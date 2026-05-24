@@ -1,0 +1,215 @@
+# QuantumLang .gitignore
+# Keeps source, specs, examples, tests, and config templates tracked.
+# Ignores build outputs, local machine files, logs, caches, and secrets.
+
+# -----------------------------
+# OS / editor files
+# -----------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+
+# VS Code / JetBrains
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+.idea/
+*.iml
+
+# -----------------------------
+# Local environment / secrets
+# -----------------------------
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+secrets/
+credentials/
+keys/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# -----------------------------
+# Logs / reports
+# -----------------------------
+*.log
+logs/
+log/
+reports/
+coverage/
+coverage-*/
+*.gcda
+*.gcno
+*.gcov
+lcov.info
+
+# -----------------------------
+# Build directories
+# -----------------------------
+build/
+build-*/
+out/
+dist/
+release/
+debug/
+Debug/
+Release/
+RelWithDebInfo/
+MinSizeRel/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+
+# -----------------------------
+# C/C++/native artifacts
+# -----------------------------
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+*.dSYM/
+*.pdb
+*.ilk
+*.gcov
+*.profraw
+*.profdata
+
+# Generated binaries
+qtlc
+qtlang
+quantumlang
+compiler/qtlc
+compiler/qtlc-*
+runtime/*.so
+runtime/*.a
+
+# -----------------------------
+# QuantumLang generated outputs
+# -----------------------------
+.qtl-cache/
+.qn-cache/
+.quantum-cache/
+.quantum-build/
+quantum.lock.tmp
+*.qni
+*.qnb
+*.qno
+*.qbc
+*.qir
+*.qasm
+*.ll
+*.bc
+*.s
+*.asm
+
+# Generated parser / lexer output
+generated/
+parser/generated/
+compiler/generated/
+*.yy.cc
+*.yy.cpp
+*.tab.cc
+*.tab.cpp
+*.tab.h
+
+# -----------------------------
+# Package managers / dependencies
+# -----------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+.pnp.*
+package-lock.json.tmp
+
+vendor/
+third_party/build/
+third_party/*/build/
+
+# -----------------------------
+# Python helper scripts / tooling
+# -----------------------------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# -----------------------------
+# Rust helper tooling, if used later
+# -----------------------------
+target/
+Cargo.lock
+
+# -----------------------------
+# Test outputs / fixtures generated at runtime
+# -----------------------------
+test-output/
+test-results/
+tmp/
+temp/
+.cache/
+.cache-*/
+bench/
+benchmarks/out/
+perf.data
+perf.data.old
+flamegraph.svg
+
+# -----------------------------
+# Documentation build outputs
+# -----------------------------
+site/
+public/
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+mkdocs-site/
+
+# -----------------------------
+# Database / local state
+# -----------------------------
+*.db
+*.sqlite
+*.sqlite3
+*.rocksdb/
+rocksdb/
+data/
+state/
+
+# -----------------------------
+# Keep important repo files tracked
+# -----------------------------
+!.gitignore
+!.gitattributes
+!README.md
+!LICENSE
+!quantum.toml
+!policy.toml
