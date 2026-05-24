@@ -1,0 +1,19 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum IoRequestKind {
+  ReadRequest
+  WriteRequest
+  ConnectRequest
+  SpawnRequest
+}
+pub struct IoRequest {
+  kind: IoRequestKind
+  handleId: u64
+  byteCount: usize
+  cancellable: bool
+  timeoutMillis: u64
+  retryable: bool
+  preservesPartialWrite: bool
+}
+pub extern "qnpkg" {
+  pub fn ioRequest(kind: IoRequestKind, handleId: u64, byteCount: usize, cancellable: bool) -> IoRequest
+}

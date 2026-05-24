@@ -1,0 +1,7 @@
+pub struct ProcessGroup {
+  leader: ProcessId,
+}
+
+pub fn group(process: Process) -> ProcessGroup
+pub fn killGroup(group: ProcessGroup) -> Result<Unit, OsError>
+pub fn signalGroup(group: ProcessGroup, signal: ProcessSignal) -> Result<Unit, OsError>

@@ -1,0 +1,60 @@
+impl BinaryCursor {
+  /**
+    Decodes the next value when bytes remain.
+
+    example:
+      let row = cursor.next<User>()?
+
+    effects: advances the compiler-tracked cursor
+    complexity: O(1) plus decoded value size
+    allocation: none for fixed-width and zero-copy decoded views
+    stability: public since 0.1
+  */
+  pub fn next<T>(self: BinaryCursor) -> Result<Option<T>, BinaryError> {
+    if self.position() >= self.view.len {
+      return Ok(None)
+    }
+    return Ok(Some(Binary.decodeFrom<T>(self)?))
+  }
+
+  /**
+    Decodes all remaining values into a Vec.
+
+    example:
+      let rows = cursor.collect<User>()?
+
+    effects: alloc
+    complexity: O(n)
+    allocation: allocates result storage
+    stability: public since 0.1
+  */
+  pub fn collect<T>(self: BinaryCursor) -> Result<Vec<T>, BinaryError> requires(alloc) {
+    let mut cursor = self
+    let mut result = Vec<T>()
+    while item = cursor.next<T>()? {
+      result = result.push(item)
+    }
+    return Ok(result)
+  }
+
+  /**
+    Decodes until predicate accepts a value.
+
+    example:
+      let user = cursor.find<User>(user => user.id == wanted)?
+
+    effects: advances the compiler-tracked cursor
+    complexity: O(n)
+    allocation: none for fixed-width and zero-copy decoded views
+    stability: public since 0.1
+  */
+  pub fn find<T>(self: BinaryCursor, predicate: fn(T) -> bool) -> Result<Option<T>, BinaryError> {
+    let mut cursor = self
+    while item = cursor.next<T>()? {
+      if predicate(item) {
+        return Ok(Some(item))
+      }
+    }
+    return Ok(None)
+  }
+}

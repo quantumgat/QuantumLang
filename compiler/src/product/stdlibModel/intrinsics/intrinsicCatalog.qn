@@ -1,0 +1,18 @@
+pub enum IntrinsicOwner {
+  CompilerIntrinsic,
+  RuntimeIntrinsic,
+  StdlibFacade,
+}
+
+pub struct IntrinsicRow {
+  name: string,
+  owner: IntrinsicOwner,
+  privateBinding: bool,
+  requiresRuntimeAbi: bool,
+}
+
+impl IntrinsicRow {
+  pub fn accepted(self: IntrinsicRow) -> bool {
+    return self.name != "" && self.privateBinding
+  }
+}

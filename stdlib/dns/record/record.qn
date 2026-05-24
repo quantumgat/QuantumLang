@@ -1,0 +1,44 @@
+pub enum DnsRecordKind {
+  A
+  Aaaa
+  Cname
+  Srv
+  Txt
+  Mx
+  Ns
+  Ptr
+}
+
+pub struct DnsQuery {
+  host: Host,
+  kind: DnsRecordKind,
+}
+
+pub struct DnsRecord {
+  name: Host,
+  kind: DnsRecordKind,
+  ttlSeconds: u32,
+  value: string,
+}
+
+pub struct DnsAnswer {
+  query: DnsQuery,
+  records: Vec<DnsRecord>,
+  cached: bool,
+}
+
+impl DnsRecord {
+  pub fn cacheable(self: DnsRecord) -> bool {
+    return self.ttlSeconds > 0
+  }
+
+  pub fn valid(self: DnsRecord) -> bool {
+    return self.value != "" && self.ttlSeconds > 0
+  }
+}
+
+impl DnsAnswer {
+  pub fn hasRecords(self: DnsAnswer) -> bool {
+    return self.records.len > 0
+  }
+}

@@ -1,0 +1,21 @@
+pub enum RuntimeAtomicErrorKind {
+  UnsupportedPayload,
+  UnsupportedTarget,
+  LockFreeRequired,
+  InvalidReference,
+  InvalidOrdering,
+}
+
+pub struct RuntimeAtomicError {
+  kind: RuntimeAtomicErrorKind,
+  recoverable: bool,
+}
+
+impl RuntimeAtomicError {
+  pub fn init(kind: RuntimeAtomicErrorKind) -> RuntimeAtomicError {
+    return RuntimeAtomicError {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+}

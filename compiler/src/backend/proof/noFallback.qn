@@ -1,0 +1,24 @@
+pub struct NoFallbackProof {
+  generatedCFallback: bool,
+  generatedCppFallback: bool,
+  generatedHeaderFallback: bool,
+  diagnosticBeforeArtifact: bool,
+}
+
+pub fn noFallbackProof() -> NoFallbackProof {
+  return NoFallbackProof {
+    generatedCFallback: false,
+    generatedCppFallback: false,
+    generatedHeaderFallback: false,
+    diagnosticBeforeArtifact: true,
+  }
+}
+
+impl NoFallbackProof {
+  pub fn passed(self: NoFallbackProof) -> bool {
+    return self.generatedCFallback == false &&
+      self.generatedCppFallback == false &&
+      self.generatedHeaderFallback == false &&
+      self.diagnosticBeforeArtifact
+  }
+}

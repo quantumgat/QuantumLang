@@ -1,0 +1,206 @@
+pub enum HirWhileHandoffKind {
+  ConditionLoop
+  PatternLoop
+  InfiniteLoop
+  LoopBreakValue
+  LabeledLoop
+  QuestionLoop
+  AwaitQuestionLoop
+  ElseNoBreakLoop
+  UntilLoop
+  TimeoutLoop
+  PollLoop
+  QuantumLoop
+}
+
+pub struct HirWhileHandoff {
+  sourceNode: u64,
+  kind: HirWhileHandoffKind,
+  formCount: usize,
+  optionPayloadBindingId: u64,
+  optionScrutineeId: u64,
+  optionPayloadType: string,
+  awaitQuestionExprId: u64,
+  deadlineExprId: u64,
+  pollSourceId: u64,
+  cancellationTokenId: u64,
+  quantumRegionId: u64,
+  qwhileProfileId: u64,
+  qwhileBoundExprId: u64,
+  runtimeHandoffReady: bool,
+  cleanupPreserved: bool,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+}
+
+pub struct HirWhileInput {
+  sourceNode: u64,
+  kind: HirWhileHandoffKind,
+  analysis: WhileAnalysisResult,
+  formCount: usize,
+  asyncRuntimeRequired: bool,
+  qwhileRequired: bool,
+}
+
+pub struct HirWhileBuild {
+  handoff: HirWhileHandoff,
+  mirSeedInstruction: u64,
+  readyForMir: bool,
+}
+
+pub fn hirWhileHandoff(
+  sourceNode: u64,
+  kind: HirWhileHandoffKind,
+  formCount: usize,
+  optionPayloadBindingId: u64,
+  optionScrutineeId: u64,
+  optionPayloadType: string,
+  awaitQuestionExprId: u64,
+  deadlineExprId: u64,
+  pollSourceId: u64,
+  cancellationTokenId: u64,
+  quantumRegionId: u64,
+  qwhileProfileId: u64,
+  qwhileBoundExprId: u64,
+  runtimeHandoffReady: bool,
+  cleanupPreserved: bool,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+) -> HirWhileHandoff {
+  return HirWhileHandoff {
+    sourceNode: sourceNode,
+    kind: kind,
+    formCount: formCount,
+    optionPayloadBindingId: optionPayloadBindingId,
+    optionScrutineeId: optionScrutineeId,
+    optionPayloadType: optionPayloadType,
+    awaitQuestionExprId: awaitQuestionExprId,
+    deadlineExprId: deadlineExprId,
+    pollSourceId: pollSourceId,
+    cancellationTokenId: cancellationTokenId,
+    quantumRegionId: quantumRegionId,
+    qwhileProfileId: qwhileProfileId,
+    qwhileBoundExprId: qwhileBoundExprId,
+    runtimeHandoffReady: runtimeHandoffReady,
+    cleanupPreserved: cleanupPreserved,
+    diagnosticsAttached: diagnosticsAttached,
+    mirReady: mirReady,
+  }
+}
+
+pub fn hirWhileInput(
+  sourceNode: u64,
+  kind: HirWhileHandoffKind,
+  analysis: WhileAnalysisResult,
+  formCount: usize,
+  asyncRuntimeRequired: bool,
+  qwhileRequired: bool,
+) -> HirWhileInput {
+  return HirWhileInput {
+    sourceNode: sourceNode,
+    kind: kind,
+    analysis: analysis,
+    formCount: formCount,
+    asyncRuntimeRequired: asyncRuntimeRequired,
+    qwhileRequired: qwhileRequired,
+  }
+}
+
+pub fn buildHirWhile(input: HirWhileInput) -> HirWhileBuild {
+  let analysisReady = input.analysis.complete()
+  let runtimeReady = !input.asyncRuntimeRequired || analysisReady
+  let qwhileReady = !input.qwhileRequired || analysisReady
+  let mirReady = analysisReady && runtimeReady && qwhileReady
+
+  let handoff = hirWhileHandoff(
+    input.sourceNode,
+    input.kind,
+    input.formCount,
+    input.sourceNode + 1,
+    input.sourceNode + 2,
+    "T",
+    input.sourceNode + 3,
+    input.sourceNode + 4,
+    input.sourceNode + 5,
+    input.sourceNode + 6,
+    input.sourceNode + 7,
+    input.sourceNode + 8,
+    input.sourceNode + 9,
+    runtimeReady,
+    true,
+    analysisReady,
+    mirReady
+  )
+
+  return HirWhileBuild {
+    handoff: handoff,
+    mirSeedInstruction: input.sourceNode + input.formCount + 1,
+    readyForMir: handoff.complete(),
+  }
+}
+
+impl HirWhileHandoff {
+  pub fn sourceNodeId(self: HirWhileHandoff) -> u64 {
+    return self.sourceNode
+  }
+
+  pub fn formTotal(self: HirWhileHandoff) -> usize {
+    return self.formCount
+  }
+
+  pub fn complete(self: HirWhileHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.formCount >= 15
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+
+  pub fn whileLetOptionReady(self: HirWhileHandoff) -> bool {
+    return self.kind == HirWhileHandoffKind.PatternLoop
+      && self.sourceNode > 0
+      && self.optionPayloadBindingId > 0
+      && self.optionScrutineeId > 0
+      && self.optionPayloadType != ""
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+
+  pub fn isAsyncPollTimeout(self: HirWhileHandoff) -> bool {
+    return self.kind == HirWhileHandoffKind.AwaitQuestionLoop
+      || self.kind == HirWhileHandoffKind.TimeoutLoop
+      || self.kind == HirWhileHandoffKind.PollLoop
+  }
+
+  pub fn asyncPollTimeoutReady(self: HirWhileHandoff) -> bool {
+    return self.isAsyncPollTimeout()
+      && self.sourceNode > 0
+      && self.awaitQuestionExprId > 0
+      && self.deadlineExprId > 0
+      && self.pollSourceId > 0
+      && self.cancellationTokenId > 0
+      && self.runtimeHandoffReady
+      && self.cleanupPreserved
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+
+  pub fn qwhileReady(self: HirWhileHandoff) -> bool {
+    return self.kind == HirWhileHandoffKind.QuantumLoop
+      && self.sourceNode > 0
+      && self.quantumRegionId > 0
+      && self.qwhileProfileId > 0
+      && self.qwhileBoundExprId > 0
+      && self.runtimeHandoffReady
+      && self.cleanupPreserved
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+}
+
+impl HirWhileBuild {
+  pub fn complete(self: HirWhileBuild) -> bool {
+    return self.handoff.complete()
+      && self.mirSeedInstruction > 0
+      && self.readyForMir
+  }
+}

@@ -1,0 +1,29 @@
+pub struct PluginKernelRegistry {
+  kernelCount: usize,
+  signatureCount: usize,
+  targetGateCount: usize,
+  deterministicDispatch: bool,
+  fallbackVerified: bool,
+  domainNeutral: bool,
+}
+
+impl PluginKernelRegistry {
+  pub fn fromKernelCount(kernelCount: usize) -> PluginKernelRegistry {
+    return PluginKernelRegistry {
+      kernelCount: kernelCount,
+      signatureCount: kernelCount,
+      targetGateCount: kernelCount,
+      deterministicDispatch: true,
+      fallbackVerified: true,
+      domainNeutral: true,
+    }
+  }
+
+  pub fn accepted(self: PluginKernelRegistry) -> bool {
+    return self.kernelCount == self.signatureCount
+      && self.kernelCount == self.targetGateCount
+      && self.deterministicDispatch
+      && self.fallbackVerified
+      && self.domainNeutral
+  }
+}

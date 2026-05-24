@@ -1,0 +1,21 @@
+pub struct MmioRegionLowering {
+  emitsDeviceAddressSpace: bool,
+  preservesRegionBounds: bool,
+  preservesTargetGate: bool,
+  emitsVolatileAccess: bool,
+}
+
+impl MmioRegionLowering {
+  pub fn init(emitsDeviceAddressSpace: bool, preservesRegionBounds: bool, preservesTargetGate: bool, emitsVolatileAccess: bool) -> MmioRegionLowering {
+    return MmioRegionLowering {
+      emitsDeviceAddressSpace: emitsDeviceAddressSpace,
+      preservesRegionBounds: preservesRegionBounds,
+      preservesTargetGate: preservesTargetGate,
+      emitsVolatileAccess: emitsVolatileAccess,
+    }
+  }
+
+  pub fn accepted(self: MmioRegionLowering) -> bool {
+    return self.emitsDeviceAddressSpace && self.preservesRegionBounds && self.preservesTargetGate && self.emitsVolatileAccess
+  }
+}

@@ -1,0 +1,23 @@
+pub struct ProgramFacts {
+  moduleCount: usize,
+  declarationCount: usize,
+  entryPointPresent: bool,
+}
+
+pub fn programFacts(moduleCount: usize, declarationCount: usize, entryPointPresent: bool) -> ProgramFacts {
+  return ProgramFacts {
+    moduleCount: moduleCount,
+    declarationCount: declarationCount,
+    entryPointPresent: entryPointPresent,
+  }
+}
+
+impl ProgramFacts {
+  pub fn modules(self: ProgramFacts) -> usize {
+    return self.moduleCount
+  }
+
+  pub fn hasEntryPoint(self: ProgramFacts) -> bool {
+    return self.entryPointPresent
+  }
+}

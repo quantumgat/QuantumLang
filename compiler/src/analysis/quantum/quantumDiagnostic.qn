@@ -1,0 +1,50 @@
+pub enum QuantumDiagnosticKind {
+  InvalidCopy
+  UseAfterRelease
+  MissingReset
+  InvalidMeasurement
+  InvalidQFuncBoundary
+  UnsupportedQirProfile
+  QwhileRequiresStaticBound
+  QwhileInvalidCondition
+  QwhileQubitOwnershipViolation
+}
+
+pub struct QuantumDiagnostic {
+  node: u64,
+  kind: QuantumDiagnosticKind,
+  code: string,
+  blocking: bool,
+}
+
+pub fn quantumDiagnostic(
+  node: u64,
+  kind: QuantumDiagnosticKind,
+  code: string,
+  blocking: bool
+) -> QuantumDiagnostic {
+  return QuantumDiagnostic {
+    node: node,
+    kind: kind,
+    code: code,
+    blocking: blocking,
+  }
+}
+
+impl QuantumDiagnostic {
+  pub fn nodeId(self: QuantumDiagnostic) -> u64 {
+    return self.node
+  }
+
+  pub fn diagnosticKind(self: QuantumDiagnostic) -> QuantumDiagnosticKind {
+    return self.kind
+  }
+
+  pub fn diagnosticCode(self: QuantumDiagnostic) -> string {
+    return self.code
+  }
+
+  pub fn blocksCompilation(self: QuantumDiagnostic) -> bool {
+    return self.blocking
+  }
+}

@@ -1,0 +1,19 @@
+pub struct CancellationToken {
+  id: u64,
+  parent: u64,
+  cancelled: bool,
+}
+
+pub fn cancellationToken(id: u64, parent: u64) -> CancellationToken {
+  return CancellationToken { id: id, parent: parent, cancelled: false }
+}
+
+impl CancellationToken {
+  pub fn tokenId(self: CancellationToken) -> u64 {
+    return self.id
+  }
+
+  pub fn isCancelled(self: CancellationToken) -> bool {
+    return self.cancelled
+  }
+}

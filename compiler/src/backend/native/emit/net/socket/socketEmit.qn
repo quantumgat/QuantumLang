@@ -1,0 +1,11 @@
+pub struct NativeNetSocketEmit {
+  directRuntimeAbi: bool,
+  handleGenerationPreserved: bool,
+  incidentPathPresent: bool,
+}
+
+impl NativeNetSocketEmit {
+  pub fn accepted(self: NativeNetSocketEmit) -> bool {
+    return self.directRuntimeAbi && self.handleGenerationPreserved && self.incidentPathPresent
+  }
+}

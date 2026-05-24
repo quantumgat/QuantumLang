@@ -1,0 +1,12 @@
+pub struct WindowsIoRuntime {
+  target: string,
+  handleBacked: bool,
+  iocpRequired: bool,
+  overlappedIo: bool,
+}
+
+impl WindowsIoRuntime {
+  pub fn accepted(self: WindowsIoRuntime) -> bool {
+    return self.target != "" && self.handleBacked && self.iocpRequired
+  }
+}

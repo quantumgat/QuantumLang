@@ -1,0 +1,9 @@
+[module]
+name = "signal"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "platform-signal-analysis"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

@@ -1,0 +1,16 @@
+pub struct IrDump {
+  hirRows: usize,
+  mirRows: usize,
+  tirRows: usize,
+  qmirRows: usize,
+}
+
+pub fn irDump(hirRows: usize, mirRows: usize, tirRows: usize, qmirRows: usize) -> IrDump {
+  return IrDump { hirRows: hirRows, mirRows: mirRows, tirRows: tirRows, qmirRows: qmirRows }
+}
+
+impl IrDump {
+  pub fn rowCount(self: IrDump) -> usize {
+    return self.hirRows + self.mirRows + self.tirRows + self.qmirRows
+  }
+}

@@ -1,0 +1,6 @@
+[module]
+name = "nativeBinaryProof"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-binary-proof-evidence"

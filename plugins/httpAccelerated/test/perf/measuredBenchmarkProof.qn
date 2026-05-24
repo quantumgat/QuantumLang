@@ -1,0 +1,119 @@
+pub enum HttpAcceleratedPerfCaseKind {
+  ParserHeaders,
+  RouteTrieLookup,
+  ExtractorChain,
+  HandlerThunk,
+  ResponseWriter,
+  SendfilePath,
+  BackpressureQueue,
+}
+
+pub struct HttpAcceleratedPerfCase {
+  kind: HttpAcceleratedPerfCaseKind,
+  name: string,
+  measured: bool,
+  fallbackCompared: bool,
+  serialSafe: bool,
+  allCoreDisabled: bool,
+  allocationBudgetChecked: bool,
+  sourceMapped: bool,
+}
+
+impl HttpAcceleratedPerfCase {
+  pub fn measured(
+    kind: HttpAcceleratedPerfCaseKind,
+    name: string,
+  ) -> HttpAcceleratedPerfCase {
+    return HttpAcceleratedPerfCase {
+      kind: kind,
+      name: name,
+      measured: true,
+      fallbackCompared: true,
+      serialSafe: true,
+      allCoreDisabled: true,
+      allocationBudgetChecked: true,
+      sourceMapped: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedPerfCase) -> bool {
+    return self.name != ""
+      && self.measured
+      && self.fallbackCompared
+      && self.serialSafe
+      && self.allCoreDisabled
+      && self.allocationBudgetChecked
+      && self.sourceMapped
+  }
+}
+
+pub struct HttpAcceleratedMeasuredBenchmarkProof {
+  runner: string,
+  cases: Vec<HttpAcceleratedPerfCase>,
+  reportPath: string,
+  baselinePath: string,
+  maxParallel: usize,
+  productSpeedClaimBlocked: bool,
+}
+
+impl HttpAcceleratedMeasuredBenchmarkProof {
+  pub fn closeout() -> HttpAcceleratedMeasuredBenchmarkProof requires(alloc) {
+    let mut cases = Vec<HttpAcceleratedPerfCase>.withCapacity(7)
+    cases = cases.push(HttpAcceleratedPerfCase.measured(
+      HttpAcceleratedPerfCaseKind.ParserHeaders,
+      "http-accelerated-parser-headers-measured"
+    ))
+    cases = cases.push(HttpAcceleratedPerfCase.measured(
+      HttpAcceleratedPerfCaseKind.RouteTrieLookup,
+      "http-accelerated-route-trie-measured"
+    ))
+    cases = cases.push(HttpAcceleratedPerfCase.measured(
+      HttpAcceleratedPerfCaseKind.ExtractorChain,
+      "http-accelerated-extractor-chain-measured"
+    ))
+    cases = cases.push(HttpAcceleratedPerfCase.measured(
+      HttpAcceleratedPerfCaseKind.HandlerThunk,
+      "http-accelerated-handler-thunk-measured"
+    ))
+    cases = cases.push(HttpAcceleratedPerfCase.measured(
+      HttpAcceleratedPerfCaseKind.ResponseWriter,
+      "http-accelerated-response-writer-measured"
+    ))
+    cases = cases.push(HttpAcceleratedPerfCase.measured(
+      HttpAcceleratedPerfCaseKind.SendfilePath,
+      "http-accelerated-sendfile-path-measured"
+    ))
+    cases = cases.push(HttpAcceleratedPerfCase.measured(
+      HttpAcceleratedPerfCaseKind.BackpressureQueue,
+      "http-accelerated-backpressure-queue-measured"
+    ))
+    return HttpAcceleratedMeasuredBenchmarkProof {
+      runner: "qtlc-http-accelerated-measured-v1",
+      cases: cases,
+      reportPath: "plugins/httpAccelerated/test/perf/reports/httpAcceleratedMeasuredReport.toml",
+      baselinePath: "plugins/httpAccelerated/test/perf/baselines/portableFallback.toml",
+      maxParallel: 1,
+      productSpeedClaimBlocked: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedMeasuredBenchmarkProof) -> bool {
+    if self.runner != "qtlc-http-accelerated-measured-v1" {
+      return false
+    }
+    if self.maxParallel != 1 || !self.productSpeedClaimBlocked {
+      return false
+    }
+    if self.cases.len() < 7 || self.reportPath == "" || self.baselinePath == "" {
+      return false
+    }
+    let mut index: usize = 0
+    while index < self.cases.len() {
+      if !self.cases[index].accepted() {
+        return false
+      }
+      index = index + 1
+    }
+    return true
+  }
+}

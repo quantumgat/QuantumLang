@@ -1,0 +1,56 @@
+pub struct PluginCompilerContract {
+  passCount: usize,
+  typeCount: usize,
+  factCount: usize,
+  hookCount: usize,
+  loweringStageCount: usize,
+  fallback: PluginPolicyRequirement,
+  sourceMaps: PluginPolicyRequirement,
+  ownerScopedSubsections: bool,
+  deterministicRegistration: bool,
+}
+
+impl PluginCompilerContract {
+  pub fn none() -> PluginCompilerContract {
+    return PluginCompilerContract {
+      passCount: 0,
+      typeCount: 0,
+      factCount: 0,
+      hookCount: 0,
+      loweringStageCount: 0,
+      fallback: PluginPolicyRequirement.Optional,
+      sourceMaps: PluginPolicyRequirement.Optional,
+      ownerScopedSubsections: true,
+      deterministicRegistration: true,
+    }
+  }
+
+  pub fn lowering(passCount: usize, factCount: usize, hookCount: usize, loweringStageCount: usize) -> PluginCompilerContract {
+    return PluginCompilerContract {
+      passCount: passCount,
+      typeCount: 0,
+      factCount: factCount,
+      hookCount: hookCount,
+      loweringStageCount: loweringStageCount,
+      fallback: PluginPolicyRequirement.Required,
+      sourceMaps: PluginPolicyRequirement.Required,
+      ownerScopedSubsections: true,
+      deterministicRegistration: true,
+    }
+  }
+
+  pub fn accepted(self: PluginCompilerContract) -> bool {
+    return self.ownerScopedSubsections
+      && self.deterministicRegistration
+      && self.fallback != PluginPolicyRequirement.Forbidden
+      && self.sourceMaps != PluginPolicyRequirement.Forbidden
+  }
+
+  pub fn hasCompileTimeBehavior(self: PluginCompilerContract) -> bool {
+    return self.passCount > 0
+      || self.typeCount > 0
+      || self.factCount > 0
+      || self.hookCount > 0
+      || self.loweringStageCount > 0
+  }
+}

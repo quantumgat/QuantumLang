@@ -1,0 +1,40 @@
+pub enum IoRequestKind {
+  ReadRequest
+  WriteRequest
+  ConnectRequest
+  SpawnRequest
+}
+
+pub struct IoRequest {
+  kind: IoRequestKind,
+  handleId: u64,
+  byteCount: usize,
+  cancellable: bool,
+  timeoutMillis: u64,
+  retryable: bool,
+  preservesPartialWrite: bool,
+}
+
+pub fn ioRequest(kind: IoRequestKind, handleId: u64, byteCount: usize, cancellable: bool) -> IoRequest {
+  return IoRequest {
+    kind: kind,
+    handleId: handleId,
+    byteCount: byteCount,
+    cancellable: cancellable,
+    timeoutMillis: 0,
+    retryable: true,
+    preservesPartialWrite: true,
+  }
+}
+
+impl IoRequest {
+  pub fn canCancel(self: IoRequest) -> bool {
+    return self.cancellable
+  }
+
+  pub fn safe(self: IoRequest) -> bool {
+    return self.handleId > 0
+      && self.preservesPartialWrite
+      && (self.cancellable || self.timeoutMillis == 0 || self.retryable)
+  }
+}

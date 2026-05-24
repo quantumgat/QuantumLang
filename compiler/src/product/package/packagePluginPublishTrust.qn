@@ -1,0 +1,42 @@
+pub struct PackagePluginPublishTrust {
+  pluginName: string,
+  manifestSchemaRequired: bool,
+  sourceMapsRequired: bool,
+  typedFailureRequired: bool,
+  noCoredumpRequired: bool,
+  proofRequired: bool,
+  lockfileRequired: bool,
+  signatureRequired: bool,
+  dryRunOfflineSafe: bool,
+  registryUploadAllowed: bool,
+}
+
+impl PackagePluginPublishTrust {
+  pub fn dryRun(pluginName: string) -> PackagePluginPublishTrust {
+    return PackagePluginPublishTrust {
+      pluginName: pluginName,
+      manifestSchemaRequired: true,
+      sourceMapsRequired: true,
+      typedFailureRequired: true,
+      noCoredumpRequired: true,
+      proofRequired: true,
+      lockfileRequired: true,
+      signatureRequired: true,
+      dryRunOfflineSafe: true,
+      registryUploadAllowed: false,
+    }
+  }
+
+  pub fn accepted(self: PackagePluginPublishTrust) -> bool {
+    return self.pluginName != ""
+      && self.manifestSchemaRequired
+      && self.sourceMapsRequired
+      && self.typedFailureRequired
+      && self.noCoredumpRequired
+      && self.proofRequired
+      && self.lockfileRequired
+      && self.signatureRequired
+      && self.dryRunOfflineSafe
+      && self.registryUploadAllowed == false
+  }
+}

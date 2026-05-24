@@ -1,0 +1,37 @@
+pub enum HirCancellationTimerKind {
+  TokenCreate
+  TokenChild
+  ScopeOpen
+  ScopeClose
+  Sleep
+  Timeout
+  Interval
+  Deadline
+}
+
+pub struct HirCancellationTimerHandoff {
+  nodeId: u64,
+  kind: HirCancellationTimerKind,
+  cleanupRequired: bool,
+  schedulerWakeRequired: bool,
+}
+
+impl HirCancellationTimerHandoff {
+  pub fn init(
+    nodeId: u64,
+    kind: HirCancellationTimerKind,
+    cleanupRequired: bool,
+    schedulerWakeRequired: bool,
+  ) -> HirCancellationTimerHandoff {
+    return HirCancellationTimerHandoff {
+      nodeId: nodeId,
+      kind: kind,
+      cleanupRequired: cleanupRequired,
+      schedulerWakeRequired: schedulerWakeRequired,
+    }
+  }
+
+  pub fn accepted(self: HirCancellationTimerHandoff) -> bool {
+    return self.nodeId > 0 && self.cleanupRequired && self.schedulerWakeRequired
+  }
+}

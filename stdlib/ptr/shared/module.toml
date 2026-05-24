@@ -1,0 +1,6 @@
+[module]
+name = "ptr.shared"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "shared-smart-pointer"

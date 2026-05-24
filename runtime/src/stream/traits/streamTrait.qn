@@ -1,0 +1,21 @@
+pub enum StreamTraitKind {
+  ReadableStream
+  WritableStream
+  SeekableStream
+  ReplayableStream
+}
+
+pub struct StreamTrait {
+  kind: StreamTraitKind,
+  capabilityChecked: bool,
+}
+
+pub fn streamTrait(kind: StreamTraitKind) -> StreamTrait {
+  return StreamTrait { kind: kind, capabilityChecked: true }
+}
+
+impl StreamTrait {
+  pub fn isAllowed(self: StreamTrait) -> bool {
+    return self.capabilityChecked
+  }
+}

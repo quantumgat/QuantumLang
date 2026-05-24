@@ -1,0 +1,53 @@
+pub enum ComplexKernelOperation {
+  Add
+  Subtract
+  Multiply
+  Divide
+  Abs
+  Conjugate
+}
+
+pub struct ComplexKernel {
+  targetFeatureChecked: bool,
+  pairLayoutStable: bool,
+  publicApiOwnedByStdlib: bool,
+}
+
+impl ComplexKernel {
+  pub fn standard() -> ComplexKernel {
+    return ComplexKernel {
+      targetFeatureChecked: true,
+      pairLayoutStable: true,
+      publicApiOwnedByStdlib: true,
+    }
+  }
+
+  pub fn canRun(self: ComplexKernel) -> bool {
+    return self.targetFeatureChecked && self.pairLayoutStable && self.publicApiOwnedByStdlib
+  }
+
+  pub fn ownsTypeIdentity(self: ComplexKernel) -> bool {
+    return false
+  }
+
+  pub fn absSquaredF64(self: ComplexKernel, real: f64, imag: f64) -> Result<f64, MathRuntimeError> {
+    return Ok(real * real + imag * imag)
+  }
+
+  pub fn divideF64(
+    self: ComplexKernel,
+    leftReal: f64,
+    leftImag: f64,
+    rightReal: f64,
+    rightImag: f64,
+  ) -> Result<(f64, f64), MathRuntimeError> {
+    let denom = rightReal * rightReal + rightImag * rightImag
+    if denom == 0.0 {
+      return Err(MathRuntimeError.ComplexDomain)
+    }
+    return Ok((
+      (leftReal * rightReal + leftImag * rightImag) / denom,
+      (leftImag * rightReal - leftReal * rightImag) / denom,
+    ))
+  }
+}

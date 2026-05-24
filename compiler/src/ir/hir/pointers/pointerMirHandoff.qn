@@ -1,0 +1,18 @@
+pub struct HirPointerMirHandoff {
+  hirNode: u64,
+  pointerCallKind: HirPointerCallKind,
+  accessFactRequired: bool,
+  checkSequenceRequired: bool,
+  mirMemoryOpRequired: bool,
+  targetVariantRequired: bool,
+}
+
+impl HirPointerMirHandoff {
+  pub fn accepted(self: HirPointerMirHandoff) -> bool {
+    return self.hirNode > 0
+      && self.accessFactRequired
+      && self.checkSequenceRequired
+      && self.mirMemoryOpRequired
+      && self.targetVariantRequired
+  }
+}

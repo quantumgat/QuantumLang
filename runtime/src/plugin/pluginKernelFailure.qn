@@ -1,0 +1,34 @@
+pub enum PluginKernelFailureKind {
+  TargetRejected,
+  AbiMismatch,
+  CapabilityDenied,
+  KernelPanicTrapped,
+  ResourceLimitExceeded,
+}
+
+pub struct PluginKernelFailure {
+  kind: PluginKernelFailureKind,
+  typed: bool,
+  noCoredump: bool,
+  sourceMapped: bool,
+  incidentRecorded: bool,
+}
+
+impl PluginKernelFailure {
+  pub fn trapped(kind: PluginKernelFailureKind) -> PluginKernelFailure {
+    return PluginKernelFailure {
+      kind: kind,
+      typed: true,
+      noCoredump: true,
+      sourceMapped: true,
+      incidentRecorded: true,
+    }
+  }
+
+  pub fn accepted(self: PluginKernelFailure) -> bool {
+    return self.typed
+      && self.noCoredump
+      && self.sourceMapped
+      && self.incidentRecorded
+  }
+}

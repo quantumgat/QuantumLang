@@ -1,0 +1,17 @@
+pub struct NetTlsProofFact {
+  verificationRequiredByDefault: bool,
+  unsafeDisableRequiresUnsafeBlock: bool,
+  alpnTyped: bool,
+  sniChecked: bool,
+  pinningDiagnostics: bool,
+}
+
+impl NetTlsProofFact {
+  pub fn accepted(self: NetTlsProofFact) -> bool {
+    return self.verificationRequiredByDefault
+      && self.unsafeDisableRequiresUnsafeBlock
+      && self.alpnTyped
+      && self.sniChecked
+      && self.pinningDiagnostics
+  }
+}

@@ -1,0 +1,54 @@
+import analysis.types::{BuiltinPrimitiveTypeId}
+
+pub enum PrimitiveCastKind {
+  Identity
+  Widen
+  Narrow
+  IntegerFloat
+  FloatInteger
+  RealComplex
+  ComplexReal
+  Unsupported
+}
+
+pub struct PrimitiveCastRule {
+  sourceType: BuiltinPrimitiveTypeId,
+  targetType: BuiltinPrimitiveTypeId,
+  kind: PrimitiveCastKind,
+  explicitRequired: bool,
+  lossy: bool,
+}
+
+pub fn primitiveCastRule(
+  sourceType: BuiltinPrimitiveTypeId,
+  targetType: BuiltinPrimitiveTypeId,
+  kind: PrimitiveCastKind,
+  explicitRequired: bool,
+  lossy: bool
+) -> PrimitiveCastRule {
+  return PrimitiveCastRule {
+    sourceType: sourceType,
+    targetType: targetType,
+    kind: kind,
+    explicitRequired: explicitRequired,
+    lossy: lossy,
+  }
+}
+
+impl PrimitiveCastRule {
+  pub fn castKind(self: PrimitiveCastRule) -> PrimitiveCastKind {
+    return self.kind
+  }
+
+  pub fn requiresExplicitCast(self: PrimitiveCastRule) -> bool {
+    return self.explicitRequired
+  }
+
+  pub fn isLossy(self: PrimitiveCastRule) -> bool {
+    return self.lossy
+  }
+
+  pub fn isAllowed(self: PrimitiveCastRule) -> bool {
+    return self.kind != PrimitiveCastKind.Unsupported
+  }
+}

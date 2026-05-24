@@ -1,0 +1,54 @@
+pub enum MirOopAsyncInterfaceTraitDynSafetyOpKind {
+  BindAsyncInterfaceSlot
+  BindAsyncTraitSlot
+  EnforceImplAsyncParity
+  LowerStaticAsyncCall
+  CreateDynAsyncAdapter
+  CreateDynFutureAbi
+  PollDynFuture
+  RejectUnsafeDynAsync
+  EmitObjectSafetyDiagnostic
+  SourceMapEdge
+}
+
+pub struct MirOopAsyncInterfaceTraitDynSafetyOp {
+  instruction: u64,
+  ownerTypeName: string,
+  methodName: string,
+  kind: MirOopAsyncInterfaceTraitDynSafetyOpKind,
+  asyncContractBound: bool,
+  implParityChecked: bool,
+  objectSafetyChecked: bool,
+  explicitDynBoundary: bool,
+  futureAbiStable: bool,
+  vtablePollEntryBound: bool,
+  staticDirectLowering: bool,
+  allocationFreeWhenStatic: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+  sourceMapReady: bool,
+}
+
+impl MirOopAsyncInterfaceTraitDynSafetyOp {
+  pub fn accepted(self: MirOopAsyncInterfaceTraitDynSafetyOp) -> bool {
+    return self.instruction > 0
+      && self.ownerTypeName != ""
+      && self.methodName != ""
+      && self.asyncContractBound
+      && self.implParityChecked
+      && self.objectSafetyChecked
+      && self.explicitDynBoundary
+      && self.futureAbiStable
+      && self.vtablePollEntryBound
+      && self.typedFailure
+      && self.noCoredump
+      && self.sourceMapReady
+  }
+
+  pub fn staticHotPathReady(self: MirOopAsyncInterfaceTraitDynSafetyOp) -> bool {
+    return self.accepted()
+      && self.staticDirectLowering
+      && self.allocationFreeWhenStatic
+      && self.kind == MirOopAsyncInterfaceTraitDynSafetyOpKind.LowerStaticAsyncCall
+  }
+}

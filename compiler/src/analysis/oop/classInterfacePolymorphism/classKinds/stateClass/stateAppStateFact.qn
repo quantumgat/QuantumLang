@@ -1,0 +1,49 @@
+pub struct StateAppStateFact {
+  ownerId: u64,
+  stateFactCount: usize,
+  transitionCount: usize,
+  witnessCount: usize,
+  appResourceCount: usize,
+  scopedStateCount: usize,
+  shutdownOrderBound: bool,
+  lazyInitPolicyBound: bool,
+  cacheInvalidationBound: bool,
+  testOverrideIsolated: bool,
+}
+
+pub fn stateAppStateFact(
+  ownerId: u64,
+  stateFactCount: usize,
+  transitionCount: usize,
+  witnessCount: usize,
+  appResourceCount: usize,
+  scopedStateCount: usize,
+  shutdownOrderBound: bool,
+  lazyInitPolicyBound: bool,
+  cacheInvalidationBound: bool,
+  testOverrideIsolated: bool,
+) -> StateAppStateFact {
+  return StateAppStateFact {
+    ownerId: ownerId,
+    stateFactCount: stateFactCount,
+    transitionCount: transitionCount,
+    witnessCount: witnessCount,
+    appResourceCount: appResourceCount,
+    scopedStateCount: scopedStateCount,
+    shutdownOrderBound: shutdownOrderBound,
+    lazyInitPolicyBound: lazyInitPolicyBound,
+    cacheInvalidationBound: cacheInvalidationBound,
+    testOverrideIsolated: testOverrideIsolated,
+  }
+}
+
+impl StateAppStateFact {
+  pub fn complete(self: StateAppStateFact) -> bool {
+    return self.stateFactCount > 0
+      && self.transitionCount > 0
+      && self.witnessCount > 0
+      && self.shutdownOrderBound
+      && self.lazyInitPolicyBound
+      && self.cacheInvalidationBound
+  }
+}

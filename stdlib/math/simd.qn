@@ -1,0 +1,12 @@
+pub struct Simd<T> {
+  lanes: usize,
+}
+
+impl<T> Simd<T> {
+  pub fn lanes(self: Simd<T>) -> usize {
+    return self.lanes
+  }
+
+  pub fn sum(self: Simd<T>) -> T
+  pub fn shuffle(self: Simd<T>, lanes: Vec<usize>) -> Simd<T>
+}

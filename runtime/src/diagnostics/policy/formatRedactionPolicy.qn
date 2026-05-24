@@ -1,0 +1,24 @@
+pub struct FormatRedactionPolicy {
+  redactSecretValues: bool,
+  redactDebugPayloads: bool,
+  preserveDiagnosticCode: bool,
+  preserveSourceSpan: bool,
+}
+
+pub fn formatRedactionPolicy() -> FormatRedactionPolicy {
+  return FormatRedactionPolicy {
+    redactSecretValues: true,
+    redactDebugPayloads: true,
+    preserveDiagnosticCode: true,
+    preserveSourceSpan: true,
+  }
+}
+
+impl FormatRedactionPolicy {
+  pub fn protectsFormatDiagnostics(self: FormatRedactionPolicy) -> bool {
+    return self.redactSecretValues
+      && self.redactDebugPayloads
+      && self.preserveDiagnosticCode
+      && self.preserveSourceSpan
+  }
+}

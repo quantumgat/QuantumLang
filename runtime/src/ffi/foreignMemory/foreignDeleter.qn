@@ -1,0 +1,21 @@
+pub struct RuntimeForeignDeleter {
+  deleterId: u64,
+  allocatorDomain: string,
+  registered: bool,
+  lifetimeTokenRequired: bool,
+}
+
+impl RuntimeForeignDeleter {
+  pub fn init(deleterId: u64, allocatorDomain: string, registered: bool, lifetimeTokenRequired: bool) -> RuntimeForeignDeleter {
+    return RuntimeForeignDeleter {
+      deleterId: deleterId,
+      allocatorDomain: allocatorDomain,
+      registered: registered,
+      lifetimeTokenRequired: lifetimeTokenRequired,
+    }
+  }
+
+  pub fn accepted(self: RuntimeForeignDeleter) -> bool {
+    return self.deleterId > 0 && self.allocatorDomain != "" && self.registered && self.lifetimeTokenRequired
+  }
+}

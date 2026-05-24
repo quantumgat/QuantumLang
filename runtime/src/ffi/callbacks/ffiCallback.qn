@@ -1,0 +1,15 @@
+pub struct FfiCallback {
+  callbackId: u64,
+  reentryChecked: bool,
+  panicBoundary: bool,
+}
+
+pub fn ffiCallback(callbackId: u64) -> FfiCallback {
+  return FfiCallback { callbackId: callbackId, reentryChecked: true, panicBoundary: true }
+}
+
+impl FfiCallback {
+  pub fn canEnterRuntime(self: FfiCallback) -> bool {
+    return self.reentryChecked && self.panicBoundary
+  }
+}

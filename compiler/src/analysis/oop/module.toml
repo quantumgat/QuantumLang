@@ -1,0 +1,9 @@
+[module]
+name = "oop"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots", "qtlc_qtlang_oop_advanced_families_parity_gap_closure", "qtlc_qtlang_oop_fixture_execution_parity_audit", "qtlc_qtlang_oop_fixture_execution_core_gap_closure", "qtlc_qtlang_oop_runtime_package_advanced_execution_audit", "qtlc_qtlang_oop_runtime_package_advanced_execution_gap_closure", "qtlc_qtlang_oop_completion_claim_audit", "qtlc_qtlang_oop_class_family_compiler_runtime_gap_closure", "qtlc_qtlang_oop_class_family_hotpath_proof_closeout", "qtlc_qtlang_oop_callable_state_class_family_gap_closure", "qtlc_qtlang_oop_core_class_kind_directory_architecture", "qtlc_qtlang_oop_callable_state_fact_migration", "qtlc_qtlang_oop_core_kind_policy_boundary_closeout", "qtlc_qtlang_oop_constructor_syntax_lifecycle_policy", "qtlc_qtlang_oop_drop_shutdown_lifecycle_policy", "qtlc_qtlang_oop_async_class_methods_parser_ast", "qtlc_qtlang_oop_async_class_hir_mir_lowering", "qtlc_qtlang_oop_async_resource_service_lifecycle", "qtlc_qtlang_oop_async_actor_mailbox_lifecycle", "qtlc_qtlang_oop_async_interface_trait_dyn_safety", "qtlc_qtlang_oop_lifecycle_async_e2e_perf_proof"]

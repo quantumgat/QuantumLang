@@ -1,0 +1,13 @@
+[module]
+name = "oop.classKinds"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "class-kind-directory-boundary"
+
+[policy]
+kindCount = 14
+perKindDirectoriesRequired = true
+perKindDocsRequired = true
+duplicateImplementationAllowed = false
+migrationSafe = true

@@ -1,0 +1,3 @@
+pub mod capabilityPtr
+
+pub use capabilityPtr.CapabilityPtr

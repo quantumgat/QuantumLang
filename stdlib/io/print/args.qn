@@ -1,0 +1,23 @@
+pub struct PrintArgs {
+  count: usize,
+  formatChecked: bool,
+  redactsSecrets: bool,
+}
+
+pub struct PrintArgPolicy {
+  acceptsMultipleValues: bool,
+  defaultSeparatorSpace: bool,
+  rejectsUnsafeInternalValues: bool,
+  usesDisplayByDefault: bool,
+}
+
+impl PrintArgPolicy {
+  pub fn fastDevelopment() -> PrintArgPolicy {
+    return PrintArgPolicy {
+      acceptsMultipleValues: true,
+      defaultSeparatorSpace: true,
+      rejectsUnsafeInternalValues: true,
+      usesDisplayByDefault: true,
+    }
+  }
+}

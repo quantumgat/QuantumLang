@@ -1,0 +1,12 @@
+pub struct FreertosRuntime {
+  target: string,
+  tasks: bool,
+  queues: bool,
+  heapPolicy: bool,
+}
+
+impl FreertosRuntime {
+  pub fn accepted(self: FreertosRuntime) -> bool {
+    return self.target != "" && self.tasks && self.heapPolicy
+  }
+}

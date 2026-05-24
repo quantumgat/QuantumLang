@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeStreamRetry {
+  streamId: u64
+  attempts: usize
+  maxAttempts: usize
+  partialErrorsPreserved: bool
+}

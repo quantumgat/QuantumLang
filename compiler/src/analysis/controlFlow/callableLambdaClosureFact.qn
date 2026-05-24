@@ -1,0 +1,48 @@
+pub enum CallableLambdaClosureFactKind {
+  NonCapturingDirect
+  SmallCaptureStack
+  NestedCaptureFlattened
+  AsyncStateMachine
+  MoveCaptureOwned
+  MethodReferenceDirect
+  CallableClassDirect
+  DynCallableBoundary
+  CollectionAlgorithmInline
+}
+
+pub struct CallableLambdaClosureFact {
+  kind: CallableLambdaClosureFactKind,
+  signatureChecked: bool,
+  captureLayoutChecked: bool,
+  escapeAnalysisBound: bool,
+  mutableAliasRejected: bool,
+  sendSyncBoundaryChecked: bool,
+  effectSetChecked: bool,
+  hotPathAllocationFree: bool,
+  sourceMapBound: bool,
+  diagnosticsReady: bool,
+}
+
+impl CallableLambdaClosureFact {
+  pub fn complete(self: CallableLambdaClosureFact) -> bool {
+    return self.signatureChecked
+      && self.captureLayoutChecked
+      && self.escapeAnalysisBound
+      && self.mutableAliasRejected
+      && self.sendSyncBoundaryChecked
+      && self.effectSetChecked
+      && self.sourceMapBound
+      && self.diagnosticsReady
+  }
+
+  pub fn hotLowerable(self: CallableLambdaClosureFact) -> bool {
+    return self.complete()
+      && self.hotPathAllocationFree
+      && self.kind != CallableLambdaClosureFactKind.DynCallableBoundary
+  }
+
+  pub fn explicitBoundary(self: CallableLambdaClosureFact) -> bool {
+    return self.complete()
+      && self.kind == CallableLambdaClosureFactKind.DynCallableBoundary
+  }
+}

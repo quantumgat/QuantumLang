@@ -1,0 +1,14 @@
+pub struct WorkShard {
+  shardId: u64,
+  itemCount: usize,
+}
+
+pub fn workShard(shardId: u64, itemCount: usize) -> WorkShard {
+  return WorkShard { shardId: shardId, itemCount: itemCount }
+}
+
+impl WorkShard {
+  pub fn hasWork(self: WorkShard) -> bool {
+    return self.itemCount > 0
+  }
+}

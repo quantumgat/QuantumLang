@@ -1,0 +1,42 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum MemoryIncidentKind {
+  Leak,
+  DoubleFree,
+  UseAfterFree,
+  StaleHandle,
+  WrongAllocator,
+  OutOfMemory,
+  PressureDenied,
+  InvalidLayout,
+  AllocatorStopped,
+  ArenaUseAfterReset,
+  ArenaDoubleRelease,
+  ArenaEscape,
+  WrongRegion,
+  DanglingArenaBox,
+  DanglingArenaSlice,
+  ZeroCopyDanglingView,
+  ZeroCopyMutationConflict,
+  ZeroCopyOverlappingMutableBorrow,
+  ZeroCopyReadAfterMutation,
+  ZeroCopyInvalidRange,
+}
+pub struct MemoryIncident {
+  incidentId: u64
+  kind: MemoryIncidentKind
+  allocationId: u64
+  handleId: u64
+  requestedBytes: usize
+  allocatedBytes: usize
+  expectedGeneration: u64
+  actualGeneration: u64
+  expectedAllocator: string
+  actualAllocator: string
+  alignment: usize
+  requiredAlignment: usize
+  boundsIndex: usize
+  boundsLen: usize
+  recoverable: bool
+  redacted: bool
+  coredump: bool
+}

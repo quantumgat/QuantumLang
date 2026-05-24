@@ -1,0 +1,39 @@
+pub struct EmergencyReportBuffer {
+  capacityBytes: usize,
+  usedBytes: usize,
+  allocationFree: bool,
+  redacted: bool,
+  ringBuffered: bool,
+  preservesNewestFatal: bool,
+  stableSchema: bool,
+  writableDuringOom: bool,
+  noCoredump: bool,
+}
+
+impl EmergencyReportBuffer {
+  pub fn fixed(capacityBytes: usize) -> EmergencyReportBuffer {
+    return EmergencyReportBuffer {
+      capacityBytes: capacityBytes,
+      usedBytes: 0,
+      allocationFree: true,
+      redacted: true,
+      ringBuffered: true,
+      preservesNewestFatal: true,
+      stableSchema: true,
+      writableDuringOom: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: EmergencyReportBuffer) -> bool {
+    return self.capacityBytes > 0
+      && self.usedBytes <= self.capacityBytes
+      && self.allocationFree
+      && self.redacted
+      && self.ringBuffered
+      && self.preservesNewestFatal
+      && self.stableSchema
+      && self.writableDuringOom
+      && self.noCoredump
+  }
+}

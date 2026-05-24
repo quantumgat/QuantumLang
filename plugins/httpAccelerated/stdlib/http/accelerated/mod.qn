@@ -1,0 +1,6 @@
+pub mod accelerated
+
+pub use accelerated.HttpAcceleratedFeature
+pub use accelerated.HttpPackageFactSet
+pub use accelerated.HttpAccelerationPlan
+pub use accelerated.HttpAcceleratedRuntimeBinding

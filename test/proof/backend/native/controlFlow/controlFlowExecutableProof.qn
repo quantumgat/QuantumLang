@@ -1,0 +1,26 @@
+pub enum ControlFlowExecutableProofKind {
+  BranchLoopExecutable
+  MatchPatternExecutable
+  ParallelLoopExecutable
+  QuantumControlExecutable
+  NegativeDiagnosticExecutable
+}
+
+pub struct ControlFlowExecutableProof {
+  kind: ControlFlowExecutableProofKind,
+  fixture: string,
+  nativeLowering: NativeControlFlowLowering,
+  generatedExecutableCaptured: bool,
+  negativeFixtureCaptured: bool,
+  noGeneratedFallback: bool,
+}
+
+impl ControlFlowExecutableProof {
+  pub fn complete(self: ControlFlowExecutableProof) -> bool {
+    return self.fixture != ""
+      && self.nativeLowering.complete()
+      && self.generatedExecutableCaptured
+      && self.negativeFixtureCaptured
+      && self.noGeneratedFallback
+  }
+}

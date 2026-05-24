@@ -1,0 +1,8 @@
+pub fn h(target: qubit) -> Unit
+pub fn x(target: qubit) -> Unit
+pub fn y(target: qubit) -> Unit
+pub fn z(target: qubit) -> Unit
+pub fn cnot(control: qubit, target: qubit) -> Unit
+pub fn rx(theta: f64, target: qubit) -> Unit
+pub fn ry(theta: f64, target: qubit) -> Unit
+pub fn rz(theta: f64, target: qubit) -> Unit

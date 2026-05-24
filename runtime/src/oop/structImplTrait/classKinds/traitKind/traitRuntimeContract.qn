@@ -1,0 +1,17 @@
+pub struct TraitRuntimeContract {
+  typeId: u64,
+  staticDispatchErased: bool,
+  dynTraitRuntimeExplicit: bool,
+  vtableBoundWhenDyn: bool,
+  lifetimeCheckedWhenDyn: bool,
+}
+
+impl TraitRuntimeContract {
+  pub fn complete(self: TraitRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.staticDispatchErased
+      && self.dynTraitRuntimeExplicit
+      && self.vtableBoundWhenDyn
+      && self.lifetimeCheckedWhenDyn
+  }
+}

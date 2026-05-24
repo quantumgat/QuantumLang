@@ -1,0 +1,15 @@
+pub fn empty<T>() -> Stream<T>
+pub fn fromAsyncIterator<T>(iterator: AsyncIterator<T>) -> Stream<T>
+pub fn withBackpressure<T>(stream: Stream<T>, policy: StreamBackpressure) -> Stream<T>
+pub fn withTimeout<T>(stream: Stream<T>, timeout: StreamTimeout) -> Stream<T>
+pub fn withRetry<T>(stream: Stream<T>, retry: RetryPolicy) -> Stream<T>
+
+pub use asyncIterator.AsyncIterator
+pub use backpressure.StreamBackpressure
+pub use backpressure.StreamBackpressurePolicy
+pub use core.Stream
+pub use core.StreamError
+pub use partial.PartialStreamResult
+pub use retry.RetryPolicy
+pub use timeout.StreamTimeout
+pub use transform.StreamTransform

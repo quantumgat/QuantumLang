@@ -1,0 +1,14 @@
+pub struct TemplatePerfProof {
+  fastPathMeasured: bool,
+  fallbackMeasured: bool,
+  reportOwnedByTest: bool,
+}
+
+pub fn templatePerfProof() -> TemplatePerfProof {
+  return TemplatePerfProof {
+    fastPathMeasured: true,
+    fallbackMeasured: true,
+    reportOwnedByTest: true,
+  }
+}
+

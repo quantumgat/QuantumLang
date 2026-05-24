@@ -1,0 +1,12 @@
+pub struct RuntimeThreadModel {
+  target: string,
+  nativeThreads: bool,
+  cooperativeOnly: bool,
+  tlsAvailable: bool,
+}
+
+impl RuntimeThreadModel {
+  pub fn accepted(self: RuntimeThreadModel) -> bool {
+    return self.target != "" && (self.nativeThreads || self.cooperativeOnly)
+  }
+}

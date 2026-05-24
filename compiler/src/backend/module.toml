@@ -1,0 +1,20 @@
+[module]
+name = "backend"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-and-qir-backend-selection"
+
+[submodules]
+native = "native/mod.qn"
+qir = "qir/mod.qn"
+registry = "registry/mod.qn"
+diagnostics = "diagnostics/mod.qn"
+proof = "proof/mod.qn"
+
+[dependencies]
+allowed = ["common", "analysis", "ir"]
+forbidden = ["backend/c", "backend/llvm", "runtime internals"]
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

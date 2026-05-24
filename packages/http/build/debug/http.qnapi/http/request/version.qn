@@ -1,0 +1,7 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum HttpVersion {
+  Http10,
+  Http11,
+  Http2,
+  Http3,
+}

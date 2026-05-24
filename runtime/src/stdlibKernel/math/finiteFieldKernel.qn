@@ -1,0 +1,72 @@
+pub struct FiniteFieldKernel {
+  modulusChecked: bool,
+  canonicalResidue: bool,
+  inverseChecked: bool,
+  constantTimeEq: bool,
+  noCoredump: bool,
+}
+
+impl FiniteFieldKernel {
+  pub fn primeField64() -> FiniteFieldKernel {
+    return FiniteFieldKernel {
+      modulusChecked: true,
+      canonicalResidue: true,
+      inverseChecked: true,
+      constantTimeEq: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: FiniteFieldKernel) -> bool {
+    return self.modulusChecked
+      && self.canonicalResidue
+      && self.inverseChecked
+      && self.constantTimeEq
+      && self.noCoredump
+  }
+
+  pub fn addU64(self: FiniteFieldKernel, left: u64, right: u64, modulus: u64) -> Result<u64, MathRuntimeError> {
+    if modulus == 0 {
+      return Err(MathRuntimeError.ZeroModulus)
+    }
+    let wide = (left as u128) + (right as u128)
+    return Ok((wide % (modulus as u128)) as u64)
+  }
+
+  pub fn subU64(self: FiniteFieldKernel, left: u64, right: u64, modulus: u64) -> Result<u64, MathRuntimeError> {
+    if modulus == 0 {
+      return Err(MathRuntimeError.ZeroModulus)
+    }
+    let l = left % modulus
+    let r = right % modulus
+    if l >= r {
+      return Ok(l - r)
+    }
+    return Ok(modulus - (r - l))
+  }
+
+  pub fn mulU64(self: FiniteFieldKernel, left: u64, right: u64, modulus: u64) -> Result<u64, MathRuntimeError> {
+    if modulus == 0 {
+      return Err(MathRuntimeError.ZeroModulus)
+    }
+    let wide = (left as u128) * (right as u128)
+    return Ok((wide % (modulus as u128)) as u64)
+  }
+
+  pub fn powU64(self: FiniteFieldKernel, base: u64, exponent: u64, modulus: u64) -> Result<u64, MathRuntimeError> {
+    if modulus == 0 {
+      return Err(MathRuntimeError.ZeroModulus)
+    }
+    let mut result: u64 = 1 % modulus
+    let mut factor = base % modulus
+    let mut exp = exponent
+    while exp > 0 {
+      if exp & 1 == 1 {
+        result = self.mulU64(result, factor, modulus)?
+      }
+      factor = self.mulU64(factor, factor, modulus)?
+      exp = exp >> 1
+    }
+    return Ok(result)
+  }
+}

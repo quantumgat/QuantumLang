@@ -1,0 +1,6 @@
+pub struct UserId {
+  value: u64,
+}
+
+pub fn current() -> UserId
+pub fn id(user: UserId) -> u64

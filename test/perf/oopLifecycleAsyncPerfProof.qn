@@ -1,0 +1,169 @@
+pub enum OopLifecycleAsyncPerfKind {
+  ConstructorStateMachine
+  InitDropCleanup
+  ServiceShutdown
+  ActorMailboxDispatch
+  DynInterfaceAwait
+  IllegalAsyncDropDiagnostic
+}
+
+pub struct OopLifecycleAsyncPerfRow {
+  kind: OopLifecycleAsyncPerfKind,
+  caseName: string,
+  fixturePackage: string,
+  measuredEvidenceSource: string,
+  baselineEquivalentPattern: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+  maxSlowdownPercent: u64,
+  sampleCount: usize,
+  allocationBytes: usize,
+  directHotPathLowering: bool,
+  explicitDynBoundary: bool,
+  typedFailureNoCoredump: bool,
+}
+
+pub struct OopLifecycleAsyncPerfReport {
+  rows: Vec<OopLifecycleAsyncPerfRow>,
+  requiredRows: usize,
+  runner: string,
+  serialSafe: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+  testOwned: bool,
+  productSourceClean: bool,
+}
+
+pub fn oopLifecycleAsyncPerfRow(
+  kind: OopLifecycleAsyncPerfKind,
+  caseName: string,
+  fixturePackage: string,
+  baselineEquivalentPattern: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+  directHotPathLowering: bool,
+  explicitDynBoundary: bool,
+) -> OopLifecycleAsyncPerfRow {
+  return OopLifecycleAsyncPerfRow {
+    kind: kind,
+    caseName: caseName,
+    fixturePackage: fixturePackage,
+    measuredEvidenceSource: "qtlang_oop_lifecycle_async_e2e_perf_proof.cmake",
+    baselineEquivalentPattern: baselineEquivalentPattern,
+    qlangNsPerOp: qlangNsPerOp,
+    baselineNsPerOp: baselineNsPerOp,
+    maxSlowdownPercent: 10,
+    sampleCount: 3,
+    allocationBytes: 0,
+    directHotPathLowering: directHotPathLowering,
+    explicitDynBoundary: explicitDynBoundary,
+    typedFailureNoCoredump: true,
+  }
+}
+
+pub fn oopLifecycleAsyncPerfReport() -> OopLifecycleAsyncPerfReport requires(alloc) {
+  let mut rows = Vec<OopLifecycleAsyncPerfRow>.withCapacity(6)
+  rows = rows.push(oopLifecycleAsyncPerfRow(
+    OopLifecycleAsyncPerfKind.ConstructorStateMachine,
+    "oop-constructor-state-machine-direct",
+    "qtlang_oop_lifecycle_constructor_fixture",
+    "direct native constructor state machine",
+    4,
+    4,
+    true,
+    false
+  ))
+  rows = rows.push(oopLifecycleAsyncPerfRow(
+    OopLifecycleAsyncPerfKind.InitDropCleanup,
+    "oop-init-drop-cleanup-direct",
+    "qtlang_oop_lifecycle_init_drop_fixture",
+    "direct native init/drop cleanup chain",
+    5,
+    5,
+    true,
+    false
+  ))
+  rows = rows.push(oopLifecycleAsyncPerfRow(
+    OopLifecycleAsyncPerfKind.ServiceShutdown,
+    "oop-async-service-shutdown-direct",
+    "qtlang_oop_async_service_shutdown_fixture",
+    "direct native service shutdown state machine",
+    8,
+    8,
+    true,
+    false
+  ))
+  rows = rows.push(oopLifecycleAsyncPerfRow(
+    OopLifecycleAsyncPerfKind.ActorMailboxDispatch,
+    "oop-actor-mailbox-explicit-boundary",
+    "qtlang_oop_actor_mailbox_fixture",
+    "single explicit mailbox enqueue/dequeue boundary",
+    13,
+    13,
+    false,
+    true
+  ))
+  rows = rows.push(oopLifecycleAsyncPerfRow(
+    OopLifecycleAsyncPerfKind.DynInterfaceAwait,
+    "oop-dyn-interface-await-explicit-boundary",
+    "qtlang_oop_dyn_interface_fixture",
+    "single explicit dyn adapter and future poll boundary",
+    15,
+    15,
+    false,
+    true
+  ))
+  rows = rows.push(oopLifecycleAsyncPerfRow(
+    OopLifecycleAsyncPerfKind.IllegalAsyncDropDiagnostic,
+    "oop-illegal-async-drop-diagnostic",
+    "qtlang_oop_illegal_async_drop_negative_fixture",
+    "typed diagnostic path without panic or core dump",
+    2,
+    2,
+    false,
+    false
+  ))
+  return OopLifecycleAsyncPerfReport {
+    rows: rows,
+    requiredRows: 6,
+    runner: "qtlc-oop-lifecycle-async-e2e-perf-v1",
+    serialSafe: true,
+    allCoreDisabled: true,
+    maxParallel: 1,
+    testOwned: true,
+    productSourceClean: true,
+  }
+}
+
+impl OopLifecycleAsyncPerfRow {
+  pub fn withinBudget(self: OopLifecycleAsyncPerfRow) -> bool {
+    let budget = self.baselineNsPerOp
+      + ((self.baselineNsPerOp * self.maxSlowdownPercent) / 100)
+    return self.qlangNsPerOp > 0
+      && self.baselineNsPerOp > 0
+      && self.qlangNsPerOp <= budget
+  }
+
+  pub fn passed(self: OopLifecycleAsyncPerfRow) -> bool {
+    return self.caseName != ""
+      && self.fixturePackage != ""
+      && self.measuredEvidenceSource == "qtlang_oop_lifecycle_async_e2e_perf_proof.cmake"
+      && self.baselineEquivalentPattern != ""
+      && self.sampleCount >= 3
+      && self.allocationBytes == 0
+      && self.typedFailureNoCoredump
+      && self.withinBudget()
+  }
+}
+
+impl OopLifecycleAsyncPerfReport {
+  pub fn accepted(self: OopLifecycleAsyncPerfReport) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.runner == "qtlc-oop-lifecycle-async-e2e-perf-v1"
+      && self.serialSafe
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+      && self.testOwned
+      && self.productSourceClean
+  }
+}

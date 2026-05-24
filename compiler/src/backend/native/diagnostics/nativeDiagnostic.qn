@@ -1,0 +1,41 @@
+pub enum NativeDiagnosticKind {
+  UnsupportedTarget
+  UnsupportedFeature
+  LayoutError
+  AbiError
+  ObjectError
+  LinkError
+  FallbackRejected
+}
+
+pub struct NativeDiagnostic {
+  code: string,
+  kind: NativeDiagnosticKind,
+  message: string,
+  sourceStart: usize,
+  sourceEnd: usize,
+}
+
+pub fn nativeDiagnostic(code: string, kind: NativeDiagnosticKind, message: string, sourceStart: usize, sourceEnd: usize) -> NativeDiagnostic {
+  return NativeDiagnostic {
+    code: code,
+    kind: kind,
+    message: message,
+    sourceStart: sourceStart,
+    sourceEnd: sourceEnd,
+  }
+}
+
+impl NativeDiagnostic {
+  pub fn diagnosticCode(self: NativeDiagnostic) -> string {
+    return self.code
+  }
+
+  pub fn diagnosticKind(self: NativeDiagnostic) -> NativeDiagnosticKind {
+    return self.kind
+  }
+
+  pub fn diagnosticMessage(self: NativeDiagnostic) -> string {
+    return self.message
+  }
+}

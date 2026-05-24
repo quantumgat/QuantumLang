@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeLogHotPath {
+  disabledEventsSkippedBeforeRecord: bool
+  staticLevelGate: bool
+  inlineFieldStorage: bool
+  compactFieldEncoding: bool
+  sinkDispatchBounded: bool
+  redactionBeforeWrite: bool
+  runtimeIncidentNoAllocation: bool
+  allocationFreeDisabled: bool
+  noCoredump: bool
+}

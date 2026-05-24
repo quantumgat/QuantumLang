@@ -1,0 +1,23 @@
+pub struct SourcePolicy {
+  allowTabs: bool,
+  requireUtf8: bool,
+  maxBytes: usize,
+}
+
+pub fn defaultSourcePolicy() -> SourcePolicy {
+  return SourcePolicy { allowTabs: true, requireUtf8: true, maxBytes: 0 }
+}
+
+impl SourcePolicy {
+  pub fn allowsTabs(self: SourcePolicy) -> bool {
+    return self.allowTabs
+  }
+
+  pub fn requiresUtf8(self: SourcePolicy) -> bool {
+    return self.requireUtf8
+  }
+
+  pub fn byteLimit(self: SourcePolicy) -> usize {
+    return self.maxBytes
+  }
+}

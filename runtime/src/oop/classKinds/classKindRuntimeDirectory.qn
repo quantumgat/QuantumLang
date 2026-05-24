@@ -1,0 +1,47 @@
+pub struct OopClassKindRuntimeDirectoryRow {
+  directory: string,
+  modelFamily: string,
+  implementationRoot: string,
+  runtimeOwner: string,
+  runtimeBoundary: string,
+  noRequestLoopReflection: bool,
+  hotPathErasedWhenPossible: bool,
+}
+
+impl OopClassKindRuntimeDirectoryRow {
+  pub fn complete(self: OopClassKindRuntimeDirectoryRow) -> bool {
+    return self.directory != ""
+      && self.modelFamily != ""
+      && self.implementationRoot != ""
+      && self.runtimeOwner != ""
+      && self.runtimeBoundary != ""
+      && self.noRequestLoopReflection
+      && self.hotPathErasedWhenPossible
+  }
+}
+
+pub struct OopClassKindRuntimeDirectory {
+  kindCount: usize,
+  indexRoot: string,
+  structImplTraitRoot: string,
+  classInterfacePolymorphismRoot: string,
+  twoPartArchitecture: bool,
+  genericOopEngineOwnsDispatch: bool,
+  actorRuntimeOwnsActorClasses: bool,
+  serviceRuntimeOwnsServiceClasses: bool,
+  packageRuntimeOwnedThroughPluginOnly: bool,
+}
+
+impl OopClassKindRuntimeDirectory {
+  pub fn complete(self: OopClassKindRuntimeDirectory) -> bool {
+    return self.kindCount == 14
+      && self.indexRoot == "runtime/src/oop/classKinds"
+      && self.structImplTraitRoot == "runtime/src/oop/structImplTrait"
+      && self.classInterfacePolymorphismRoot == "runtime/src/oop/classInterfacePolymorphism"
+      && self.twoPartArchitecture
+      && self.genericOopEngineOwnsDispatch
+      && self.actorRuntimeOwnsActorClasses
+      && self.serviceRuntimeOwnsServiceClasses
+      && self.packageRuntimeOwnedThroughPluginOnly
+  }
+}

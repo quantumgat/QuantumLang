@@ -1,0 +1,11 @@
+pub struct UnknownStdlibImportDiagnostic {
+  importPath: string,
+  code: string,
+  suggestsPublicPath: bool,
+}
+
+impl UnknownStdlibImportDiagnostic {
+  pub fn accepted(self: UnknownStdlibImportDiagnostic) -> bool {
+    return self.importPath != "" && self.code != "" && self.suggestsPublicPath
+  }
+}

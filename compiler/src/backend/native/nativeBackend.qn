@@ -1,0 +1,22 @@
+import backend.registry::{Backend}
+
+pub class NativeBackend {
+  targetName: string,
+  directNativeLowering: bool,
+  generatedSourceFallback: bool,
+
+  pub init(targetName: string) {
+    self.targetName = targetName
+    self.directNativeLowering = true
+    self.generatedSourceFallback = false
+  }
+}
+impl Backend for NativeBackend {
+  pub fn name(self: &NativeBackend) -> string {
+    return "native"
+  }
+
+  pub fn supportsNative(self: &NativeBackend) -> bool {
+    return true
+  }
+}

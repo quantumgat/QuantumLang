@@ -1,0 +1,37 @@
+pub struct SourceFile {
+  id: u32,
+  path: string,
+  text: string,
+  byteLength: usize,
+}
+
+pub fn sourceFile(id: u32, path: string, text: string, byteLength: usize) -> SourceFile {
+  return SourceFile {
+    id: id,
+    path: path,
+    text: text,
+    byteLength: byteLength,
+  }
+}
+
+impl SourceFile {
+  pub fn fileId(self: SourceFile) -> u32 {
+    return self.id
+  }
+
+  pub fn filePath(self: SourceFile) -> string {
+    return self.path
+  }
+
+  pub fn contents(self: SourceFile) -> string {
+    return self.text
+  }
+
+  pub fn lenBytes(self: SourceFile) -> usize {
+    return self.byteLength
+  }
+
+  pub fn isEmpty(self: SourceFile) -> bool {
+    return self.byteLength == 0
+  }
+}

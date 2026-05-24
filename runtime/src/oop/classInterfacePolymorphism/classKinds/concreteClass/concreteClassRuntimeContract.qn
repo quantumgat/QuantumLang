@@ -1,0 +1,17 @@
+pub struct ConcreteClassRuntimeContract {
+  typeId: u64,
+  metadataBound: bool,
+  layoutBound: bool,
+  lifecycleGuardBound: bool,
+  directDispatchBound: bool,
+}
+
+impl ConcreteClassRuntimeContract {
+  pub fn complete(self: ConcreteClassRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.metadataBound
+      && self.layoutBound
+      && self.lifecycleGuardBound
+      && self.directDispatchBound
+  }
+}

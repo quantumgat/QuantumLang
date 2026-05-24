@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum AbiSymbolKind {
+  RuntimeCallSymbol,
+  MemorySymbol,
+  QuantumSymbol,
+  OopSymbol,
+}
+pub struct AbiSymbol {
+  name: string
+  kind: AbiSymbolKind
+  version: string
+  stable: bool
+  publicHeaderRequired: bool
+}
+pub extern "qnpkg" {
+  pub fn abiSymbol(name: string, kind: AbiSymbolKind) -> AbiSymbol
+}

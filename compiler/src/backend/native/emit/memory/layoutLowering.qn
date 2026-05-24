@@ -1,0 +1,36 @@
+pub struct LayoutLowering {
+  typeId: u64,
+  sizeKnown: bool,
+  alignmentKnown: bool,
+  strideKnown: bool,
+  endianKnown: bool,
+  abiStable: bool,
+  paddingRejectedForWire: bool,
+}
+
+impl LayoutLowering {
+  pub fn init(typeId: u64) -> LayoutLowering {
+    return LayoutLowering {
+      typeId: typeId,
+      sizeKnown: true,
+      alignmentKnown: true,
+      strideKnown: true,
+      endianKnown: true,
+      abiStable: true,
+      paddingRejectedForWire: true,
+    }
+  }
+
+  pub fn nativeReady(self: LayoutLowering) -> bool {
+    return self.typeId > 0
+      && self.sizeKnown
+      && self.alignmentKnown
+      && self.strideKnown
+      && self.endianKnown
+      && self.abiStable
+  }
+
+  pub fn wireReady(self: LayoutLowering) -> bool {
+    return self.nativeReady() && self.paddingRejectedForWire
+  }
+}

@@ -1,0 +1,21 @@
+pub struct Valid<T> {
+  value: T,
+  ruleSet: string,
+}
+
+impl<T> Valid<T> {
+  pub fn init(value: T, ruleSet: string) -> Valid<T> {
+    return Valid<T> {
+      value: value,
+      ruleSet: ruleSet,
+    }
+  }
+
+  pub fn value(self: Valid<T>) -> T {
+    return self.value
+  }
+
+  pub fn ruleSet(self: Valid<T>) -> string {
+    return self.ruleSet
+  }
+}

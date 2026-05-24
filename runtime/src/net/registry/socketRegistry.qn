@@ -1,0 +1,17 @@
+pub struct RuntimeSocketRegistry {
+  openCount: usize,
+  maxOpen: usize,
+  generationChecked: bool,
+  staleHandleDiagnostics: bool,
+  doubleCloseSafe: bool,
+}
+
+impl RuntimeSocketRegistry {
+  pub fn canOpen(self: RuntimeSocketRegistry) -> bool {
+    return self.openCount < self.maxOpen
+  }
+
+  pub fn safe(self: RuntimeSocketRegistry) -> bool {
+    return self.generationChecked && self.staleHandleDiagnostics && self.doubleCloseSafe
+  }
+}

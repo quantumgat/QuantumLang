@@ -1,0 +1,9 @@
+[module]
+name = "stdlibModel"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_qtlang_stdlib_model_foundation", "qtlc_qtlang_stdlib_public_root_audit"]

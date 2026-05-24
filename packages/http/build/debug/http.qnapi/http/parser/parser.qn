@@ -1,0 +1,7 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpParser {
+  strict: bool
+  limits: HttpBodyLimits
+  maxHeaderBytes: usize
+  allowPipelining: bool
+}

@@ -1,0 +1,45 @@
+pub enum SyncPrimitiveDiagnosticKind {
+  None
+  PoisonedLock
+  TimeoutWithoutCleanup
+  CancellationWithoutCleanup
+  DeadlockRisk
+  MissedWake
+  InvalidPermitRelease
+  BarrierPartyMismatch
+  OnceReentry
+}
+
+pub struct SyncPrimitiveSafety {
+  nodeId: u64,
+  poisonPolicyDefined: bool,
+  timeoutCancelCleanup: bool,
+  waitGraphTracked: bool,
+  diagnostic: SyncPrimitiveDiagnosticKind,
+}
+
+impl SyncPrimitiveSafety {
+  pub fn init(
+    nodeId: u64,
+    poisonPolicyDefined: bool,
+    timeoutCancelCleanup: bool,
+    waitGraphTracked: bool,
+    diagnostic: SyncPrimitiveDiagnosticKind,
+  ) -> SyncPrimitiveSafety {
+    return SyncPrimitiveSafety {
+      nodeId: nodeId,
+      poisonPolicyDefined: poisonPolicyDefined,
+      timeoutCancelCleanup: timeoutCancelCleanup,
+      waitGraphTracked: waitGraphTracked,
+      diagnostic: diagnostic,
+    }
+  }
+
+  pub fn accepted(self: SyncPrimitiveSafety) -> bool {
+    return self.nodeId > 0
+      && self.poisonPolicyDefined
+      && self.timeoutCancelCleanup
+      && self.waitGraphTracked
+      && self.diagnostic == SyncPrimitiveDiagnosticKind.None
+  }
+}

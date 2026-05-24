@@ -1,0 +1,11 @@
+pub struct PrivateStdlibSymbolDiagnostic {
+  symbolName: string,
+  code: string,
+  autoImportSuppressed: bool,
+}
+
+impl PrivateStdlibSymbolDiagnostic {
+  pub fn accepted(self: PrivateStdlibSymbolDiagnostic) -> bool {
+    return self.symbolName != "" && self.code != "" && self.autoImportSuppressed
+  }
+}

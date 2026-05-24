@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct StreamCursor {
+  streamId: u64
+  position: usize
+  done: bool
+}
+pub extern "qnpkg" {
+  pub fn streamCursor(streamId: u64, position: usize) -> StreamCursor
+}

@@ -1,0 +1,37 @@
+pub struct PartialInitializationFact {
+  partialId: u64,
+  constructorId: u64,
+  ownerTypeId: u64,
+  initializedPartCount: usize,
+  cleanupStepCount: usize,
+  failurePointBound: bool,
+  sourceMapBound: bool,
+}
+
+pub fn partialInitializationFact(
+  partialId: u64,
+  constructorId: u64,
+  ownerTypeId: u64,
+  initializedPartCount: usize,
+  cleanupStepCount: usize,
+  failurePointBound: bool,
+  sourceMapBound: bool,
+) -> PartialInitializationFact {
+  return PartialInitializationFact {
+    partialId: partialId,
+    constructorId: constructorId,
+    ownerTypeId: ownerTypeId,
+    initializedPartCount: initializedPartCount,
+    cleanupStepCount: cleanupStepCount,
+    failurePointBound: failurePointBound,
+    sourceMapBound: sourceMapBound,
+  }
+}
+
+impl PartialInitializationFact {
+  pub fn cleanupComplete(self: PartialInitializationFact) -> bool {
+    return self.failurePointBound
+      && self.sourceMapBound
+      && self.cleanupStepCount >= self.initializedPartCount
+  }
+}

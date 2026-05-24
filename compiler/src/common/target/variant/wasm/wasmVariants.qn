@@ -1,0 +1,18 @@
+pub struct WasmTargetVariants {
+  wasi: TargetVariantId,
+  unknown: TargetVariantId,
+  browser: TargetVariantId,
+  threadsSimd: TargetVariantId,
+}
+
+impl WasmTargetVariants {
+  pub fn coversPortable(self: WasmTargetVariants) -> bool {
+    return self.wasi == TargetVariantId.Wasm32Wasi
+      && self.unknown == TargetVariantId.Wasm32Unknown
+      && self.browser == TargetVariantId.Wasm32Browser
+  }
+
+  pub fn coversHotPath(self: WasmTargetVariants) -> bool {
+    return self.threadsSimd == TargetVariantId.Wasm32ThreadsSimd
+  }
+}

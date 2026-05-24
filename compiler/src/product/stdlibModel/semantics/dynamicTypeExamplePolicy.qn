@@ -1,0 +1,41 @@
+pub enum DynamicTypeExampleKind {
+  UnionVec
+  AnyVec
+  QAnyVec
+  MixedLiteralRejected
+}
+
+pub struct DynamicTypeExamplePolicy {
+  kind: DynamicTypeExampleKind,
+  example: string,
+  parserRequired: bool,
+  typeFactsRequired: bool,
+  runtimeAbiRequired: bool,
+  qirRequired: bool,
+  implicitAnyAllowed: bool,
+}
+
+pub fn dynamicTypeExamplePolicy(
+  kind: DynamicTypeExampleKind,
+  example: string,
+) -> DynamicTypeExamplePolicy {
+  return DynamicTypeExamplePolicy {
+    kind: kind,
+    example: example,
+    parserRequired: true,
+    typeFactsRequired: true,
+    runtimeAbiRequired: true,
+    qirRequired: kind == DynamicTypeExampleKind.QAnyVec,
+    implicitAnyAllowed: false,
+  }
+}
+
+impl DynamicTypeExamplePolicy {
+  pub fn publishable(self: DynamicTypeExamplePolicy) -> bool {
+    return self.example != ""
+      && self.parserRequired
+      && self.typeFactsRequired
+      && self.runtimeAbiRequired
+      && self.implicitAnyAllowed == false
+  }
+}

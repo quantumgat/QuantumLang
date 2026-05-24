@@ -1,0 +1,22 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct AbiLayout {
+  typeName: string
+  size: usize
+  align: usize
+  stride: usize
+  endian: string
+  opaque: bool
+  stable: bool
+}
+pub extern "qnpkg" {
+  pub fn abiLayout(typeName: string, size: usize, align: usize) -> AbiLayout
+}
+pub extern "qnpkg" {
+  pub fn opaqueHandleLayout(typeName: string) -> AbiLayout
+}
+pub extern "qnpkg" {
+  pub fn complexPairLayout(typeName: string, componentSize: usize) -> AbiLayout
+}
+pub extern "qnpkg" {
+  pub fn wireAbiLayout(typeName: string, size: usize, align: usize, endian: string) -> AbiLayout
+}

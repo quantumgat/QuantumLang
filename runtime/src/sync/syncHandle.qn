@@ -1,0 +1,14 @@
+pub struct SyncHandle {
+  id: u64,
+  generation: u32,
+}
+
+pub fn syncHandle(id: u64, generation: u32) -> SyncHandle {
+  return SyncHandle { id: id, generation: generation }
+}
+
+impl SyncHandle {
+  pub fn raw(self: SyncHandle) -> u64 {
+    return self.id
+  }
+}

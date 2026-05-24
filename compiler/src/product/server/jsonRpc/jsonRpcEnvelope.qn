@@ -1,0 +1,12 @@
+pub struct JsonRpcEnvelope {
+  method: string,
+  requestId: string,
+  hasParams: bool,
+  responseExpected: bool,
+}
+
+impl JsonRpcEnvelope {
+  pub fn accepted(self: JsonRpcEnvelope) -> bool {
+    return self.method != "" && (self.requestId != "" || self.responseExpected == false)
+  }
+}

@@ -1,0 +1,15 @@
+pub struct TextKernel {
+  unicodeChecked: bool,
+  normalizationStable: bool,
+  publicApiOwnedByStdlib: bool,
+}
+
+impl TextKernel {
+  pub fn standard() -> TextKernel {
+    return TextKernel { unicodeChecked: true, normalizationStable: true, publicApiOwnedByStdlib: true }
+  }
+
+  pub fn canRun(self: TextKernel) -> bool {
+    return self.unicodeChecked && self.normalizationStable && self.publicApiOwnedByStdlib
+  }
+}

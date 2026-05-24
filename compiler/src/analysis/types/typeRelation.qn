@@ -1,0 +1,36 @@
+pub enum TypeRelationKind {
+  Same
+  Assignable
+  Implements
+  Extends
+  Converts
+}
+
+pub struct TypeRelation {
+  left: u64,
+  right: u64,
+  kind: TypeRelationKind,
+  proven: bool,
+}
+
+pub fn typeRelation(left: u64, right: u64, kind: TypeRelationKind, proven: bool) -> TypeRelation {
+  return TypeRelation { left: left, right: right, kind: kind, proven: proven }
+}
+
+impl TypeRelation {
+  pub fn leftType(self: TypeRelation) -> u64 {
+    return self.left
+  }
+
+  pub fn rightType(self: TypeRelation) -> u64 {
+    return self.right
+  }
+
+  pub fn relationKind(self: TypeRelation) -> TypeRelationKind {
+    return self.kind
+  }
+
+  pub fn isProven(self: TypeRelation) -> bool {
+    return self.proven
+  }
+}

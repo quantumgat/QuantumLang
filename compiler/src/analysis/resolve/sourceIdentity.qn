@@ -1,0 +1,33 @@
+pub struct SourceIdentity {
+  packageName: string,
+  relativePath: string,
+  modulePath: string,
+  explicitPackageLine: bool,
+}
+
+pub fn sourceIdentity(packageName: string, relativePath: string, modulePath: string) -> SourceIdentity {
+  return SourceIdentity {
+    packageName: packageName,
+    relativePath: relativePath,
+    modulePath: modulePath,
+    explicitPackageLine: false,
+  }
+}
+
+impl SourceIdentity {
+  pub fn package(self: SourceIdentity) -> string {
+    return self.packageName
+  }
+
+  pub fn sourcePath(self: SourceIdentity) -> string {
+    return self.relativePath
+  }
+
+  pub fn module(self: SourceIdentity) -> string {
+    return self.modulePath
+  }
+
+  pub fn inferredFromPath(self: SourceIdentity) -> bool {
+    return !self.explicitPackageLine
+  }
+}

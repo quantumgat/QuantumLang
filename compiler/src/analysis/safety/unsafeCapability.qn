@@ -1,0 +1,39 @@
+pub enum UnsafeCapabilityKind {
+  RawPointerRead,
+  RawPointerWrite,
+  PointerArithmetic,
+  AddressExposure,
+  RawSliceView,
+  UnalignedAccess,
+  BulkMemory,
+  AllocationFromRawParts,
+  FfiBoundary,
+  SimdIntrinsic,
+  AtomicRaw,
+  VolatileMmio,
+  CapabilityPointer,
+}
+
+pub struct UnsafeCapability {
+  kind: UnsafeCapabilityKind,
+  targetGateRequired: bool,
+  runtimeDiagnosticRequired: bool,
+}
+
+impl UnsafeCapability {
+  pub fn init(kind: UnsafeCapabilityKind, targetGateRequired: bool, runtimeDiagnosticRequired: bool) -> UnsafeCapability {
+    return UnsafeCapability {
+      kind: kind,
+      targetGateRequired: targetGateRequired,
+      runtimeDiagnosticRequired: runtimeDiagnosticRequired,
+    }
+  }
+
+  pub fn requiresTargetGate(self: UnsafeCapability) -> bool {
+    return self.targetGateRequired
+  }
+
+  pub fn requiresRuntimeDiagnostic(self: UnsafeCapability) -> bool {
+    return self.runtimeDiagnosticRequired
+  }
+}

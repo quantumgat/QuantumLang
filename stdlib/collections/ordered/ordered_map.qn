@@ -1,0 +1,491 @@
+struct OrderedMapNode<K, V> {
+  keys: Vec<K>,
+  values: Vec<V>,
+  children: Vec<OrderedMapNode<K, V>>,
+  leaf: bool,
+}
+
+pub struct OrderedMapRange<K, V> {
+  items: Vec<(K, V)>,
+  index: usize,
+  generation: usize,
+}
+
+pub struct OrderedMap<K, V> {
+  root: Option<OrderedMapNode<K, V>>,
+  len: usize,
+  minDegree: usize,
+  comparator: Comparator<K>,
+  generation: usize,
+}
+
+impl<K, V> OrderedMap<K, V> {
+  pub fn init() -> OrderedMap<K, V> requires(alloc) {
+    return OrderedMap<K, V>.withNodeCapacity(16)
+  }
+
+  pub fn empty() -> OrderedMap<K, V> requires(alloc) {
+    return OrderedMap<K, V>.init()
+  }
+
+  pub fn withNodeCapacity(nodeCapacity: usize) -> OrderedMap<K, V> requires(alloc) {
+    return OrderedMap<K, V> {
+      root: None,
+      len: 0,
+      minDegree: OrderedMap<K, V>.normalizeNodeCapacity(nodeCapacity),
+      comparator: Comparator<K>.init(),
+      generation: 0,
+    }
+  }
+
+  pub fn len(self: OrderedMap<K, V>) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: OrderedMap<K, V>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn get(self: OrderedMap<K, V>, key: K) -> Option<V> {
+    match self.root {
+      Some(node) => {
+        return self.searchNode(node, key)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn containsKey(self: OrderedMap<K, V>, key: K) -> bool {
+    let found = self.get(key)
+    match found {
+      Some(value) => {
+        return true
+      }
+      None => {
+        return false
+      }
+    }
+  }
+
+  pub fn put(self: OrderedMap<K, V>, key: K, value: V) -> OrderedMap<K, V> requires(alloc) {
+    match self.root {
+      Some(root) => {
+        let inserted = self.insertNode(root, key, value)
+        return OrderedMap<K, V> {
+          root: Some(inserted.0),
+          len: self.len + inserted.1,
+          minDegree: self.minDegree,
+          comparator: self.comparator,
+          generation: self.generation + 1,
+        }
+      }
+      None => {
+        let root = OrderedMapNode<K, V> {
+          keys: Vec<K>.empty().push(key),
+          values: Vec<V>.empty().push(value),
+          children: Vec<OrderedMapNode<K, V>>.empty(),
+          leaf: true,
+        }
+        return OrderedMap<K, V> {
+          root: Some(root),
+          len: 1,
+          minDegree: self.minDegree,
+          comparator: self.comparator,
+          generation: self.generation + 1,
+        }
+      }
+    }
+  }
+
+  pub fn insert(self: OrderedMap<K, V>, key: K, value: V) -> OrderedMap<K, V> requires(alloc) {
+    return self.put(key, value)
+  }
+
+  pub fn remove(self: OrderedMap<K, V>, key: K) -> (OrderedMap<K, V>, Option<V>) requires(alloc) {
+    match self.root {
+      Some(root) => {
+        let removed = self.removeNode(root, key)
+        let nextLen = self.len - removed.1
+        return (
+          OrderedMap<K, V> {
+            root: Some(removed.0),
+            len: nextLen,
+            minDegree: self.minDegree,
+            comparator: self.comparator,
+            generation: self.generation + removed.1,
+          },
+          removed.2
+        )
+      }
+      None => {
+        return (self, None)
+      }
+    }
+  }
+
+  pub fn range(self: OrderedMap<K, V>, start: K, end: K) -> Vec<(K, V)> requires(alloc) {
+    return self.rangeCursor(start, end).toVec()
+  }
+
+  pub fn rangeInclusive(self: OrderedMap<K, V>, start: K, end: K) -> Vec<(K, V)> requires(alloc) {
+    return self.rangeInclusiveCursor(start, end).toVec()
+  }
+
+  pub fn rangeCursor(self: OrderedMap<K, V>, start: K, end: K) -> OrderedMapRange<K, V> requires(alloc) {
+    let mut items = Vec<(K, V)>.withCapacity(self.len)
+    match self.root {
+      Some(root) => {
+        items = self.collectRange(root, start, end, false, items)
+      }
+      None => {
+      }
+    }
+    return OrderedMapRange<K, V> {
+      items: items,
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  pub fn rangeInclusiveCursor(self: OrderedMap<K, V>, start: K, end: K) -> OrderedMapRange<K, V> requires(alloc) {
+    let mut items = Vec<(K, V)>.withCapacity(self.len)
+    match self.root {
+      Some(root) => {
+        items = self.collectRange(root, start, end, true, items)
+      }
+      None => {
+      }
+    }
+    return OrderedMapRange<K, V> {
+      items: items,
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  pub fn lowerBound(self: OrderedMap<K, V>, key: K) -> Option<(K, V)> requires(alloc) {
+    match self.root {
+      Some(root) => {
+        return self.lowerBoundNode(root, key, None)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn upperBound(self: OrderedMap<K, V>, key: K) -> Option<(K, V)> requires(alloc) {
+    match self.root {
+      Some(root) => {
+        return self.upperBoundNode(root, key, None)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn first(self: OrderedMap<K, V>) -> Option<(K, V)> {
+    return self.entryAt(0)
+  }
+
+  pub fn last(self: OrderedMap<K, V>) -> Option<(K, V)> {
+    if self.len == 0 {
+      return None
+    }
+    return self.entryAt(self.len - 1)
+  }
+
+  pub fn entryAt(self: OrderedMap<K, V>, index: usize) -> Option<(K, V)> {
+    if index >= self.len {
+      return None
+    }
+    match self.root {
+      Some(root) => {
+        return self.entryAtNode(root, index, 0).0
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn iter(self: OrderedMap<K, V>) -> OrderedMapRange<K, V> requires(alloc) {
+    return self.rangeAllCursor()
+  }
+
+  pub fn keys(self: OrderedMap<K, V>) -> Vec<K> requires(alloc) {
+    let mut result = Vec<K>.withCapacity(self.len)
+    let mut cursor = self.rangeAllCursor()
+    let mut next = cursor.next()
+    while next.1 != None {
+      match next.1 {
+        Some(pair) => {
+          result = result.push(pair.0)
+        }
+        None => {
+        }
+      }
+      cursor = next.0
+      next = cursor.next()
+    }
+    return result
+  }
+
+  pub fn values(self: OrderedMap<K, V>) -> Vec<V> requires(alloc) {
+    let mut result = Vec<V>.withCapacity(self.len)
+    let mut cursor = self.rangeAllCursor()
+    let mut next = cursor.next()
+    while next.1 != None {
+      match next.1 {
+        Some(pair) => {
+          result = result.push(pair.1)
+        }
+        None => {
+        }
+      }
+      cursor = next.0
+      next = cursor.next()
+    }
+    return result
+  }
+
+  fn searchNode(self: OrderedMap<K, V>, node: OrderedMapNode<K, V>, key: K) -> Option<V> {
+    let mut index: usize = 0
+    while index < node.keys.len {
+      let order = self.comparator.compare(key, node.keys[index])
+      if order == Ordering.Equal {
+        return Some(node.values[index])
+      }
+      if order == Ordering.Less {
+        if node.leaf {
+          return None
+        }
+        return self.searchNode(node.children[index], key)
+      }
+      index = index + 1
+    }
+    if node.leaf {
+      return None
+    }
+    return self.searchNode(node.children[index], key)
+  }
+
+  fn insertNode(self: OrderedMap<K, V>, node: OrderedMapNode<K, V>, key: K, value: V) -> (OrderedMapNode<K, V>, usize) requires(alloc) {
+    let mut keys = Vec<K>.withCapacity(node.keys.len + 1)
+    let mut values = Vec<V>.withCapacity(node.values.len + 1)
+    let mut inserted: bool = false
+    let mut added: usize = 1
+    let mut index: usize = 0
+    while index < node.keys.len {
+      let order = self.comparator.compare(key, node.keys[index])
+      if order == Ordering.Equal {
+        keys = keys.push(node.keys[index])
+        values = values.push(value)
+        inserted = true
+        added = 0
+      } else {
+        if inserted == false && order == Ordering.Less {
+          keys = keys.push(key)
+          values = values.push(value)
+          inserted = true
+        }
+        keys = keys.push(node.keys[index])
+        values = values.push(node.values[index])
+      }
+      index = index + 1
+    }
+    if inserted == false {
+      keys = keys.push(key)
+      values = values.push(value)
+    }
+    return (
+      OrderedMapNode<K, V> {
+        keys: keys,
+        values: values,
+        children: node.children,
+        leaf: node.leaf,
+      },
+      added
+    )
+  }
+
+  fn removeNode(self: OrderedMap<K, V>, node: OrderedMapNode<K, V>, key: K) -> (OrderedMapNode<K, V>, usize, Option<V>) requires(alloc) {
+    let mut keys = Vec<K>.withCapacity(node.keys.len)
+    let mut values = Vec<V>.withCapacity(node.values.len)
+    let mut removed: Option<V> = None
+    let mut index: usize = 0
+    while index < node.keys.len {
+      let order = self.comparator.compare(key, node.keys[index])
+      if order == Ordering.Equal {
+        removed = Some(node.values[index])
+      } else {
+        keys = keys.push(node.keys[index])
+        values = values.push(node.values[index])
+      }
+      index = index + 1
+    }
+    match removed {
+      Some(value) => {
+        return (
+          OrderedMapNode<K, V> { keys: keys, values: values, children: node.children, leaf: node.leaf },
+          1,
+          Some(value)
+        )
+      }
+      None => {
+        return (node, 0, None)
+      }
+    }
+  }
+
+  fn collectRange(self: OrderedMap<K, V>, node: OrderedMapNode<K, V>, start: K, end: K, inclusiveEnd: bool, items: Vec<(K, V)>) -> Vec<(K, V)> requires(alloc) {
+    let mut result = items
+    let mut index: usize = 0
+    while index < node.keys.len {
+      if node.leaf == false {
+        result = self.collectRange(node.children[index], start, end, inclusiveEnd, result)
+      }
+      let key = node.keys[index]
+      let afterStart = self.comparator.compare(key, start) != Ordering.Less
+      let beforeEnd = self.comparator.compare(key, end) == Ordering.Less || (inclusiveEnd && self.comparator.compare(key, end) == Ordering.Equal)
+      if afterStart && beforeEnd {
+        result = result.push((key, node.values[index]))
+      }
+      index = index + 1
+    }
+    if node.leaf == false {
+      result = self.collectRange(node.children[index], start, end, inclusiveEnd, result)
+    }
+    return result
+  }
+
+  fn rangeAll(self: OrderedMap<K, V>) -> Vec<(K, V)> requires(alloc) {
+    return self.rangeAllCursor().toVec()
+  }
+
+  fn rangeAllCursor(self: OrderedMap<K, V>) -> OrderedMapRange<K, V> requires(alloc) {
+    let mut result = Vec<(K, V)>.withCapacity(self.len)
+    match self.root {
+      Some(root) => {
+        result = self.collectAllNode(root, result)
+      }
+      None => {
+      }
+    }
+    return OrderedMapRange<K, V> {
+      items: result,
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  fn collectAllNode(self: OrderedMap<K, V>, node: OrderedMapNode<K, V>, items: Vec<(K, V)>) -> Vec<(K, V)> requires(alloc) {
+    let mut result = items
+    let mut index: usize = 0
+    while index < node.keys.len {
+      if node.leaf == false {
+        result = self.collectAllNode(node.children[index], result)
+      }
+      result = result.push((node.keys[index], node.values[index]))
+      index = index + 1
+    }
+    if node.leaf == false {
+      result = self.collectAllNode(node.children[index], result)
+    }
+    return result
+  }
+
+  fn entryAtNode(self: OrderedMap<K, V>, node: OrderedMapNode<K, V>, target: usize, seen: usize) -> (Option<(K, V)>, usize) {
+    let mut index: usize = 0
+    let mut current = seen
+    while index < node.keys.len {
+      if node.leaf == false {
+        let child = self.entryAtNode(node.children[index], target, current)
+        match child.0 {
+          Some(pair) => {
+            return child
+          }
+          None => {
+            current = child.1
+          }
+        }
+      }
+      if current == target {
+        return (Some((node.keys[index], node.values[index])), current)
+      }
+      current = current + 1
+      index = index + 1
+    }
+    return (None, current)
+  }
+
+  fn lowerBoundNode(self: OrderedMap<K, V>, node: OrderedMapNode<K, V>, key: K, best: Option<(K, V)>) -> Option<(K, V)> {
+    let mut candidate = best
+    let mut index: usize = 0
+    while index < node.keys.len {
+      let order = self.comparator.compare(node.keys[index], key)
+      if order != Ordering.Less {
+        candidate = Some((node.keys[index], node.values[index]))
+        if node.leaf == false {
+          return self.lowerBoundNode(node.children[index], key, candidate)
+        }
+        return candidate
+      }
+      index = index + 1
+    }
+    if node.leaf == false {
+      return self.lowerBoundNode(node.children[index], key, candidate)
+    }
+    return candidate
+  }
+
+  fn upperBoundNode(self: OrderedMap<K, V>, node: OrderedMapNode<K, V>, key: K, best: Option<(K, V)>) -> Option<(K, V)> {
+    let mut candidate = best
+    let mut index: usize = 0
+    while index < node.keys.len {
+      let order = self.comparator.compare(node.keys[index], key)
+      if order == Ordering.Greater {
+        candidate = Some((node.keys[index], node.values[index]))
+        if node.leaf == false {
+          return self.upperBoundNode(node.children[index], key, candidate)
+        }
+        return candidate
+      }
+      index = index + 1
+    }
+    if node.leaf == false {
+      return self.upperBoundNode(node.children[index], key, candidate)
+    }
+    return candidate
+  }
+
+  fn normalizeNodeCapacity(nodeCapacity: usize) -> usize {
+    if nodeCapacity < 4 {
+      return 4
+    }
+    return nodeCapacity
+  }
+}
+
+impl<K, V> OrderedMapRange<K, V> {
+  pub fn next(self: OrderedMapRange<K, V>) -> (OrderedMapRange<K, V>, Option<(K, V)>) {
+    if self.index >= self.items.len {
+      return (self, None)
+    }
+    return (
+      OrderedMapRange<K, V> {
+        items: self.items,
+        index: self.index + 1,
+        generation: self.generation,
+      },
+      Some(self.items[self.index])
+    )
+  }
+
+  pub fn toVec(self: OrderedMapRange<K, V>) -> Vec<(K, V)> {
+    return self.items
+  }
+}

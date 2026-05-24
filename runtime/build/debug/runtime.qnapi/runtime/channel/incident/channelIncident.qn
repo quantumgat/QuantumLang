@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeChannelIncidentKind {
+  ClosedSend
+  Full
+  Empty
+  Backpressure
+  LostWake
+  SelectRace
+  CancelledWaiter
+}
+pub struct RuntimeChannelIncident {
+  kind: RuntimeChannelIncidentKind
+  channelId: u64
+  diagnosticCode: string
+  noAllocationRequired: bool
+}

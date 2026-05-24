@@ -1,0 +1,35 @@
+pub struct DropShutdownLifecyclePolicyFact {
+  dropCanonical: bool,
+  closeShutdownAllowed: bool,
+  reverseFieldBaseCleanupRequired: bool,
+  doubleDropRejected: bool,
+  useAfterDropRejected: bool,
+  fallibleShutdownBound: bool,
+  asyncShutdownBound: bool,
+  shutdownBeforeDropRequired: bool,
+  resourceStateServiceActorBound: bool,
+  cancellationSafe: bool,
+  panicPolicyBound: bool,
+  sourceMapsRequired: bool,
+  noCoredumpFailureRequired: bool,
+  directHotPathLoweringRequired: bool,
+}
+
+impl DropShutdownLifecyclePolicyFact {
+  pub fn complete(self: DropShutdownLifecyclePolicyFact) -> bool {
+    return self.dropCanonical
+      && self.closeShutdownAllowed
+      && self.reverseFieldBaseCleanupRequired
+      && self.doubleDropRejected
+      && self.useAfterDropRejected
+      && self.fallibleShutdownBound
+      && self.asyncShutdownBound
+      && self.shutdownBeforeDropRequired
+      && self.resourceStateServiceActorBound
+      && self.cancellationSafe
+      && self.panicPolicyBound
+      && self.sourceMapsRequired
+      && self.noCoredumpFailureRequired
+      && self.directHotPathLoweringRequired
+  }
+}

@@ -1,0 +1,10 @@
+[module]
+name = "cache"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-hidden-artifact-flow-cache"
+
+[dependencies]
+allowed = ["backend/native/object", "backend/native/link"]
+forbidden = ["public build output", "generated source fallback"]

@@ -1,0 +1,12 @@
+pub struct FreertosPlatformContract {
+  target: string,
+  taskRuntimeAvailable: bool,
+  heapPolicyRequired: bool,
+  interruptAware: bool,
+}
+
+impl FreertosPlatformContract {
+  pub fn accepted(self: FreertosPlatformContract) -> bool {
+    return self.target != "" && self.taskRuntimeAvailable && self.heapPolicyRequired
+  }
+}

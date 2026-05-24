@@ -1,0 +1,30 @@
+pub struct StringInterpolationLowering {
+  formatPlanId: u64,
+  expressionCount: usize,
+  leftToRight: bool,
+  evaluatesEachExpressionOnce: bool,
+  lowersToCheckedFormat: bool,
+}
+
+pub fn stringInterpolationLowering(formatPlanId: u64, expressionCount: usize) -> StringInterpolationLowering {
+  return StringInterpolationLowering {
+    formatPlanId: formatPlanId,
+    expressionCount: expressionCount,
+    leftToRight: true,
+    evaluatesEachExpressionOnce: true,
+    lowersToCheckedFormat: true,
+  }
+}
+
+impl StringInterpolationLowering {
+  pub fn ready(self: StringInterpolationLowering) -> bool {
+    return self.formatPlanId > 0
+      && self.leftToRight
+      && self.evaluatesEachExpressionOnce
+      && self.lowersToCheckedFormat
+  }
+
+  pub fn valueCount(self: StringInterpolationLowering) -> usize {
+    return self.expressionCount
+  }
+}

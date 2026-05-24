@@ -1,0 +1,15 @@
+pub struct CacheMetadata {
+  pathExt: string,
+  schemaVersion: string,
+  recordsTarget: bool,
+  recordsToolchain: bool,
+}
+
+pub fn cacheMetadata() -> CacheMetadata {
+  return CacheMetadata {
+    pathExt: ".qcm",
+    schemaVersion: "0.1",
+    recordsTarget: true,
+    recordsToolchain: true,
+  }
+}

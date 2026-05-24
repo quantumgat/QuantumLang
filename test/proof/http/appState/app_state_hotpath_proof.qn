@@ -1,0 +1,80 @@
+pub struct HttpAppStateHotPathProof {
+  planComplete: bool,
+  generatedFactsComplete: bool,
+  noDynamicClassDispatch: bool,
+  noServiceLocator: bool,
+  noAppStateReflection: bool,
+  lifecycleColdOnly: bool,
+  pluginHookOnly: bool,
+}
+
+impl HttpAppStateHotPathProof {
+  pub fn init(plan: HttpHotPathPlan, generated: HttpGeneratedFactsProof) -> HttpAppStateHotPathProof {
+    return HttpAppStateHotPathProof {
+      planComplete: plan.complete(),
+      generatedFactsComplete: generated.complete(),
+      noDynamicClassDispatch: plan.dynamicClassDispatchBlocked,
+      noServiceLocator: plan.serviceLocatorBlocked,
+      noAppStateReflection: plan.appStateReflectionBlocked,
+      lifecycleColdOnly: plan.lifecycleErasedFromRequest,
+      pluginHookOnly: plan.genericPluginHookReady && plan.noCoreHttp,
+    }
+  }
+
+  pub fn complete(self: HttpAppStateHotPathProof) -> bool {
+    return self.planComplete
+      && self.generatedFactsComplete
+      && self.noDynamicClassDispatch
+      && self.noServiceLocator
+      && self.noAppStateReflection
+      && self.lifecycleColdOnly
+      && self.pluginHookOnly
+  }
+}
+
+pub fn httpAppStateHotPathProof() -> HttpAppStateHotPathProof {
+  let endpoint = EndpointFact
+    .simple("UsersApi", EndpointMethod.get("get"), EndpointReturn.json("User"))
+    .withParam(EndpointParam.path("id", "UserId"))
+    .withParam(EndpointParam.capability("auth", "AuthenticatedUser"))
+  let endpoints = EndpointGraph.empty().add(endpoint)
+  let routes = RouteGraph.fromEndpoints(endpoints)?
+  let extractors = ExtractorGraph
+    .empty()
+    .add(ExtractorFact.init("UsersApi.get", EndpointParam.path("id", "UserId")))
+    .add(ExtractorFact.init("UsersApi.get", EndpointParam.capability("auth", "AuthenticatedUser")))
+  let capabilities = CapabilityGraph.empty().add(CapabilityFact.authenticated("UsersApi.get"))
+  let thunk = HandlerThunk.fromEndpoint(endpoint, extractors, capabilities)
+  let thunks = HandlerThunkGraph.empty().add(thunk)
+  let sourceMap = HttpSourceMap
+    .empty()
+    .add(HttpSourceMapEntry.handler(thunk, "users_api.qn", 12))
+
+  let lifecycle = AppStateLifecycle
+    .managed(true, true, true)
+    .withHealthCheck()
+    .withReconnect()
+    .withWarmup()
+  let db = AppStateFact.init("DbPool", 8101, AppStateFamily.Pool, lifecycle, 0, false, false)
+  let states = AppStateGraph.empty().add(db)
+  let controllers = ControllerGraph.empty().add(ControllerFact.init("UsersApi", 9101))
+  let dependencies = AppDependencyGraph.fromApp(states, controllers)
+  let app = AppPlan.init(
+    8080,
+    states,
+    controllers,
+    ApiGraph.empty(),
+    dependencies,
+    MiddlewarePolicyGraph.empty(),
+    ServerPolicy.init().workers(8),
+    LifecycleHooks.init(),
+    HttpErrorPolicy.default(),
+    ResponsePolicy.default(),
+    HttpDefaultMiddlewarePolicy.api(),
+    TrustedProxyPolicy.none()
+  )
+
+  let generated = HttpGeneratedFactsProof.fromGraphs(endpoints, routes, extractors, capabilities, thunks, sourceMap)
+  let plan = HttpHotPathPlan.fromGraphs(app, routes, extractors, capabilities, thunks)
+  return HttpAppStateHotPathProof.init(plan, generated)
+}

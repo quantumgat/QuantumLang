@@ -1,0 +1,13 @@
+pub struct CompletionSource {
+  usesQueryFacts: bool,
+  usesStdlibModel: bool,
+  computesBackendState: bool,
+}
+
+pub fn completionSource() -> CompletionSource {
+  return CompletionSource {
+    usesQueryFacts: true,
+    usesStdlibModel: true,
+    computesBackendState: false,
+  }
+}

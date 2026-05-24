@@ -1,0 +1,13 @@
+pub class ControllerModule {
+  controllerCount: usize,
+  providerCount: usize,
+  routeBlockCount: usize,
+  middlewareCount: usize,
+
+  pub init() {
+    self.controllerCount = 0
+    self.providerCount = 0
+    self.routeBlockCount = 0
+    self.middlewareCount = 0
+  }
+}

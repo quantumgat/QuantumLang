@@ -1,0 +1,19 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum PolicyScope {
+  Global,
+  AppContext,
+  Controller,
+  Endpoint,
+}
+pub struct PolicyFact {
+  scope: PolicyScope
+  policyType: string
+  contextType: string
+}
+pub struct MiddlewarePolicyGraph {
+  policies: Vec<PolicyFact>
+  globalCount: usize
+  appContextCount: usize
+  controllerCount: usize
+  endpointCount: usize
+}

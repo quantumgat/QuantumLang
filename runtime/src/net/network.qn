@@ -1,0 +1,4 @@
+pub interface Network {
+  pub fn providerName(self: &Network) -> string
+  pub fn supportsTcp(self: &Network) -> bool
+}

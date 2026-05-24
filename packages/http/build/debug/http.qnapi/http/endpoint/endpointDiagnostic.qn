@@ -1,0 +1,16 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum EndpointDiagnosticKind {
+  DuplicateEndpoint,
+  MissingReturn,
+  InvalidParameter,
+  InvalidManualRoute,
+  QueryInManualRoute,
+  UnsupportedCapability,
+  RouteConflict,
+}
+pub struct EndpointDiagnostic {
+  kind: EndpointDiagnosticKind
+  endpointName: string
+  message: string
+  sourceLine: usize
+}

@@ -1,0 +1,21 @@
+pub struct RuntimeTimerHeap {
+  activeTimers: usize,
+  heapBound: usize,
+  earliestDeadlineMillis: u64,
+  stableOrder: bool,
+}
+
+impl RuntimeTimerHeap {
+  pub fn init(activeTimers: usize, heapBound: usize, earliestDeadlineMillis: u64, stableOrder: bool) -> RuntimeTimerHeap {
+    return RuntimeTimerHeap {
+      activeTimers: activeTimers,
+      heapBound: heapBound,
+      earliestDeadlineMillis: earliestDeadlineMillis,
+      stableOrder: stableOrder,
+    }
+  }
+
+  pub fn bounded(self: RuntimeTimerHeap) -> bool {
+    return self.heapBound > 0 && self.activeTimers <= self.heapBound
+  }
+}

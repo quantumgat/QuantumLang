@@ -1,0 +1,71 @@
+pub enum OopCompletionClaimStatus {
+  SelfHostedCompilerRuntimeComplete
+  ExternalPackageProviderWorkRemaining
+  Blocked
+}
+
+pub struct OopCompletionClaimAuditFact {
+  sourceFactParityClosed: bool,
+  coreFixtureExecutionClosed: bool,
+  runtimeEngineClosed: bool,
+  dispatchHotPathProofClosed: bool,
+  backendLoweringProofClosed: bool,
+  advancedExecutionContractsClosed: bool,
+  packageDeferralDiagnosticsClosed: bool,
+  externalPackageProviderWorkSeparated: bool,
+  selfHostedCompilerRuntimeClaimAllowed: bool,
+  allExternalPackageProviderImplementationsComplete: bool,
+  status: OopCompletionClaimStatus,
+}
+
+pub fn oopCompletionClaimAuditFact(
+  sourceFactParityClosed: bool,
+  coreFixtureExecutionClosed: bool,
+  runtimeEngineClosed: bool,
+  dispatchHotPathProofClosed: bool,
+  backendLoweringProofClosed: bool,
+  advancedExecutionContractsClosed: bool,
+  packageDeferralDiagnosticsClosed: bool,
+  externalPackageProviderWorkSeparated: bool,
+  selfHostedCompilerRuntimeClaimAllowed: bool,
+  allExternalPackageProviderImplementationsComplete: bool,
+  status: OopCompletionClaimStatus,
+) -> OopCompletionClaimAuditFact {
+  return OopCompletionClaimAuditFact {
+    sourceFactParityClosed: sourceFactParityClosed,
+    coreFixtureExecutionClosed: coreFixtureExecutionClosed,
+    runtimeEngineClosed: runtimeEngineClosed,
+    dispatchHotPathProofClosed: dispatchHotPathProofClosed,
+    backendLoweringProofClosed: backendLoweringProofClosed,
+    advancedExecutionContractsClosed: advancedExecutionContractsClosed,
+    packageDeferralDiagnosticsClosed: packageDeferralDiagnosticsClosed,
+    externalPackageProviderWorkSeparated: externalPackageProviderWorkSeparated,
+    selfHostedCompilerRuntimeClaimAllowed: selfHostedCompilerRuntimeClaimAllowed,
+    allExternalPackageProviderImplementationsComplete: allExternalPackageProviderImplementationsComplete,
+    status: status,
+  }
+}
+
+impl OopCompletionClaimAuditFact {
+  pub fn canClaimSelfHostedCompilerRuntimeComplete(self: OopCompletionClaimAuditFact) -> bool {
+    return self.sourceFactParityClosed
+      && self.coreFixtureExecutionClosed
+      && self.runtimeEngineClosed
+      && self.dispatchHotPathProofClosed
+      && self.backendLoweringProofClosed
+      && self.advancedExecutionContractsClosed
+      && self.packageDeferralDiagnosticsClosed
+      && self.externalPackageProviderWorkSeparated
+      && self.selfHostedCompilerRuntimeClaimAllowed
+      && self.status == OopCompletionClaimStatus.SelfHostedCompilerRuntimeComplete
+  }
+
+  pub fn canClaimAllExternalPackagesComplete(self: OopCompletionClaimAuditFact) -> bool {
+    return self.allExternalPackageProviderImplementationsComplete
+      && self.status == OopCompletionClaimStatus.SelfHostedCompilerRuntimeComplete
+  }
+
+  pub fn blocksSelfHostedOopCompletion(self: OopCompletionClaimAuditFact) -> bool {
+    return self.canClaimSelfHostedCompilerRuntimeComplete() == false
+  }
+}

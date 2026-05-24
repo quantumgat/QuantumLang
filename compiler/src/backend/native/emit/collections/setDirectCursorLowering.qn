@@ -1,0 +1,62 @@
+pub struct SetDirectCursorLowering {
+  cursorObjectErased: bool,
+  cursorStateScalarized: bool,
+  valueLoweredToDirectBucketLoad: bool,
+  optionWrapErased: bool,
+  closureInlinedWhenMonomorphic: bool,
+  capturedClosureUsesCheapThunk: bool,
+  boundsProofRequired: bool,
+  probeChecksHoisted: bool,
+  tombstoneCheckMinimized: bool,
+  iteratorLoweredToCursor: bool,
+  toVecLoweredToDirectCursor: bool,
+  lookupInsertRemoveUseRawProbe: bool,
+  growRehashUsesRawBuckets: bool,
+  benchmarkProofRequired: bool,
+}
+
+pub fn setDirectCursorLowering() -> SetDirectCursorLowering {
+  return SetDirectCursorLowering {
+    cursorObjectErased: true,
+    cursorStateScalarized: true,
+    valueLoweredToDirectBucketLoad: true,
+    optionWrapErased: true,
+    closureInlinedWhenMonomorphic: true,
+    capturedClosureUsesCheapThunk: true,
+    boundsProofRequired: true,
+    probeChecksHoisted: true,
+    tombstoneCheckMinimized: true,
+    iteratorLoweredToCursor: true,
+    toVecLoweredToDirectCursor: true,
+    lookupInsertRemoveUseRawProbe: true,
+    growRehashUsesRawBuckets: true,
+    benchmarkProofRequired: true,
+  }
+}
+
+impl SetDirectCursorLowering {
+  pub fn canEmitRawBucketScan(self: SetDirectCursorLowering) -> bool {
+    return self.cursorObjectErased
+      && self.cursorStateScalarized
+      && self.valueLoweredToDirectBucketLoad
+      && self.optionWrapErased
+      && self.boundsProofRequired
+      && self.probeChecksHoisted
+      && self.tombstoneCheckMinimized
+      && self.iteratorLoweredToCursor
+      && self.toVecLoweredToDirectCursor
+  }
+
+  pub fn canInlineOrSpecializePredicate(self: SetDirectCursorLowering) -> bool {
+    return self.closureInlinedWhenMonomorphic
+      || self.capturedClosureUsesCheapThunk
+  }
+
+  pub fn canProveCppComparableHotPath(self: SetDirectCursorLowering) -> bool {
+    return self.canEmitRawBucketScan()
+      && self.canInlineOrSpecializePredicate()
+      && self.lookupInsertRemoveUseRawProbe
+      && self.growRehashUsesRawBuckets
+      && self.benchmarkProofRequired
+  }
+}

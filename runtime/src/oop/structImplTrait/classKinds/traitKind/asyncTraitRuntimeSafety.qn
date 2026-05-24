@@ -1,0 +1,21 @@
+pub struct AsyncTraitRuntimeSafety {
+  traitTypeId: u64,
+  staticDispatchRuntimeErased: bool,
+  asyncImplParityRuntimeBound: bool,
+  dynBoundaryRuntimeExplicit: bool,
+  futureAbiRuntimeBound: bool,
+  objectSafetyRuntimeRejected: bool,
+  typedFailureNoCoredumpBound: bool,
+}
+
+impl AsyncTraitRuntimeSafety {
+  pub fn complete(self: AsyncTraitRuntimeSafety) -> bool {
+    return self.traitTypeId > 0
+      && self.staticDispatchRuntimeErased
+      && self.asyncImplParityRuntimeBound
+      && self.dynBoundaryRuntimeExplicit
+      && self.futureAbiRuntimeBound
+      && self.objectSafetyRuntimeRejected
+      && self.typedFailureNoCoredumpBound
+  }
+}

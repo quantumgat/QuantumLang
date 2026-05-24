@@ -1,0 +1,36 @@
+pub enum RuntimeChannelIncidentKind {
+  ClosedSend
+  Full
+  Empty
+  Backpressure
+  LostWake
+  SelectRace
+  CancelledWaiter
+}
+
+pub struct RuntimeChannelIncident {
+  kind: RuntimeChannelIncidentKind,
+  channelId: u64,
+  diagnosticCode: string,
+  noAllocationRequired: bool,
+}
+
+impl RuntimeChannelIncident {
+  pub fn init(
+    kind: RuntimeChannelIncidentKind,
+    channelId: u64,
+    diagnosticCode: string,
+    noAllocationRequired: bool,
+  ) -> RuntimeChannelIncident {
+    return RuntimeChannelIncident {
+      kind: kind,
+      channelId: channelId,
+      diagnosticCode: diagnosticCode,
+      noAllocationRequired: noAllocationRequired,
+    }
+  }
+
+  pub fn reportable(self: RuntimeChannelIncident) -> bool {
+    return self.channelId > 0 && self.diagnosticCode != "" && self.noAllocationRequired
+  }
+}

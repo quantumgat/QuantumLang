@@ -1,0 +1,12 @@
+pub struct WindowsRuntime {
+  target: string,
+  iocp: bool,
+  handleModel: bool,
+  waitApi: bool,
+}
+
+impl WindowsRuntime {
+  pub fn accepted(self: WindowsRuntime) -> bool {
+    return self.target != "" && self.iocp && self.handleModel
+  }
+}

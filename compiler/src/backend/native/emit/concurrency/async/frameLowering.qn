@@ -1,0 +1,29 @@
+pub enum NativeAsyncFrameLoweringKind {
+  FrameCreate
+  StateDispatch
+  AwaitSuspend
+  AwaitResume
+  CleanupEdge
+  SourceMapEmit
+}
+
+pub struct NativeAsyncFrameLowering {
+  instruction: u64,
+  kind: NativeAsyncFrameLoweringKind,
+  stackMapReady: bool,
+  sourceMapReady: bool,
+  cleanupPreserved: bool,
+  debuggerVisible: bool,
+  runtimeCallReady: bool,
+}
+
+impl NativeAsyncFrameLowering {
+  pub fn complete(self: NativeAsyncFrameLowering) -> bool {
+    return self.instruction > 0
+      && self.stackMapReady
+      && self.sourceMapReady
+      && self.cleanupPreserved
+      && self.debuggerVisible
+      && self.runtimeCallReady
+  }
+}

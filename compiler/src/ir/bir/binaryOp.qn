@@ -1,0 +1,19 @@
+pub enum BinaryOpKind {
+  Add
+  Sub
+  Mul
+  Div
+  Compare
+  Bitwise
+}
+
+pub struct BinaryOp {
+  result: u64,
+  lhs: u64,
+  rhs: u64,
+  kind: BinaryOpKind,
+}
+
+pub fn binaryOp(result: u64, lhs: u64, rhs: u64, kind: BinaryOpKind) -> BinaryOp {
+  return BinaryOp { result: result, lhs: lhs, rhs: rhs, kind: kind }
+}

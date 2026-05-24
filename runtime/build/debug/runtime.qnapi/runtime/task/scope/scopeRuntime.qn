@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeTaskScope {
+  scopeId: u64
+  parentTask: TaskId
+  open: bool
+  childCount: usize
+  cancellationLinked: bool
+}

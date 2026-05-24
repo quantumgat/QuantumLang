@@ -1,0 +1,19 @@
+pub struct CallbackUnregisterFact {
+  callbackId: u64,
+  unregisterToken: u64,
+  lifetimeTokenValid: bool,
+}
+
+impl CallbackUnregisterFact {
+  pub fn init(callbackId: u64, unregisterToken: u64, lifetimeTokenValid: bool) -> CallbackUnregisterFact {
+    return CallbackUnregisterFact {
+      callbackId: callbackId,
+      unregisterToken: unregisterToken,
+      lifetimeTokenValid: lifetimeTokenValid,
+    }
+  }
+
+  pub fn accepted(self: CallbackUnregisterFact) -> bool {
+    return self.callbackId > 0 && self.unregisterToken > 0 && self.lifetimeTokenValid
+  }
+}

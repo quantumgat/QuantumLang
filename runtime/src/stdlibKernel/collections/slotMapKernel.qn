@@ -1,0 +1,45 @@
+pub struct SlotMapKernel {
+  generationalKeyBacked: bool,
+  slotVecFreeListBacked: bool,
+  slotMapBackedByMapEntries: bool,
+  insertUsesFreeListOrTail: bool,
+  removeUsesGenerationBumpAndFreeLink: bool,
+  getUsesIndexGenerationCheck: bool,
+  mapGetUsesEntryGenerationCheck: bool,
+  iteratorOccupiedSlotCursorStable: bool,
+  toVecUsesOccupiedSlotCopy: bool,
+  staleKeyRejected: bool,
+  callableLoopsInlineable: bool,
+}
+
+impl SlotMapKernel {
+  pub fn standard() -> SlotMapKernel {
+    return SlotMapKernel {
+      generationalKeyBacked: true,
+      slotVecFreeListBacked: true,
+      slotMapBackedByMapEntries: true,
+      insertUsesFreeListOrTail: true,
+      removeUsesGenerationBumpAndFreeLink: true,
+      getUsesIndexGenerationCheck: true,
+      mapGetUsesEntryGenerationCheck: true,
+      iteratorOccupiedSlotCursorStable: true,
+      toVecUsesOccupiedSlotCopy: true,
+      staleKeyRejected: true,
+      callableLoopsInlineable: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: SlotMapKernel) -> bool {
+    return self.generationalKeyBacked
+      && self.slotVecFreeListBacked
+      && self.slotMapBackedByMapEntries
+      && self.insertUsesFreeListOrTail
+      && self.removeUsesGenerationBumpAndFreeLink
+      && self.getUsesIndexGenerationCheck
+      && self.mapGetUsesEntryGenerationCheck
+      && self.iteratorOccupiedSlotCursorStable
+      && self.toVecUsesOccupiedSlotCopy
+      && self.staleKeyRejected
+      && self.callableLoopsInlineable
+  }
+}

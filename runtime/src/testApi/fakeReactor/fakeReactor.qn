@@ -1,0 +1,15 @@
+pub struct FakeReactor {
+  eventCount: usize,
+  deterministic: bool,
+  publicRuntimeApi: bool,
+}
+
+pub fn fakeReactor(eventCount: usize) -> FakeReactor {
+  return FakeReactor { eventCount: eventCount, deterministic: true, publicRuntimeApi: false }
+}
+
+impl FakeReactor {
+  pub fn canReplay(self: FakeReactor) -> bool {
+    return self.deterministic && self.publicRuntimeApi == false
+  }
+}

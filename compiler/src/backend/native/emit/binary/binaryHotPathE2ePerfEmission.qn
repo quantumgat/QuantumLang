@@ -1,0 +1,27 @@
+pub struct BinaryHotPathE2ePerfEmission {
+  cursorLoadsInline: bool,
+  writerStoresInline: bool,
+  portableCodecSpecialized: bool,
+  acceleratedViewZeroCopy: bool,
+  codecBuilderErased: bool,
+  writerNoTempBuffer: bool,
+  allocationBudgetZeroOnHotPath: bool,
+  generatedExecutableCaptured: bool,
+  cppBaselineCaptured: bool,
+  generatedCppFallbackRejected: bool,
+}
+
+impl BinaryHotPathE2ePerfEmission {
+  pub fn complete(self: BinaryHotPathE2ePerfEmission) -> bool {
+    return self.cursorLoadsInline
+      && self.writerStoresInline
+      && self.portableCodecSpecialized
+      && self.acceleratedViewZeroCopy
+      && self.codecBuilderErased
+      && self.writerNoTempBuffer
+      && self.allocationBudgetZeroOnHotPath
+      && self.generatedExecutableCaptured
+      && self.cppBaselineCaptured
+      && self.generatedCppFallbackRejected
+  }
+}

@@ -1,0 +1,21 @@
+pub struct EpochReclamationFact {
+  node: u64,
+  pinned: bool,
+  quiescentObserved: bool,
+  retireEpochOlder: bool,
+}
+
+impl EpochReclamationFact {
+  pub fn init(node: u64, pinned: bool, quiescentObserved: bool, retireEpochOlder: bool) -> EpochReclamationFact {
+    return EpochReclamationFact {
+      node: node,
+      pinned: pinned,
+      quiescentObserved: quiescentObserved,
+      retireEpochOlder: retireEpochOlder,
+    }
+  }
+
+  pub fn accepted(self: EpochReclamationFact) -> bool {
+    return self.pinned && self.quiescentObserved && self.retireEpochOlder
+  }
+}

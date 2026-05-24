@@ -1,0 +1,19 @@
+pub struct FfiAliasPolicyFact {
+  uniqueOrReadonly: bool,
+  mutableAliasRejected: bool,
+  diagnosticCode: string,
+}
+
+impl FfiAliasPolicyFact {
+  pub fn init(uniqueOrReadonly: bool, mutableAliasRejected: bool, diagnosticCode: string) -> FfiAliasPolicyFact {
+    return FfiAliasPolicyFact {
+      uniqueOrReadonly: uniqueOrReadonly,
+      mutableAliasRejected: mutableAliasRejected,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn accepted(self: FfiAliasPolicyFact) -> bool {
+    return self.uniqueOrReadonly && self.mutableAliasRejected && self.diagnosticCode != ""
+  }
+}

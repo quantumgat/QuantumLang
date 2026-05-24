@@ -1,0 +1,12 @@
+pub struct FreertosSyncRuntime {
+  target: string,
+  semaphore: bool,
+  queueWait: bool,
+  interruptSafe: bool,
+}
+
+impl FreertosSyncRuntime {
+  pub fn accepted(self: FreertosSyncRuntime) -> bool {
+    return self.target != "" && self.semaphore && self.interruptSafe
+  }
+}

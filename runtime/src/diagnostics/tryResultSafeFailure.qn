@@ -1,0 +1,23 @@
+pub enum TryResultSafeFailureKind {
+  InvalidCarrier
+  ReturnTypeMismatch
+  MissingConversion
+  AsyncViolation
+}
+
+pub struct TryResultSafeFailure {
+  kind: TryResultSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+}
+
+impl TryResultSafeFailure {
+  pub fn safe(self: TryResultSafeFailure) -> bool {
+    return self.sourceRangeReady
+      && self.fixitReady
+      && self.noCoredump
+      && self.recoverable
+  }
+}

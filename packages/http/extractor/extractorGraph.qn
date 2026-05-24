@@ -1,0 +1,170 @@
+import capability::{HttpCtxCapabilityPlan, HttpCtxCapabilitySlot}
+import endpoint::{EndpointParam, EndpointParamSource}
+
+pub struct ExtractorFact {
+  endpointName: string,
+  paramName: string,
+  typeName: string,
+  source: EndpointParamSource,
+  required: bool,
+  contextType: string,
+  contextSlotIndex: usize,
+}
+
+impl ExtractorFact {
+  pub fn init(endpointName: string, param: EndpointParam) -> ExtractorFact {
+    return ExtractorFact {
+      endpointName: endpointName,
+      paramName: param.name(),
+      typeName: param.typeName(),
+      source: param.source(),
+      required: param.required(),
+      contextType: "",
+      contextSlotIndex: 0,
+    }
+  }
+
+  pub fn contextSlot(endpointName: string, paramName: string, slot: HttpCtxCapabilitySlot) -> ExtractorFact {
+    return ExtractorFact {
+      endpointName: endpointName,
+      paramName: paramName,
+      typeName: slot.capabilityType(),
+      source: EndpointParamSource.Context,
+      required: slot.required(),
+      contextType: slot.contextType(),
+      contextSlotIndex: slot.slotIndex(),
+    }
+  }
+
+  pub fn endpointName(self: ExtractorFact) -> string {
+    return self.endpointName
+  }
+
+  pub fn paramName(self: ExtractorFact) -> string {
+    return self.paramName
+  }
+
+  pub fn typeName(self: ExtractorFact) -> string {
+    return self.typeName
+  }
+
+  pub fn source(self: ExtractorFact) -> EndpointParamSource {
+    return self.source
+  }
+
+  pub fn required(self: ExtractorFact) -> bool {
+    return self.required
+  }
+
+  pub fn contextType(self: ExtractorFact) -> string {
+    return self.contextType
+  }
+
+  pub fn contextSlotIndex(self: ExtractorFact) -> usize {
+    return self.contextSlotIndex
+  }
+}
+
+pub struct ExtractorGraph {
+  facts: Vec<ExtractorFact>,
+  pathCount: usize,
+  queryCount: usize,
+  bodyCount: usize,
+  capabilityCount: usize,
+  contextCount: usize,
+  requestCount: usize,
+  responseCount: usize,
+}
+
+impl ExtractorGraph {
+  pub fn empty() -> ExtractorGraph {
+    return ExtractorGraph {
+      facts: [],
+      pathCount: 0,
+      queryCount: 0,
+      bodyCount: 0,
+      capabilityCount: 0,
+      contextCount: 0,
+      requestCount: 0,
+      responseCount: 0,
+    }
+  }
+
+  pub fn add(self: ExtractorGraph, fact: ExtractorFact) -> ExtractorGraph {
+    let pathCount = self.pathCount + ExtractorGraph.countSource(fact.source(), EndpointParamSource.Path)
+    let queryCount = self.queryCount + ExtractorGraph.countSource(fact.source(), EndpointParamSource.Query)
+    let bodyCount = self.bodyCount + ExtractorGraph.countSource(fact.source(), EndpointParamSource.Body)
+    let capabilityCount = self.capabilityCount + ExtractorGraph.countSource(fact.source(), EndpointParamSource.Capability)
+    let contextCount = self.contextCount + ExtractorGraph.countSource(fact.source(), EndpointParamSource.Context)
+    let requestCount = self.requestCount + ExtractorGraph.countSource(fact.source(), EndpointParamSource.Request)
+    let responseCount = self.responseCount + ExtractorGraph.countSource(fact.source(), EndpointParamSource.Response)
+    return ExtractorGraph {
+      facts: self.facts.push(fact),
+      pathCount: pathCount,
+      queryCount: queryCount,
+      bodyCount: bodyCount,
+      capabilityCount: capabilityCount,
+      contextCount: contextCount,
+      requestCount: requestCount,
+      responseCount: responseCount,
+    }
+  }
+
+  pub fn countSource(source: EndpointParamSource, expected: EndpointParamSource) -> usize {
+    if source == expected {
+      return 1
+    }
+    return 0
+  }
+
+  pub fn factCount(self: ExtractorGraph) -> usize {
+    return self.facts.len()
+  }
+
+  pub fn addContext(self: ExtractorGraph, endpointName: string, paramName: string, plan: HttpCtxCapabilityPlan) -> ExtractorGraph {
+    let mut graph = self
+    let mut index: usize = 0
+    while index < plan.slotCount() {
+      graph = graph.add(ExtractorFact.contextSlot(endpointName, paramName, plan.slotAt(index)))
+      index = index + 1
+    }
+    return graph
+  }
+
+  pub fn pathExtractors(self: ExtractorGraph) -> usize {
+    return self.pathCount
+  }
+
+  pub fn bodyExtractors(self: ExtractorGraph) -> usize {
+    return self.bodyCount
+  }
+
+  pub fn capabilityExtractors(self: ExtractorGraph) -> usize {
+    return self.capabilityCount
+  }
+
+  pub fn contextExtractors(self: ExtractorGraph) -> usize {
+    return self.contextCount
+  }
+
+  pub fn requestExtractors(self: ExtractorGraph) -> usize {
+    return self.requestCount
+  }
+
+  pub fn responseExtractors(self: ExtractorGraph) -> usize {
+    return self.responseCount
+  }
+
+  pub fn rawEscapeHatchExtractors(self: ExtractorGraph) -> usize {
+    let mut count = self.requestCount + self.responseCount
+    let mut index: usize = 0
+    while index < self.facts.len() {
+      let fact = self.facts[index]
+      if fact.source() == EndpointParamSource.Context && fact.typeName() == "HttpCtx" {
+        count = count + 1
+      }
+      index = index + 1
+    }
+    return count
+  }
+}

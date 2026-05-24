@@ -1,0 +1,30 @@
+import body::{HttpBody}
+import request::{HttpHeaderMap}
+
+pub struct Created {
+  body: HttpBody,
+}
+
+impl Created {
+  pub fn init(body: HttpBody) -> Created {
+    return Created {
+      body: body,
+    }
+  }
+
+  pub fn json(body: string) -> Created {
+    return Created.init(HttpBody.text(body))
+  }
+
+  pub fn empty() -> Created {
+    return Created.init(HttpBody.empty())
+  }
+
+  pub fn response(self: Created) -> HttpResponse {
+    return HttpResponse.init(
+      HttpStatus.created(),
+      HttpHeaderMap.empty().add("content-type", "application/json"),
+      self.body
+    )
+  }
+}

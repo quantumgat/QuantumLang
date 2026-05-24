@@ -1,0 +1,27 @@
+pub struct OopModifierParse {
+  openModifier: bool,
+  finalModifier: bool,
+  sealedModifier: bool,
+  virtualModifier: bool,
+  overrideModifier: bool,
+}
+
+pub fn oopModifierParse(openModifier: bool, finalModifier: bool, sealedModifier: bool, virtualModifier: bool, overrideModifier: bool) -> OopModifierParse {
+  return OopModifierParse {
+    openModifier: openModifier,
+    finalModifier: finalModifier,
+    sealedModifier: sealedModifier,
+    virtualModifier: virtualModifier,
+    overrideModifier: overrideModifier,
+  }
+}
+
+impl OopModifierParse {
+  pub fn hasDispatchModifier(self: OopModifierParse) -> bool {
+    return self.virtualModifier || self.overrideModifier
+  }
+
+  pub fn hasHierarchyModifier(self: OopModifierParse) -> bool {
+    return self.openModifier || self.finalModifier || self.sealedModifier
+  }
+}

@@ -1,0 +1,15 @@
+pub struct BlockingGate {
+  effectChecked: bool,
+  schedulerAware: bool,
+  fallbackThreadAllowed: bool,
+}
+
+pub fn blockingGate() -> BlockingGate {
+  return BlockingGate { effectChecked: true, schedulerAware: true, fallbackThreadAllowed: false }
+}
+
+impl BlockingGate {
+  pub fn canBlock(self: BlockingGate) -> bool {
+    return self.effectChecked && self.schedulerAware && self.fallbackThreadAllowed == false
+  }
+}

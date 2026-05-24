@@ -1,0 +1,45 @@
+pub enum NativeForDomainDataLowLevelLoweringKind {
+  TableCursorDirectLoop
+  BinaryViewDirectLoop
+  ColumnBlockVectorLoop
+  DeltaApplyDirectLoop
+  PageDecodeDirectLoop
+  BitProbeDirectLoop
+  MergePipelineDirectLoop
+  PointerRangeDirectLoop
+  CheckedSliceDirectLoop
+  MemoryRegionDirectLoop
+  AtomicRetryDirectLoop
+  MmioVolatileDirectLoop
+  FileTextCursorLoop
+  RetryBatchRuntimeLoop
+  TimeWindowRuntimeLoop
+  ResourceTransactionRuntimeLoop
+}
+
+pub struct NativeForDomainDataLowLevelLowering {
+  kind: NativeForDomainDataLowLevelLoweringKind,
+  mir: MirForDomainDataLowLevelOp,
+  emitsDirectCursor: bool,
+  emitsHoistedBounds: bool,
+  emitsDirectLoadStore: bool,
+  emitsVectorLaneWhenAvailable: bool,
+  emitsVolatileForMmio: bool,
+  emitsCleanup: bool,
+  emitsSafeFailure: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeForDomainDataLowLevelLowering {
+  pub fn complete(self: NativeForDomainDataLowLevelLowering) -> bool {
+    return self.mir.complete()
+      && self.emitsDirectCursor
+      && self.emitsHoistedBounds
+      && self.emitsDirectLoadStore
+      && self.emitsVectorLaneWhenAvailable
+      && self.emitsVolatileForMmio
+      && self.emitsCleanup
+      && self.emitsSafeFailure
+      && self.noGeneratedFallback
+  }
+}

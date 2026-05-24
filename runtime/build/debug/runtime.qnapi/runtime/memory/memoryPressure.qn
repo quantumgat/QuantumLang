@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum MemoryPressureLevel {
+  MemoryPressureLow
+  MemoryPressureModerate
+  MemoryPressureHigh
+  MemoryPressureCritical
+}
+pub struct MemoryPressure {
+  usedBytes: usize
+  limitBytes: usize
+  level: MemoryPressureLevel
+}
+pub extern "qnpkg" {
+  pub fn memoryPressure(usedBytes: usize, limitBytes: usize, level: MemoryPressureLevel) -> MemoryPressure
+}

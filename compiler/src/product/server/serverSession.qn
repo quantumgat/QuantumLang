@@ -1,0 +1,25 @@
+pub class ServerSession {
+  workspaceRoot: string,
+  tracksDocuments: bool,
+  routesQueries: bool,
+  ownsTypeChecking: bool,
+  running: bool,
+
+  pub init(workspaceRoot: string) {
+    self.workspaceRoot = workspaceRoot
+    self.tracksDocuments = true
+    self.routesQueries = true
+    self.ownsTypeChecking = false
+    self.running = false
+  }
+
+  pub fn start(self: &mut ServerSession) -> bool {
+    self.running = true
+    return self.running
+  }
+
+  pub fn shutdown(self: &mut ServerSession) -> bool {
+    self.running = false
+    return self.running == false
+  }
+}

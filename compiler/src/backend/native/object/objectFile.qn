@@ -1,0 +1,34 @@
+pub enum ObjectFormat {
+  ElfObject
+  MachObject
+  CoffObject
+}
+
+pub struct ObjectFile {
+  path: string,
+  format: ObjectFormat,
+  byteCount: usize,
+  deterministic: bool,
+}
+
+pub fn objectFile(path: string, format: ObjectFormat, byteCount: usize, deterministic: bool) -> ObjectFile {
+  return ObjectFile { path: path, format: format, byteCount: byteCount, deterministic: deterministic }
+}
+
+impl ObjectFile {
+  pub fn objectPath(self: ObjectFile) -> string {
+    return self.path
+  }
+
+  pub fn objectFormat(self: ObjectFile) -> ObjectFormat {
+    return self.format
+  }
+
+  pub fn bytes(self: ObjectFile) -> usize {
+    return self.byteCount
+  }
+
+  pub fn isDeterministic(self: ObjectFile) -> bool {
+    return self.deterministic
+  }
+}

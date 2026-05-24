@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PoolOccupiedCursorKernel {
+  cursorErased: bool
+  hasNextUsesIndexCompare: bool
+  nextUsesOccupiedScan: bool
+  valueUncheckedUsesDirectSlotLoad: bool
+  handleUncheckedUsesIndexGenerationPair: bool
+  queryLoopsUseCursor: bool
+  toVecUsesCursor: bool
+  iteratorUsesCursor: bool
+  forEachUsesCursor: bool
+  optionMatchRemovedFromHotLoops: bool
+}

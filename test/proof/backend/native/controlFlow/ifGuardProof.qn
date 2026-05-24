@@ -1,0 +1,75 @@
+pub enum IfGuardProofKind {
+  RequestedFormsCaptured
+  TypeNarrowingProof
+  HotPathLowering
+  SafetyDiagnosticCoverage
+  NegativeFixtureCoverage
+  NoGeneratedFallback
+}
+
+pub struct IfGuardProof {
+  kind: IfGuardProofKind,
+  fixture: string,
+  formCount: usize,
+  nativeLowering: NativeIfLowering,
+  negativeFixtureCaptured: bool,
+}
+
+pub struct IfExecutableHotPathProof {
+  parserReady: bool,
+  astReady: bool,
+  analysisReady: bool,
+  hirReady: bool,
+  mirReady: bool,
+  nativeReady: bool,
+  runtimeSafeFailureReady: bool,
+  nativeExecutableCases: usize,
+  negativeDiagnosticCases: usize,
+}
+
+pub fn ifExecutableHotPathProof(
+  parserReady: bool,
+  astReady: bool,
+  analysisReady: bool,
+  hirReady: bool,
+  mirReady: bool,
+  nativeReady: bool,
+  runtimeSafeFailureReady: bool,
+  nativeExecutableCases: usize,
+  negativeDiagnosticCases: usize,
+) -> IfExecutableHotPathProof {
+  return IfExecutableHotPathProof {
+    parserReady: parserReady,
+    astReady: astReady,
+    analysisReady: analysisReady,
+    hirReady: hirReady,
+    mirReady: mirReady,
+    nativeReady: nativeReady,
+    runtimeSafeFailureReady: runtimeSafeFailureReady,
+    nativeExecutableCases: nativeExecutableCases,
+    negativeDiagnosticCases: negativeDiagnosticCases,
+  }
+}
+
+impl IfGuardProof {
+  pub fn complete(self: IfGuardProof) -> bool {
+    return self.fixture != ""
+      && self.formCount >= 13
+      && self.nativeLowering.complete()
+      && self.negativeFixtureCaptured
+  }
+}
+
+impl IfExecutableHotPathProof {
+  pub fn complete(self: IfExecutableHotPathProof) -> bool {
+    return self.parserReady
+      && self.astReady
+      && self.analysisReady
+      && self.hirReady
+      && self.mirReady
+      && self.nativeReady
+      && self.runtimeSafeFailureReady
+      && self.nativeExecutableCases >= 3
+      && self.negativeDiagnosticCases >= 11
+  }
+}

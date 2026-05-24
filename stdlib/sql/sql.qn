@@ -1,0 +1,6 @@
+pub struct SqlQuery {
+  text: string,
+}
+
+pub fn query(text: string) -> SqlQuery
+pub fn text(query: SqlQuery) -> string

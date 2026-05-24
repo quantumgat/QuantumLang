@@ -1,0 +1,54 @@
+pub enum SystemSafetyKind {
+  PathTraversal
+  PathLiteralValidation
+  PathRootEscape
+  PathStyleMismatch
+  FileSizeLimit
+  AtomicWrite
+  SymlinkEscape
+  TempNameUniqueness
+  FileLockConflict
+  ProcessOutputLimit
+  ProcessTimeout
+  EnvNameValidation
+  EnvMutation
+  CwdMutation
+  UserDirFallback
+  OsInfoTargetGate
+  ProcessArgValidation
+  ProcessPipeBackpressure
+  ProcessCancellation
+  ProcessGroupSignal
+  SignalPortability
+  SignalHandlerSafety
+  SignalSubscriptionRestore
+  SignalShutdownIntegration
+  TerminalCapability
+  TerminalModeRestore
+  TerminalEscapeSafety
+  SysCapabilityGate
+  SysUnsupportedDiagnostic
+  SysRawHandleBoundary
+  RawHandleCapability
+}
+
+pub struct SystemSafetyFact {
+  kind: SystemSafetyKind,
+  noCoredump: bool,
+  noUncheckedRawHandle: bool,
+  boundedMemory: bool,
+  blockingDeclared: bool,
+  recoveryDiagnostic: bool,
+  hotPathWarning: bool,
+}
+
+impl SystemSafetyFact {
+  pub fn accepted(self: SystemSafetyFact) -> bool {
+    return self.noCoredump
+      && self.noUncheckedRawHandle
+      && self.boundedMemory
+      && self.blockingDeclared
+      && self.recoveryDiagnostic
+      && self.hotPathWarning
+  }
+}

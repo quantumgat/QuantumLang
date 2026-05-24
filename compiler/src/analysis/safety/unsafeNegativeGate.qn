@@ -1,0 +1,19 @@
+pub struct UnsafeNegativeGate {
+  fixture: string,
+  diagnosticCode: string,
+  mustReject: bool,
+}
+
+impl UnsafeNegativeGate {
+  pub fn init(fixture: string, diagnosticCode: string, mustReject: bool) -> UnsafeNegativeGate {
+    return UnsafeNegativeGate {
+      fixture: fixture,
+      diagnosticCode: diagnosticCode,
+      mustReject: mustReject,
+    }
+  }
+
+  pub fn enforced(self: UnsafeNegativeGate) -> bool {
+    return self.mustReject && self.diagnosticCode != ""
+  }
+}

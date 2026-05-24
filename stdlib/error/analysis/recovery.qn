@@ -1,0 +1,61 @@
+pub enum ErrorRecoveryKind {
+  None,
+  Retry,
+  Backoff,
+  Reopen,
+  Reallocate,
+  Fallback,
+  AskUser,
+  ReportOnly,
+}
+
+pub struct ErrorRecovery {
+  kind: ErrorRecoveryKind,
+  action: string,
+  safe: bool,
+  automatic: bool,
+  preservesData: bool,
+  maxAttempts: usize,
+}
+
+impl ErrorRecovery {
+  pub fn none() -> ErrorRecovery {
+    return ErrorRecovery {
+      kind: ErrorRecoveryKind.None,
+      action: "",
+      safe: true,
+      automatic: false,
+      preservesData: true,
+      maxAttempts: 0,
+    }
+  }
+
+  /**
+    Creates a safe recovery suggestion.
+
+    example:
+      let recovery = ErrorRecovery.retry("retry read", 3)
+
+    effects: pure
+    complexity: O(1)
+    allocation: stores caller-provided action
+    stability: public since 0.1
+  */
+  pub fn retry(action: string, maxAttempts: usize) -> ErrorRecovery {
+    return ErrorRecovery {
+      kind: ErrorRecoveryKind.Retry,
+      action: action,
+      safe: true,
+      automatic: true,
+      preservesData: true,
+      maxAttempts: maxAttempts,
+    }
+  }
+
+  pub fn recommended(self: ErrorRecovery) -> bool {
+    return self.safe
+      && self.preservesData
+      && (self.kind == ErrorRecoveryKind.None || self.action != "")
+      && self.maxAttempts <= 16
+  }
+}

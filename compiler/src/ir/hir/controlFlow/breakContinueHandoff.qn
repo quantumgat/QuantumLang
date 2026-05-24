@@ -1,0 +1,47 @@
+pub enum HirBreakContinueKind {
+  BreakJump
+  BreakValue
+  ContinueJump
+  LabeledBreak
+  LabeledContinue
+}
+
+pub struct HirBreakContinueHandoff {
+  sourceNode: u64,
+  kind: HirBreakContinueKind,
+  targetLoop: u64,
+  targetBlock: u64,
+  valueSlot: u64,
+  cleanupEdgeCount: usize,
+}
+
+pub fn hirBreakContinueHandoff(
+  sourceNode: u64,
+  kind: HirBreakContinueKind,
+  targetLoop: u64,
+  targetBlock: u64,
+  valueSlot: u64,
+  cleanupEdgeCount: usize,
+) -> HirBreakContinueHandoff {
+  return HirBreakContinueHandoff {
+    sourceNode: sourceNode,
+    kind: kind,
+    targetLoop: targetLoop,
+    targetBlock: targetBlock,
+    valueSlot: valueSlot,
+    cleanupEdgeCount: cleanupEdgeCount,
+  }
+}
+
+impl HirBreakContinueHandoff {
+  pub fn mirReady(self: HirBreakContinueHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.targetLoop > 0
+      && self.targetBlock > 0
+  }
+
+  pub fn carriesValue(self: HirBreakContinueHandoff) -> bool {
+    return self.kind == HirBreakContinueKind.BreakValue
+      && self.valueSlot > 0
+  }
+}

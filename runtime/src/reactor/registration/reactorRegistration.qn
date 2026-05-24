@@ -1,0 +1,21 @@
+pub struct RuntimeReactorRegistration {
+  handleId: u64,
+  interestMask: u32,
+  cancellationTokenId: u64,
+  cleanupRegistered: bool,
+}
+
+impl RuntimeReactorRegistration {
+  pub fn init(handleId: u64, interestMask: u32, cancellationTokenId: u64, cleanupRegistered: bool) -> RuntimeReactorRegistration {
+    return RuntimeReactorRegistration {
+      handleId: handleId,
+      interestMask: interestMask,
+      cancellationTokenId: cancellationTokenId,
+      cleanupRegistered: cleanupRegistered,
+    }
+  }
+
+  pub fn safe(self: RuntimeReactorRegistration) -> bool {
+    return self.handleId > 0 && self.interestMask > 0 && self.cancellationTokenId > 0 && self.cleanupRegistered
+  }
+}

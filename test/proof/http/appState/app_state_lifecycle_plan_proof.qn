@@ -1,0 +1,62 @@
+pub struct HttpAppStateLifecyclePlanProof {
+  planComplete: bool,
+  dependencyOrderComplete: bool,
+  startupStepCount: usize,
+  shutdownStepCount: usize,
+  dropStepCount: usize,
+  healthCheckCount: usize,
+  reconnectCount: usize,
+  warmupCount: usize,
+  runtimeWorkAvailable: bool,
+}
+
+impl HttpAppStateLifecyclePlanProof {
+  pub fn init(plan: AppLifecyclePlan) -> HttpAppStateLifecyclePlanProof {
+    return HttpAppStateLifecyclePlanProof {
+      planComplete: plan.complete(),
+      dependencyOrderComplete: plan.dependencyOrderComplete,
+      startupStepCount: plan.startupStepCount,
+      shutdownStepCount: plan.shutdownStepCount,
+      dropStepCount: plan.dropStepCount,
+      healthCheckCount: plan.healthCheckCount,
+      reconnectCount: plan.reconnectCount,
+      warmupCount: plan.warmupCount,
+      runtimeWorkAvailable: plan.hasRuntimeWork(),
+    }
+  }
+
+  pub fn complete(self: HttpAppStateLifecyclePlanProof) -> bool {
+    return self.planComplete
+      && self.dependencyOrderComplete
+      && self.startupStepCount > 0
+      && self.shutdownStepCount > 0
+      && self.dropStepCount > 0
+      && self.healthCheckCount > 0
+      && self.reconnectCount > 0
+      && self.warmupCount > 0
+      && self.runtimeWorkAvailable
+  }
+}
+
+pub fn httpAppStateLifecyclePlanProof() -> HttpAppStateLifecyclePlanProof {
+  let lifecycle = AppStateLifecycle
+    .managed(true, true, true)
+    .withHealthCheck()
+    .withReconnect()
+    .withWarmup()
+  let state = AppStateFact
+    .init("LifecycleOwner", 8001, AppStateFamily.Service, lifecycle, 1, false, false)
+  let cache = AppStateFact
+    .init("CacheOwner", 8002, AppStateFamily.Cache, AppStateLifecycle.managed(true, true, false), 0, false, false)
+  let graph = AppStateGraph
+    .empty()
+    .add(state)
+    .add(cache)
+    .addDependency(AppStateDependency.required(state.ownerId(), cache.ownerId()))
+  let hooks = LifecycleHooks
+    .init()
+    .onStart("warm-route-table")
+    .onStop("flush-metrics")
+  let plan = AppLifecyclePlan.from(graph, hooks)
+  return HttpAppStateLifecyclePlanProof.init(plan)
+}

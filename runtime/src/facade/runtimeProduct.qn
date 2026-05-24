@@ -1,0 +1,28 @@
+pub struct RuntimeProduct {
+  packageName: string,
+  archiveName: string,
+  publicCommand: bool,
+  publicHeaders: bool,
+  hiddenArchive: bool,
+  generatedSourceFallback: bool,
+}
+
+pub fn runtimeProduct() -> RuntimeProduct {
+  return RuntimeProduct {
+    packageName: "runtime",
+    archiveName: "libqtlcRuntime.a",
+    publicCommand: false,
+    publicHeaders: false,
+    hiddenArchive: true,
+    generatedSourceFallback: false,
+  }
+}
+
+impl RuntimeProduct {
+  pub fn linksInsideQtlc(self) -> bool {
+    return self.publicCommand == false &&
+      self.publicHeaders == false &&
+      self.hiddenArchive &&
+      self.generatedSourceFallback == false
+  }
+}

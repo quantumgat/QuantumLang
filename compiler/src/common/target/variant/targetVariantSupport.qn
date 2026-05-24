@@ -1,0 +1,8 @@
+pub enum TargetSupportTier {
+  Tier1Host,
+  Tier1Cross,
+  Tier2Supported,
+  Tier3Experimental,
+  Planned,
+  Unsupported,
+}

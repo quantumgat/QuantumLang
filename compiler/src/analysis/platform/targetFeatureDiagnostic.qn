@@ -1,0 +1,19 @@
+pub struct TargetFeatureDiagnostic {
+  code: string,
+  hasRange: bool,
+  blocksUnsupportedFeature: bool,
+}
+
+impl TargetFeatureDiagnostic {
+  pub fn init(code: string, hasRange: bool, blocksUnsupportedFeature: bool) -> TargetFeatureDiagnostic {
+    return TargetFeatureDiagnostic {
+      code: code,
+      hasRange: hasRange,
+      blocksUnsupportedFeature: blocksUnsupportedFeature,
+    }
+  }
+
+  pub fn reportable(self: TargetFeatureDiagnostic) -> bool {
+    return self.code != "" && self.hasRange && self.blocksUnsupportedFeature
+  }
+}

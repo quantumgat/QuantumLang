@@ -1,0 +1,11 @@
+pub struct BadStdlibUseDiagnostic {
+  symbolName: string,
+  code: string,
+  hasFix: bool,
+}
+
+impl BadStdlibUseDiagnostic {
+  pub fn accepted(self: BadStdlibUseDiagnostic) -> bool {
+    return self.symbolName != "" && self.code != ""
+  }
+}

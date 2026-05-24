@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeReportSnapshot {
+  reportId: u64
+  incidentId: DeterministicIncidentId
+  runtime: RuntimeSnapshot
+  logEventSequence: u64
+  replayPath: string
+  schemaName: string
+  redacted: bool
+  deterministic: bool
+  privacySafe: bool
+  noCoredump: bool
+}

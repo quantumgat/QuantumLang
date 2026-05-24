@@ -1,0 +1,12 @@
+pub struct PlatformThreadingFact {
+  target: string,
+  threadsAvailable: bool,
+  atomicsAvailable: bool,
+  schedulerRequired: bool,
+}
+
+impl PlatformThreadingFact {
+  pub fn accepted(self: PlatformThreadingFact) -> bool {
+    return self.target != "" && (self.threadsAvailable || self.schedulerRequired == false)
+  }
+}

@@ -1,0 +1,39 @@
+pub struct AllocDomain {
+  id: u64,
+  name: string,
+  isolated: bool,
+}
+
+impl AllocDomain {
+  pub fn system() -> AllocDomain {
+    return AllocDomain {
+      id: 1,
+      name: "system",
+      isolated: false,
+    }
+  }
+
+  pub fn named(id: u64, name: string, isolated: bool) -> AllocDomain {
+    return AllocDomain {
+      id: id,
+      name: name,
+      isolated: isolated,
+    }
+  }
+
+  pub fn id(self: AllocDomain) -> u64 {
+    return self.id
+  }
+
+  pub fn name(self: AllocDomain) -> string {
+    return self.name
+  }
+
+  pub fn isolated(self: AllocDomain) -> bool {
+    return self.isolated
+  }
+
+  pub fn acceptsFreeFrom(self: AllocDomain, other: AllocDomain) -> bool {
+    return self.id == other.id
+  }
+}

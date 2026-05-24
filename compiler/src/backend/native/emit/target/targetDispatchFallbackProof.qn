@@ -1,0 +1,31 @@
+pub struct TargetDispatchFallbackProof {
+  feature: CpuFeatureLowering,
+  dispatch: RuntimeDispatchLowering,
+  fallback: TargetFallbackLowering,
+  emitsDiagnosticWhenUnsupported: bool,
+  noGeneratedCppFallback: bool,
+}
+
+impl TargetDispatchFallbackProof {
+  pub fn init(
+    feature: CpuFeatureLowering,
+    dispatch: RuntimeDispatchLowering,
+    fallback: TargetFallbackLowering,
+  ) -> TargetDispatchFallbackProof {
+    return TargetDispatchFallbackProof {
+      feature: feature,
+      dispatch: dispatch,
+      fallback: fallback,
+      emitsDiagnosticWhenUnsupported: true,
+      noGeneratedCppFallback: true,
+    }
+  }
+
+  pub fn accepted(self: TargetDispatchFallbackProof) -> bool {
+    return self.feature.accepted()
+      && self.dispatch.accepted()
+      && self.fallback.accepted()
+      && self.emitsDiagnosticWhenUnsupported
+      && self.noGeneratedCppFallback
+  }
+}

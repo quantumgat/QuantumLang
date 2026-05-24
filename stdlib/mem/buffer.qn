@@ -1,0 +1,150 @@
+/**
+  Borrowed immutable bytes with no ownership transfer.
+
+  example:
+    let view = buffer.view()
+    if view.isEmpty() { return }
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: lifetime is tied to the source buffer generation
+  stability: public since 0.1
+*/
+pub struct BytesView {
+  ptr: Ptr<u8>,
+  len: usize,
+  generation: u64,
+}
+
+/**
+  Borrowed mutable bytes with exclusive write permission.
+
+  example:
+    let view = buffer.mutView()
+    let count = view.len()
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: lifetime is tied to the source buffer generation and mutable lease
+  stability: public since 0.1
+*/
+pub struct BytesMutView {
+  ptr: Ptr<u8>,
+  len: usize,
+  generation: u64,
+}
+
+/**
+  Owned low-level byte buffer that can expose zero-copy views.
+
+  example:
+    let buffer = Buffer.fromParts(ptr, len, capacity, generation)
+    let bytes = buffer.view()
+    let writable = buffer.mutView()
+
+  effects: pure for view creation
+  complexity: O(1) view creation
+  allocation: none unless an allocator-backed constructor is used later
+  safety: views carry generation metadata so stale views can be rejected
+  stability: public since 0.1
+*/
+pub struct Buffer {
+  ptr: Ptr<u8>,
+  len: usize,
+  capacity: usize,
+  generation: u64,
+}
+
+impl Buffer {
+  pub fn init(len: usize) -> Buffer {
+    return Buffer {
+      ptr: Ptr<u8>(),
+      len: len,
+      capacity: len,
+      generation: 0,
+    }
+  }
+
+  pub fn fromParts(ptr: Ptr<u8>, len: usize, capacity: usize, generation: u64) -> Buffer {
+    return Buffer {
+      ptr: ptr,
+      len: len,
+      capacity: capacity,
+      generation: generation,
+    }
+  }
+
+  pub fn len(self: Buffer) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Buffer) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Buffer) -> bool {
+    return self.len == 0
+  }
+
+  pub fn view(self: Buffer) -> BytesView {
+    return BytesView {
+      ptr: self.ptr,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+
+  pub fn mutView(self: Buffer) -> BytesMutView {
+    return BytesMutView {
+      ptr: self.ptr,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}
+
+impl BytesView {
+  pub fn len(self: BytesView) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: BytesView) -> bool {
+    return self.len == 0
+  }
+
+  pub fn ptr(self: BytesView) -> Ptr<u8> {
+    return self.ptr
+  }
+
+  pub fn generation(self: BytesView) -> u64 {
+    return self.generation
+  }
+}
+
+impl BytesMutView {
+  pub fn len(self: BytesMutView) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: BytesMutView) -> bool {
+    return self.len == 0
+  }
+
+  pub fn ptr(self: BytesMutView) -> Ptr<u8> {
+    return self.ptr
+  }
+
+  pub fn generation(self: BytesMutView) -> u64 {
+    return self.generation
+  }
+
+  pub fn asView(self: BytesMutView) -> BytesView {
+    return BytesView {
+      ptr: self.ptr,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}

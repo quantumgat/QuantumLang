@@ -1,0 +1,15 @@
+pub struct DeterministicScheduler {
+  taskCount: usize,
+  deterministic: bool,
+  publicRuntimeApi: bool,
+}
+
+pub fn deterministicScheduler(taskCount: usize) -> DeterministicScheduler {
+  return DeterministicScheduler { taskCount: taskCount, deterministic: true, publicRuntimeApi: false }
+}
+
+impl DeterministicScheduler {
+  pub fn canReplay(self: DeterministicScheduler) -> bool {
+    return self.deterministic && self.publicRuntimeApi == false
+  }
+}

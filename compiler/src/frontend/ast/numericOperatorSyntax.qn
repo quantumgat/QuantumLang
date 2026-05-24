@@ -1,0 +1,174 @@
+pub enum AstNumericOperatorKind {
+  Add
+  Subtract
+  Multiply
+  Divide
+  Remainder
+  Power
+  Equal
+  NotEqual
+  Less
+  LessEqual
+  Greater
+  GreaterEqual
+  BitAnd
+  BitOr
+  BitXor
+  BitNot
+  ShiftLeft
+  ShiftRight
+  PrefixIncrement
+  PrefixDecrement
+  PostfixIncrement
+  PostfixDecrement
+  AddAssign
+  SubtractAssign
+  MultiplyAssign
+  DivideAssign
+  RemainderAssign
+  PowerAssign
+  BitAndAssign
+  BitOrAssign
+  BitXorAssign
+  ShiftLeftAssign
+  ShiftRightAssign
+  UnaryPlus
+  UnaryMinus
+}
+
+pub struct AstNumericOperatorSyntax {
+  kind: AstNumericOperatorKind,
+  token: string,
+  precedence: usize,
+  unary: bool,
+  assignment: bool,
+  comparison: bool,
+  bitwise: bool,
+  mutating: bool,
+  prefix: bool,
+  postfix: bool,
+  lvalueRequired: bool,
+  returnsOldValue: bool,
+  noImport: bool,
+}
+
+impl AstNumericOperatorSyntax {
+  pub fn infix(kind: AstNumericOperatorKind, token: string, precedence: usize) -> AstNumericOperatorSyntax {
+    return AstNumericOperatorSyntax {
+      kind: kind,
+      token: token,
+      precedence: precedence,
+      unary: false,
+      assignment: false,
+      comparison: false,
+      bitwise: false,
+      mutating: false,
+      prefix: false,
+      postfix: false,
+      lvalueRequired: false,
+      returnsOldValue: false,
+      noImport: true,
+    }
+  }
+
+  pub fn unary(kind: AstNumericOperatorKind, token: string) -> AstNumericOperatorSyntax {
+    return AstNumericOperatorSyntax {
+      kind: kind,
+      token: token,
+      precedence: 90,
+      unary: true,
+      assignment: false,
+      comparison: false,
+      bitwise: kind == AstNumericOperatorKind.BitNot,
+      mutating: false,
+      prefix: true,
+      postfix: false,
+      lvalueRequired: false,
+      returnsOldValue: false,
+      noImport: true,
+    }
+  }
+
+  pub fn assignment(kind: AstNumericOperatorKind, token: string) -> AstNumericOperatorSyntax {
+    return AstNumericOperatorSyntax {
+      kind: kind,
+      token: token,
+      precedence: 10,
+      unary: false,
+      assignment: true,
+      comparison: false,
+      bitwise: kind == AstNumericOperatorKind.BitAndAssign
+        || kind == AstNumericOperatorKind.BitOrAssign
+        || kind == AstNumericOperatorKind.BitXorAssign
+        || kind == AstNumericOperatorKind.ShiftLeftAssign
+        || kind == AstNumericOperatorKind.ShiftRightAssign,
+      mutating: true,
+      prefix: false,
+      postfix: false,
+      lvalueRequired: true,
+      returnsOldValue: false,
+      noImport: true,
+    }
+  }
+
+  pub fn compare(kind: AstNumericOperatorKind, token: string) -> AstNumericOperatorSyntax {
+    return AstNumericOperatorSyntax {
+      kind: kind,
+      token: token,
+      precedence: 40,
+      unary: false,
+      assignment: false,
+      comparison: true,
+      bitwise: false,
+      mutating: false,
+      prefix: false,
+      postfix: false,
+      lvalueRequired: false,
+      returnsOldValue: false,
+      noImport: true,
+    }
+  }
+
+  pub fn bit(kind: AstNumericOperatorKind, token: string, precedence: usize) -> AstNumericOperatorSyntax {
+    return AstNumericOperatorSyntax {
+      kind: kind,
+      token: token,
+      precedence: precedence,
+      unary: false,
+      assignment: false,
+      comparison: false,
+      bitwise: true,
+      mutating: false,
+      prefix: false,
+      postfix: false,
+      lvalueRequired: false,
+      returnsOldValue: false,
+      noImport: true,
+    }
+  }
+
+  pub fn increment(kind: AstNumericOperatorKind, token: string, prefix: bool) -> AstNumericOperatorSyntax {
+    return AstNumericOperatorSyntax {
+      kind: kind,
+      token: token,
+      precedence: 95,
+      unary: true,
+      assignment: false,
+      comparison: false,
+      bitwise: false,
+      mutating: true,
+      prefix: prefix,
+      postfix: !prefix,
+      lvalueRequired: true,
+      returnsOldValue: !prefix,
+      noImport: true,
+    }
+  }
+
+  pub fn accepted(self: AstNumericOperatorSyntax) -> bool {
+    return self.token != ""
+      && self.precedence > 0
+      && self.noImport
+      && (!self.mutating || self.lvalueRequired)
+  }
+}

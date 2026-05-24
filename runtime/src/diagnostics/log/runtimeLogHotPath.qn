@@ -1,0 +1,39 @@
+pub struct RuntimeLogHotPath {
+  disabledEventsSkippedBeforeRecord: bool,
+  staticLevelGate: bool,
+  inlineFieldStorage: bool,
+  compactFieldEncoding: bool,
+  sinkDispatchBounded: bool,
+  redactionBeforeWrite: bool,
+  runtimeIncidentNoAllocation: bool,
+  allocationFreeDisabled: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeLogHotPath {
+  pub fn standard() -> RuntimeLogHotPath {
+    return RuntimeLogHotPath {
+      disabledEventsSkippedBeforeRecord: true,
+      staticLevelGate: true,
+      inlineFieldStorage: true,
+      compactFieldEncoding: true,
+      sinkDispatchBounded: true,
+      redactionBeforeWrite: true,
+      runtimeIncidentNoAllocation: true,
+      allocationFreeDisabled: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn passed(self: RuntimeLogHotPath) -> bool {
+    return self.disabledEventsSkippedBeforeRecord
+      && self.staticLevelGate
+      && self.inlineFieldStorage
+      && self.compactFieldEncoding
+      && self.sinkDispatchBounded
+      && self.redactionBeforeWrite
+      && self.runtimeIncidentNoAllocation
+      && self.allocationFreeDisabled
+      && self.noCoredump
+  }
+}

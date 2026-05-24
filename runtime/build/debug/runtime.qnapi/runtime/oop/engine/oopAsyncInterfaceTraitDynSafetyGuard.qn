@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopAsyncInterfaceTraitDynSafetyGuard {
+  objectId: u64
+  ownerTypeName: string
+  methodName: string
+  generation: u64
+  objectSafe: bool
+  dynBoundaryActive: bool
+  adapterReady: bool
+  futureAbiReady: bool
+  pollEntryReady: bool
+  cancellationRequested: bool
+  cleanupCompleted: bool
+  typedFailureBound: bool
+  noCoredumpFailure: bool
+  sourceMapBound: bool
+}

@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeEffectKind {
+  FilesystemEffect
+  NetworkEffect
+  ProcessEffect
+  TerminalEffect
+  QuantumEffect
+}
+pub struct RuntimeEffect {
+  kind: RuntimeEffectKind
+  capabilityChecked: bool
+  sideEffect: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeEffect(kind: RuntimeEffectKind, sideEffect: bool) -> RuntimeEffect
+}

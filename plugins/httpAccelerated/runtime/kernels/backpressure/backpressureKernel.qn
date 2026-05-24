@@ -1,0 +1,131 @@
+pub struct HttpBackpressureKernel {
+  symbol: string,
+  boundedQueue: bool,
+  slowClientPolicy: bool,
+  disconnectCleanup: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+}
+
+pub struct HttpBackpressureQueue {
+  capacity: usize,
+  queuedBytes: usize,
+  closed: bool,
+}
+
+impl HttpBackpressureQueue {
+  pub fn bounded(capacity: usize) -> HttpBackpressureQueue {
+    return HttpBackpressureQueue {
+      capacity: capacity,
+      queuedBytes: 0,
+      closed: false,
+    }
+  }
+
+  pub fn available(self: HttpBackpressureQueue) -> usize {
+    if self.queuedBytes >= self.capacity {
+      return 0
+    }
+    return self.capacity - self.queuedBytes
+  }
+}
+
+pub struct HttpBackpressureRuntimeResult {
+  queue: HttpBackpressureQueue,
+  accepted: bool,
+  failure: Option<HttpAcceleratedFailure>,
+}
+
+impl HttpBackpressureRuntimeResult {
+  pub fn safe(self: HttpBackpressureRuntimeResult) -> bool {
+    if self.accepted {
+      return self.queue.queuedBytes <= self.queue.capacity && self.failure == None
+    }
+    match self.failure {
+      Some(failure) => {
+        return failure.safe()
+      }
+      None => {
+        return false
+      }
+    }
+  }
+}
+
+impl HttpBackpressureKernel {
+  pub fn queue() -> HttpBackpressureKernel {
+    return HttpBackpressureKernel {
+      symbol: "http.backpressure.queue",
+      boundedQueue: true,
+      slowClientPolicy: true,
+      disconnectCleanup: true,
+      typedFailure: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: HttpBackpressureKernel) -> bool {
+    return self.symbol == "http.backpressure.queue"
+      && self.boundedQueue
+      && self.slowClientPolicy
+      && self.disconnectCleanup
+      && self.typedFailure
+      && self.noCoredump
+  }
+
+  pub fn enqueue(
+    self: HttpBackpressureKernel,
+    queue: HttpBackpressureQueue,
+    bytes: usize,
+  ) -> HttpBackpressureRuntimeResult {
+    if !self.accepted() {
+      return HttpBackpressureRuntimeResult {
+        queue: queue,
+        accepted: false,
+        failure: Some(HttpAcceleratedFailure.kernelUnavailable()),
+      }
+    }
+    if queue.closed {
+      return HttpBackpressureRuntimeResult {
+        queue: queue,
+        accepted: false,
+        failure: Some(HttpAcceleratedFailure.slowClient("connection closed")),
+      }
+    }
+    if bytes > queue.available() {
+      return HttpBackpressureRuntimeResult {
+        queue: queue,
+        accepted: false,
+        failure: Some(HttpAcceleratedFailure.slowClient("backpressure queue full")),
+      }
+    }
+    return HttpBackpressureRuntimeResult {
+      queue: HttpBackpressureQueue {
+        capacity: queue.capacity,
+        queuedBytes: queue.queuedBytes + bytes,
+        closed: false,
+      },
+      accepted: true,
+      failure: None,
+    }
+  }
+
+  pub fn drain(
+    self: HttpBackpressureKernel,
+    queue: HttpBackpressureQueue,
+    bytes: usize,
+  ) -> HttpBackpressureQueue {
+    if bytes >= queue.queuedBytes {
+      return HttpBackpressureQueue {
+        capacity: queue.capacity,
+        queuedBytes: 0,
+        closed: queue.closed,
+      }
+    }
+    return HttpBackpressureQueue {
+      capacity: queue.capacity,
+      queuedBytes: queue.queuedBytes - bytes,
+      closed: queue.closed,
+    }
+  }
+}

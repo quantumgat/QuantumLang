@@ -1,0 +1,67 @@
+pub struct ZeroCopyViewFact {
+  sourceId: u64,
+  generation: u64,
+  mutationEpoch: u64,
+  start: usize,
+  len: usize,
+  mutable: bool,
+  noOwnershipTransfer: bool,
+  explicitCopyOnly: bool,
+  boundsProven: bool,
+  runtimeGuardRequired: bool,
+  valid: bool,
+}
+
+impl ZeroCopyViewFact {
+  pub fn init(sourceId: u64, generation: u64, mutationEpoch: u64, mutable: bool, valid: bool) -> ZeroCopyViewFact {
+    return ZeroCopyViewFact {
+      sourceId: sourceId,
+      generation: generation,
+      mutationEpoch: mutationEpoch,
+      start: 0,
+      len: 0,
+      mutable: mutable,
+      noOwnershipTransfer: true,
+      explicitCopyOnly: true,
+      boundsProven: true,
+      runtimeGuardRequired: false,
+      valid: valid,
+    }
+  }
+
+  pub fn range(sourceId: u64, generation: u64, mutationEpoch: u64, start: usize, len: usize, mutable: bool) -> ZeroCopyViewFact {
+    return ZeroCopyViewFact {
+      sourceId: sourceId,
+      generation: generation,
+      mutationEpoch: mutationEpoch,
+      start: start,
+      len: len,
+      mutable: mutable,
+      noOwnershipTransfer: true,
+      explicitCopyOnly: true,
+      boundsProven: true,
+      runtimeGuardRequired: false,
+      valid: true,
+    }
+  }
+
+  pub fn permitsRead(self: ZeroCopyViewFact, generation: u64, mutationEpoch: u64) -> bool {
+    return self.valid
+      && self.generation == generation
+      && self.mutationEpoch == mutationEpoch
+      && self.noOwnershipTransfer
+      && self.explicitCopyOnly
+  }
+
+  pub fn permitsWrite(self: ZeroCopyViewFact, generation: u64, mutationEpoch: u64) -> bool {
+    return self.mutable && self.permitsRead(generation, mutationEpoch)
+  }
+
+  pub fn hotPath(self: ZeroCopyViewFact) -> bool {
+    return self.valid
+      && self.boundsProven
+      && self.noOwnershipTransfer
+      && self.explicitCopyOnly
+      && self.runtimeGuardRequired == false
+  }
+}

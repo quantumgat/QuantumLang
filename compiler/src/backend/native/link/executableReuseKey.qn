@@ -1,0 +1,27 @@
+pub struct ExecutableReuseKey {
+  actionHash: string,
+  targetHash: string,
+  archiveHash: string,
+}
+
+pub fn executableReuseKey(actionHash: string, targetHash: string, archiveHash: string) -> ExecutableReuseKey {
+  return ExecutableReuseKey {
+    actionHash: actionHash,
+    targetHash: targetHash,
+    archiveHash: archiveHash,
+  }
+}
+
+impl ExecutableReuseKey {
+  pub fn action(self: ExecutableReuseKey) -> string {
+    return self.actionHash
+  }
+
+  pub fn target(self: ExecutableReuseKey) -> string {
+    return self.targetHash
+  }
+
+  pub fn archive(self: ExecutableReuseKey) -> string {
+    return self.archiveHash
+  }
+}

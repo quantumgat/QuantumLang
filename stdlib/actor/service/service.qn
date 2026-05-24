@@ -1,0 +1,22 @@
+pub enum ServiceState {
+  Starting
+  Ready
+  Degraded
+  Stopping
+  Stopped
+}
+
+pub struct Service<T> {
+  actor: ActorRef<T>,
+  state: ServiceState,
+}
+
+impl Service<T> {
+  pub fn start(self: Service<T>) -> Result<Unit, ActorError>
+
+  pub fn stop(self: Service<T>) -> Result<Unit, ActorError>
+
+  pub fn state(self: Service<T>) -> ServiceState {
+    return self.state
+  }
+}

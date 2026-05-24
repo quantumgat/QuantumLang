@@ -1,0 +1,25 @@
+pub struct ForPatternControlRealImplProof {
+  parserRows: usize,
+  analysisRows: usize,
+  hirRows: usize,
+  mirRows: usize,
+  nativeRows: usize,
+  executableRows: usize,
+  negativeRows: usize,
+  cleanupProofRows: usize,
+  lowering: NativeForPatternControlLowering,
+}
+
+impl ForPatternControlRealImplProof {
+  pub fn complete(self: ForPatternControlRealImplProof) -> bool {
+    return self.parserRows >= 10
+      && self.analysisRows >= 10
+      && self.hirRows >= 7
+      && self.mirRows >= 7
+      && self.nativeRows >= 7
+      && self.executableRows >= 10
+      && self.negativeRows >= 5
+      && self.cleanupProofRows >= 3
+      && self.lowering.complete()
+  }
+}

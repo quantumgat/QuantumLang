@@ -1,0 +1,47 @@
+pub enum AstParallelLoopExitKind {
+  ContinueWorker
+  BreakAll
+  StopValue
+}
+
+pub struct AstParallelLoopForm {
+  node: AstNode,
+  optionsNode: u64,
+  workNode: u64,
+  workerBinding: u64,
+  bodyNode: u64,
+  exitKind: AstParallelLoopExitKind,
+}
+
+pub fn astParallelLoopForm(
+  node: AstNode,
+  optionsNode: u64,
+  workNode: u64,
+  workerBinding: u64,
+  bodyNode: u64,
+  exitKind: AstParallelLoopExitKind,
+) -> AstParallelLoopForm {
+  return AstParallelLoopForm {
+    node: node,
+    optionsNode: optionsNode,
+    workNode: workNode,
+    workerBinding: workerBinding,
+    bodyNode: bodyNode,
+    exitKind: exitKind,
+  }
+}
+
+impl AstParallelLoopForm {
+  pub fn complete(self: AstParallelLoopForm) -> bool {
+    return self.node.nodeId() > 0
+      && self.optionsNode > 0
+      && self.workNode > 0
+      && self.workerBinding > 0
+      && self.bodyNode > 0
+  }
+
+  pub fn stopsAllWorkers(self: AstParallelLoopForm) -> bool {
+    return self.exitKind == AstParallelLoopExitKind.BreakAll
+      || self.exitKind == AstParallelLoopExitKind.StopValue
+  }
+}

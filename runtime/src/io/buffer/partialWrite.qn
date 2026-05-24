@@ -1,0 +1,43 @@
+pub struct PartialWrite {
+  requestedBytes: usize,
+  writtenBytes: usize,
+  resumeOffset: usize,
+  resumable: bool,
+  noDataLoss: bool,
+}
+
+impl PartialWrite {
+  pub fn complete(byteCount: usize) -> PartialWrite {
+    return PartialWrite {
+      requestedBytes: byteCount,
+      writtenBytes: byteCount,
+      resumeOffset: byteCount,
+      resumable: false,
+      noDataLoss: true,
+    }
+  }
+
+  pub fn pending(requestedBytes: usize, writtenBytes: usize) -> PartialWrite {
+    return PartialWrite {
+      requestedBytes: requestedBytes,
+      writtenBytes: writtenBytes,
+      resumeOffset: writtenBytes,
+      resumable: true,
+      noDataLoss: true,
+    }
+  }
+
+  pub fn incomplete(self: PartialWrite) -> bool {
+    return self.writtenBytes < self.requestedBytes
+  }
+
+  pub fn remaining(self: PartialWrite) -> usize {
+    return self.requestedBytes - self.writtenBytes
+  }
+
+  pub fn safe(self: PartialWrite) -> bool {
+    return self.noDataLoss
+      && self.writtenBytes <= self.requestedBytes
+      && self.resumeOffset == self.writtenBytes
+  }
+}

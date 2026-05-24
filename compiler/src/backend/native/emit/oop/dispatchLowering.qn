@@ -1,0 +1,27 @@
+pub enum OopDispatchLoweringKind {
+  DirectLowering
+  VtableLowering
+  InterfaceTableLowering
+  SealedBranchLowering
+  CachedLowering
+}
+
+pub struct OopDispatchLowering {
+  kind: OopDispatchLoweringKind,
+  hotPathSafe: bool,
+  routeMetadata: bool,
+}
+
+pub fn oopDispatchLowering(kind: OopDispatchLoweringKind, hotPathSafe: bool, routeMetadata: bool) -> OopDispatchLowering {
+  return OopDispatchLowering {
+    kind: kind,
+    hotPathSafe: hotPathSafe,
+    routeMetadata: routeMetadata,
+  }
+}
+
+impl OopDispatchLowering {
+  pub fn canEmit(self: OopDispatchLowering) -> bool {
+    return self.hotPathSafe && self.routeMetadata
+  }
+}

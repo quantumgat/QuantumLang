@@ -1,0 +1,69 @@
+pub struct HttpHeader {
+  name: string,
+  value: string,
+}
+
+impl HttpHeader {
+  pub fn init(name: string, value: string) -> HttpHeader {
+    return HttpHeader {
+      name: name,
+      value: value,
+    }
+  }
+
+  pub fn name(self: HttpHeader) -> string {
+    return self.name
+  }
+
+  pub fn value(self: HttpHeader) -> string {
+    return self.value
+  }
+
+  pub fn matches(self: HttpHeader, name: string) -> bool {
+    return self.name == name
+  }
+}
+
+pub struct HttpHeaderMap {
+  headers: Vec<HttpHeader>,
+}
+
+impl HttpHeaderMap {
+  pub fn init(headers: Vec<HttpHeader>) -> HttpHeaderMap {
+    return HttpHeaderMap {
+      headers: headers,
+    }
+  }
+
+  pub fn empty() -> HttpHeaderMap {
+    return HttpHeaderMap {
+      headers: [],
+    }
+  }
+
+  pub fn len(self: HttpHeaderMap) -> usize {
+    return self.headers.len()
+  }
+
+  pub fn isEmpty(self: HttpHeaderMap) -> bool {
+    return self.len() == 0
+  }
+
+  pub fn add(self: HttpHeaderMap, name: string, value: string) -> HttpHeaderMap {
+    return HttpHeaderMap {
+      headers: self.headers.push(HttpHeader.init(name, value)),
+    }
+  }
+
+  pub fn get(self: HttpHeaderMap, name: string) -> Option<string> {
+    let mut index: usize = 0
+    while index < self.headers.len() {
+      let header = self.headers[index]
+      if header.matches(name) {
+        return Some(header.value())
+      }
+      index = index + 1
+    }
+    return None
+  }
+}

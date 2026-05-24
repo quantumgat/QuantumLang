@@ -1,0 +1,35 @@
+pub struct Query<T> {
+  value: T,
+  name: string,
+  present: bool,
+}
+
+impl<T> Query<T> {
+  pub fn init(name: string, value: T) -> Query<T> {
+    return Query<T> {
+      value: value,
+      name: name,
+      present: true,
+    }
+  }
+
+  pub fn optional(name: string, value: T, present: bool) -> Query<T> {
+    return Query<T> {
+      value: value,
+      name: name,
+      present: present,
+    }
+  }
+
+  pub fn value(self: Query<T>) -> T {
+    return self.value
+  }
+
+  pub fn name(self: Query<T>) -> string {
+    return self.name
+  }
+
+  pub fn exists(self: Query<T>) -> bool {
+    return self.present
+  }
+}

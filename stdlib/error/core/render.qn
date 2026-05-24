@@ -1,0 +1,75 @@
+pub enum ErrorRenderMode {
+  Display,
+  Debug,
+  Report,
+}
+
+pub struct ErrorRenderPolicy {
+  mode: ErrorRenderMode,
+  includeCode: bool,
+  includeCategory: bool,
+  includeSource: bool,
+  includeFields: bool,
+  includeCauseChain: bool,
+  redactSecrets: bool,
+  stableOrder: bool,
+}
+
+impl ErrorRenderPolicy {
+  /**
+    Produces concise user-facing error text.
+
+    example:
+      let text = err.render(ErrorRenderPolicy.display())?
+
+    effects: pure unless formatter allocation is required
+    complexity: O(fields + causes)
+    allocation: bounded by rendered text
+    stability: public since 0.1
+  */
+  pub fn display() -> ErrorRenderPolicy {
+    return ErrorRenderPolicy {
+      mode: ErrorRenderMode.Display,
+      includeCode: true,
+      includeCategory: true,
+      includeSource: true,
+      includeFields: false,
+      includeCauseChain: true,
+      redactSecrets: true,
+      stableOrder: true,
+    }
+  }
+
+  pub fn debug() -> ErrorRenderPolicy {
+    return ErrorRenderPolicy {
+      mode: ErrorRenderMode.Debug,
+      includeCode: true,
+      includeCategory: true,
+      includeSource: true,
+      includeFields: true,
+      includeCauseChain: true,
+      redactSecrets: true,
+      stableOrder: true,
+    }
+  }
+
+  pub fn report() -> ErrorRenderPolicy {
+    return ErrorRenderPolicy {
+      mode: ErrorRenderMode.Report,
+      includeCode: true,
+      includeCategory: true,
+      includeSource: true,
+      includeFields: true,
+      includeCauseChain: true,
+      redactSecrets: true,
+      stableOrder: true,
+    }
+  }
+
+  pub fn safe(self: ErrorRenderPolicy) -> bool {
+    return self.includeCode
+      && self.includeCategory
+      && self.redactSecrets
+      && self.stableOrder
+  }
+}

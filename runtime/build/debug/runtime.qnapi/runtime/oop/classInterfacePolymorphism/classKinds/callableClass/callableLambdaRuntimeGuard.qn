@@ -1,0 +1,22 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum CallableLambdaRuntimeGuardKind {
+  DirectInlineLambda
+  StackEnvironment
+  AsyncClosureFrame
+  CallableClassThunk
+  DynCallableBoundary
+  SafetyDiagnostic
+}
+pub struct CallableLambdaRuntimeGuard {
+  kind: CallableLambdaRuntimeGuardKind
+  callableId: u64
+  generation: u64
+  environmentLive: bool
+  captureBorrowValid: bool
+  mutableAliasFree: bool
+  sendSyncBoundaryValid: bool
+  asyncFrameValid: bool
+  dynBoundaryExplicit: bool
+  typedFailureBound: bool
+  noCoredumpFailure: bool
+}

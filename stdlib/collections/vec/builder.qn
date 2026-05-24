@@ -1,0 +1,61 @@
+/**
+  Builder for capacity-first Vec construction.
+
+  example:
+    let users = Vec<User>.builder().capacity(1024).build()
+
+  effects: pure until build reserves storage
+  complexity: O(1) builder configuration
+  allocation: build allocates according to configured capacity
+  stability: public since 0.1
+*/
+pub struct VecBuilder<T> {
+  capacity: usize,
+}
+
+impl<T> VecBuilder<T> {
+  /**
+    Creates a Vec builder with zero requested capacity.
+
+    example:
+      let builder = VecBuilder<User>.init()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn init() -> VecBuilder<T> {
+    return VecBuilder<T> { capacity: 0 }
+  }
+
+  /**
+    Sets the capacity requested by build.
+
+    example:
+      let builder = Vec<User>.builder().capacity(1024)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn capacity(self: VecBuilder<T>, capacity: usize) -> VecBuilder<T> {
+    return VecBuilder<T> { capacity: capacity }
+  }
+
+  /**
+    Builds an empty Vec with the requested capacity.
+
+    example:
+      let users = Vec<User>.builder().capacity(1024).build()
+
+    effects: alloc
+    complexity: O(1)
+    allocation: reserves the configured capacity
+    stability: public since 0.1
+  */
+  pub fn build(self: VecBuilder<T>) -> Vec<T> requires(alloc) {
+    return Vec<T>.withCapacity(self.capacity)
+  }
+}

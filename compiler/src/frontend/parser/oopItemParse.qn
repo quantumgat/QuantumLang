@@ -1,0 +1,25 @@
+pub struct OopItemParse {
+  classItems: usize,
+  interfaceItems: usize,
+  implItems: usize,
+  errors: usize,
+}
+
+pub fn oopItemParse(classItems: usize, interfaceItems: usize, implItems: usize, errors: usize) -> OopItemParse {
+  return OopItemParse {
+    classItems: classItems,
+    interfaceItems: interfaceItems,
+    implItems: implItems,
+    errors: errors,
+  }
+}
+
+impl OopItemParse {
+  pub fn parsedOopItems(self: OopItemParse) -> usize {
+    return self.classItems + self.interfaceItems + self.implItems
+  }
+
+  pub fn isClean(self: OopItemParse) -> bool {
+    return self.errors == 0
+  }
+}

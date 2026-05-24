@@ -1,0 +1,40 @@
+pub enum BreakContinueSafeFailureKind {
+  InvalidLabel
+  BreakOutsideLoop
+  ContinueOutsideLoop
+  BreakValueMismatch
+  ContinueWithValue
+}
+
+pub struct BreakContinueSafeFailure {
+  kind: BreakContinueSafeFailureKind,
+  sourceRangeReady: bool,
+  loopStackCaptured: bool,
+  noCoredump: bool,
+  emergencyReportReady: bool,
+}
+
+pub fn breakContinueSafeFailure(
+  kind: BreakContinueSafeFailureKind,
+  sourceRangeReady: bool,
+  loopStackCaptured: bool,
+  noCoredump: bool,
+  emergencyReportReady: bool,
+) -> BreakContinueSafeFailure {
+  return BreakContinueSafeFailure {
+    kind: kind,
+    sourceRangeReady: sourceRangeReady,
+    loopStackCaptured: loopStackCaptured,
+    noCoredump: noCoredump,
+    emergencyReportReady: emergencyReportReady,
+  }
+}
+
+impl BreakContinueSafeFailure {
+  pub fn reportable(self: BreakContinueSafeFailure) -> bool {
+    return self.sourceRangeReady
+      && self.loopStackCaptured
+      && self.noCoredump
+      && self.emergencyReportReady
+  }
+}

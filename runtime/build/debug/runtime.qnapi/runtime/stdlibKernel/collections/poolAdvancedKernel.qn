@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PoolAdvancedKernel {
+  batchInsertLoopStable: bool
+  batchRemoveLoopStable: bool
+  updateManyDirectHandleLoop: bool
+  queryPredicateInlineable: bool
+  retainDrainUsesHandleSnapshot: bool
+  lifecycleReplaceDirectSlotStore: bool
+  leaseCleanupUsesRemove: bool
+  metricsFreeListWalkStable: bool
+  parallelForEachOccupiedCursorStable: bool
+  policySelectionCompileTime: bool
+}

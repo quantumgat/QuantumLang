@@ -1,0 +1,53 @@
+pub struct PackageLockEntry {
+  name: string,
+  version: string,
+  source: string,
+  checksum: string,
+  signature: string,
+  registry: string,
+  signingKey: string,
+}
+
+impl PackageLockEntry {
+  pub fn package(name: string, version: string, source: string) -> PackageLockEntry {
+    return PackageLockEntry {
+      name: name,
+      version: version,
+      source: source,
+      checksum: "",
+      signature: "",
+      registry: "",
+      signingKey: "",
+    }
+  }
+
+  pub fn signed(self: PackageLockEntry) -> bool {
+    return self.checksum != "" && self.signature != ""
+  }
+
+  pub fn carriesRegistryTrust(self: PackageLockEntry) -> bool {
+    return self.source != "registry" || (self.registry != "" && self.signingKey != "")
+  }
+}
+
+pub struct PackageLockfile {
+  fingerprint: string,
+  entryCount: usize,
+  signatureEntries: usize,
+  reproducible: bool,
+}
+
+impl PackageLockfile {
+  pub fn expected(fingerprint: string, entryCount: usize, signatureEntries: usize) -> PackageLockfile {
+    return PackageLockfile {
+      fingerprint: fingerprint,
+      entryCount: entryCount,
+      signatureEntries: signatureEntries,
+      reproducible: true,
+    }
+  }
+
+  pub fn signaturesComplete(self: PackageLockfile) -> bool {
+    return self.entryCount == self.signatureEntries
+  }
+}

@@ -1,0 +1,11 @@
+[module]
+name = "structImplTrait"
+visibility = "internal"
+root = "mod.qn"
+owner = "runtime"
+role = "oop-struct-impl-trait-runtime-boundary"
+
+[policy]
+model = "struct+impl+trait"
+runtimeEngineDefault = false
+hiddenAllocationAllowed = false

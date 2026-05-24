@@ -1,0 +1,19 @@
+pub struct SimdLoadStoreFact {
+  alignment: usize,
+  requiredAlignment: usize,
+  scalarFallbackAvailable: bool,
+}
+
+impl SimdLoadStoreFact {
+  pub fn init(alignment: usize, requiredAlignment: usize, scalarFallbackAvailable: bool) -> SimdLoadStoreFact {
+    return SimdLoadStoreFact {
+      alignment: alignment,
+      requiredAlignment: requiredAlignment,
+      scalarFallbackAvailable: scalarFallbackAvailable,
+    }
+  }
+
+  pub fn accepted(self: SimdLoadStoreFact) -> bool {
+    return self.alignment >= self.requiredAlignment || self.scalarFallbackAvailable
+  }
+}

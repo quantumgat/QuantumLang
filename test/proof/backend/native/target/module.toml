@@ -1,0 +1,6 @@
+[module]
+name = "nativeTargetProof"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-target-proof-evidence"

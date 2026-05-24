@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopEngineExecutionContract {
+  metadataRuntime: bool
+  vtableRuntime: bool
+  interfaceObjectRuntime: bool
+  dispatchRuntime: bool
+  downcastRuntime: bool
+  reflectionColdPath: bool
+  memoryBoundaryRuntime: bool
+  ffiBoundaryRuntime: bool
+  hiddenAllocationRejected: bool
+  staleHandleDiagnostics: bool
+}
+pub extern "qnpkg" {
+  pub fn oopEngineExecutionContract() -> OopEngineExecutionContract
+}

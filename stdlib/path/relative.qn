@@ -1,0 +1,11 @@
+pub struct RelativePath {
+  value: PathBuf,
+}
+
+pub fn relativePath(value: string) -> Option<RelativePath>
+
+impl RelativePath {
+  pub fn path(self: RelativePath) -> PathBuf {
+    return self.value
+  }
+}

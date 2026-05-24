@@ -1,0 +1,22 @@
+pub enum ProofErrorKind {
+  MissingArtifactEvidence
+  GeneratedSourceFallback
+  HiddenCacheViolation
+  BackendMismatch
+}
+
+pub struct ProofError {
+  kind: ProofErrorKind,
+  stableCode: u32,
+  blocksArtifact: bool,
+}
+
+pub fn proofError(kind: ProofErrorKind, stableCode: u32, blocksArtifact: bool) -> ProofError {
+  return ProofError { kind: kind, stableCode: stableCode, blocksArtifact: blocksArtifact }
+}
+
+impl ProofError {
+  pub fn blocksOutput(self: ProofError) -> bool {
+    return self.blocksArtifact
+  }
+}

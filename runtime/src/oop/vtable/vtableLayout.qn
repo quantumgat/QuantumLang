@@ -1,0 +1,15 @@
+pub struct VtableLayout {
+  methodCount: usize,
+  sealedWhenPossible: bool,
+  sourceMapped: bool,
+}
+
+pub fn vtableLayout(methodCount: usize) -> VtableLayout {
+  return VtableLayout { methodCount: methodCount, sealedWhenPossible: true, sourceMapped: true }
+}
+
+impl VtableLayout {
+  pub fn canDispatch(self: VtableLayout) -> bool {
+    return self.methodCount > 0 && self.sealedWhenPossible && self.sourceMapped
+  }
+}

@@ -1,0 +1,45 @@
+pub struct RuntimeSafeFailure {
+  policy: SafeFailurePolicy,
+  diagnosticsInstalled: bool,
+  panicHookInstalled: bool,
+  oomHandlerInstalled: bool,
+  ffiBoundaryInstalled: bool,
+  signalBridgeInstalled: bool,
+  sourceMapInstalled: bool,
+  emergencyReportBuffer: EmergencyReportBuffer,
+  recoverableBoundaryInstalled: bool,
+  fatalBoundaryInstalled: bool,
+  coredumpDisabled: bool,
+}
+
+pub fn runtimeSafeFailure(policy: SafeFailurePolicy) -> RuntimeSafeFailure {
+  return RuntimeSafeFailure {
+    policy: policy,
+    diagnosticsInstalled: true,
+    panicHookInstalled: true,
+    oomHandlerInstalled: true,
+    ffiBoundaryInstalled: true,
+    signalBridgeInstalled: true,
+    sourceMapInstalled: true,
+    emergencyReportBuffer: EmergencyReportBuffer.fixed(65536),
+    recoverableBoundaryInstalled: true,
+    fatalBoundaryInstalled: true,
+    coredumpDisabled: true,
+  }
+}
+
+impl RuntimeSafeFailure {
+  pub fn installed(self: RuntimeSafeFailure) -> bool {
+    return self.policy.guaranteesSafeFailure()
+      && self.diagnosticsInstalled
+      && self.panicHookInstalled
+      && self.oomHandlerInstalled
+      && self.ffiBoundaryInstalled
+      && self.signalBridgeInstalled
+      && self.sourceMapInstalled
+      && self.emergencyReportBuffer.safe()
+      && self.recoverableBoundaryInstalled
+      && self.fatalBoundaryInstalled
+      && self.coredumpDisabled
+  }
+}

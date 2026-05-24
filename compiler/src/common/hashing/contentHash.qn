@@ -1,0 +1,18 @@
+pub struct ContentHash {
+  high: u64,
+  low: u64,
+}
+
+pub fn contentHash(high: u64, low: u64) -> ContentHash {
+  return ContentHash { high: high, low: low }
+}
+
+impl ContentHash {
+  pub fn isZero(self: ContentHash) -> bool {
+    return self.high == 0 && self.low == 0
+  }
+
+  pub fn highBits(self: ContentHash) -> u64 {
+    return self.high
+  }
+}

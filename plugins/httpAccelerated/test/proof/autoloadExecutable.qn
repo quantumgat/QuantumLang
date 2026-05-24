@@ -1,0 +1,24 @@
+pub struct HttpAcceleratedAutoloadExecutableProof {
+  acceleratedPath: HttpAcceleratorExecutablePath,
+  fallbackPath: HttpAcceleratorExecutablePath,
+  integrationGate: HttpAcceleratedIntegrationGate,
+  runtimeKernelProof: HttpAcceleratedRuntimeKernelProof,
+}
+
+impl HttpAcceleratedAutoloadExecutableProof {
+  pub fn complete(self: HttpAcceleratedAutoloadExecutableProof) -> bool {
+    return self.acceleratedPath.executable()
+      && self.fallbackPath.executable()
+      && self.integrationGate.accepted()
+      && self.runtimeKernelProof.complete()
+  }
+}
+
+pub fn httpAcceleratedAutoloadExecutableProof() -> HttpAcceleratedAutoloadExecutableProof {
+  return HttpAcceleratedAutoloadExecutableProof {
+    acceleratedPath: HttpAcceleratorExecutablePath.fromLoadPlan(HttpAcceleratorLoadPlan.accelerated()),
+    fallbackPath: HttpAcceleratorExecutablePath.fromLoadPlan(HttpAcceleratorLoadPlan.portableFallback()),
+    integrationGate: HttpAcceleratedIntegrationGate.required(),
+    runtimeKernelProof: httpAcceleratedRuntimeKernelProof(),
+  }
+}

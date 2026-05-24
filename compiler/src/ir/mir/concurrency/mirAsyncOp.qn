@@ -1,0 +1,33 @@
+pub enum MirAsyncOpKind {
+  CreateFrame
+  AwaitPoll
+  AwaitSuspend
+  AwaitQuestionBranch
+  CompleteFrame
+  CancelFrame
+}
+
+pub struct MirAsyncOp {
+  instruction: u64,
+  kind: MirAsyncOpKind,
+  stateMachineReady: bool,
+  cleanupReady: bool,
+  runtimeCallReady: bool,
+  sourceMapReady: bool,
+}
+
+impl MirAsyncOp {
+  pub fn lowerable(self: MirAsyncOp) -> bool {
+    return self.instruction > 0
+      && self.stateMachineReady
+      && self.cleanupReady
+      && self.runtimeCallReady
+      && self.sourceMapReady
+  }
+
+  pub fn isAwait(self: MirAsyncOp) -> bool {
+    return self.kind == MirAsyncOpKind.AwaitPoll
+      || self.kind == MirAsyncOpKind.AwaitSuspend
+      || self.kind == MirAsyncOpKind.AwaitQuestionBranch
+  }
+}

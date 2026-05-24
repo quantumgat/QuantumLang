@@ -1,0 +1,19 @@
+pub struct ConstantTimeSelectLowering {
+  emitsSelectInstruction: bool,
+  avoidsSecretBranch: bool,
+  preservesBothInputs: bool,
+}
+
+impl ConstantTimeSelectLowering {
+  pub fn init(emitsSelectInstruction: bool, avoidsSecretBranch: bool, preservesBothInputs: bool) -> ConstantTimeSelectLowering {
+    return ConstantTimeSelectLowering {
+      emitsSelectInstruction: emitsSelectInstruction,
+      avoidsSecretBranch: avoidsSecretBranch,
+      preservesBothInputs: preservesBothInputs,
+    }
+  }
+
+  pub fn accepted(self: ConstantTimeSelectLowering) -> bool {
+    return self.emitsSelectInstruction && self.avoidsSecretBranch && self.preservesBothInputs
+  }
+}

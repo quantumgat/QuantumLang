@@ -1,0 +1,40 @@
+pub fn invalidFormatSpecifierFixture(user: string) -> string {
+  // expected: QLTEXT0002 span=format-specifier
+  // fixit: remove unsupported specifier
+  // golden: text/json/lsp exact-code exact-span
+  f"{user:unknown}"
+}
+
+pub fn invalidPrecisionFixture(amount: dec128) -> string {
+  // expected: QLTEXT0003 span=format-specifier
+  // fixit: replace with .2 or another digit precision
+  // golden: text/json/lsp exact-code exact-span
+  f"{amount:.x}"
+}
+
+pub fn invalidZeroPaddingFixture(id: u64) -> string {
+  // expected: QLTEXT0004 span=format-specifier
+  // fixit: replace with 08 or another digit width
+  // golden: text/json/lsp exact-code exact-span
+  f"{id:0x}"
+}
+
+pub fn unsupportedDisplayFixture(secretKey: string) -> string {
+  // expected: QLTEXT0005 span=expression-segment
+  // help: implement display formatting or use an explicit formatter
+  f"{secretKey}"
+}
+
+pub fn unsupportedDebugFixture(value: string) -> string {
+  // expected: QLTEXT0006 span=expression-segment
+  // help: implement debug formatting or remove :?
+  f"{value:?}"
+}
+
+pub fn secretRedactionFixture(secretKey: string) -> string {
+  // expected: QLSEC0003 span=secret-value
+  // render: text/json/lsp preserve code and redact snippet
+  // fixit: wrap with redacted(secretKey), never print raw secret
+  // golden: text/json/lsp exact-code exact-span redacted-snippet
+  f"token={secretKey}"
+}

@@ -1,0 +1,71 @@
+pub struct HttpAcceleratedSourceLayoutProof {
+  manifestReady: bool,
+  stdlibRootReady: bool,
+  compilerHooksReady: bool,
+  runtimeKernelsReady: bool,
+  packageFactsReady: bool,
+  hotPathPipelineReady: bool,
+  noCoreHttp: bool,
+}
+
+impl HttpAcceleratedSourceLayoutProof {
+  pub fn complete(self: HttpAcceleratedSourceLayoutProof) -> bool {
+    return self.manifestReady
+      && self.stdlibRootReady
+      && self.compilerHooksReady
+      && self.runtimeKernelsReady
+      && self.packageFactsReady
+      && self.hotPathPipelineReady
+      && self.noCoreHttp
+  }
+}
+
+pub fn httpAcceleratedSourceLayoutProof() -> HttpAcceleratedSourceLayoutProof {
+  let facts = HttpPackageFactSet.complete(true, true, true, true, true, true, true)
+  let plan = HttpAccelerationPlan.fromFacts(facts)
+  let lowering = HttpAcceleratedLoweringPlan.fromPackageFacts(facts)
+  let pipeline = HttpAcceleratedHotPathPipeline.fromPackageGraphs(
+    httpAcceleratedProofRoutes(),
+    httpAcceleratedProofExtractors(),
+    httpAcceleratedProofCapabilities(),
+    httpAcceleratedProofThunks(),
+    httpAcceleratedProofSourceMap(),
+    httpAcceleratedProofTransport()
+  )
+  return HttpAcceleratedSourceLayoutProof {
+    manifestReady: true,
+    stdlibRootReady: plan.ready(),
+    compilerHooksReady: lowering.accepted()
+      && HttpAcceleratedHookUse.required().genericOnly()
+      && HttpAcceleratedHookRegistration.required().genericOnly()
+      && HttpPackageFactBinding.required().complete()
+      && HttpAcceleratedIntegrationGate.required().accepted()
+      && HttpAcceleratedTargetGate.portable().accepted()
+      && HttpAcceleratedSourceMapBridge.required().complete(),
+    runtimeKernelsReady: HttpParserKernel.simd().accepted()
+      && HttpRouteKernel.trie().accepted()
+      && HttpWriterKernel.response().accepted()
+      && HttpSendfileKernel.splice().accepted()
+      && HttpBackpressureKernel.queue().accepted()
+      && httpAcceleratedRuntimeKernelProof().complete()
+      && HttpAcceleratedRuntimeAbi.v1().accepted()
+      && HttpAcceleratedKernelLifecycle.required().complete()
+      && HttpAcceleratedTargetDispatch.required().complete()
+      && HttpAcceleratedFailure.kernelUnavailable().safe(),
+    packageFactsReady: facts.ready(),
+    hotPathPipelineReady: pipeline.complete(),
+    noCoreHttp: true
+      && httpAcceleratedAutoloadExecutableProof().complete()
+      && httpAcceleratedE2eServerProof().complete()
+      && HttpAcceleratedRealTrafficBenchmark.closeout().accepted()
+      && HttpGoComparisonBenchmark.fixture().accepted()
+      && HttpAcceleratedMeasuredBenchmarkProof.closeout().accepted(),
+  }
+}
+
+fn httpAcceleratedProofRoutes() -> RouteGraph
+fn httpAcceleratedProofExtractors() -> ExtractorGraph
+fn httpAcceleratedProofCapabilities() -> CapabilityGraph
+fn httpAcceleratedProofThunks() -> HandlerThunkGraph
+fn httpAcceleratedProofSourceMap() -> HttpSourceMap
+fn httpAcceleratedProofTransport() -> HttpAsyncTransportPlan

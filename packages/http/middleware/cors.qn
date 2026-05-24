@@ -1,0 +1,56 @@
+pub struct CorsPolicy {
+  enabled: bool,
+  origins: Vec<string>,
+  methods: Vec<string>,
+  headers: Vec<string>,
+  credentials: bool,
+  maxAgeSeconds: usize,
+  varyOrigin: bool,
+}
+
+pub struct Cors {
+}
+
+impl Cors {
+  pub fn disabled() -> CorsPolicy {
+    return CorsPolicy.init(false, [], [], [], false, 0, false)
+  }
+
+  pub fn allowAll() -> CorsPolicy {
+    return CorsPolicy.init(true, ["*"], ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], ["*"], false, 600, true)
+  }
+
+  pub fn allowOrigins(origins: Vec<string>) -> CorsPolicy {
+    return CorsPolicy.init(true, origins, ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], ["content-type", "authorization"], false, 600, true)
+  }
+}
+
+impl CorsPolicy {
+  pub fn init(
+    enabled: bool,
+    origins: Vec<string>,
+    methods: Vec<string>,
+    headers: Vec<string>,
+    credentials: bool,
+    maxAgeSeconds: usize,
+    varyOrigin: bool,
+  ) -> CorsPolicy {
+    return CorsPolicy {
+      enabled: enabled,
+      origins: origins,
+      methods: methods,
+      headers: headers,
+      credentials: credentials,
+      maxAgeSeconds: maxAgeSeconds,
+      varyOrigin: varyOrigin,
+    }
+  }
+
+  pub fn allowCredentials(self: CorsPolicy) -> CorsPolicy {
+    return CorsPolicy.init(self.enabled, self.origins, self.methods, self.headers, true, self.maxAgeSeconds, true)
+  }
+
+  pub fn configured(self: CorsPolicy) -> bool {
+    return self.enabled && self.origins.len() > 0 && self.varyOrigin
+  }
+}

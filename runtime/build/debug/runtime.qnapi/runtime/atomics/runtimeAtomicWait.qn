@@ -1,0 +1,18 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeAtomicWaitStatus {
+  Pending,
+  Woken,
+  TimedOut,
+  Cancelled,
+  NotEqual,
+  Unsupported,
+}
+pub struct RuntimeAtomicWaitRequest {
+  order: RuntimeMemoryOrder
+  hasTimeout: bool
+  cancellationObserved: bool
+  guardHeld: bool
+  guardAware: bool
+  schedulerParkSupported: bool
+  targetSupported: bool
+}

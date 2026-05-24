@@ -1,0 +1,19 @@
+pub struct RuntimeFacadeContext {
+  runtimeName: string,
+  ownsSubsystemInternals: bool,
+  hasPorts: bool,
+}
+
+pub fn runtimeFacadeContext(runtimeName: string) -> RuntimeFacadeContext {
+  return RuntimeFacadeContext {
+    runtimeName: runtimeName,
+    ownsSubsystemInternals: false,
+    hasPorts: true,
+  }
+}
+
+impl RuntimeFacadeContext {
+  pub fn composesOnly(self: RuntimeFacadeContext) -> bool {
+    return self.hasPorts && self.ownsSubsystemInternals == false
+  }
+}

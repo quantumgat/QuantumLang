@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ZeroCopyBorrowRuntime {
+  leaseTableChecked: bool
+  staleGenerationRejected: bool
+  mutationConflictRejected: bool
+  overlappingMutableRejected: bool
+  invalidRangeRejected: bool
+  noAllocationOnHotPath: bool
+  noCoredumpFailure: bool
+}

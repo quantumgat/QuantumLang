@@ -1,0 +1,2 @@
+pub fn processId() -> ProcessId
+pub fn parentProcessId() -> Option<ProcessId>

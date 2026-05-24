@@ -1,0 +1,480 @@
+pub struct HttpStatus {
+  code: u16,
+}
+
+impl HttpStatus {
+  pub fn init(code: u16) -> HttpStatus {
+    return HttpStatus {
+      code: code,
+    }
+  }
+
+  pub fn fromCode(code: u16) -> Result<HttpStatus, IntoHttpError> {
+    let status = HttpStatus.init(code)
+    if status.valid() {
+      return Ok(status)
+    }
+    return Err(IntoHttpError.badRequest("invalid HTTP status code"))
+  }
+
+  pub fn code(self: HttpStatus) -> u16 {
+    return self.code
+  }
+
+  pub fn valid(self: HttpStatus) -> bool {
+    return self.informational()
+      || self.success()
+      || self.redirect()
+      || self.clientError()
+      || self.serverError()
+  }
+
+  pub fn registered(self: HttpStatus) -> bool {
+    match self.code {
+      100 => return true
+      101 => return true
+      102 => return true
+      103 => return true
+      200 => return true
+      201 => return true
+      202 => return true
+      203 => return true
+      204 => return true
+      205 => return true
+      206 => return true
+      207 => return true
+      208 => return true
+      226 => return true
+      300 => return true
+      301 => return true
+      302 => return true
+      303 => return true
+      304 => return true
+      305 => return true
+      306 => return true
+      307 => return true
+      308 => return true
+      400 => return true
+      401 => return true
+      402 => return true
+      403 => return true
+      404 => return true
+      405 => return true
+      406 => return true
+      407 => return true
+      408 => return true
+      409 => return true
+      410 => return true
+      411 => return true
+      412 => return true
+      413 => return true
+      414 => return true
+      415 => return true
+      416 => return true
+      417 => return true
+      418 => return true
+      421 => return true
+      422 => return true
+      423 => return true
+      424 => return true
+      425 => return true
+      426 => return true
+      428 => return true
+      429 => return true
+      431 => return true
+      451 => return true
+      500 => return true
+      501 => return true
+      502 => return true
+      503 => return true
+      504 => return true
+      505 => return true
+      506 => return true
+      507 => return true
+      508 => return true
+      510 => return true
+      511 => return true
+      _ => return false
+    }
+  }
+
+  pub fn reason(self: HttpStatus) -> string {
+    match self.code {
+      100 => return "Continue"
+      101 => return "Switching Protocols"
+      102 => return "Processing"
+      103 => return "Early Hints"
+      200 => return "OK"
+      201 => return "Created"
+      202 => return "Accepted"
+      203 => return "Non-Authoritative Information"
+      204 => return "No Content"
+      205 => return "Reset Content"
+      206 => return "Partial Content"
+      207 => return "Multi-Status"
+      208 => return "Already Reported"
+      226 => return "IM Used"
+      300 => return "Multiple Choices"
+      301 => return "Moved Permanently"
+      302 => return "Found"
+      303 => return "See Other"
+      304 => return "Not Modified"
+      305 => return "Use Proxy"
+      306 => return "Unused"
+      307 => return "Temporary Redirect"
+      308 => return "Permanent Redirect"
+      400 => return "Bad Request"
+      401 => return "Unauthorized"
+      402 => return "Payment Required"
+      403 => return "Forbidden"
+      404 => return "Not Found"
+      405 => return "Method Not Allowed"
+      406 => return "Not Acceptable"
+      407 => return "Proxy Authentication Required"
+      408 => return "Request Timeout"
+      409 => return "Conflict"
+      410 => return "Gone"
+      411 => return "Length Required"
+      412 => return "Precondition Failed"
+      413 => return "Payload Too Large"
+      414 => return "URI Too Long"
+      415 => return "Unsupported Media Type"
+      416 => return "Range Not Satisfiable"
+      417 => return "Expectation Failed"
+      418 => return "I'm a teapot"
+      421 => return "Misdirected Request"
+      422 => return "Unprocessable Content"
+      423 => return "Locked"
+      424 => return "Failed Dependency"
+      425 => return "Too Early"
+      426 => return "Upgrade Required"
+      428 => return "Precondition Required"
+      429 => return "Too Many Requests"
+      431 => return "Request Header Fields Too Large"
+      451 => return "Unavailable For Legal Reasons"
+      500 => return "Internal Server Error"
+      501 => return "Not Implemented"
+      502 => return "Bad Gateway"
+      503 => return "Service Unavailable"
+      504 => return "Gateway Timeout"
+      505 => return "HTTP Version Not Supported"
+      506 => return "Variant Also Negotiates"
+      507 => return "Insufficient Storage"
+      508 => return "Loop Detected"
+      510 => return "Not Extended"
+      511 => return "Network Authentication Required"
+      _ => return "Unknown"
+    }
+  }
+
+  pub fn statusLine(self: HttpStatus, version: HttpVersion) -> string {
+    return version.text() + " " + self.code.toString() + " " + self.reason()
+  }
+
+  pub fn bodyAllowed(self: HttpStatus) -> bool {
+    return !self.informational()
+      && self.code != 204
+      && self.code != 205
+      && self.code != 304
+  }
+
+  pub fn cacheableByDefault(self: HttpStatus) -> bool {
+    match self.code {
+      200 => return true
+      203 => return true
+      204 => return true
+      206 => return true
+      300 => return true
+      301 => return true
+      308 => return true
+      404 => return true
+      405 => return true
+      410 => return true
+      414 => return true
+      501 => return true
+      _ => return false
+    }
+  }
+
+  pub fn retryable(self: HttpStatus) -> bool {
+    return self.code == 408
+      || self.code == 425
+      || self.code == 429
+      || self.code == 500
+      || self.code == 502
+      || self.code == 503
+      || self.code == 504
+  }
+
+  pub fn continueStatus() -> HttpStatus {
+    return HttpStatus.init(100)
+  }
+
+  pub fn switchingProtocols() -> HttpStatus {
+    return HttpStatus.init(101)
+  }
+
+  pub fn processing() -> HttpStatus {
+    return HttpStatus.init(102)
+  }
+
+  pub fn earlyHints() -> HttpStatus {
+    return HttpStatus.init(103)
+  }
+
+  pub fn ok() -> HttpStatus {
+    return HttpStatus.init(200)
+  }
+
+  pub fn created() -> HttpStatus {
+    return HttpStatus.init(201)
+  }
+
+  pub fn accepted() -> HttpStatus {
+    return HttpStatus.init(202)
+  }
+
+  pub fn nonAuthoritativeInformation() -> HttpStatus {
+    return HttpStatus.init(203)
+  }
+
+  pub fn noContent() -> HttpStatus {
+    return HttpStatus.init(204)
+  }
+
+  pub fn resetContent() -> HttpStatus {
+    return HttpStatus.init(205)
+  }
+
+  pub fn partialContent() -> HttpStatus {
+    return HttpStatus.init(206)
+  }
+
+  pub fn multiStatus() -> HttpStatus {
+    return HttpStatus.init(207)
+  }
+
+  pub fn alreadyReported() -> HttpStatus {
+    return HttpStatus.init(208)
+  }
+
+  pub fn imUsed() -> HttpStatus {
+    return HttpStatus.init(226)
+  }
+
+  pub fn multipleChoices() -> HttpStatus {
+    return HttpStatus.init(300)
+  }
+
+  pub fn movedPermanently() -> HttpStatus {
+    return HttpStatus.init(301)
+  }
+
+  pub fn found() -> HttpStatus {
+    return HttpStatus.init(302)
+  }
+
+  pub fn seeOther() -> HttpStatus {
+    return HttpStatus.init(303)
+  }
+
+  pub fn notModified() -> HttpStatus {
+    return HttpStatus.init(304)
+  }
+
+  pub fn useProxy() -> HttpStatus {
+    return HttpStatus.init(305)
+  }
+
+  pub fn unused() -> HttpStatus {
+    return HttpStatus.init(306)
+  }
+
+  pub fn temporaryRedirect() -> HttpStatus {
+    return HttpStatus.init(307)
+  }
+
+  pub fn permanentRedirect() -> HttpStatus {
+    return HttpStatus.init(308)
+  }
+
+  pub fn badRequest() -> HttpStatus {
+    return HttpStatus.init(400)
+  }
+
+  pub fn unauthorized() -> HttpStatus {
+    return HttpStatus.init(401)
+  }
+
+  pub fn paymentRequired() -> HttpStatus {
+    return HttpStatus.init(402)
+  }
+
+  pub fn forbidden() -> HttpStatus {
+    return HttpStatus.init(403)
+  }
+
+  pub fn notFound() -> HttpStatus {
+    return HttpStatus.init(404)
+  }
+
+  pub fn methodNotAllowed() -> HttpStatus {
+    return HttpStatus.init(405)
+  }
+
+  pub fn notAcceptable() -> HttpStatus {
+    return HttpStatus.init(406)
+  }
+
+  pub fn proxyAuthenticationRequired() -> HttpStatus {
+    return HttpStatus.init(407)
+  }
+
+  pub fn requestTimeout() -> HttpStatus {
+    return HttpStatus.init(408)
+  }
+
+  pub fn conflict() -> HttpStatus {
+    return HttpStatus.init(409)
+  }
+
+  pub fn gone() -> HttpStatus {
+    return HttpStatus.init(410)
+  }
+
+  pub fn lengthRequired() -> HttpStatus {
+    return HttpStatus.init(411)
+  }
+
+  pub fn preconditionFailed() -> HttpStatus {
+    return HttpStatus.init(412)
+  }
+
+  pub fn payloadTooLarge() -> HttpStatus {
+    return HttpStatus.init(413)
+  }
+
+  pub fn uriTooLong() -> HttpStatus {
+    return HttpStatus.init(414)
+  }
+
+  pub fn unsupportedMediaType() -> HttpStatus {
+    return HttpStatus.init(415)
+  }
+
+  pub fn rangeNotSatisfiable() -> HttpStatus {
+    return HttpStatus.init(416)
+  }
+
+  pub fn expectationFailed() -> HttpStatus {
+    return HttpStatus.init(417)
+  }
+
+  pub fn imATeapot() -> HttpStatus {
+    return HttpStatus.init(418)
+  }
+
+  pub fn misdirectedRequest() -> HttpStatus {
+    return HttpStatus.init(421)
+  }
+
+  pub fn unprocessableContent() -> HttpStatus {
+    return HttpStatus.init(422)
+  }
+
+  pub fn locked() -> HttpStatus {
+    return HttpStatus.init(423)
+  }
+
+  pub fn failedDependency() -> HttpStatus {
+    return HttpStatus.init(424)
+  }
+
+  pub fn tooEarly() -> HttpStatus {
+    return HttpStatus.init(425)
+  }
+
+  pub fn upgradeRequired() -> HttpStatus {
+    return HttpStatus.init(426)
+  }
+
+  pub fn preconditionRequired() -> HttpStatus {
+    return HttpStatus.init(428)
+  }
+
+  pub fn tooManyRequests() -> HttpStatus {
+    return HttpStatus.init(429)
+  }
+
+  pub fn requestHeaderFieldsTooLarge() -> HttpStatus {
+    return HttpStatus.init(431)
+  }
+
+  pub fn unavailableForLegalReasons() -> HttpStatus {
+    return HttpStatus.init(451)
+  }
+
+  pub fn internalServerError() -> HttpStatus {
+    return HttpStatus.init(500)
+  }
+
+  pub fn notImplemented() -> HttpStatus {
+    return HttpStatus.init(501)
+  }
+
+  pub fn badGateway() -> HttpStatus {
+    return HttpStatus.init(502)
+  }
+
+  pub fn serviceUnavailable() -> HttpStatus {
+    return HttpStatus.init(503)
+  }
+
+  pub fn gatewayTimeout() -> HttpStatus {
+    return HttpStatus.init(504)
+  }
+
+  pub fn httpVersionNotSupported() -> HttpStatus {
+    return HttpStatus.init(505)
+  }
+
+  pub fn variantAlsoNegotiates() -> HttpStatus {
+    return HttpStatus.init(506)
+  }
+
+  pub fn insufficientStorage() -> HttpStatus {
+    return HttpStatus.init(507)
+  }
+
+  pub fn loopDetected() -> HttpStatus {
+    return HttpStatus.init(508)
+  }
+
+  pub fn notExtended() -> HttpStatus {
+    return HttpStatus.init(510)
+  }
+
+  pub fn networkAuthenticationRequired() -> HttpStatus {
+    return HttpStatus.init(511)
+  }
+
+  pub fn informational(self: HttpStatus) -> bool {
+    return self.code >= 100 && self.code < 200
+  }
+
+  pub fn success(self: HttpStatus) -> bool {
+    return self.code >= 200 && self.code < 300
+  }
+
+  pub fn redirect(self: HttpStatus) -> bool {
+    return self.code >= 300 && self.code < 400
+  }
+
+  pub fn clientError(self: HttpStatus) -> bool {
+    return self.code >= 400 && self.code < 500
+  }
+
+  pub fn serverError(self: HttpStatus) -> bool {
+    return self.code >= 500 && self.code < 600
+  }
+}

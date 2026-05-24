@@ -1,0 +1,271 @@
+pub enum BinaryLengthPrefix {
+  U32,
+  U64,
+  VarU64,
+}
+
+pub struct BinaryCodecOptions {
+  endian: BinaryEndian,
+  lengthPrefix: BinaryLengthPrefix,
+  stableMapOrder: bool,
+}
+
+pub struct BinaryRawBytes {
+  bytes: BinaryView,
+  nativeLayout: bool,
+  mayContainPadding: bool,
+}
+
+pub struct BinaryCodecTypeCoverage {
+  fixedUnsigned: bool,
+  fixedSigned: bool,
+  pointerSizedIntegersPortable: bool,
+  floatsIeeeBits: bool,
+  boolCanonicalByte: bool,
+  charUnicodeScalar: bool,
+  stringUtf8LengthPrefixed: bool,
+  bytesLengthPrefixed: bool,
+  vecRecursive: bool,
+  arraysFixedLength: bool,
+  optionResultTagged: bool,
+  tuplesOrdered: bool,
+  nestedStructsRecursive: bool,
+  orderedMapsStable: bool,
+  unorderedMapsRejected: bool,
+  liveResourcesRejected: bool,
+}
+
+pub struct Binary {
+}
+
+pub trait BinarySerializable<T> {
+  pub fn encodeBinary(value: T, writer: BinaryWriter, options: BinaryCodecOptions) -> Result<BinaryWriter, BinaryError>
+  pub fn decodeBinary(cursor: BinaryCursor, options: BinaryCodecOptions) -> Result<T, BinaryError>
+}
+
+pub fn binaryCodecOptions() -> BinaryCodecOptions {
+  return BinaryCodecOptions {
+    endian: BinaryEndian.Little,
+    lengthPrefix: BinaryLengthPrefix.VarU64,
+    stableMapOrder: true,
+  }
+}
+
+pub fn binaryCodecTypeCoverage() -> BinaryCodecTypeCoverage {
+  return BinaryCodecTypeCoverage {
+    fixedUnsigned: true,
+    fixedSigned: true,
+    pointerSizedIntegersPortable: true,
+    floatsIeeeBits: true,
+    boolCanonicalByte: true,
+    charUnicodeScalar: true,
+    stringUtf8LengthPrefixed: true,
+    bytesLengthPrefixed: true,
+    vecRecursive: true,
+    arraysFixedLength: true,
+    optionResultTagged: true,
+    tuplesOrdered: true,
+    nestedStructsRecursive: true,
+    orderedMapsStable: true,
+    unorderedMapsRejected: true,
+    liveResourcesRejected: true,
+  }
+}
+
+impl Binary {
+  /**
+    Encodes a value with portable field-by-field binary layout.
+
+    example:
+      let bytes = Binary.encode(user)?
+      let bigBytes = Binary.encode(user, endian: .Big)?
+
+    effects: writes stable binary fields, never raw struct padding
+    complexity: O(encoded bytes)
+    allocation: output buffer only
+    stability: public since 0.1
+  */
+  pub fn encode<T>(value: T) -> Result<BinaryView, BinaryError> {
+    return Binary.encodeWithOptions(value, binaryCodecOptions())
+  }
+
+  /**
+    Encodes a value with an explicit portable endian.
+
+    example:
+      let bytes = Binary.encode(user, endian: .Big)?
+      let bytes = Binary.encode(user, endian: .Little)?
+      let bytes = Binary.encode(user, endian: BinaryEndian.Big)?
+
+    effects: writes stable binary fields, never raw struct padding
+    complexity: O(encoded bytes)
+    allocation: output buffer only
+    stability: public since 0.1
+  */
+  pub fn encode<T>(value: T, endian: BinaryEndian) -> Result<BinaryView, BinaryError> {
+    return Binary.encodeWithOptions(value, BinaryCodecOptions {
+      endian: endian,
+      lengthPrefix: BinaryLengthPrefix.VarU64,
+      stableMapOrder: true,
+    })
+  }
+
+  pub fn encodeWithOptions<T>(value: T, options: BinaryCodecOptions) -> Result<BinaryView, BinaryError> {
+    return binaryEncodePortable(value, options)
+  }
+
+  /**
+    Decodes a value with portable field-by-field binary layout.
+
+    example:
+      let user = Binary.decode<User>(bytes)?
+      let user = Binary.decode<User>(bytes, endian: .Big)?
+
+    effects: reads stable binary fields, never native struct padding
+    complexity: O(encoded bytes)
+    allocation: decoded value only
+    stability: public since 0.1
+  */
+  pub fn decode<T>(bytes: BinaryView) -> Result<T, BinaryError> {
+    return Binary.decodeWithOptions<T>(bytes, binaryCodecOptions())
+  }
+
+  /**
+    Decodes a value with an explicit portable endian.
+
+    example:
+      let user = Binary.decode<User>(bytes, endian: .Big)?
+      let user = Binary.decode<User>(bytes, endian: .Little)?
+      let user = Binary.decode<User>(bytes, endian: BinaryEndian.Big)?
+
+    effects: reads stable binary fields, never native struct padding
+    complexity: O(encoded bytes)
+    allocation: decoded value only
+    stability: public since 0.1
+  */
+  pub fn decode<T>(bytes: BinaryView, endian: BinaryEndian) -> Result<T, BinaryError> {
+    return Binary.decodeWithOptions<T>(bytes, BinaryCodecOptions {
+      endian: endian,
+      lengthPrefix: BinaryLengthPrefix.VarU64,
+      stableMapOrder: true,
+    })
+  }
+
+  pub fn decodeWithOptions<T>(bytes: BinaryView, options: BinaryCodecOptions) -> Result<T, BinaryError> {
+    return binaryDecodePortable<T>(bytes, options)
+  }
+
+  /**
+    Decodes a borrowed view without materializing owned fields.
+
+    example:
+      let view = Binary.view<User>(rowBytes)?
+      let id = view.id()
+
+    effects: validates layout and borrows from input bytes
+    complexity: O(validated layout regions)
+    allocation: none on hot path
+    stability: public since 0.1
+  */
+  pub fn view<TView>(bytes: BinaryView) -> Result<View<TView>, BinaryError> {
+    return binaryDecodeView<TView>(bytes, binaryCodecOptions())
+  }
+
+  pub fn view<TView>(bytes: BinaryView, endian: BinaryEndian) -> Result<View<TView>, BinaryError> {
+    return binaryDecodeView<TView>(bytes, BinaryCodecOptions {
+      endian: endian,
+      lengthPrefix: BinaryLengthPrefix.VarU64,
+      stableMapOrder: true,
+    })
+  }
+
+  /**
+    Encodes into an existing writer with no temporary byte buffer.
+
+    example:
+      let writer = Binary.write(writer, user)?
+
+    effects: appends encoded fields to writer
+    complexity: O(encoded bytes)
+    allocation: none beyond writer growth policy
+    stability: public since 0.1
+  */
+  pub fn write<T>(writer: BinaryWriter, value: T) -> Result<BinaryWriter, BinaryError> {
+    return binaryEncodeInto(writer, value, binaryCodecOptions())
+  }
+
+  /**
+    Computes the exact portable encoded size.
+
+    example:
+      let size = Binary.size(user)?
+
+    effects: reads value shape without writing bytes
+    complexity: O(variable fields)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn size<T>(value: T) -> Result<usize, BinaryError> {
+    return binaryEncodedSize(value, binaryCodecOptions())
+  }
+
+  /**
+    Starts a reusable compiled codec builder for repeated binary work.
+
+    example:
+      let codec = Binary.codec<User>()
+        .endian(.Little)
+        .limits(Limits.default())
+        .validate()
+        .trustedAfterValidate()
+        .build()?
+
+    effects: pure builder creation
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn codec<T>() -> CodecBuilder<T> {
+    return CodecBuilder<T>.init(binaryCodecOptions())
+  }
+
+  pub fn encodeBig<T>(value: T) -> Result<BinaryView, BinaryError> {
+    return Binary.encodeWithOptions(value, BinaryCodecOptions {
+      endian: BinaryEndian.Big,
+      lengthPrefix: BinaryLengthPrefix.VarU64,
+      stableMapOrder: true,
+    })
+  }
+
+  pub fn decodeBig<T>(bytes: BinaryView) -> Result<T, BinaryError> {
+    return Binary.decodeWithOptions<T>(bytes, BinaryCodecOptions {
+      endian: BinaryEndian.Big,
+      lengthPrefix: BinaryLengthPrefix.VarU64,
+      stableMapOrder: true,
+    })
+  }
+
+  /**
+    Returns native memory bytes for an unsafe boundary.
+
+    example:
+      unsafe {
+        let bytes = Binary.raw(user)?
+      }
+
+    effects: exposes native ABI layout and possible padding bytes
+    complexity: O(native byte size)
+    allocation: output view only
+    stability: unsafe public since 0.1
+  */
+  pub fn raw<T>(value: T) -> Result<BinaryRawBytes, BinaryError> {
+    return binaryRawNative(value)
+  }
+}
+
+fn binaryEncodePortable<T>(value: T, options: BinaryCodecOptions) -> Result<BinaryView, BinaryError>
+fn binaryDecodePortable<T>(bytes: BinaryView, options: BinaryCodecOptions) -> Result<T, BinaryError>
+fn binaryDecodeView<TView>(bytes: BinaryView, options: BinaryCodecOptions) -> Result<View<TView>, BinaryError>
+fn binaryEncodeInto<T>(writer: BinaryWriter, value: T, options: BinaryCodecOptions) -> Result<BinaryWriter, BinaryError>
+fn binaryEncodedSize<T>(value: T, options: BinaryCodecOptions) -> Result<usize, BinaryError>
+fn binaryRawNative<T>(value: T) -> Result<BinaryRawBytes, BinaryError>

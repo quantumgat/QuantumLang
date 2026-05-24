@@ -1,0 +1,364 @@
+pub struct Deque<T> {
+  items: Vec<T>,
+  head: usize,
+  tail: usize,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<T> Deque<T> {
+  pub fn init() -> Deque<T> {
+    return Deque<T> {
+      items: Vec<T>.empty(),
+      head: 0,
+      tail: 0,
+      len: 0,
+      capacity: 0,
+      generation: 0,
+    }
+  }
+
+  pub fn empty() -> Deque<T> {
+    return Deque<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Deque<T> requires(alloc) {
+    return Deque<T> {
+      items: Vec<T>.withCapacity(capacity),
+      head: 0,
+      tail: 0,
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn fromVec(items: Vec<T>) -> Deque<T> {
+    return Deque<T> {
+      items: items,
+      head: 0,
+      tail: items.len,
+      len: items.len,
+      capacity: items.capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> DequeBuilder<T> {
+    return DequeBuilder<T> { capacity: 0 }
+  }
+
+  pub fn len(self: Deque<T>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Deque<T>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Deque<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn physicalIndex(self: Deque<T>, logicalIndex: usize) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (self.head + logicalIndex) % self.capacity
+  }
+
+  pub fn pushFront(self: Deque<T>, value: T) -> Deque<T> requires(alloc) {
+    let deque = self.ensureCapacityForPush()
+    let head = deque.prevHead()
+    let items = deque.writeSlot(head, value)
+    return Deque<T> {
+      items: items,
+      head: head,
+      tail: deque.tail,
+      len: deque.len + 1,
+      capacity: deque.capacity,
+      generation: deque.generation + 1,
+    }
+  }
+
+  pub fn pushBack(self: Deque<T>, value: T) -> Deque<T> requires(alloc) {
+    let deque = self.ensureCapacityForPush()
+    let items = deque.writeSlot(deque.tail, value)
+    return Deque<T> {
+      items: items,
+      head: deque.head,
+      tail: deque.nextTail(),
+      len: deque.len + 1,
+      capacity: deque.capacity,
+      generation: deque.generation + 1,
+    }
+  }
+
+  pub fn popFront(self: Deque<T>) -> (Deque<T>, Option<T>) {
+    if self.len == 0 {
+      return (self, None)
+    }
+    let value = self.items[self.head]
+    return (
+      Deque<T> {
+        items: self.items,
+        head: self.nextHead(),
+        tail: self.tail,
+        len: self.len - 1,
+        capacity: self.capacity,
+        generation: self.generation + 1,
+      },
+      Some(value)
+    )
+  }
+
+  pub fn popBack(self: Deque<T>) -> (Deque<T>, Option<T>) {
+    if self.len == 0 {
+      return (self, None)
+    }
+    let tail = self.prevTail()
+    let value = self.items[tail]
+    return (
+      Deque<T> {
+        items: self.items,
+        head: self.head,
+        tail: tail,
+        len: self.len - 1,
+        capacity: self.capacity,
+        generation: self.generation + 1,
+      },
+      Some(value)
+    )
+  }
+
+  pub fn front(self: Deque<T>) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    return Some(self.items[self.head])
+  }
+
+  pub fn back(self: Deque<T>) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    return Some(self.items[self.prevTail()])
+  }
+
+  pub fn peekFront(self: Deque<T>) -> Option<T> {
+    return self.front()
+  }
+
+  pub fn peekBack(self: Deque<T>) -> Option<T> {
+    return self.back()
+  }
+
+  pub fn rotateLeft(self: Deque<T>, count: usize) -> Deque<T> {
+    if self.len == 0 {
+      return self
+    }
+    let shift = count % self.len
+    return self.withHeadTail(self.physicalIndex(shift), self.physicalIndex(shift + self.len))
+  }
+
+  pub fn rotateRight(self: Deque<T>, count: usize) -> Deque<T> {
+    if self.len == 0 {
+      return self
+    }
+    let shift = count % self.len
+    let left = self.len - shift
+    return self.rotateLeft(left)
+  }
+
+  pub fn splitOff(self: Deque<T>, index: usize) -> Deque<T> requires(alloc) {
+    if index >= self.len {
+      return Deque<T>.empty()
+    }
+    let mut result = Deque<T>.withCapacity(self.len - index)
+    let mut cursor = index
+    while cursor < self.len {
+      result = result.pushBack(self.items[self.physicalIndex(cursor)])
+      cursor = cursor + 1
+    }
+    return result
+  }
+
+  pub fn append(self: Deque<T>, other: Deque<T>) -> Deque<T> requires(alloc) {
+    let mut result = self
+    let mut index: usize = 0
+    while index < other.len {
+      result = result.pushBack(other.items[other.physicalIndex(index)])
+      index = index + 1
+    }
+    return result
+  }
+
+  pub fn clear(self: Deque<T>) -> Deque<T> requires(alloc) {
+    return Deque<T>.withCapacity(self.capacity).withGeneration(self.generation + 1)
+  }
+
+  pub fn iter(self: Deque<T>) -> DequeIter<T> {
+    return DequeIter<T> {
+      deque: self,
+      index: 0,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+
+  pub fn forEach(self: Deque<T>, action: fn(T) -> ()) -> () {
+    let mut index: usize = 0
+    while index < self.len {
+      action(self.items[self.physicalIndex(index)])
+      index = index + 1
+    }
+  }
+
+  pub fn find(self: Deque<T>, predicate: fn(T) -> bool) -> Option<T> {
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self.items[self.physicalIndex(index)]
+      if predicate(value) {
+        return Some(value)
+      }
+      index = index + 1
+    }
+    return None
+  }
+
+  pub fn countWhere(self: Deque<T>, predicate: fn(T) -> bool) -> usize {
+    let mut count: usize = 0
+    let mut index: usize = 0
+    while index < self.len {
+      if predicate(self.items[self.physicalIndex(index)]) {
+        count = count + 1
+      }
+      index = index + 1
+    }
+    return count
+  }
+
+  pub fn any(self: Deque<T>, predicate: fn(T) -> bool) -> bool {
+    let mut index: usize = 0
+    while index < self.len {
+      if predicate(self.items[self.physicalIndex(index)]) {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn all(self: Deque<T>, predicate: fn(T) -> bool) -> bool {
+    let mut index: usize = 0
+    while index < self.len {
+      if predicate(self.items[self.physicalIndex(index)]) == false {
+        return false
+      }
+      index = index + 1
+    }
+    return true
+  }
+
+  pub fn fold<U>(self: Deque<T>, initial: U, reducer: fn(U, T) -> U) -> U {
+    let mut total = initial
+    let mut index: usize = 0
+    while index < self.len {
+      total = reducer(total, self.items[self.physicalIndex(index)])
+      index = index + 1
+    }
+    return total
+  }
+
+  pub fn ensureCapacityForPush(self: Deque<T>) -> Deque<T> requires(alloc) {
+    if self.len < self.capacity {
+      return self
+    }
+    let nextCapacity = self.nextCapacity()
+    let mut items = Vec<T>.withCapacity(nextCapacity)
+    let mut index: usize = 0
+    while index < self.len {
+      items = items.push(self.items[self.physicalIndex(index)])
+      index = index + 1
+    }
+    return Deque<T> {
+      items: items,
+      head: 0,
+      tail: self.len,
+      len: self.len,
+      capacity: nextCapacity,
+      generation: self.generation,
+    }
+  }
+
+  pub fn writeSlot(self: Deque<T>, index: usize, value: T) -> Vec<T> requires(alloc) {
+    if index >= self.items.len {
+      return self.items.push(value)
+    }
+    return self.items.set(index, value)
+  }
+
+  pub fn nextCapacity(self: Deque<T>) -> usize {
+    if self.capacity == 0 {
+      return 16
+    }
+    return self.capacity * 2
+  }
+
+  pub fn nextHead(self: Deque<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (self.head + 1) % self.capacity
+  }
+
+  pub fn prevHead(self: Deque<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    if self.head == 0 {
+      return self.capacity - 1
+    }
+    return self.head - 1
+  }
+
+  pub fn nextTail(self: Deque<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (self.tail + 1) % self.capacity
+  }
+
+  pub fn prevTail(self: Deque<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    if self.tail == 0 {
+      return self.capacity - 1
+    }
+    return self.tail - 1
+  }
+
+  pub fn withHeadTail(self: Deque<T>, head: usize, tail: usize) -> Deque<T> {
+    return Deque<T> {
+      items: self.items,
+      head: head,
+      tail: tail,
+      len: self.len,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn withGeneration(self: Deque<T>, generation: usize) -> Deque<T> {
+    return Deque<T> {
+      items: self.items,
+      head: self.head,
+      tail: self.tail,
+      len: self.len,
+      capacity: self.capacity,
+      generation: generation,
+    }
+  }
+}

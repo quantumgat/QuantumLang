@@ -1,0 +1,43 @@
+pub struct MapBuilder<K, V> {
+  map: Map<K, V>,
+  capacity: usize,
+  hasher: Hasher,
+}
+
+impl<K, V> MapBuilder<K, V> {
+  pub fn init() -> MapBuilder<K, V> requires(alloc) {
+    return MapBuilder<K, V> {
+      map: Map<K, V>.withCapacity(16),
+      capacity: 16,
+      hasher: Hasher.init(),
+    }
+  }
+
+  pub fn capacity(self: MapBuilder<K, V>, capacity: usize) -> MapBuilder<K, V> requires(alloc) {
+    return MapBuilder<K, V> {
+      map: Map<K, V>.withCapacity(capacity),
+      capacity: capacity,
+      hasher: self.hasher,
+    }
+  }
+
+  pub fn hasher(self: MapBuilder<K, V>, hasher: Hasher) -> MapBuilder<K, V> requires(alloc) {
+    return MapBuilder<K, V> {
+      map: Map<K, V>.withHasher(hasher),
+      capacity: self.capacity,
+      hasher: hasher,
+    }
+  }
+
+  pub fn insert(self: MapBuilder<K, V>, key: K, value: V) -> MapBuilder<K, V> requires(alloc) {
+    return MapBuilder<K, V> {
+      map: self.map.put(key, value),
+      capacity: self.capacity,
+      hasher: self.hasher,
+    }
+  }
+
+  pub fn build(self: MapBuilder<K, V>) -> Map<K, V> {
+    return self.map
+  }
+}

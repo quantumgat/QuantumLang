@@ -1,0 +1,12 @@
+pub struct QirIntrinsicEntry {
+  qnName: string,
+  qirSymbol: string,
+  providerOwned: bool,
+  loweringRequired: bool,
+}
+
+impl QirIntrinsicEntry {
+  pub fn accepted(self: QirIntrinsicEntry) -> bool {
+    return self.qnName != "" && self.qirSymbol != "" && self.loweringRequired
+  }
+}

@@ -1,0 +1,21 @@
+pub struct QirModuleEmission {
+  moduleName: string,
+  profileName: string,
+  verifierRequired: bool,
+  artifactPlanRequired: bool,
+  qwhileLoopEmitted: bool,
+  noNativeFallback: bool,
+}
+
+impl QirModuleEmission {
+  pub fn accepted(self: QirModuleEmission) -> bool {
+    return self.moduleName != "" && self.profileName != "" && self.verifierRequired
+  }
+
+  pub fn qwhileReady(self: QirModuleEmission) -> bool {
+    return self.accepted()
+      && self.artifactPlanRequired
+      && self.qwhileLoopEmitted
+      && self.noNativeFallback
+  }
+}

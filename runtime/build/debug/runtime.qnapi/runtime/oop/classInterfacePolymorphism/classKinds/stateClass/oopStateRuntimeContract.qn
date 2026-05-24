@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopStateRuntimeContract {
+  lifecycleTableRuntime: bool
+  dependencyOrderRuntime: bool
+  scopedStateRuntime: bool
+  startupShutdownRuntime: bool
+  reconnectRuntime: bool
+  healthCheckRuntime: bool
+  testOverrideIsolationRuntime: bool
+  staleStateDiagnostics: bool
+  noRequestLoopReflection: bool
+}
+pub extern "qnpkg" {
+  pub fn oopStateRuntimeContract() -> OopStateRuntimeContract
+}

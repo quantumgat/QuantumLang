@@ -1,0 +1,34 @@
+pub struct PluginRuntimeDynamicLoadPlan {
+  library: PluginDynamicLibrary,
+  registry: PluginKernelRegistry,
+  dispatchTable: PluginKernelDispatchTable,
+  abi: PluginRuntimeAbi,
+  loadBeforeUse: bool,
+  unloadRegistered: bool,
+  incidentReportRequired: bool,
+}
+
+impl PluginRuntimeDynamicLoadPlan {
+  pub fn forLibrary(path: string, kernelCount: usize) -> PluginRuntimeDynamicLoadPlan {
+    let library = PluginDynamicLibrary.shared(path)
+    return PluginRuntimeDynamicLoadPlan {
+      library: library,
+      registry: PluginKernelRegistry.fromKernelCount(kernelCount),
+      dispatchTable: PluginKernelDispatchTable.fromKernelCount(kernelCount),
+      abi: PluginRuntimeAbi.v1(),
+      loadBeforeUse: true,
+      unloadRegistered: true,
+      incidentReportRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginRuntimeDynamicLoadPlan) -> bool {
+    return self.library.accepted()
+      && self.registry.accepted()
+      && self.dispatchTable.accepted()
+      && self.abi.accepted()
+      && self.loadBeforeUse
+      && self.unloadRegistered
+      && self.incidentReportRequired
+  }
+}

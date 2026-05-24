@@ -1,0 +1,18 @@
+pub struct CancelScope {
+  token: CancelToken,
+  open: bool,
+}
+
+impl CancelScope {
+  pub fn run<T>(self: CancelScope, work: fn(CancelToken) -> T) -> Result<T, CancelError>
+
+  pub fn cancel(self: CancelScope) -> Result<Unit, CancelError>
+
+  pub fn token(self: CancelScope) -> CancelToken {
+    return self.token
+  }
+
+  pub fn isOpen(self: CancelScope) -> bool {
+    return self.open
+  }
+}

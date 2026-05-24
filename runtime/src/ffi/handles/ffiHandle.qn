@@ -1,0 +1,58 @@
+pub enum FfiHandleKind {
+  BorrowedHandle
+  OwnedHandle
+  CallbackHandle
+}
+
+pub struct FfiHandle {
+  handleId: u64,
+  kind: FfiHandleKind,
+  generation: usize,
+  ownerSubsystem: string,
+  state: HandleState,
+  generationChecked: bool,
+}
+
+pub fn ffiHandle(handleId: u64, kind: FfiHandleKind) -> FfiHandle {
+  return FfiHandle {
+    handleId: handleId,
+    kind: kind,
+    generation: 1,
+    ownerSubsystem: "ffi",
+    state: HandleState.Open,
+    generationChecked: true,
+  }
+}
+
+impl FfiHandle {
+  pub fn rejectsStaleUse(self: FfiHandle) -> bool {
+    return self.generationChecked
+  }
+
+  pub fn validate(self: FfiHandle, generation: usize, ownerSubsystem: string) -> Result<FfiHandle, HandleError> {
+    if self.state != HandleState.Open {
+      return Err(HandleError.ClosedHandle)
+    }
+    if self.generation != generation {
+      return Err(HandleError.WrongGeneration)
+    }
+    if self.ownerSubsystem != ownerSubsystem {
+      return Err(HandleError.WrongSubsystem)
+    }
+    return Ok(self)
+  }
+
+  pub fn close(self: FfiHandle) -> Result<FfiHandle, HandleError> {
+    if self.state == HandleState.Closed {
+      return Err(HandleError.DoubleClose)
+    }
+    return Ok(FfiHandle {
+      handleId: self.handleId,
+      kind: self.kind,
+      generation: self.generation + 1,
+      ownerSubsystem: self.ownerSubsystem,
+      state: HandleState.Closed,
+      generationChecked: self.generationChecked,
+    })
+  }
+}

@@ -1,0 +1,38 @@
+pub struct ShutdownSignal {
+  signal: Signal,
+  graceful: bool,
+}
+
+pub fn shutdownSignal(signal: Signal) -> ShutdownSignal {
+  return ShutdownSignal {
+    signal: signal,
+    graceful: true,
+  }
+}
+
+pub fn waitShutdown() -> Result<ShutdownSignal, OsError> {
+  let signal = shutdownSet().wait()?
+  return Ok(shutdownSignal(signal))
+}
+
+pub fn tryShutdown() -> Result<Option<ShutdownSignal>, OsError> {
+  let signal = shutdownSet().tryWait()?
+  match signal {
+    Some(value) => {
+      return Ok(Some(shutdownSignal(value)))
+    }
+    None => {
+      return Ok(None)
+    }
+  }
+}
+
+impl ShutdownSignal {
+  pub fn signal(self: ShutdownSignal) -> Signal {
+    return self.signal
+  }
+
+  pub fn graceful(self: ShutdownSignal) -> bool {
+    return self.graceful
+  }
+}

@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimePrintHotPath {
+  directLiteralWrite: bool
+  directStderrWrite: bool
+  reusableBuffer: bool
+  singleWriteWhenContiguous: bool
+  allocationFreeLiteral: bool
+  preservesPartialWrite: bool
+  flushOrderStable: bool
+  noPanic: bool
+  noCoredump: bool
+}

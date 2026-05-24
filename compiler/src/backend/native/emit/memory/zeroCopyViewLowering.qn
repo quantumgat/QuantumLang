@@ -1,0 +1,33 @@
+pub struct ZeroCopyViewLowering {
+  viewIsPointerLengthPair: bool,
+  borrowTokenErasedWhenProven: bool,
+  boundsHoisted: bool,
+  toOwnedIsExplicitCopyOnly: bool,
+  mutationEpochChecked: bool,
+  noRuntimeWrapperOnHotPath: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl ZeroCopyViewLowering {
+  pub fn hotPath() -> ZeroCopyViewLowering {
+    return ZeroCopyViewLowering {
+      viewIsPointerLengthPair: true,
+      borrowTokenErasedWhenProven: true,
+      boundsHoisted: true,
+      toOwnedIsExplicitCopyOnly: true,
+      mutationEpochChecked: true,
+      noRuntimeWrapperOnHotPath: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: ZeroCopyViewLowering) -> bool {
+    return self.viewIsPointerLengthPair
+      && self.borrowTokenErasedWhenProven
+      && self.boundsHoisted
+      && self.toOwnedIsExplicitCopyOnly
+      && self.mutationEpochChecked
+      && self.noRuntimeWrapperOnHotPath
+      && self.noCoredumpDiagnostic
+  }
+}

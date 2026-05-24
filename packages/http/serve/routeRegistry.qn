@@ -1,0 +1,19 @@
+pub class RouteRegistry {
+  routeCount: usize,
+  conflictCount: usize,
+
+  pub init() {
+    self.routeCount = 0
+    self.conflictCount = 0
+  }
+
+  pub fn register(self: &mut RouteRegistry, routeName: string) -> bool {
+    self.routeCount = self.routeCount + 1
+    return self.conflictCount == 0
+  }
+
+  pub fn hasConflicts(self: RouteRegistry) -> bool {
+    return self.conflictCount > 0
+  }
+}
+

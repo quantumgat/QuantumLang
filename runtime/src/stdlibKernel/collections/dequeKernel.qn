@@ -1,0 +1,51 @@
+pub struct DequeKernel {
+  circularBufferBacked: bool,
+  headTailDirect: bool,
+  moduloIndexLowered: bool,
+  pushFrontUsesHeadDecAndStore: bool,
+  pushBackUsesTailStore: bool,
+  popFrontUsesHeadLoadAndHeadInc: bool,
+  popBackUsesTailDecAndLoad: bool,
+  peekFrontBackUsesDirectLoad: bool,
+  rotateUsesHeadTailMove: bool,
+  growRepackLinearized: bool,
+  zeroCopyFromVec: bool,
+  iteratorRingCursorStable: bool,
+  callableLoopsInlineable: bool,
+}
+
+impl DequeKernel {
+  pub fn standard() -> DequeKernel {
+    return DequeKernel {
+      circularBufferBacked: true,
+      headTailDirect: true,
+      moduloIndexLowered: true,
+      pushFrontUsesHeadDecAndStore: true,
+      pushBackUsesTailStore: true,
+      popFrontUsesHeadLoadAndHeadInc: true,
+      popBackUsesTailDecAndLoad: true,
+      peekFrontBackUsesDirectLoad: true,
+      rotateUsesHeadTailMove: true,
+      growRepackLinearized: true,
+      zeroCopyFromVec: true,
+      iteratorRingCursorStable: true,
+      callableLoopsInlineable: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: DequeKernel) -> bool {
+    return self.circularBufferBacked
+      && self.headTailDirect
+      && self.moduloIndexLowered
+      && self.pushFrontUsesHeadDecAndStore
+      && self.pushBackUsesTailStore
+      && self.popFrontUsesHeadLoadAndHeadInc
+      && self.popBackUsesTailDecAndLoad
+      && self.peekFrontBackUsesDirectLoad
+      && self.rotateUsesHeadTailMove
+      && self.growRepackLinearized
+      && self.zeroCopyFromVec
+      && self.iteratorRingCursorStable
+      && self.callableLoopsInlineable
+  }
+}

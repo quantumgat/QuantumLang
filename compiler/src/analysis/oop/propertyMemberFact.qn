@@ -1,0 +1,42 @@
+pub enum PropertyAccessKind {
+  Getter
+  Setter
+  FieldLike
+  ExplicitMethodRequired
+}
+
+pub struct PropertyMemberFact {
+  propertyId: u64,
+  ownerTypeId: u64,
+  getterId: u64,
+  setterId: u64,
+  accessKind: PropertyAccessKind,
+  fallible: bool,
+  hiddenEffectsRejected: bool,
+}
+
+pub fn propertyMemberFact(
+  propertyId: u64,
+  ownerTypeId: u64,
+  getterId: u64,
+  setterId: u64,
+  accessKind: PropertyAccessKind,
+  fallible: bool,
+  hiddenEffectsRejected: bool,
+) -> PropertyMemberFact {
+  return PropertyMemberFact {
+    propertyId: propertyId,
+    ownerTypeId: ownerTypeId,
+    getterId: getterId,
+    setterId: setterId,
+    accessKind: accessKind,
+    fallible: fallible,
+    hiddenEffectsRejected: hiddenEffectsRejected,
+  }
+}
+
+impl PropertyMemberFact {
+  pub fn canUseFieldSyntax(self: PropertyMemberFact) -> bool {
+    return self.fallible == false && self.hiddenEffectsRejected == false
+  }
+}

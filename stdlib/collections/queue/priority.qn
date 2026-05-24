@@ -1,0 +1,140 @@
+pub struct PriorityQueue<T, P> {
+  heap: Heap<T, P>,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<T, P> PriorityQueue<T, P> {
+  pub fn init() -> PriorityQueue<T, P> {
+    return PriorityQueue<T, P> {
+      heap: Heap<T, P>.empty(),
+      len: 0,
+      capacity: 0,
+      generation: 0,
+    }
+  }
+
+  pub fn empty() -> PriorityQueue<T, P> {
+    return PriorityQueue<T, P>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> PriorityQueue<T, P> requires(alloc) {
+    return PriorityQueue<T, P> {
+      heap: Heap<T, P>.withCapacity(capacity),
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn withComparator(comparator: Comparator<P>) -> PriorityQueue<T, P> {
+    return PriorityQueue<T, P> {
+      heap: Heap<T, P>.withComparator(comparator),
+      len: 0,
+      capacity: 0,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> PriorityQueueBuilder<T, P> {
+    return PriorityQueueBuilder<T, P> {
+      capacity: 0,
+      comparator: Comparator<P>.init(),
+    }
+  }
+
+  pub fn len(self: PriorityQueue<T, P>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: PriorityQueue<T, P>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: PriorityQueue<T, P>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn push(self: PriorityQueue<T, P>, value: T, priority: P) -> PriorityQueue<T, P> requires(alloc) {
+    let heap = self.heap.push(value, priority)
+    return PriorityQueue<T, P>.fromHeap(heap, self.generation + 1)
+  }
+
+  pub fn pushWithPriority(self: PriorityQueue<T, P>, value: T, priority: P) -> PriorityQueue<T, P> requires(alloc) {
+    return self.push(value, priority)
+  }
+
+  pub fn pop(self: PriorityQueue<T, P>) -> (PriorityQueue<T, P>, Option<T>) requires(alloc) {
+    let popped = self.heap.pop()
+    let queue = PriorityQueue<T, P>.fromHeap(popped.0, self.generation + 1)
+    match popped.1 {
+      Some(entry) => {
+        return (queue, Some(entry.value))
+      }
+      None => {
+        return (queue, None)
+      }
+    }
+  }
+
+  pub fn peek(self: PriorityQueue<T, P>) -> Option<T> {
+    let top = self.heap.peek()
+    match top {
+      Some(entry) => {
+        return Some(entry.value)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn peekPriority(self: PriorityQueue<T, P>) -> Option<P> {
+    let top = self.heap.peek()
+    match top {
+      Some(entry) => {
+        return Some(entry.priority)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn replaceTop(self: PriorityQueue<T, P>, value: T, priority: P) -> (PriorityQueue<T, P>, Option<T>) requires(alloc) {
+    let replaced = self.heap.replaceTop(value, priority)
+    let queue = PriorityQueue<T, P>.fromHeap(replaced.0, self.generation + 1)
+    match replaced.1 {
+      Some(entry) => {
+        return (queue, Some(entry.value))
+      }
+      None => {
+        return (queue, None)
+      }
+    }
+  }
+
+  pub fn clear(self: PriorityQueue<T, P>) -> PriorityQueue<T, P> requires(alloc) {
+    return PriorityQueue<T, P>.fromHeap(self.heap.clear(), self.generation + 1)
+  }
+
+  pub fn iter(self: PriorityQueue<T, P>) -> PriorityQueueIter<T, P> {
+    return PriorityQueueIter<T, P> {
+      heapIter: self.heap.iter(),
+    }
+  }
+
+  pub fn intoSortedVec(self: PriorityQueue<T, P>) -> Vec<T> requires(alloc) {
+    return self.heap.intoSortedVec()
+  }
+
+  pub fn fromHeap(heap: Heap<T, P>, generation: usize) -> PriorityQueue<T, P> {
+    return PriorityQueue<T, P> {
+      heap: heap,
+      len: heap.len,
+      capacity: heap.capacity,
+      generation: generation,
+    }
+  }
+}

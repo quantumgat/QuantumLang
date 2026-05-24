@@ -1,0 +1,179 @@
+pub struct CheckedNumber<T> {
+  value: T,
+}
+
+pub struct SaturatingNumber<T> {
+  value: T,
+}
+
+pub struct WrappingNumber<T> {
+  value: T,
+}
+
+pub struct OverflowingNumber<T> {
+  value: T,
+}
+
+pub trait IntegerNumber<T> {
+  pub fn abs(self: T) -> T
+  pub fn min(self: T, right: T) -> T
+  pub fn max(self: T, right: T) -> T
+  pub fn clamp(self: T, low: T, high: T) -> T
+  pub fn gcd(self: T, right: T) -> T
+  pub fn lcm(self: T, right: T) -> T
+  pub fn pow(self: T, exponent: u64) -> T
+  pub fn powMod(self: T, exponent: T, modulus: T) -> Result<T, string>
+  pub fn modInv(self: T, modulus: T) -> Result<T, string>
+  pub fn bitCount(self: T) -> usize
+  pub fn leadingZeros(self: T) -> usize
+  pub fn trailingZeros(self: T) -> usize
+  pub fn rotateLeft(self: T, amount: usize) -> T
+  pub fn rotateRight(self: T, amount: usize) -> T
+  pub fn checked(self: T) -> CheckedNumber<T>
+  pub fn saturating(self: T) -> SaturatingNumber<T>
+  pub fn wrapping(self: T) -> WrappingNumber<T>
+  pub fn overflowing(self: T) -> OverflowingNumber<T>
+}
+
+pub trait FloatNumber<T> {
+  pub fn abs(self: T) -> T
+  pub fn min(self: T, right: T) -> T
+  pub fn max(self: T, right: T) -> T
+  pub fn clamp(self: T, low: T, high: T) -> T
+  pub fn sqrt(self: T) -> T
+  pub fn cbrt(self: T) -> T
+  pub fn exp(self: T) -> T
+  pub fn exp2(self: T) -> T
+  pub fn ln(self: T) -> T
+  pub fn log(self: T, base: T) -> T
+  pub fn log2(self: T) -> T
+  pub fn log10(self: T) -> T
+  pub fn pow(self: T, exponent: T) -> T
+  pub fn sin(self: T) -> T
+  pub fn cos(self: T) -> T
+  pub fn tan(self: T) -> T
+  pub fn asin(self: T) -> T
+  pub fn acos(self: T) -> T
+  pub fn atan(self: T) -> T
+  pub fn atan2(self: T, x: T) -> T
+  pub fn floor(self: T) -> T
+  pub fn ceil(self: T) -> T
+  pub fn round(self: T) -> T
+  pub fn trunc(self: T) -> T
+  pub fn fract(self: T) -> T
+  pub fn isNaN(self: T) -> bool
+  pub fn isInf(self: T) -> bool
+  pub fn isFinite(self: T) -> bool
+}
+
+pub trait CheckedNumberOps<T> {
+  pub fn add(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn sub(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn mul(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn div(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn rem(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn value(self: CheckedNumber<T>) -> T
+}
+
+pub trait SaturatingNumberOps<T> {
+  pub fn add(self: SaturatingNumber<T>, right: T) -> T
+  pub fn sub(self: SaturatingNumber<T>, right: T) -> T
+  pub fn mul(self: SaturatingNumber<T>, right: T) -> T
+  pub fn value(self: SaturatingNumber<T>) -> T
+}
+
+pub trait WrappingNumberOps<T> {
+  pub fn add(self: WrappingNumber<T>, right: T) -> T
+  pub fn sub(self: WrappingNumber<T>, right: T) -> T
+  pub fn mul(self: WrappingNumber<T>, right: T) -> T
+  pub fn value(self: WrappingNumber<T>) -> T
+}
+
+pub trait OverflowingNumberOps<T> {
+  pub fn add(self: OverflowingNumber<T>, right: T) -> (T, bool)
+  pub fn sub(self: OverflowingNumber<T>, right: T) -> (T, bool)
+  pub fn mul(self: OverflowingNumber<T>, right: T) -> (T, bool)
+  pub fn value(self: OverflowingNumber<T>) -> T
+}
+
+extend<T: IntegerNumber<T>> T {
+  pub fn abs(self: T) -> T
+  pub fn min(self: T, right: T) -> T
+  pub fn max(self: T, right: T) -> T
+  pub fn clamp(self: T, low: T, high: T) -> T
+  pub fn gcd(self: T, right: T) -> T
+  pub fn lcm(self: T, right: T) -> T
+  pub fn pow(self: T, exponent: u64) -> T
+  pub fn powMod(self: T, exponent: T, modulus: T) -> Result<T, string>
+  pub fn modInv(self: T, modulus: T) -> Result<T, string>
+  pub fn bitCount(self: T) -> usize
+  pub fn leadingZeros(self: T) -> usize
+  pub fn trailingZeros(self: T) -> usize
+  pub fn rotateLeft(self: T, amount: usize) -> T
+  pub fn rotateRight(self: T, amount: usize) -> T
+  pub fn checked(self: T) -> CheckedNumber<T>
+  pub fn saturating(self: T) -> SaturatingNumber<T>
+  pub fn wrapping(self: T) -> WrappingNumber<T>
+  pub fn overflowing(self: T) -> OverflowingNumber<T>
+}
+
+extend<T: FloatNumber<T>> T {
+  pub fn abs(self: T) -> T
+  pub fn min(self: T, right: T) -> T
+  pub fn max(self: T, right: T) -> T
+  pub fn clamp(self: T, low: T, high: T) -> T
+  pub fn sqrt(self: T) -> T
+  pub fn cbrt(self: T) -> T
+  pub fn exp(self: T) -> T
+  pub fn exp2(self: T) -> T
+  pub fn ln(self: T) -> T
+  pub fn log(self: T, base: T) -> T
+  pub fn log2(self: T) -> T
+  pub fn log10(self: T) -> T
+  pub fn pow(self: T, exponent: T) -> T
+  pub fn sin(self: T) -> T
+  pub fn cos(self: T) -> T
+  pub fn tan(self: T) -> T
+  pub fn asin(self: T) -> T
+  pub fn acos(self: T) -> T
+  pub fn atan(self: T) -> T
+  pub fn atan2(self: T, x: T) -> T
+  pub fn floor(self: T) -> T
+  pub fn ceil(self: T) -> T
+  pub fn round(self: T) -> T
+  pub fn trunc(self: T) -> T
+  pub fn fract(self: T) -> T
+  pub fn isNaN(self: T) -> bool
+  pub fn isInf(self: T) -> bool
+  pub fn isFinite(self: T) -> bool
+}
+
+extend<T: CheckedNumberOps<T>> CheckedNumber<T> {
+  pub fn add(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn sub(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn mul(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn div(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn rem(self: CheckedNumber<T>, right: T) -> Result<T, string>
+  pub fn value(self: CheckedNumber<T>) -> T
+}
+
+extend<T: SaturatingNumberOps<T>> SaturatingNumber<T> {
+  pub fn add(self: SaturatingNumber<T>, right: T) -> T
+  pub fn sub(self: SaturatingNumber<T>, right: T) -> T
+  pub fn mul(self: SaturatingNumber<T>, right: T) -> T
+  pub fn value(self: SaturatingNumber<T>) -> T
+}
+
+extend<T: WrappingNumberOps<T>> WrappingNumber<T> {
+  pub fn add(self: WrappingNumber<T>, right: T) -> T
+  pub fn sub(self: WrappingNumber<T>, right: T) -> T
+  pub fn mul(self: WrappingNumber<T>, right: T) -> T
+  pub fn value(self: WrappingNumber<T>) -> T
+}
+
+extend<T: OverflowingNumberOps<T>> OverflowingNumber<T> {
+  pub fn add(self: OverflowingNumber<T>, right: T) -> (T, bool)
+  pub fn sub(self: OverflowingNumber<T>, right: T) -> (T, bool)
+  pub fn mul(self: OverflowingNumber<T>, right: T) -> (T, bool)
+  pub fn value(self: OverflowingNumber<T>) -> T
+}

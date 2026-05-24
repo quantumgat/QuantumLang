@@ -1,0 +1,31 @@
+pub enum MirSmartPointerOpKind {
+  BoxAlloc,
+  BoxDrop,
+  SharedAlloc,
+  SharedClone,
+  SharedRelease,
+  WeakCreate,
+  WeakUpgrade,
+  PinBorrow,
+  UniqueAlloc,
+  PinnedAlloc,
+  CapabilityBorrow,
+}
+
+pub struct MirSmartPointerOp {
+  instruction: u64,
+  kind: MirSmartPointerOpKind,
+  typeName: string,
+  runtimeCallRequired: bool,
+  wrapperErasureEligible: bool,
+  ownershipFactAccepted: bool,
+}
+
+impl MirSmartPointerOp {
+  pub fn accepted(self: MirSmartPointerOp) -> bool {
+    return self.instruction > 0
+      && self.typeName != ""
+      && (self.runtimeCallRequired || self.wrapperErasureEligible)
+      && self.ownershipFactAccepted
+  }
+}

@@ -1,0 +1,341 @@
+pub struct Decimal {
+  scale: i32,
+}
+
+pub struct Decimal64 {
+  scale: i32,
+}
+
+pub struct Decimal128 {
+  scale: i32,
+}
+
+pub struct Decimal256 {
+  scale: i32,
+}
+
+pub struct CheckedDec<T> {
+  value: T,
+}
+
+pub struct SaturatingDec<T> {
+  value: T,
+}
+
+pub struct TrappingDec<T> {
+  value: T,
+}
+
+pub struct ExactDec<T> {
+  value: T,
+}
+
+pub struct Currency {
+  code: string,
+}
+
+pub struct DecimalAuditRecord {
+  value: decimal,
+  formatted: string,
+  context: DecimalContext,
+  status: DecimalStatus,
+}
+
+impl Decimal {
+  pub fn fromStringLiteral(value: string) -> Result<Decimal, string>
+  pub fn fromDecimalLiteral(value: decimal) -> Decimal
+  pub fn parse(text: string) -> Result<decimal, DecimalError>
+  pub fn parse(text: string, context: DecimalContext) -> Result<decimal, DecimalError>
+  pub fn parse<T>(text: string) -> Result<T, DecimalError>
+  pub fn parse<T>(text: string, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn tryParse(text: string) -> Option<decimal>
+  pub fn tryParse<T>(text: string) -> Option<T>
+  pub fn fromBigInt(value: BigInt, scale: i32) -> decimal
+  pub fn fromBigUint(value: BigUint, scale: i32) -> decimal
+  pub fn fromF32(value: f32) -> Result<decimal, DecimalError>
+  pub fn fromF32(value: f32, context: DecimalContext) -> Result<decimal, DecimalError>
+  pub fn fromF64(value: f64) -> Result<decimal, DecimalError>
+  pub fn fromF64(value: f64, context: DecimalContext) -> Result<decimal, DecimalError>
+  pub fn fromF128(value: f128) -> Result<decimal, DecimalError>
+  pub fn fromF128(value: f128, context: DecimalContext) -> Result<decimal, DecimalError>
+
+  pub fn scaleOf(self: Decimal) -> i32 {
+    return self.scale
+  }
+}
+
+impl Currency {
+  pub fn minorUnits(code: string) -> Result<i32, DecimalError>
+}
+
+impl DecimalAuditRecord {
+  pub fn isExact(self: DecimalAuditRecord) -> bool {
+    return self.status.isOk()
+  }
+}
+
+pub trait DecimalNumber<T> {
+  pub fn abs(self: T) -> T
+  pub fn neg(self: T) -> T
+  pub fn add(self: T, right: T) -> T
+  pub fn sub(self: T, right: T) -> T
+  pub fn mul(self: T, right: T) -> T
+  pub fn div(self: T, right: T) -> Result<T, DecimalError>
+  pub fn div(self: T, right: T, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn rem(self: T, right: T) -> Result<T, DecimalError>
+  pub fn sqrt(self: T) -> Result<T, DecimalError>
+  pub fn sqrt(self: T, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn pow(self: T, exponent: i32) -> Result<T, DecimalError>
+  pub fn pow(self: T, exponent: i32, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn round(self: T, scale: i32) -> Result<T, DecimalError>
+  pub fn round(self: T, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn quantize(self: T, scale: i32) -> Result<T, DecimalError>
+  pub fn quantize(self: T, scale: i32, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn rescale(self: T, scale: i32) -> Result<T, DecimalError>
+  pub fn normalize(self: T) -> T
+  pub fn scaleOf(self: T) -> i32
+  pub fn precisionOf(self: T) -> i32
+  pub fn floor(self: T) -> T
+  pub fn ceil(self: T) -> T
+  pub fn trunc(self: T) -> T
+  pub fn fract(self: T) -> T
+  pub fn format(self: T) -> string
+  pub fn format(self: T, format: DecimalFormat) -> string
+  pub fn compare(self: T, right: T) -> i32
+  pub fn min(self: T, right: T) -> T
+  pub fn max(self: T, right: T) -> T
+  pub fn clamp(self: T, low: T, high: T) -> T
+  pub fn toDecimal(self: T) -> decimal
+  pub fn toDec64(self: T) -> Result<dec64, DecimalError>
+  pub fn toDec128(self: T) -> Result<dec128, DecimalError>
+  pub fn toDec256(self: T) -> Result<dec256, DecimalError>
+  pub fn toI8(self: T) -> Result<i8, DecimalError>
+  pub fn toI16(self: T) -> Result<i16, DecimalError>
+  pub fn toI32(self: T) -> Result<i32, DecimalError>
+  pub fn toI64(self: T) -> Result<i64, DecimalError>
+  pub fn toI128(self: T) -> Result<i128, DecimalError>
+  pub fn toI256(self: T) -> Result<i256, DecimalError>
+  pub fn toU8(self: T) -> Result<u8, DecimalError>
+  pub fn toU16(self: T) -> Result<u16, DecimalError>
+  pub fn toU32(self: T) -> Result<u32, DecimalError>
+  pub fn toU64(self: T) -> Result<u64, DecimalError>
+  pub fn toU128(self: T) -> Result<u128, DecimalError>
+  pub fn toU256(self: T) -> Result<u256, DecimalError>
+  pub fn toIsize(self: T) -> Result<isize, DecimalError>
+  pub fn toUsize(self: T) -> Result<usize, DecimalError>
+  pub fn toF32(self: T) -> Result<f32, DecimalError>
+  pub fn toF64(self: T) -> Result<f64, DecimalError>
+  pub fn toF128(self: T) -> Result<f128, DecimalError>
+  pub fn toBigInt(self: T) -> Result<BigInt, DecimalError>
+  pub fn toBigUint(self: T) -> Result<BigUint, DecimalError>
+  pub fn percent(self: T) -> T
+  pub fn percent(self: T, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn basisPoints(self: T, bps: i32) -> T
+  pub fn basisPoints(self: T, bps: i32, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn money(self: T, currency: string) -> Result<T, DecimalError>
+  pub fn formatMoney(self: T, currency: string) -> string
+  pub fn audit(self: T, context: DecimalContext) -> DecimalAuditRecord
+  pub fn auditFormat(self: T) -> string
+  pub fn auditFormat(self: T, context: DecimalContext) -> string
+  pub fn checked(self: T) -> CheckedDec<T>
+  pub fn saturating(self: T) -> SaturatingDec<T>
+  pub fn trapping(self: T) -> TrappingDec<T>
+  pub fn exact(self: T) -> ExactDec<T>
+}
+
+pub trait CheckedDecOps<T> {
+  pub fn add(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn sub(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn mul(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn div(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn rem(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn pow(self: CheckedDec<T>, exponent: i32) -> Result<T, DecimalError>
+  pub fn rescale(self: CheckedDec<T>, scale: i32) -> Result<T, DecimalError>
+  pub fn quantize(self: CheckedDec<T>, scale: i32) -> Result<T, DecimalError>
+  pub fn sqrt(self: CheckedDec<T>) -> Result<T, DecimalError>
+  pub fn value(self: CheckedDec<T>) -> T
+}
+
+pub trait SaturatingDecOps<T> {
+  pub fn add(self: SaturatingDec<T>, right: T) -> T
+  pub fn sub(self: SaturatingDec<T>, right: T) -> T
+  pub fn mul(self: SaturatingDec<T>, right: T) -> T
+  pub fn quantize(self: SaturatingDec<T>, scale: i32) -> T
+  pub fn value(self: SaturatingDec<T>) -> T
+}
+
+pub trait TrappingDecOps<T> {
+  pub fn div(self: TrappingDec<T>, right: T) -> T
+  pub fn sqrt(self: TrappingDec<T>) -> T
+  pub fn value(self: TrappingDec<T>) -> T
+}
+
+pub trait ExactDecOps<T> {
+  pub fn add(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn sub(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn mul(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn div(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn rem(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn rescale(self: ExactDec<T>, scale: i32) -> Result<T, DecimalError>
+  pub fn quantize(self: ExactDec<T>, scale: i32) -> Result<T, DecimalError>
+  pub fn value(self: ExactDec<T>) -> T
+}
+
+pub trait FixedDecimalNumber<I, SCALE> {
+  pub fn checked(self: fixed<I, SCALE>) -> CheckedDec<fixed<I, SCALE>>
+  pub fn exact(self: fixed<I, SCALE>) -> ExactDec<fixed<I, SCALE>>
+  pub fn round(self: fixed<I, SCALE>, rounding: DecimalRounding) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn quantize(self: fixed<I, SCALE>, scale: i32) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn rescale<TO>(self: fixed<I, SCALE>) -> Result<fixed<I, TO>, DecimalError>
+}
+
+pub trait FixedCheckedDecOps<I, SCALE> {
+  pub fn add(self: CheckedDec<fixed<I, SCALE>>, right: fixed<I, SCALE>) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn sub(self: CheckedDec<fixed<I, SCALE>>, right: fixed<I, SCALE>) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn mul<RIGHT_SCALE, OUT_SCALE>(self: CheckedDec<fixed<I, SCALE>>, right: fixed<I, RIGHT_SCALE>) -> Result<fixed<I, OUT_SCALE>, DecimalError>
+  pub fn div<RIGHT_SCALE, OUT_SCALE>(self: CheckedDec<fixed<I, SCALE>>, right: fixed<I, RIGHT_SCALE>) -> Result<fixed<I, OUT_SCALE>, DecimalError>
+  pub fn rescale<TO>(self: CheckedDec<fixed<I, SCALE>>) -> Result<fixed<I, TO>, DecimalError>
+  pub fn value(self: CheckedDec<fixed<I, SCALE>>) -> fixed<I, SCALE>
+}
+
+pub trait FixedExactDecOps<I, SCALE> {
+  pub fn add(self: ExactDec<fixed<I, SCALE>>, right: fixed<I, SCALE>) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn sub(self: ExactDec<fixed<I, SCALE>>, right: fixed<I, SCALE>) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn mul<RIGHT_SCALE, OUT_SCALE>(self: ExactDec<fixed<I, SCALE>>, right: fixed<I, RIGHT_SCALE>) -> Result<fixed<I, OUT_SCALE>, DecimalError>
+  pub fn div<RIGHT_SCALE, OUT_SCALE>(self: ExactDec<fixed<I, SCALE>>, right: fixed<I, RIGHT_SCALE>) -> Result<fixed<I, OUT_SCALE>, DecimalError>
+  pub fn rescale<TO>(self: ExactDec<fixed<I, SCALE>>) -> Result<fixed<I, TO>, DecimalError>
+  pub fn value(self: ExactDec<fixed<I, SCALE>>) -> fixed<I, SCALE>
+}
+
+extend<T: DecimalNumber<T>> T {
+  pub fn abs(self: T) -> T
+  pub fn neg(self: T) -> T
+  pub fn add(self: T, right: T) -> T
+  pub fn sub(self: T, right: T) -> T
+  pub fn mul(self: T, right: T) -> T
+  pub fn div(self: T, right: T) -> Result<T, DecimalError>
+  pub fn div(self: T, right: T, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn rem(self: T, right: T) -> Result<T, DecimalError>
+  pub fn sqrt(self: T) -> Result<T, DecimalError>
+  pub fn sqrt(self: T, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn pow(self: T, exponent: i32) -> Result<T, DecimalError>
+  pub fn pow(self: T, exponent: i32, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn round(self: T, scale: i32) -> Result<T, DecimalError>
+  pub fn round(self: T, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn quantize(self: T, scale: i32) -> Result<T, DecimalError>
+  pub fn quantize(self: T, scale: i32, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn rescale(self: T, scale: i32) -> Result<T, DecimalError>
+  pub fn normalize(self: T) -> T
+  pub fn scaleOf(self: T) -> i32
+  pub fn precisionOf(self: T) -> i32
+  pub fn floor(self: T) -> T
+  pub fn ceil(self: T) -> T
+  pub fn trunc(self: T) -> T
+  pub fn fract(self: T) -> T
+  pub fn format(self: T) -> string
+  pub fn format(self: T, format: DecimalFormat) -> string
+  pub fn compare(self: T, right: T) -> i32
+  pub fn min(self: T, right: T) -> T
+  pub fn max(self: T, right: T) -> T
+  pub fn clamp(self: T, low: T, high: T) -> T
+  pub fn toDecimal(self: T) -> decimal
+  pub fn toDec64(self: T) -> Result<dec64, DecimalError>
+  pub fn toDec128(self: T) -> Result<dec128, DecimalError>
+  pub fn toDec256(self: T) -> Result<dec256, DecimalError>
+  pub fn toI8(self: T) -> Result<i8, DecimalError>
+  pub fn toI16(self: T) -> Result<i16, DecimalError>
+  pub fn toI32(self: T) -> Result<i32, DecimalError>
+  pub fn toI64(self: T) -> Result<i64, DecimalError>
+  pub fn toI128(self: T) -> Result<i128, DecimalError>
+  pub fn toI256(self: T) -> Result<i256, DecimalError>
+  pub fn toU8(self: T) -> Result<u8, DecimalError>
+  pub fn toU16(self: T) -> Result<u16, DecimalError>
+  pub fn toU32(self: T) -> Result<u32, DecimalError>
+  pub fn toU64(self: T) -> Result<u64, DecimalError>
+  pub fn toU128(self: T) -> Result<u128, DecimalError>
+  pub fn toU256(self: T) -> Result<u256, DecimalError>
+  pub fn toIsize(self: T) -> Result<isize, DecimalError>
+  pub fn toUsize(self: T) -> Result<usize, DecimalError>
+  pub fn toF32(self: T) -> Result<f32, DecimalError>
+  pub fn toF64(self: T) -> Result<f64, DecimalError>
+  pub fn toF128(self: T) -> Result<f128, DecimalError>
+  pub fn toBigInt(self: T) -> Result<BigInt, DecimalError>
+  pub fn toBigUint(self: T) -> Result<BigUint, DecimalError>
+  pub fn percent(self: T) -> T
+  pub fn percent(self: T, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn basisPoints(self: T, bps: i32) -> T
+  pub fn basisPoints(self: T, bps: i32, context: DecimalContext) -> Result<T, DecimalError>
+  pub fn money(self: T, currency: string) -> Result<T, DecimalError>
+  pub fn formatMoney(self: T, currency: string) -> string
+  pub fn audit(self: T, context: DecimalContext) -> DecimalAuditRecord
+  pub fn auditFormat(self: T) -> string
+  pub fn auditFormat(self: T, context: DecimalContext) -> string
+  pub fn checked(self: T) -> CheckedDec<T>
+  pub fn saturating(self: T) -> SaturatingDec<T>
+  pub fn trapping(self: T) -> TrappingDec<T>
+  pub fn exact(self: T) -> ExactDec<T>
+}
+
+extend<T: CheckedDecOps<T>> CheckedDec<T> {
+  pub fn add(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn sub(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn mul(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn div(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn rem(self: CheckedDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn pow(self: CheckedDec<T>, exponent: i32) -> Result<T, DecimalError>
+  pub fn rescale(self: CheckedDec<T>, scale: i32) -> Result<T, DecimalError>
+  pub fn quantize(self: CheckedDec<T>, scale: i32) -> Result<T, DecimalError>
+  pub fn sqrt(self: CheckedDec<T>) -> Result<T, DecimalError>
+  pub fn value(self: CheckedDec<T>) -> T
+}
+
+extend<T: SaturatingDecOps<T>> SaturatingDec<T> {
+  pub fn add(self: SaturatingDec<T>, right: T) -> T
+  pub fn sub(self: SaturatingDec<T>, right: T) -> T
+  pub fn mul(self: SaturatingDec<T>, right: T) -> T
+  pub fn quantize(self: SaturatingDec<T>, scale: i32) -> T
+  pub fn value(self: SaturatingDec<T>) -> T
+}
+
+extend<T: TrappingDecOps<T>> TrappingDec<T> {
+  pub fn div(self: TrappingDec<T>, right: T) -> T
+  pub fn sqrt(self: TrappingDec<T>) -> T
+  pub fn value(self: TrappingDec<T>) -> T
+}
+
+extend<T: ExactDecOps<T>> ExactDec<T> {
+  pub fn add(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn sub(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn mul(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn div(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn rem(self: ExactDec<T>, right: T) -> Result<T, DecimalError>
+  pub fn rescale(self: ExactDec<T>, scale: i32) -> Result<T, DecimalError>
+  pub fn quantize(self: ExactDec<T>, scale: i32) -> Result<T, DecimalError>
+  pub fn value(self: ExactDec<T>) -> T
+}
+
+extend<I, SCALE> fixed<I, SCALE> {
+  pub fn checked(self: fixed<I, SCALE>) -> CheckedDec<fixed<I, SCALE>>
+  pub fn exact(self: fixed<I, SCALE>) -> ExactDec<fixed<I, SCALE>>
+  pub fn round(self: fixed<I, SCALE>, rounding: DecimalRounding) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn quantize(self: fixed<I, SCALE>, scale: i32) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn rescale<TO>(self: fixed<I, SCALE>) -> Result<fixed<I, TO>, DecimalError>
+}
+
+extend<I, SCALE> CheckedDec<fixed<I, SCALE>> {
+  pub fn add(self: CheckedDec<fixed<I, SCALE>>, right: fixed<I, SCALE>) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn sub(self: CheckedDec<fixed<I, SCALE>>, right: fixed<I, SCALE>) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn mul<RIGHT_SCALE, OUT_SCALE>(self: CheckedDec<fixed<I, SCALE>>, right: fixed<I, RIGHT_SCALE>) -> Result<fixed<I, OUT_SCALE>, DecimalError>
+  pub fn div<RIGHT_SCALE, OUT_SCALE>(self: CheckedDec<fixed<I, SCALE>>, right: fixed<I, RIGHT_SCALE>) -> Result<fixed<I, OUT_SCALE>, DecimalError>
+  pub fn rescale<TO>(self: CheckedDec<fixed<I, SCALE>>) -> Result<fixed<I, TO>, DecimalError>
+  pub fn value(self: CheckedDec<fixed<I, SCALE>>) -> fixed<I, SCALE>
+}
+
+extend<I, SCALE> ExactDec<fixed<I, SCALE>> {
+  pub fn add(self: ExactDec<fixed<I, SCALE>>, right: fixed<I, SCALE>) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn sub(self: ExactDec<fixed<I, SCALE>>, right: fixed<I, SCALE>) -> Result<fixed<I, SCALE>, DecimalError>
+  pub fn mul<RIGHT_SCALE, OUT_SCALE>(self: ExactDec<fixed<I, SCALE>>, right: fixed<I, RIGHT_SCALE>) -> Result<fixed<I, OUT_SCALE>, DecimalError>
+  pub fn div<RIGHT_SCALE, OUT_SCALE>(self: ExactDec<fixed<I, SCALE>>, right: fixed<I, RIGHT_SCALE>) -> Result<fixed<I, OUT_SCALE>, DecimalError>
+  pub fn rescale<TO>(self: ExactDec<fixed<I, SCALE>>) -> Result<fixed<I, TO>, DecimalError>
+  pub fn value(self: ExactDec<fixed<I, SCALE>>) -> fixed<I, SCALE>
+}

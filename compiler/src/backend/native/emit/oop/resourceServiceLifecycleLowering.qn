@@ -1,0 +1,29 @@
+pub struct OopResourceServiceLifecycleNativeLowering {
+  mirOpId: u64,
+  ownerTypeName: string,
+  emitsDirectLifecycleCall: bool,
+  emitsDependencyOrder: bool,
+  emitsReadinessHealthCheck: bool,
+  emitsReconnectRetryState: bool,
+  emitsCancellationSafeShutdown: bool,
+  emitsGenerationCheck: bool,
+  emitsTypedFailurePath: bool,
+  noCoredumpFailure: bool,
+  sourceMapBound: bool,
+}
+
+impl OopResourceServiceLifecycleNativeLowering {
+  pub fn complete(self: OopResourceServiceLifecycleNativeLowering) -> bool {
+    return self.mirOpId > 0
+      && self.ownerTypeName != ""
+      && self.emitsDirectLifecycleCall
+      && self.emitsDependencyOrder
+      && self.emitsReadinessHealthCheck
+      && self.emitsReconnectRetryState
+      && self.emitsCancellationSafeShutdown
+      && self.emitsGenerationCheck
+      && self.emitsTypedFailurePath
+      && self.noCoredumpFailure
+      && self.sourceMapBound
+  }
+}

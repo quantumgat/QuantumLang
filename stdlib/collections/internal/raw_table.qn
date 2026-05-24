@@ -1,0 +1,279 @@
+pub enum RawBucketState {
+  Empty,
+  Full,
+  Tombstone,
+}
+
+pub struct RawBucket<K, V> {
+  key: Option<K>,
+  value: Option<V>,
+  hash: u64,
+  state: RawBucketState,
+}
+
+pub struct RawTable<K, V> {
+  buckets: Vec<RawBucket<K, V>>,
+  len: usize,
+  capacity: usize,
+  tombstones: usize,
+  maxLoadPercent: usize,
+  generation: usize,
+}
+
+pub struct RawInsertSlot {
+  index: usize,
+  found: bool,
+}
+
+fn rawOptionPayloadUnchecked<T>(value: Option<T>, message: string) -> T {
+  match value {
+    Some(payload) => {
+      return payload
+    }
+    None => {
+      return panic(message)
+    }
+  }
+}
+
+impl<K, V> RawBucket<K, V> {
+  pub fn empty() -> RawBucket<K, V> {
+    return RawBucket<K, V> {
+      key: None,
+      value: None,
+      hash: 0,
+      state: RawBucketState.Empty,
+    }
+  }
+
+  pub fn full(key: K, value: V, hash: u64) -> RawBucket<K, V> {
+    return RawBucket<K, V> {
+      key: Some(key),
+      value: Some(value),
+      hash: hash,
+      state: RawBucketState.Full,
+    }
+  }
+
+  pub fn tombstone(hash: u64) -> RawBucket<K, V> {
+    return RawBucket<K, V> {
+      key: None,
+      value: None,
+      hash: hash,
+      state: RawBucketState.Tombstone,
+    }
+  }
+
+  pub fn isFull(self: RawBucket<K, V>) -> bool {
+    return self.state == RawBucketState.Full
+  }
+
+  pub fn keyUnchecked(self: RawBucket<K, V>) -> K {
+    return rawOptionPayloadUnchecked(self.key, "empty hash bucket")
+  }
+
+  pub fn valueUnchecked(self: RawBucket<K, V>) -> V {
+    return rawOptionPayloadUnchecked(self.value, "empty hash bucket")
+  }
+
+  pub fn hasKey(self: RawBucket<K, V>, key: K, hash: u64) -> bool {
+    if self.state != RawBucketState.Full {
+      return false
+    }
+    if self.hash != hash {
+      return false
+    }
+    return self.keyUnchecked() == key
+  }
+}
+
+impl<K, V> RawTable<K, V> {
+  pub fn init() -> RawTable<K, V> requires(alloc) {
+    return RawTable<K, V>.withCapacity(16)
+  }
+
+  pub fn withCapacity(capacity: usize) -> RawTable<K, V> requires(alloc) {
+    let bucketCount = RawTable<K, V>.normalizeBucketCount(capacity)
+    let mut buckets = Vec<RawBucket<K, V>>.withCapacity(bucketCount)
+    let mut index: usize = 0
+    while index < bucketCount {
+      buckets = buckets.push(RawBucket<K, V>.empty())
+      index = index + 1
+    }
+    return RawTable<K, V> {
+      buckets: buckets,
+      len: 0,
+      capacity: bucketCount,
+      tombstones: 0,
+      maxLoadPercent: 75,
+      generation: 0,
+    }
+  }
+
+  pub fn normalizeBucketCount(capacity: usize) -> usize {
+    let mut count: usize = 16
+    let target = capacity * 2
+    while count < target {
+      count = count * 2
+    }
+    return count
+  }
+
+  pub fn canInsertWithoutGrow(self: RawTable<K, V>, additional: usize) -> bool {
+    if self.capacity == 0 {
+      return false
+    }
+    return (self.len + additional + self.tombstones) * 100 < self.capacity * self.maxLoadPercent
+  }
+
+  pub fn probeIndex(self: RawTable<K, V>, hash: u64, probe: usize) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (hash as usize + probe + probe * probe) % self.capacity
+  }
+
+  pub fn get(self: RawTable<K, V>, key: K, hash: u64) -> Option<V> {
+    let index = self.findExistingSlot(key, hash)
+    if index >= self.capacity {
+      return None
+    }
+    let bucket = self.buckets[index]
+    return Some(bucket.valueUnchecked())
+  }
+
+  pub fn containsKey(self: RawTable<K, V>, key: K, hash: u64) -> bool {
+    return self.findExistingSlot(key, hash) < self.capacity
+  }
+
+  pub fn put(self: RawTable<K, V>, key: K, value: V, hash: u64) -> (RawTable<K, V>, bool) requires(alloc) {
+    let slot = self.findInsertSlot(key, hash)
+    if slot.index >= self.capacity {
+      return panic("hash table insert without capacity")
+    }
+    if slot.found {
+      return (self.writeFull(slot.index, key, value, hash, false), true)
+    }
+    return (self.writeFull(slot.index, key, value, hash, true), false)
+  }
+
+  pub fn remove(self: RawTable<K, V>, key: K, hash: u64) -> (RawTable<K, V>, Option<V>) requires(alloc) {
+    let index = self.findExistingSlot(key, hash)
+    if index >= self.capacity {
+      return (self, None)
+    }
+    let bucket = self.buckets[index]
+    let value = bucket.valueUnchecked()
+    return (self.writeTombstone(index, hash), Some(value))
+  }
+
+  pub fn findExistingSlot(self: RawTable<K, V>, key: K, hash: u64) -> usize {
+    let mut probe: usize = 0
+    while probe < self.capacity {
+      let index = self.probeIndex(hash, probe)
+      let bucket = self.buckets[index]
+      if bucket.state == RawBucketState.Empty {
+        return self.capacity
+      }
+      if bucket.hasKey(key, hash) {
+        return index
+      }
+      probe = probe + 1
+    }
+    return self.capacity
+  }
+
+  pub fn findInsertSlot(self: RawTable<K, V>, key: K, hash: u64) -> RawInsertSlot {
+    let mut tombstoneIndex: usize = self.capacity
+    let mut hasTombstone: bool = false
+    let mut probe: usize = 0
+    while probe < self.capacity {
+      let index = self.probeIndex(hash, probe)
+      let bucket = self.buckets[index]
+      if bucket.hasKey(key, hash) {
+        return RawInsertSlot { index: index, found: true }
+      }
+      if bucket.state == RawBucketState.Tombstone && hasTombstone == false {
+        tombstoneIndex = index
+        hasTombstone = true
+      }
+      if bucket.state == RawBucketState.Empty {
+        if hasTombstone {
+          return RawInsertSlot { index: tombstoneIndex, found: false }
+        }
+        return RawInsertSlot { index: index, found: false }
+      }
+      probe = probe + 1
+    }
+    return RawInsertSlot { index: self.capacity, found: false }
+  }
+
+  pub fn writeFull(self: RawTable<K, V>, index: usize, key: K, value: V, hash: u64, inserted: bool) -> RawTable<K, V> requires(alloc) {
+    let previous = self.buckets[index]
+    let buckets = self.buckets.set(index, RawBucket<K, V>.full(key, value, hash))
+    let mut nextLen = self.len
+    let mut nextTombstones = self.tombstones
+    if inserted {
+      nextLen = self.len + 1
+      if previous.state == RawBucketState.Tombstone {
+        nextTombstones = self.tombstones - 1
+      }
+    }
+    return self.withBuckets(buckets, nextLen, nextTombstones)
+  }
+
+  pub fn writeTombstone(self: RawTable<K, V>, index: usize, hash: u64) -> RawTable<K, V> requires(alloc) {
+    let buckets = self.buckets.set(index, RawBucket<K, V>.tombstone(hash))
+    return self.withBuckets(buckets, self.len - 1, self.tombstones + 1)
+  }
+
+  pub fn withBuckets(self: RawTable<K, V>, buckets: Vec<RawBucket<K, V>>, len: usize, tombstones: usize) -> RawTable<K, V> {
+    return RawTable<K, V> {
+      buckets: buckets,
+      len: len,
+      capacity: self.capacity,
+      tombstones: tombstones,
+      maxLoadPercent: self.maxLoadPercent,
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn directCursorLimit(self: RawTable<K, V>) -> usize {
+    return self.capacity
+  }
+
+  pub fn directIsFullAt(self: RawTable<K, V>, index: usize) -> bool {
+    if index >= self.capacity {
+      return false
+    }
+    let bucket = self.buckets[index]
+    return bucket.state == RawBucketState.Full
+  }
+
+  pub fn directKeyAt(self: RawTable<K, V>, index: usize) -> K {
+    let bucket = self.buckets[index]
+    return bucket.keyUnchecked()
+  }
+
+  pub fn directValueAt(self: RawTable<K, V>, index: usize) -> V {
+    let bucket = self.buckets[index]
+    return bucket.valueUnchecked()
+  }
+
+  pub fn directHashAt(self: RawTable<K, V>, index: usize) -> u64 {
+    let bucket = self.buckets[index]
+    return bucket.hash
+  }
+
+  pub fn markInserted(self: RawTable<K, V>) -> RawTable<K, V> {
+    return self.withBuckets(self.buckets, self.len + 1, self.tombstones)
+  }
+
+  pub fn markUpdated(self: RawTable<K, V>) -> RawTable<K, V> {
+    return self.withBuckets(self.buckets, self.len, self.tombstones)
+  }
+
+  pub fn markRemoved(self: RawTable<K, V>) -> RawTable<K, V> {
+    return self.withBuckets(self.buckets, self.len - 1, self.tombstones + 1)
+  }
+}

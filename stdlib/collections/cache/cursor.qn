@@ -1,0 +1,83 @@
+pub struct CacheCursor<K, V> {
+  cache: Cache<K, V>,
+  order: LinkedListIter<CacheOrderKey<K>>,
+  generation: usize,
+}
+
+impl<K, V> CacheCursor<K, V> {
+  pub fn fromCache(cache: Cache<K, V>) -> CacheCursor<K, V> {
+    return CacheCursor<K, V> {
+      cache: cache,
+      order: cache.order.iter(),
+      generation: cache.generation,
+    }.seekLive()
+  }
+
+  pub fn hasNext(self: CacheCursor<K, V>) -> bool {
+    return !self.order.isEmpty()
+  }
+
+  pub fn orderKeyUnchecked(self: CacheCursor<K, V>) -> CacheOrderKey<K> {
+    return cacheOptionPayloadUnchecked(self.order.next(), "Cache cursor missing order key")
+  }
+
+  pub fn entryRecordUnchecked(self: CacheCursor<K, V>) -> CacheEntry<K, V> {
+    let orderKey = self.orderKeyUnchecked()
+    return cacheOptionPayloadUnchecked(self.cache.entries.get(orderKey.key), "Cache cursor missing entry")
+  }
+
+  pub fn entryUnchecked(self: CacheCursor<K, V>) -> (K, V) {
+    let entry = self.entryRecordUnchecked()
+    return (entry.key, entry.value)
+  }
+
+  pub fn valueUnchecked(self: CacheCursor<K, V>) -> V {
+    return self.entryRecordUnchecked().value
+  }
+
+  pub fn next(self: CacheCursor<K, V>) -> CacheCursor<K, V> {
+    return CacheCursor<K, V> {
+      cache: self.cache,
+      order: self.order.advance(),
+      generation: self.generation,
+    }.seekLive()
+  }
+
+  pub fn seekLive(self: CacheCursor<K, V>) -> CacheCursor<K, V> {
+    let mut order = self.order
+    while !order.isEmpty() {
+      let orderKey = cacheOptionPayloadUnchecked(order.next(), "Cache cursor missing order key")
+      let entry = self.cache.entries.get(orderKey.key)
+      match entry {
+        Some(found) => {
+          if found.generation == orderKey.generation {
+            return CacheCursor<K, V> {
+              cache: self.cache,
+              order: order,
+              generation: self.generation,
+            }
+          }
+        }
+        None => {
+        }
+      }
+      order = order.advance()
+    }
+    return CacheCursor<K, V> {
+      cache: self.cache,
+      order: order,
+      generation: self.generation,
+    }
+  }
+}
+
+fn cacheOptionPayloadUnchecked<T>(value: Option<T>, message: string) -> T {
+  match value {
+    Some(payload) => {
+      return payload
+    }
+    None => {
+      return panic(message)
+    }
+  }
+}

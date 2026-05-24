@@ -1,0 +1,3 @@
+pub fn targetNativeProofOwner() -> string {
+  return "qtlc/qtlang/test/proof/backend/native/target"
+}

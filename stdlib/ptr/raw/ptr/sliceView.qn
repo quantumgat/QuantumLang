@@ -1,0 +1,139 @@
+impl<T> Ptr<T> {
+  /**
+    Creates an immutable pointer slice from this raw pointer and length.
+
+    example:
+      let users = ptr.slice(count)?
+
+    advanced:
+      unsafe {
+        let users = ptr.asSlice(count)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: requires non-null readable storage for len elements
+    stability: public since 0.1
+  */
+  pub fn asSlice(self: Ptr<T>, len: usize) -> Slice<T> requires(unsafe) {
+    return Slice<T>.fromPtr(self.requireNonNull(), len)
+  }
+
+  /**
+    Creates a mutable pointer slice from this raw pointer and length.
+
+    example:
+      let users = ptr.mutSlice(count)?
+
+    advanced:
+      unsafe {
+        let users = ptr.asMutSlice(count)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: requires exclusive writable storage for len elements
+    stability: public since 0.1
+  */
+  pub fn asMutSlice(self: Ptr<T>, len: usize) -> MutSlice<T> requires(unsafe) {
+    return MutSlice<T>.fromPtr(self.requireNonNull(), len)
+  }
+
+  /**
+    Creates a raw span from this pointer and length.
+
+    example:
+      let slice = ptr.slice(count)?
+
+    advanced:
+      unsafe {
+        let span = ptr.asSpan(count)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: span construction is unsafe; checked conversion validates access
+    stability: public since 0.1
+  */
+  pub fn asSpan(self: Ptr<T>, len: usize) -> Span<T> requires(unsafe) {
+    return Span<T>.fromPtr(self, len)
+  }
+
+  /**
+    Checks readable access and returns an immutable slice.
+
+    example:
+      let users = ptr.slice(count)?
+      if users.isEmpty() { return }
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: validates readable range before constructing Slice<T>
+    stability: public since 0.1
+  */
+  pub fn slice(self: Ptr<T>, len: usize) -> Result<Slice<T>, PtrError> {
+    return self.checkSlice(len)
+  }
+
+  /**
+    Checks writable access and returns a mutable slice.
+
+    example:
+      let users = ptr.mutSlice(count)?
+      users.set(0, user)?
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: validates exclusive writable range before constructing MutSlice<T>
+    stability: public since 0.1
+  */
+  pub fn mutSlice(self: Ptr<T>, len: usize) -> Result<MutSlice<T>, PtrError> {
+    return self.checkMutSlice(len)
+  }
+
+  /**
+    Checks readable access and returns an immutable slice.
+
+    example:
+      let values = ptr.slice(count)?.toVec()
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: validates readable range before constructing Slice<T>
+    stability: public since 0.1
+  */
+  pub fn checkSlice(self: Ptr<T>, len: usize) -> Result<Slice<T>, PtrError> {
+    let ptr = self.checkReadable(len)?
+    let nonNull = ptr.checkNonNull()?
+    return Ok(Slice<T>.fromPtr(nonNull, len))
+  }
+
+  /**
+    Checks writable access and returns a mutable slice.
+
+    example:
+      let slice = ptr.mutSlice(count)?
+      slice.fill(defaultUser)
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: validates exclusive writable range before constructing MutSlice<T>
+    stability: public since 0.1
+  */
+  pub fn checkMutSlice(self: Ptr<T>, len: usize) -> Result<MutSlice<T>, PtrError> {
+    let ptr = self.checkWritable(len)?
+    let nonNull = ptr.checkNonNull()?
+    return Ok(MutSlice<T>.fromPtr(nonNull, len))
+  }
+
+  fn requireNonNull(self: Ptr<T>) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self, "null pointer cannot create slice view")
+  }
+}

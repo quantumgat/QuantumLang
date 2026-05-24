@@ -1,0 +1,19 @@
+pub struct AtomicWaitDiagnostic {
+  code: string,
+  hasRange: bool,
+  blocksUnsafePark: bool,
+}
+
+impl AtomicWaitDiagnostic {
+  pub fn init(code: string, hasRange: bool, blocksUnsafePark: bool) -> AtomicWaitDiagnostic {
+    return AtomicWaitDiagnostic {
+      code: code,
+      hasRange: hasRange,
+      blocksUnsafePark: blocksUnsafePark,
+    }
+  }
+
+  pub fn reportable(self: AtomicWaitDiagnostic) -> bool {
+    return self.code != "" && self.hasRange && self.blocksUnsafePark
+  }
+}

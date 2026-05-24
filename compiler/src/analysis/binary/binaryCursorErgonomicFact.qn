@@ -1,0 +1,19 @@
+pub struct BinaryCursorErgonomicFact {
+  node: u64,
+  shortAliasesAccepted: bool,
+  linearCursorStateRewrite: bool,
+  tupleCursorStyleKept: bool,
+  boundsDiagnosticAccepted: bool,
+  noAllocation: bool,
+}
+
+impl BinaryCursorErgonomicFact {
+  pub fn accepted(self: BinaryCursorErgonomicFact) -> bool {
+    return self.node > 0
+      && self.shortAliasesAccepted
+      && self.linearCursorStateRewrite
+      && self.tupleCursorStyleKept
+      && self.boundsDiagnosticAccepted
+      && self.noAllocation
+  }
+}

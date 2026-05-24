@@ -1,0 +1,19 @@
+pub struct ForeignClassKindPolicyFact {
+  ownerId: u64,
+  ffiAbiBound: bool,
+  ownershipPolicyBound: bool,
+  noUnwindBound: bool,
+  finalizerBound: bool,
+  sourceMapBound: bool,
+}
+
+impl ForeignClassKindPolicyFact {
+  pub fn complete(self: ForeignClassKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.ffiAbiBound
+      && self.ownershipPolicyBound
+      && self.noUnwindBound
+      && self.finalizerBound
+      && self.sourceMapBound
+  }
+}

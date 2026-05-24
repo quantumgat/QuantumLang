@@ -1,0 +1,23 @@
+pub enum PrintErrorKind {
+  StdoutUnavailable,
+  StderrUnavailable,
+  PartialWrite,
+  FlushFailed,
+  FormattingFailed,
+  UnprintableValue,
+  UnsafeValueRejected,
+  SecretRedacted,
+}
+
+pub struct PrintError {
+  kind: PrintErrorKind,
+  bytesWritten: usize,
+  message: string,
+}
+
+impl PrintError {
+  pub fn retryable(self: PrintError) -> bool {
+    return self.kind == PrintErrorKind.PartialWrite
+      || self.kind == PrintErrorKind.FlushFailed
+  }
+}

@@ -1,0 +1,22 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpResponse {
+  status: HttpStatus
+  headers: HttpHeaderMap
+  body: HttpBody
+}
+pub struct Response {
+}
+pub enum ResponseStatus {
+  Ok,
+  Created,
+  Accepted,
+  NoContent,
+  BadRequest,
+  Unauthorized,
+  Forbidden,
+  NotFound,
+  Conflict,
+  TooManyRequests,
+  Internal,
+  Unavailable,
+}

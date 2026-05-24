@@ -1,0 +1,19 @@
+pub struct SimdMaskFact {
+  laneCount: usize,
+  maskLanes: usize,
+  valid: bool,
+}
+
+impl SimdMaskFact {
+  pub fn init(laneCount: usize, maskLanes: usize, valid: bool) -> SimdMaskFact {
+    return SimdMaskFact {
+      laneCount: laneCount,
+      maskLanes: maskLanes,
+      valid: valid,
+    }
+  }
+
+  pub fn accepted(self: SimdMaskFact) -> bool {
+    return self.valid && self.laneCount == self.maskLanes
+  }
+}

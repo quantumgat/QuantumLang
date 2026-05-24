@@ -1,0 +1,52 @@
+pub enum OopAsyncMethodOwnerKind {
+  ClassOwner
+  InterfaceOwner
+  TraitOwner
+  ImplOwner
+  ServiceOwner
+  ActorOwner
+}
+
+pub enum OopAsyncMethodDiagnosticKind {
+  None
+  AsyncDropRejected
+  AwaitedCleanupRequiresShutdown
+  DynAsyncRequiresAdapter
+  ImplAsyncMismatch
+  ReceiverBorrowAcrossAwait
+}
+
+pub struct OopAsyncMethodSyntax {
+  ownerKind: OopAsyncMethodOwnerKind,
+  methodName: string,
+  asyncModifier: bool,
+  fnKeyword: bool,
+  receiverPresent: bool,
+  awaitCount: usize,
+  resultReturnRequired: bool,
+  sourceMapBound: bool,
+  diagnostic: OopAsyncMethodDiagnosticKind,
+}
+
+impl OopAsyncMethodSyntax {
+  pub fn parsed(self: OopAsyncMethodSyntax) -> bool {
+    return self.methodName != ""
+      && self.asyncModifier
+      && self.fnKeyword
+      && self.sourceMapBound
+      && self.diagnostic == OopAsyncMethodDiagnosticKind.None
+  }
+
+  pub fn legalLifecycleAsync(self: OopAsyncMethodSyntax) -> bool {
+    return self.methodName == "shutdown" || self.methodName == "close"
+  }
+
+  pub fn rejectsIllegalAsyncDrop(self: OopAsyncMethodSyntax) -> bool {
+    return self.methodName != "drop"
+      || self.diagnostic == OopAsyncMethodDiagnosticKind.AsyncDropRejected
+  }
+
+  pub fn requiresAwaitedCleanupContract(self: OopAsyncMethodSyntax) -> bool {
+    return self.awaitCount > 0 && self.resultReturnRequired && self.legalLifecycleAsync()
+  }
+}

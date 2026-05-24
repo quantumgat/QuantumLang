@@ -1,0 +1,14 @@
+pub struct StaticLayoutAssertion {
+  name: string,
+  expectedSize: usize,
+  expectedAlignment: usize,
+  actualSize: usize,
+  actualAlignment: usize,
+}
+
+impl StaticLayoutAssertion {
+  pub fn passes(self: StaticLayoutAssertion) -> bool {
+    return self.expectedSize == self.actualSize
+      && self.expectedAlignment == self.actualAlignment
+  }
+}

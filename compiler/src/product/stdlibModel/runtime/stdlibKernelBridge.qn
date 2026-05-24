@@ -1,0 +1,11 @@
+pub struct StdlibKernelBridge {
+  familyName: string,
+  kernelName: string,
+  runtimeOwned: bool,
+}
+
+impl StdlibKernelBridge {
+  pub fn accepted(self: StdlibKernelBridge) -> bool {
+    return self.familyName != "" && self.kernelName != "" && self.runtimeOwned
+  }
+}

@@ -1,0 +1,6 @@
+[module]
+name = "ptr.own"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "owning-smart-pointer"

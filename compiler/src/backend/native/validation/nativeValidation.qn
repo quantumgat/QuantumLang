@@ -1,0 +1,35 @@
+pub enum NativeValidationKind {
+  LoweringInvariant,
+  HotPathInvariant,
+  TargetInvariant,
+  FallbackPolicy,
+}
+
+pub struct NativeValidation {
+  kind: NativeValidationKind,
+  subject: string,
+  diagnosticBeforeArtifact: bool,
+  productOwned: bool,
+}
+
+pub fn nativeValidation(
+  kind: NativeValidationKind,
+  subject: string,
+  diagnosticBeforeArtifact: bool,
+  productOwned: bool,
+) -> NativeValidation {
+  return NativeValidation {
+    kind: kind,
+    subject: subject,
+    diagnosticBeforeArtifact: diagnosticBeforeArtifact,
+    productOwned: productOwned,
+  }
+}
+
+impl NativeValidation {
+  pub fn accepted(self: NativeValidation) -> bool {
+    return self.subject != ""
+      && self.diagnosticBeforeArtifact
+      && self.productOwned
+  }
+}

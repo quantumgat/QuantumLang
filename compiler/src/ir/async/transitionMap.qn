@@ -1,0 +1,36 @@
+pub enum AsyncTransitionKind {
+  Enter
+  Poll
+  Suspend
+  Resume
+  Complete
+  Cancel
+  PanicCleanup
+}
+
+pub struct AsyncTransitionMap {
+  transitionId: u64,
+  kind: AsyncTransitionKind,
+  fromState: usize,
+  toState: usize,
+  sourceMapId: u64,
+  cleanupEdgeId: u64,
+  runtimeCallReady: bool,
+}
+
+impl AsyncTransitionMap {
+  pub fn valid(self: AsyncTransitionMap) -> bool {
+    return self.transitionId > 0
+      && self.sourceMapId > 0
+      && self.runtimeCallReady
+  }
+
+  pub fn preservesCleanup(self: AsyncTransitionMap) -> bool {
+    if self.kind == AsyncTransitionKind.Suspend
+      || self.kind == AsyncTransitionKind.Cancel
+      || self.kind == AsyncTransitionKind.PanicCleanup {
+      return self.cleanupEdgeId > 0
+    }
+    return true
+  }
+}

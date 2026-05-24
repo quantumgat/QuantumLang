@@ -1,0 +1,6 @@
+[module]
+name = "test.proof.binary"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "binary-proof-layout"

@@ -1,0 +1,30 @@
+pub enum AstLiteralRangeFormKind {
+  VecLiteral
+  EmptyVecLiteral
+  MapLiteral
+  RecordLiteral
+  TupleLiteral
+  RangeExclusive
+  RangeInclusive
+  RangeOpenStart
+  RangeOpenEnd
+  TypedEmptyLiteral
+  UnionLiteralInference
+}
+
+pub struct AstLiteralRangeForm {
+  node: AstNode,
+  kind: AstLiteralRangeFormKind,
+  elementCount: usize,
+  typeHintId: u64,
+  inferredTypeId: u64,
+  sourceRangeReady: bool,
+}
+
+impl AstLiteralRangeForm {
+  pub fn complete(self: AstLiteralRangeForm) -> bool {
+    return self.node.nodeId() > 0
+      && self.sourceRangeReady
+      && self.inferredTypeId > 0
+  }
+}

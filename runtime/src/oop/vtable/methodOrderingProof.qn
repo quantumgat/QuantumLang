@@ -1,0 +1,23 @@
+pub struct MethodOrderingProof {
+  tableSymbolId: u64,
+  methodCount: usize,
+  contiguousOrder: bool,
+  stableSourceOrder: bool,
+  duplicateSlots: usize,
+}
+
+pub fn methodOrderingProof(tableSymbolId: u64, methodCount: usize, contiguousOrder: bool, stableSourceOrder: bool, duplicateSlots: usize) -> MethodOrderingProof {
+  return MethodOrderingProof {
+    tableSymbolId: tableSymbolId,
+    methodCount: methodCount,
+    contiguousOrder: contiguousOrder,
+    stableSourceOrder: stableSourceOrder,
+    duplicateSlots: duplicateSlots,
+  }
+}
+
+impl MethodOrderingProof {
+  pub fn passes(self: MethodOrderingProof) -> bool {
+    return self.tableSymbolId > 0 && self.methodCount > 0 && self.contiguousOrder && self.stableSourceOrder && self.duplicateSlots == 0
+  }
+}

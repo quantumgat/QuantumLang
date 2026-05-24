@@ -1,0 +1,3 @@
+pub mod finalClassRuntimeContract
+
+pub use finalClassRuntimeContract.FinalClassRuntimeContract

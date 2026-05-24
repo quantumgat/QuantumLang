@@ -1,0 +1,35 @@
+pub enum Ordering {
+  Less,
+  Equal,
+  Greater,
+}
+
+pub struct Comparator<T> {
+  stable: bool,
+}
+
+pub trait Ord<T> {
+  pub fn compare(self: T, other: T) -> Ordering
+}
+
+impl<T> Comparator<T> {
+  pub fn init() -> Comparator<T> {
+    return Comparator<T> {
+      stable: true,
+    }
+  }
+
+  pub fn compare(self: Comparator<T>, left: T, right: T) -> Ordering {
+    if left < right {
+      return Ordering.Less
+    }
+    if left > right {
+      return Ordering.Greater
+    }
+    return Ordering.Equal
+  }
+
+  pub fn less(self: Comparator<T>, left: T, right: T) -> bool {
+    return self.compare(left, right) == Ordering.Less
+  }
+}

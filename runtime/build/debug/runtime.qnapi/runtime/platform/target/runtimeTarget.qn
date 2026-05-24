@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeTargetFamily {
+  DesktopRuntime,
+  MobileRuntime,
+  EmbeddedRuntime,
+  WasmRuntime,
+  QuantumProviderRuntime,
+}
+pub struct RuntimeTarget {
+  name: string
+  family: RuntimeTargetFamily
+  hosted: bool
+}

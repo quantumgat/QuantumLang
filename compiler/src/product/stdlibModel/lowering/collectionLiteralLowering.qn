@@ -1,0 +1,11 @@
+pub struct StdlibCollectionLiteralLowering {
+  literalKind: string,
+  targetType: string,
+  inferenceRequired: bool,
+}
+
+impl StdlibCollectionLiteralLowering {
+  pub fn accepted(self: StdlibCollectionLiteralLowering) -> bool {
+    return self.literalKind != "" && self.targetType != "" && self.inferenceRequired
+  }
+}

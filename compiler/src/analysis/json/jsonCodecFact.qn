@@ -1,0 +1,37 @@
+pub struct JsonCodecFact {
+  typeName: string,
+  derivesJsonCodec: bool,
+  typedDecode: bool,
+  typedEncode: bool,
+  typedSize: bool,
+  typedCodecDeriveLowered: bool,
+  fieldMatcherLowered: bool,
+  primitiveCodecBound: bool,
+  dynamicParse: bool,
+  dynamicEncode: bool,
+  dynamicValueBypass: bool,
+  serdeMetadataRequired: bool,
+  exactNumberPolicy: bool,
+  pathAwareErrors: bool,
+  unsupportedTypeRejected: bool,
+}
+
+impl JsonCodecFact {
+  pub fn accepted(self: JsonCodecFact) -> bool {
+    return self.typeName != ""
+      && self.derivesJsonCodec
+      && self.typedDecode
+      && self.typedEncode
+      && self.typedSize
+      && self.typedCodecDeriveLowered
+      && self.fieldMatcherLowered
+      && self.primitiveCodecBound
+      && self.dynamicParse
+      && self.dynamicEncode
+      && self.dynamicValueBypass
+      && self.serdeMetadataRequired
+      && self.exactNumberPolicy
+      && self.pathAwareErrors
+      && self.unsupportedTypeRejected
+  }
+}

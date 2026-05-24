@@ -1,0 +1,42 @@
+pub enum NativeSyncPrimitiveLoweringKind {
+  MutexFastPath
+  RwLockFastPath
+  SemaphoreFastPath
+  EventWaitWake
+  BarrierGeneration
+  OnceAtomicState
+  WaitGroupCounter
+  CondvarWaitWake
+  TimeoutCancelCleanup
+  WaitGraphDiagnostic
+}
+
+pub struct NativeSyncPrimitiveLowering {
+  instruction: u64,
+  kind: NativeSyncPrimitiveLoweringKind,
+  runtimeAbiReady: bool,
+  noGeneratedFallback: bool,
+  safeFailureReady: bool,
+}
+
+impl NativeSyncPrimitiveLowering {
+  pub fn init(
+    instruction: u64,
+    kind: NativeSyncPrimitiveLoweringKind,
+    runtimeAbiReady: bool,
+    noGeneratedFallback: bool,
+    safeFailureReady: bool,
+  ) -> NativeSyncPrimitiveLowering {
+    return NativeSyncPrimitiveLowering {
+      instruction: instruction,
+      kind: kind,
+      runtimeAbiReady: runtimeAbiReady,
+      noGeneratedFallback: noGeneratedFallback,
+      safeFailureReady: safeFailureReady,
+    }
+  }
+
+  pub fn complete(self: NativeSyncPrimitiveLowering) -> bool {
+    return self.instruction > 0 && self.runtimeAbiReady && self.noGeneratedFallback && self.safeFailureReady
+  }
+}

@@ -1,0 +1,6 @@
+[module]
+name = "signal"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "signal"

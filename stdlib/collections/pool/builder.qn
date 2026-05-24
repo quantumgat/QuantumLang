@@ -1,0 +1,25 @@
+/**
+  Builder for capacity-first Pool construction.
+
+  effects: allocation only on build
+  complexity: O(1) builder configuration
+  allocation: reserves slot capacity
+  stability: public since 0.1
+*/
+pub struct PoolBuilder<T> {
+  capacity: usize,
+}
+
+impl<T> PoolBuilder<T> {
+  pub fn init() -> PoolBuilder<T> {
+    return PoolBuilder<T> { capacity: 0 }
+  }
+
+  pub fn capacity(self: PoolBuilder<T>, capacity: usize) -> PoolBuilder<T> {
+    return PoolBuilder<T> { capacity: capacity }
+  }
+
+  pub fn build(self: PoolBuilder<T>) -> Pool<T> requires(alloc) {
+    return Pool<T>.withCapacity(self.capacity)
+  }
+}

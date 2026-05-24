@@ -1,0 +1,38 @@
+pub enum DecimalTrapKind {
+  Overflow
+  DivisionByZero
+  Inexact
+  InvalidOperation
+  ResourceLimit
+}
+
+pub struct DecimalContextKernel {
+  precisionChecked: bool,
+  scaleChecked: bool,
+  roundingDeterministic: bool,
+  trapsTyped: bool,
+  noBinaryFloatFallback: bool,
+  noCoredump: bool,
+}
+
+impl DecimalContextKernel {
+  pub fn standard() -> DecimalContextKernel {
+    return DecimalContextKernel {
+      precisionChecked: true,
+      scaleChecked: true,
+      roundingDeterministic: true,
+      trapsTyped: true,
+      noBinaryFloatFallback: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: DecimalContextKernel) -> bool {
+    return self.precisionChecked
+      && self.scaleChecked
+      && self.roundingDeterministic
+      && self.trapsTyped
+      && self.noBinaryFloatFallback
+      && self.noCoredump
+  }
+}

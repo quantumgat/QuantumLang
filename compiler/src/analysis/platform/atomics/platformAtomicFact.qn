@@ -1,0 +1,12 @@
+pub struct PlatformAtomicFact {
+  target: string,
+  lockFreePointer: bool,
+  waitWakeAvailable: bool,
+  fallbackRequired: bool,
+}
+
+impl PlatformAtomicFact {
+  pub fn accepted(self: PlatformAtomicFact) -> bool {
+    return self.target != "" && (self.lockFreePointer || self.fallbackRequired)
+  }
+}

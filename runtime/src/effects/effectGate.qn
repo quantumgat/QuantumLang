@@ -1,0 +1,15 @@
+pub struct EffectGate {
+  capabilityName: string,
+  allowed: bool,
+  diagnosticCode: u32,
+}
+
+pub fn effectGate(capabilityName: string, allowed: bool, diagnosticCode: u32) -> EffectGate {
+  return EffectGate { capabilityName: capabilityName, allowed: allowed, diagnosticCode: diagnosticCode }
+}
+
+impl EffectGate {
+  pub fn canEnter(self: EffectGate) -> bool {
+    return self.allowed && self.diagnosticCode == 0
+  }
+}

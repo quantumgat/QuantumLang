@@ -1,0 +1,12 @@
+pub struct WasmLinkPlan {
+  target: string,
+  wasmModuleRequired: bool,
+  wasiImportsAllowed: bool,
+  browserImportsAllowed: bool,
+}
+
+impl WasmLinkPlan {
+  pub fn accepted(self: WasmLinkPlan) -> bool {
+    return self.target != "" && self.wasmModuleRequired
+  }
+}

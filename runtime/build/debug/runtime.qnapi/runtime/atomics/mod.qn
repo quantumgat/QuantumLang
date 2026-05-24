@@ -1,0 +1,26 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub mod runtimeAtomicCompareExchange
+pub mod runtimeAtomicError
+pub mod runtimeAtomicFence
+pub mod runtimeAtomicPayload
+pub mod runtimeAtomicRef
+pub mod runtimeAtomicTypeSupport
+pub mod runtimeAtomicWait
+pub mod runtimeAtomicWake
+pub mod runtimeMemoryOrderPolicy
+pub mod atomics
+pub use runtimeAtomicError.RuntimeAtomicError
+pub use runtimeAtomicError.RuntimeAtomicErrorKind
+pub use runtimeAtomicCompareExchange.RuntimeAtomicCompareExchange
+pub use runtimeAtomicFence.RuntimeAtomicFence
+pub use runtimeAtomicPayload.RuntimeAtomicPayload
+pub use runtimeAtomicPayload.RuntimeAtomicPayloadKind
+pub use runtimeAtomicRef.RuntimeAtomicRef
+pub use runtimeAtomicTypeSupport.RuntimeAtomicTypeSupport
+pub use runtimeAtomicWait.RuntimeAtomicWaitRequest
+pub use runtimeAtomicWait.RuntimeAtomicWaitStatus
+pub use runtimeAtomicWake.RuntimeAtomicWake
+pub use runtimeMemoryOrderPolicy.RuntimeAtomicOperationKind
+pub use runtimeMemoryOrderPolicy.RuntimeMemoryOrderPolicy
+pub use atomics.RuntimeMemoryOrder
+pub use atomics.RuntimeAtomicCapability

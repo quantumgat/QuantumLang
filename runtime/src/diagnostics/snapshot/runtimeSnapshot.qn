@@ -1,0 +1,15 @@
+pub struct RuntimeSnapshot {
+  subsystemCount: usize,
+  eventCount: usize,
+  sourceMapped: bool,
+}
+
+pub fn runtimeSnapshot(subsystemCount: usize, eventCount: usize) -> RuntimeSnapshot {
+  return RuntimeSnapshot { subsystemCount: subsystemCount, eventCount: eventCount, sourceMapped: true }
+}
+
+impl RuntimeSnapshot {
+  pub fn hasEvents(self: RuntimeSnapshot) -> bool {
+    return self.eventCount > 0
+  }
+}

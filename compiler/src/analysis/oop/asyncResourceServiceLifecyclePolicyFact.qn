@@ -1,0 +1,31 @@
+pub struct AsyncResourceServiceLifecyclePolicyFact {
+  resourceLifecycleBound: bool,
+  serviceLifecycleBound: bool,
+  stateLifecycleBound: bool,
+  asyncMethodLoweringBound: bool,
+  dropShutdownPolicyBound: bool,
+  readinessHealthBound: bool,
+  reconnectRetryOwnershipBound: bool,
+  staleGenerationDiagnosticBound: bool,
+  cancellationSafeShutdownBound: bool,
+  runtimeGuardBound: bool,
+  nativeLoweringBound: bool,
+  typedFailureNoCoredumpBound: bool,
+}
+
+impl AsyncResourceServiceLifecyclePolicyFact {
+  pub fn complete(self: AsyncResourceServiceLifecyclePolicyFact) -> bool {
+    return self.resourceLifecycleBound
+      && self.serviceLifecycleBound
+      && self.stateLifecycleBound
+      && self.asyncMethodLoweringBound
+      && self.dropShutdownPolicyBound
+      && self.readinessHealthBound
+      && self.reconnectRetryOwnershipBound
+      && self.staleGenerationDiagnosticBound
+      && self.cancellationSafeShutdownBound
+      && self.runtimeGuardBound
+      && self.nativeLoweringBound
+      && self.typedFailureNoCoredumpBound
+  }
+}

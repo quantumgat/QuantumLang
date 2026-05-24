@@ -1,0 +1,55 @@
+pub struct PackageRegistryCandidate {
+  version: string,
+  signingKey: string,
+  yanked: bool,
+}
+
+impl PackageRegistryCandidate {
+  pub fn available(version: string, signingKey: string) -> PackageRegistryCandidate {
+    return PackageRegistryCandidate {
+      version: version,
+      signingKey: signingKey,
+      yanked: false,
+    }
+  }
+
+  pub fn selectable(self: PackageRegistryCandidate) -> bool {
+    return self.version != "" && self.signingKey != "" && self.yanked == false
+  }
+}
+
+pub struct PackageRegistryIndex {
+  packageName: string,
+  registry: string,
+  source: string,
+  candidateCount: usize,
+  yankedCount: usize,
+  externalLookup: bool,
+  deterministicHighestCompatible: bool,
+}
+
+impl PackageRegistryIndex {
+  pub fn forPackage(packageName: string, registry: string, candidateCount: usize) -> PackageRegistryIndex {
+    return PackageRegistryIndex {
+      packageName: packageName,
+      registry: registry,
+      source: "manifest-or-registry-cache",
+      candidateCount: candidateCount,
+      yankedCount: 0,
+      externalLookup: true,
+      deterministicHighestCompatible: true,
+    }
+  }
+
+  pub fn selectable(self: PackageRegistryIndex) -> bool {
+    return self.packageName != ""
+      && self.registry != ""
+      && self.source != ""
+      && self.candidateCount > self.yankedCount
+      && self.deterministicHighestCompatible
+  }
+
+  pub fn loadedExternally(self: PackageRegistryIndex) -> bool {
+    return self.externalLookup && self.source != ""
+  }
+}

@@ -1,0 +1,30 @@
+pub enum TraceMarkerKind {
+  LoweringTrace
+  EmitTrace
+  LinkTrace
+  ProofTrace
+}
+
+pub struct TraceMarker {
+  kind: TraceMarkerKind,
+  label: string,
+  stable: bool,
+}
+
+pub fn traceMarker(kind: TraceMarkerKind, label: string, stable: bool) -> TraceMarker {
+  return TraceMarker { kind: kind, label: label, stable: stable }
+}
+
+impl TraceMarker {
+  pub fn markerKind(self: TraceMarker) -> TraceMarkerKind {
+    return self.kind
+  }
+
+  pub fn markerLabel(self: TraceMarker) -> string {
+    return self.label
+  }
+
+  pub fn isStable(self: TraceMarker) -> bool {
+    return self.stable
+  }
+}

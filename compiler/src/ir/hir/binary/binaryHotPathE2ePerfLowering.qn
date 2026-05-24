@@ -1,0 +1,21 @@
+pub struct HirBinaryHotPathE2ePerfLowering {
+  hirNode: u64,
+  cursorStateLinearized: bool,
+  writerChainLinearized: bool,
+  portableCodecResolved: bool,
+  viewLifetimeRegionResolved: bool,
+  codecBuilderChainResolved: bool,
+  benchmarkAnnotationsPreserved: bool,
+}
+
+impl HirBinaryHotPathE2ePerfLowering {
+  pub fn accepted(self: HirBinaryHotPathE2ePerfLowering) -> bool {
+    return self.hirNode > 0
+      && self.cursorStateLinearized
+      && self.writerChainLinearized
+      && self.portableCodecResolved
+      && self.viewLifetimeRegionResolved
+      && self.codecBuilderChainResolved
+      && self.benchmarkAnnotationsPreserved
+  }
+}

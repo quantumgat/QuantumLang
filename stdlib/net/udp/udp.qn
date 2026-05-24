@@ -1,0 +1,56 @@
+pub struct UdpPacket {
+  bytes: Bytes,
+  remote: SocketAddr,
+  truncated: bool,
+}
+
+pub struct UdpSocket {
+  handle: u64,
+  local: SocketAddr,
+  connected: bool,
+}
+
+impl UdpPacket {
+  pub fn accepted(self: UdpPacket) -> bool {
+    return !self.truncated
+  }
+}
+
+impl UdpSocket {
+  pub fn accepted(self: UdpSocket) -> bool {
+    return self.handle > 0
+  }
+
+  pub async fn recv(self: UdpSocket, into: IoSliceMut) -> NetResult<UdpPacket> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.ConnectionReset,
+        message: "udp socket is closed",
+        retryable: false,
+      })
+    }
+    return Ok(UdpPacket {
+      bytes: Bytes { data: into.data, len: into.len },
+      remote: self.local,
+      truncated: false,
+    })
+  }
+
+  pub async fn send(self: UdpSocket, packet: UdpPacket) -> NetResult<usize> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.ConnectionReset,
+        message: "udp socket is closed",
+        retryable: false,
+      })
+    }
+    if packet.truncated {
+      return Err(NetError {
+        kind: NetErrorKind.PlatformFailure,
+        message: "udp packet is truncated",
+        retryable: false,
+      })
+    }
+    return Ok(packet.bytes.count())
+  }
+}

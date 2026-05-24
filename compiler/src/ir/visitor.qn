@@ -1,0 +1,6 @@
+pub trait IrVisitor {
+  fn visitHirNode(self, nodeId: u64) -> ()
+  fn visitMirBlock(self, blockId: u64) -> ()
+  fn visitTirNode(self, nodeId: u64) -> ()
+  fn visitQmirRegion(self, regionId: u64) -> ()
+}

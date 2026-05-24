@@ -1,0 +1,29 @@
+pub struct ForAsyncParallelRealImplProof {
+  parserRows: usize,
+  analysisRows: usize,
+  hirRows: usize,
+  mirRows: usize,
+  nativeRows: usize,
+  runtimeRows: usize,
+  executableRows: usize,
+  negativeRows: usize,
+  asyncEvidenceRows: usize,
+  parallelEvidenceRows: usize,
+  lowering: NativeForAsyncParallelLowering,
+}
+
+impl ForAsyncParallelRealImplProof {
+  pub fn complete(self: ForAsyncParallelRealImplProof) -> bool {
+    return self.parserRows >= 10
+      && self.analysisRows >= 10
+      && self.hirRows >= 10
+      && self.mirRows >= 10
+      && self.nativeRows >= 10
+      && self.runtimeRows >= 4
+      && self.executableRows >= 10
+      && self.negativeRows >= 4
+      && self.asyncEvidenceRows >= 5
+      && self.parallelEvidenceRows >= 3
+      && self.lowering.complete()
+  }
+}

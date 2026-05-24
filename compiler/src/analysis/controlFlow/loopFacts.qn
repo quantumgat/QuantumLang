@@ -1,0 +1,15 @@
+pub struct LoopFacts {
+  loopId: u64,
+  mayBreak: bool,
+  mayContinue: bool,
+  hasBackEdge: bool,
+}
+
+pub fn loopFacts(loopId: u64, mayBreak: bool, mayContinue: bool, hasBackEdge: bool) -> LoopFacts {
+  return LoopFacts {
+    loopId: loopId,
+    mayBreak: mayBreak,
+    mayContinue: mayContinue,
+    hasBackEdge: hasBackEdge,
+  }
+}

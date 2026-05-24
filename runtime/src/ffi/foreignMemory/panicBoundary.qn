@@ -1,0 +1,19 @@
+pub struct RuntimeFfiPanicBoundary {
+  noUnwind: bool,
+  statusMapping: bool,
+  cleanupBeforeReturn: bool,
+}
+
+impl RuntimeFfiPanicBoundary {
+  pub fn init(noUnwind: bool, statusMapping: bool, cleanupBeforeReturn: bool) -> RuntimeFfiPanicBoundary {
+    return RuntimeFfiPanicBoundary {
+      noUnwind: noUnwind,
+      statusMapping: statusMapping,
+      cleanupBeforeReturn: cleanupBeforeReturn,
+    }
+  }
+
+  pub fn accepted(self: RuntimeFfiPanicBoundary) -> bool {
+    return self.noUnwind && self.statusMapping && self.cleanupBeforeReturn
+  }
+}

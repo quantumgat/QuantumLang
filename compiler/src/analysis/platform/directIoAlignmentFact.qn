@@ -1,0 +1,21 @@
+pub struct DirectIoAlignmentFact {
+  addressAligned: bool,
+  offsetAligned: bool,
+  lengthAligned: bool,
+  targetCapable: bool,
+}
+
+impl DirectIoAlignmentFact {
+  pub fn init(addressAligned: bool, offsetAligned: bool, lengthAligned: bool, targetCapable: bool) -> DirectIoAlignmentFact {
+    return DirectIoAlignmentFact {
+      addressAligned: addressAligned,
+      offsetAligned: offsetAligned,
+      lengthAligned: lengthAligned,
+      targetCapable: targetCapable,
+    }
+  }
+
+  pub fn accepted(self: DirectIoAlignmentFact) -> bool {
+    return self.addressAligned && self.offsetAligned && self.lengthAligned && self.targetCapable
+  }
+}

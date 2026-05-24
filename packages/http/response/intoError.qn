@@ -1,0 +1,45 @@
+import body::{HttpBody}
+import request::{HttpHeaderMap}
+
+pub struct IntoHttpError {
+  status: HttpStatus,
+  message: string,
+}
+
+impl IntoHttpError {
+  pub fn init(status: HttpStatus, message: string) -> IntoHttpError {
+    return IntoHttpError {
+      status: status,
+      message: message,
+    }
+  }
+
+  pub fn badRequest(message: string) -> IntoHttpError {
+    return IntoHttpError.init(HttpStatus.badRequest(), message)
+  }
+
+  pub fn fromHttp(error: HttpError) -> IntoHttpError {
+    return IntoHttpError.init(error.status(), error.message())
+  }
+
+  pub fn fromError(error: Error) -> IntoHttpError {
+    let http = HttpError.fromError(error)
+    return IntoHttpError.fromHttp(http)
+  }
+
+  pub fn status(self: IntoHttpError) -> HttpStatus {
+    return self.status
+  }
+
+  pub fn message(self: IntoHttpError) -> string {
+    return self.message
+  }
+
+  pub fn response(self: IntoHttpError) -> HttpResponse {
+    return HttpResponse.init(
+      self.status,
+      HttpHeaderMap.empty().add("content-type", "text/plain; charset=utf-8"),
+      HttpBody.text(self.message)
+    )
+  }
+}

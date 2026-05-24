@@ -1,0 +1,30 @@
+pub struct PluginDocsExamplesMount {
+  docsRoot: string,
+  examplesRoot: string,
+  docsOptional: bool,
+  examplesOptional: bool,
+  sourceRootRelative: bool,
+  hostPathLeakRejected: bool,
+}
+
+impl PluginDocsExamplesMount {
+  pub fn fromRoot(root: PluginStdlibRoot) -> PluginDocsExamplesMount {
+    return PluginDocsExamplesMount {
+      docsRoot: root.docsRoot,
+      examplesRoot: root.examplesRoot,
+      docsOptional: true,
+      examplesOptional: true,
+      sourceRootRelative: true,
+      hostPathLeakRejected: true,
+    }
+  }
+
+  pub fn accepted(self: PluginDocsExamplesMount) -> bool {
+    return self.docsRoot != ""
+      && self.examplesRoot != ""
+      && self.docsOptional
+      && self.examplesOptional
+      && self.sourceRootRelative
+      && self.hostPathLeakRejected
+  }
+}

@@ -1,0 +1,22 @@
+pub enum BackendCapabilityKind {
+  NativeObject
+  QirHandoff
+  HiddenCache
+  NoFallbackProof
+}
+
+pub struct BackendCapability {
+  backend: BackendId,
+  kind: BackendCapabilityKind,
+  supported: bool,
+}
+
+pub fn backendCapability(backend: BackendId, kind: BackendCapabilityKind, supported: bool) -> BackendCapability {
+  return BackendCapability { backend: backend, kind: kind, supported: supported }
+}
+
+impl BackendCapability {
+  pub fn isSupported(self: BackendCapability) -> bool {
+    return self.supported
+  }
+}

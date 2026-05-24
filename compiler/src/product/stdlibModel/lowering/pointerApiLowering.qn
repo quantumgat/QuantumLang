@@ -1,0 +1,19 @@
+pub struct StdlibPointerApiLowering {
+  symbolName: string,
+  astSyntaxRequired: bool,
+  hirLoweringRequired: bool,
+  mirMemoryOpRequired: bool,
+  targetVariantRequired: bool,
+  nativeEmissionRequired: bool,
+}
+
+impl StdlibPointerApiLowering {
+  pub fn accepted(self: StdlibPointerApiLowering) -> bool {
+    return self.symbolName != ""
+      && self.astSyntaxRequired
+      && self.hirLoweringRequired
+      && self.mirMemoryOpRequired
+      && self.targetVariantRequired
+      && self.nativeEmissionRequired
+  }
+}

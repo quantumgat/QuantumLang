@@ -1,0 +1,15 @@
+pub struct GeneratedSource {
+  fileName: string,
+  sourceBytes: usize,
+  stable: bool,
+}
+
+pub fn generatedSource(fileName: string, sourceBytes: usize, stable: bool) -> GeneratedSource {
+  return GeneratedSource { fileName: fileName, sourceBytes: sourceBytes, stable: stable }
+}
+
+impl GeneratedSource {
+  pub fn deterministic(self: GeneratedSource) -> bool {
+    return self.stable
+  }
+}

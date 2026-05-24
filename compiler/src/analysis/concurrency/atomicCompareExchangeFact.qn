@@ -1,0 +1,23 @@
+pub struct AtomicCompareExchangeFact {
+  node: u64,
+  successOrdering: AtomicOrdering,
+  failureOrdering: AtomicOrdering,
+  targetSupported: bool,
+}
+
+impl AtomicCompareExchangeFact {
+  pub fn init(node: u64, successOrdering: AtomicOrdering, failureOrdering: AtomicOrdering, targetSupported: bool) -> AtomicCompareExchangeFact {
+    return AtomicCompareExchangeFact {
+      node: node,
+      successOrdering: successOrdering,
+      failureOrdering: failureOrdering,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn accepted(self: AtomicCompareExchangeFact) -> bool {
+    let success = MemoryOrderFact.init(self.node, AtomicOperationKind.CompareExchange, self.successOrdering)
+    let failure = MemoryOrderFact.init(self.node, AtomicOperationKind.Load, self.failureOrdering)
+    return self.targetSupported && success.valid() && failure.valid()
+  }
+}

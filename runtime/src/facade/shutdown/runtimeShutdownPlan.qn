@@ -1,0 +1,15 @@
+pub struct RuntimeShutdownPlan {
+  graceful: bool,
+  drainsPorts: bool,
+  releasesHandles: bool,
+}
+
+pub fn runtimeShutdownPlan() -> RuntimeShutdownPlan {
+  return RuntimeShutdownPlan { graceful: true, drainsPorts: true, releasesHandles: true }
+}
+
+impl RuntimeShutdownPlan {
+  pub fn canShutdownCleanly(self: RuntimeShutdownPlan) -> bool {
+    return self.graceful && self.drainsPorts && self.releasesHandles
+  }
+}

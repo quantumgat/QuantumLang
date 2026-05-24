@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeDispatchMode {
+  Static,
+  Runtime,
+  Fallback,
+  Rejected,
+}
+pub struct RuntimeDispatchDecision {
+  mode: RuntimeDispatchMode
+  featureSupported: bool
+  fallbackAvailable: bool
+}

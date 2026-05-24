@@ -1,0 +1,109 @@
+impl Bson {
+  /**
+    Decodes MongoDB-compatible BSON bytes into a typed value.
+
+    example:
+      let user = Bson.decode<User>(bytes)?
+
+    mode:
+      Mongo-compatible BSON. This accepts standard BSON storage types and
+      target-guided canonical carriers without inventing hidden QuantumLang
+      exact type metadata.
+
+    effects: validates lengths and type tags before field reads
+    complexity: O(encoded bytes)
+    allocation: decoded value only
+    stability: public since 0.1
+  */
+  pub fn decode<T>(bytes: BinaryView) -> Result<T, BsonError> {
+    return bsonDecodeTyped<T>(bytes, bsonCodecOptions())
+  }
+
+  pub fn decode<T>(bytes: BinaryView, mode: BsonCodecMode) -> Result<T, BsonError> {
+    return bsonDecodeTyped<T>(bytes, bsonOptionsFor(mode))
+  }
+
+  /**
+    Decodes QuantumLang-exact BSON extension bytes into the requested type.
+
+    example:
+      let value = Bson.decodeExact<i16>(bytes)?
+
+    mode:
+      Preserves and checks QuantumLang type identity. Decoding exact i16 as i32
+      is an error unless a separate explicit conversion API is used.
+
+    effects: validates exact type tags and bounds before materialization
+    complexity: O(encoded bytes)
+    allocation: decoded value only
+    stability: public since 0.1
+  */
+  pub fn decodeExact<T>(bytes: BinaryView) -> Result<T, BsonError> {
+    return bsonDecodeTyped<T>(bytes, bsonExactOptions())
+  }
+
+  pub fn decodeWithOptions<T>(bytes: BinaryView, options: BsonCodecOptions) -> Result<T, BsonError> {
+    return bsonDecodeTyped<T>(bytes, options)
+  }
+
+  pub fn decodeValue(bytes: BinaryView) -> Result<BsonValue, BsonError> {
+    return bsonDecodeValue(bytes)
+  }
+}
+
+pub fn decode<T>(bytes: BinaryView) -> Result<T, BsonError> {
+  return Bson.decode<T>(bytes)
+}
+
+pub fn decode<T>(bytes: BinaryView, mode: BsonCodecMode) -> Result<T, BsonError> {
+  return Bson.decode<T>(bytes, mode)
+}
+
+pub fn decodeExact<T>(bytes: BinaryView) -> Result<T, BsonError> {
+  return Bson.decodeExact<T>(bytes)
+}
+
+pub fn decodeValue(bytes: BinaryView) -> Result<BsonValue, BsonError> {
+  return Bson.decodeValue(bytes)
+}
+
+extend BinaryView {
+  /**
+    Decodes this byte view with the same Mongo-compatible policy as
+    Bson.decode.
+
+    example:
+      let user = bytes.fromBson<User>()?
+
+    effects: validates BSON before materializing the target type
+    complexity: O(encoded bytes)
+    allocation: decoded value only
+    stability: public since 0.1
+  */
+  pub fn fromBson<T>(self: BinaryView) -> Result<T, BsonError> {
+    return Bson.decode<T>(self)
+  }
+
+  pub fn fromBson<T>(self: BinaryView, mode: BsonCodecMode) -> Result<T, BsonError> {
+    return Bson.decode<T>(self, mode)
+  }
+
+  /**
+    Decodes this byte view with the same QuantumLang-exact policy as
+    Bson.decodeExact.
+
+    example:
+      let user = bytes.fromBsonExact<User>()?
+
+    effects: validates exact type tags before materializing the target type
+    complexity: O(encoded bytes)
+    allocation: decoded value only
+    stability: public since 0.1
+  */
+  pub fn fromBsonExact<T>(self: BinaryView) -> Result<T, BsonError> {
+    return Bson.decodeExact<T>(self)
+  }
+}
+
+fn bsonDecodeTyped<T>(bytes: BinaryView, options: BsonCodecOptions) -> Result<T, BsonError>
+fn bsonDecodeValue(bytes: BinaryView) -> Result<BsonValue, BsonError>

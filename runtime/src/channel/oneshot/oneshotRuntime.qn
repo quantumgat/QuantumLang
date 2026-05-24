@@ -1,0 +1,21 @@
+pub struct RuntimeOneshotChannel {
+  channelId: u64,
+  sent: bool,
+  received: bool,
+  closed: bool,
+}
+
+impl RuntimeOneshotChannel {
+  pub fn init(channelId: u64, sent: bool, received: bool, closed: bool) -> RuntimeOneshotChannel {
+    return RuntimeOneshotChannel {
+      channelId: channelId,
+      sent: sent,
+      received: received,
+      closed: closed,
+    }
+  }
+
+  pub fn singleUse(self: RuntimeOneshotChannel) -> bool {
+    return self.channelId > 0 && (self.sent == false || self.received == false)
+  }
+}

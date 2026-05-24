@@ -1,0 +1,25 @@
+pub struct TemplateLoweringPlan {
+  intrinsic: string,
+  fallbackRequired: bool,
+  sourceMapRequired: bool,
+  typedDiagnosticRequired: bool,
+}
+
+impl TemplateLoweringPlan {
+  pub fn accepted(self: TemplateLoweringPlan) -> bool {
+    return self.intrinsic != ""
+      && self.fallbackRequired
+      && self.sourceMapRequired
+      && self.typedDiagnosticRequired
+  }
+}
+
+pub fn templateLoweringPlan() -> TemplateLoweringPlan {
+  return TemplateLoweringPlan {
+    intrinsic: "pluginTemplate.run",
+    fallbackRequired: true,
+    sourceMapRequired: true,
+    typedDiagnosticRequired: true,
+  }
+}
+

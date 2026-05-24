@@ -1,0 +1,42 @@
+pub struct PluginManifestValidation {
+  manifestAccepted: bool,
+  abiAccepted: bool,
+  stdlibRootAccepted: bool,
+  exportsAccepted: bool,
+  compilerContractAccepted: bool,
+  runtimeContractAccepted: bool,
+  targetGateAccepted: bool,
+  safetyAccepted: bool,
+  proofAccepted: bool,
+  oldSchemaRejected: bool,
+}
+
+impl PluginManifestValidation {
+  pub fn fromManifest(manifest: PluginManifest) -> PluginManifestValidation {
+    return PluginManifestValidation {
+      manifestAccepted: manifest.accepted(),
+      abiAccepted: manifest.abi.accepted(),
+      stdlibRootAccepted: manifest.stdlib.accepted(),
+      exportsAccepted: manifest.exports.accepted(),
+      compilerContractAccepted: manifest.compiler.accepted(),
+      runtimeContractAccepted: manifest.runtime.accepted(),
+      targetGateAccepted: manifest.targets.accepted(),
+      safetyAccepted: manifest.safety.accepted(),
+      proofAccepted: manifest.proof.accepted(),
+      oldSchemaRejected: manifest.abi.rejectsOldSchema(),
+    }
+  }
+
+  pub fn accepted(self: PluginManifestValidation) -> bool {
+    return self.manifestAccepted
+      && self.abiAccepted
+      && self.stdlibRootAccepted
+      && self.exportsAccepted
+      && self.compilerContractAccepted
+      && self.runtimeContractAccepted
+      && self.targetGateAccepted
+      && self.safetyAccepted
+      && self.proofAccepted
+      && self.oldSchemaRejected
+  }
+}

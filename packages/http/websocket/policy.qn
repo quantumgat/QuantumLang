@@ -1,0 +1,47 @@
+pub struct WebSocketPolicy {
+  maxFrameBytes: usize,
+  allowCompression: bool,
+  maxMessageBytes: usize,
+  heartbeatSeconds: usize,
+}
+
+impl WebSocketPolicy {
+  pub fn init() -> WebSocketPolicy {
+    return WebSocketPolicy {
+      maxFrameBytes: 1048576,
+      allowCompression: false,
+      maxMessageBytes: 16777216,
+      heartbeatSeconds: 30,
+    }
+  }
+
+  pub fn maxFrameBytes(self: WebSocketPolicy) -> usize {
+    return self.maxFrameBytes
+  }
+
+  pub fn allowCompression(self: WebSocketPolicy) -> bool {
+    return self.allowCompression
+  }
+
+  pub fn withMaxFrameBytes(self: WebSocketPolicy, maxFrameBytes: usize) -> WebSocketPolicy {
+    return WebSocketPolicy {
+      maxFrameBytes: maxFrameBytes,
+      allowCompression: self.allowCompression,
+      maxMessageBytes: self.maxMessageBytes,
+      heartbeatSeconds: self.heartbeatSeconds,
+    }
+  }
+
+  pub fn withCompression(self: WebSocketPolicy, allowCompression: bool) -> WebSocketPolicy {
+    return WebSocketPolicy {
+      maxFrameBytes: self.maxFrameBytes,
+      allowCompression: allowCompression,
+      maxMessageBytes: self.maxMessageBytes,
+      heartbeatSeconds: self.heartbeatSeconds,
+    }
+  }
+
+  pub fn allowsFrame(self: WebSocketPolicy, frame: Frame) -> bool {
+    return frame.payloadBytes() <= self.maxFrameBytes
+  }
+}

@@ -1,0 +1,75 @@
+import analysis.types::{BuiltinPrimitiveTypeId}
+
+pub enum PrimitiveNumericKind {
+  SignedInteger
+  UnsignedInteger
+  Float
+  Decimal
+  BigInteger
+  Complex
+  Rational
+  Fixed
+  Simd
+  Vector
+  Matrix
+  Tensor
+  FiniteField
+  Overflow
+}
+
+pub struct PrimitiveNumericType {
+  typeId: BuiltinPrimitiveTypeId,
+  kind: PrimitiveNumericKind,
+  bitWidth: usize,
+  laneWidth: usize,
+  laneCount: usize,
+  signed: bool,
+}
+
+pub fn primitiveNumericType(
+  typeId: BuiltinPrimitiveTypeId,
+  kind: PrimitiveNumericKind,
+  bitWidth: usize,
+  laneWidth: usize,
+  laneCount: usize,
+  signed: bool
+) -> PrimitiveNumericType {
+  return PrimitiveNumericType {
+    typeId: typeId,
+    kind: kind,
+    bitWidth: bitWidth,
+    laneWidth: laneWidth,
+    laneCount: laneCount,
+    signed: signed,
+  }
+}
+
+impl PrimitiveNumericType {
+  pub fn numericKind(self: PrimitiveNumericType) -> PrimitiveNumericKind {
+    return self.kind
+  }
+
+  pub fn width(self: PrimitiveNumericType) -> usize {
+    return self.bitWidth
+  }
+
+  pub fn realLaneWidth(self: PrimitiveNumericType) -> usize {
+    return self.laneWidth
+  }
+
+  pub fn lanes(self: PrimitiveNumericType) -> usize {
+    return self.laneCount
+  }
+
+  pub fn isSigned(self: PrimitiveNumericType) -> bool {
+    return self.signed
+  }
+
+  pub fn isComplex(self: PrimitiveNumericType) -> bool {
+    return self.laneCount == 2 && self.kind == PrimitiveNumericKind.Complex
+  }
+}
+
+pub fn requiredPrimitiveNumericTypeCount() -> usize {
+  return 43
+}

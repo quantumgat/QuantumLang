@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct AsyncResourceRuntimeLifecycle {
+  typeId: u64
+  handleGenerationBound: bool
+  asyncInitRuntimeBound: bool
+  startRuntimeBound: bool
+  closeShutdownRuntimeBound: bool
+  cancellationCleanupRuntimeBound: bool
+  staleHandleDiagnosticBound: bool
+  noCoredumpFailureBound: bool
+}

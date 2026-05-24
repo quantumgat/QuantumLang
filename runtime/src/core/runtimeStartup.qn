@@ -1,0 +1,31 @@
+pub enum RuntimeStartupMode {
+  CompilerLinkedStartup,
+  TestStartup,
+}
+
+pub struct RuntimeStartup {
+  mode: RuntimeStartupMode,
+  initializesHandles: bool,
+  initializesMemory: bool,
+  initializesPlatform: bool,
+  publicCommand: bool,
+}
+
+pub fn compilerLinkedStartup() -> RuntimeStartup {
+  return RuntimeStartup {
+    mode: RuntimeStartupMode.CompilerLinkedStartup,
+    initializesHandles: true,
+    initializesMemory: true,
+    initializesPlatform: true,
+    publicCommand: false,
+  }
+}
+
+impl RuntimeStartup {
+  pub fn isComplete(self) -> bool {
+    return self.initializesHandles &&
+      self.initializesMemory &&
+      self.initializesPlatform &&
+      self.publicCommand == false
+  }
+}

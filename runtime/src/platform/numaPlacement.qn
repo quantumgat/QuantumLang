@@ -1,0 +1,21 @@
+pub struct RuntimeNumaPlacement {
+  nodeId: usize,
+  pageBytes: usize,
+  local: bool,
+  pinned: bool,
+}
+
+impl RuntimeNumaPlacement {
+  pub fn init(nodeId: usize, pageBytes: usize, local: bool, pinned: bool) -> RuntimeNumaPlacement {
+    return RuntimeNumaPlacement {
+      nodeId: nodeId,
+      pageBytes: pageBytes,
+      local: local,
+      pinned: pinned,
+    }
+  }
+
+  pub fn accepted(self: RuntimeNumaPlacement) -> bool {
+    return self.pageBytes > 0 && self.local && self.pinned
+  }
+}

@@ -1,0 +1,52 @@
+pub enum MirOopResourceServiceLifecycleOpKind {
+  AsyncInitResource
+  StartResource
+  ShutdownResource
+  CloseResource
+  AsyncInitService
+  StartService
+  MarkReady
+  HealthCheck
+  ReconnectRetry
+  StateTransition
+  CancelShutdown
+  RejectStaleGeneration
+}
+
+pub struct MirOopResourceServiceLifecycleOp {
+  instruction: u64,
+  ownerTypeName: string,
+  kind: MirOopResourceServiceLifecycleOpKind,
+  directLifecycleCall: bool,
+  dependencyOrderReady: bool,
+  readinessHealthReady: bool,
+  reconnectRetryReady: bool,
+  cancellationCleanupReady: bool,
+  generationChecked: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+  sourceMapReady: bool,
+}
+
+impl MirOopResourceServiceLifecycleOp {
+  pub fn accepted(self: MirOopResourceServiceLifecycleOp) -> bool {
+    return self.instruction > 0
+      && self.ownerTypeName != ""
+      && self.directLifecycleCall
+      && self.dependencyOrderReady
+      && self.readinessHealthReady
+      && self.reconnectRetryReady
+      && self.cancellationCleanupReady
+      && self.generationChecked
+      && self.typedFailure
+      && self.noCoredump
+      && self.sourceMapReady
+  }
+
+  pub fn shutdownEdge(self: MirOopResourceServiceLifecycleOp) -> bool {
+    return self.accepted()
+      && (self.kind == MirOopResourceServiceLifecycleOpKind.ShutdownResource
+        || self.kind == MirOopResourceServiceLifecycleOpKind.CloseResource
+        || self.kind == MirOopResourceServiceLifecycleOpKind.CancelShutdown)
+  }
+}

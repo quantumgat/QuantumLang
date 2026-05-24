@@ -1,0 +1,15 @@
+pub struct TrieBuilder<V> {
+  capacity: usize,
+}
+
+impl<V> TrieBuilder<V> {
+  pub fn capacity(self: TrieBuilder<V>, capacity: usize) -> TrieBuilder<V> {
+    return TrieBuilder<V> {
+      capacity: capacity,
+    }
+  }
+
+  pub fn build(self: TrieBuilder<V>) -> Trie<V> requires(alloc) {
+    return Trie<V>.withCapacity(self.capacity)
+  }
+}

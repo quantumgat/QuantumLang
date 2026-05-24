@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum PluginKernelFailureKind {
+  TargetRejected,
+  AbiMismatch,
+  CapabilityDenied,
+  KernelPanicTrapped,
+  ResourceLimitExceeded,
+}
+pub struct PluginKernelFailure {
+  kind: PluginKernelFailureKind
+  typed: bool
+  noCoredump: bool
+  sourceMapped: bool
+  incidentRecorded: bool
+}

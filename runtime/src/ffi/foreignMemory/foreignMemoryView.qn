@@ -1,0 +1,23 @@
+pub struct RuntimeForeignMemoryView {
+  address: usize,
+  bytes: usize,
+  lifetimeToken: u64,
+  aliasChecked: bool,
+  deleterRequired: bool,
+}
+
+impl RuntimeForeignMemoryView {
+  pub fn init(address: usize, bytes: usize, lifetimeToken: u64, aliasChecked: bool, deleterRequired: bool) -> RuntimeForeignMemoryView {
+    return RuntimeForeignMemoryView {
+      address: address,
+      bytes: bytes,
+      lifetimeToken: lifetimeToken,
+      aliasChecked: aliasChecked,
+      deleterRequired: deleterRequired,
+    }
+  }
+
+  pub fn accepted(self: RuntimeForeignMemoryView) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.lifetimeToken > 0 && self.aliasChecked && self.deleterRequired
+  }
+}

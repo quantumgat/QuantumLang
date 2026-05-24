@@ -1,0 +1,35 @@
+pub struct AsyncOopMethodHirMirLoweringPolicyFact {
+  parserAstPolicyBound: bool,
+  hirLoweringBound: bool,
+  genericAsyncHandoffBound: bool,
+  mirOpBound: bool,
+  nativeLoweringBound: bool,
+  runtimeGuardBound: bool,
+  selfCaptureAcrossAwaitChecked: bool,
+  mutableBorrowAcrossAwaitRejectedOrPinned: bool,
+  cancellationCleanupBound: bool,
+  partialInitCleanupBound: bool,
+  stackStateMachineHotPathBound: bool,
+  hiddenAllocationRejected: bool,
+  typedFailureNoCoredumpBound: bool,
+  sourceMapsRequired: bool,
+}
+
+impl AsyncOopMethodHirMirLoweringPolicyFact {
+  pub fn complete(self: AsyncOopMethodHirMirLoweringPolicyFact) -> bool {
+    return self.parserAstPolicyBound
+      && self.hirLoweringBound
+      && self.genericAsyncHandoffBound
+      && self.mirOpBound
+      && self.nativeLoweringBound
+      && self.runtimeGuardBound
+      && self.selfCaptureAcrossAwaitChecked
+      && self.mutableBorrowAcrossAwaitRejectedOrPinned
+      && self.cancellationCleanupBound
+      && self.partialInitCleanupBound
+      && self.stackStateMachineHotPathBound
+      && self.hiddenAllocationRejected
+      && self.typedFailureNoCoredumpBound
+      && self.sourceMapsRequired
+  }
+}

@@ -1,0 +1,21 @@
+pub struct RuntimeTaskTimer {
+  taskId: u64,
+  timerId: u64,
+  cancellationTokenId: u64,
+  staleWakeSuppressed: bool,
+}
+
+impl RuntimeTaskTimer {
+  pub fn init(taskId: u64, timerId: u64, cancellationTokenId: u64, staleWakeSuppressed: bool) -> RuntimeTaskTimer {
+    return RuntimeTaskTimer {
+      taskId: taskId,
+      timerId: timerId,
+      cancellationTokenId: cancellationTokenId,
+      staleWakeSuppressed: staleWakeSuppressed,
+    }
+  }
+
+  pub fn linked(self: RuntimeTaskTimer) -> bool {
+    return self.taskId > 0 && self.timerId > 0 && self.cancellationTokenId > 0 && self.staleWakeSuppressed
+  }
+}

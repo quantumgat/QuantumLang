@@ -1,0 +1,15 @@
+pub struct ActionIndex {
+  pathExt: string,
+  keyBits: usize,
+  atomicWrites: bool,
+  leaseProtected: bool,
+}
+
+pub fn actionIndex() -> ActionIndex {
+  return ActionIndex {
+    pathExt: ".qci",
+    keyBits: 256,
+    atomicWrites: true,
+    leaseProtected: true,
+  }
+}

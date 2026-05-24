@@ -1,0 +1,23 @@
+pub struct ForRangeCollectionRealImplProof {
+  parserRows: usize,
+  analysisRows: usize,
+  hirRows: usize,
+  mirRows: usize,
+  nativeRows: usize,
+  executableRows: usize,
+  negativeRows: usize,
+  lowering: NativeForRangeCollectionLowering,
+}
+
+impl ForRangeCollectionRealImplProof {
+  pub fn complete(self: ForRangeCollectionRealImplProof) -> bool {
+    return self.parserRows >= 10
+      && self.analysisRows >= 8
+      && self.hirRows >= 7
+      && self.mirRows >= 4
+      && self.nativeRows >= 5
+      && self.executableRows >= 10
+      && self.negativeRows >= 4
+      && self.lowering.complete()
+  }
+}

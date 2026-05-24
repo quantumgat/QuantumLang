@@ -1,0 +1,100 @@
+pub enum ConcurrencySafetyDiagnosticKind {
+  None
+  DataRace
+  SendBoundaryViolation
+  SyncBoundaryViolation
+  BorrowAcrossAwait
+  BlockingInAsync
+  OrphanTask
+  ActorMessageTypeMismatch
+  ActorMessageLifetimeEscape
+  SelectMutableAlias
+  CloseAfterSend
+}
+
+pub struct ConcurrencySafetyDiagnostic {
+  nodeId: u64,
+  kind: ConcurrencySafetyDiagnosticKind,
+  sourceRangeReady: bool,
+  fixItReady: bool,
+  safeFailureOnly: bool,
+  noRuntimeAbort: bool,
+}
+
+impl ConcurrencySafetyDiagnostic {
+  pub fn init(
+    nodeId: u64,
+    kind: ConcurrencySafetyDiagnosticKind,
+    sourceRangeReady: bool,
+    fixItReady: bool,
+    safeFailureOnly: bool,
+    noRuntimeAbort: bool,
+  ) -> ConcurrencySafetyDiagnostic {
+    return ConcurrencySafetyDiagnostic {
+      nodeId: nodeId,
+      kind: kind,
+      sourceRangeReady: sourceRangeReady,
+      fixItReady: fixItReady,
+      safeFailureOnly: safeFailureOnly,
+      noRuntimeAbort: noRuntimeAbort,
+    }
+  }
+
+  pub fn accepted(self: ConcurrencySafetyDiagnostic) -> bool {
+    return self.nodeId > 0
+      && self.kind == ConcurrencySafetyDiagnosticKind.None
+      && self.sourceRangeReady
+      && self.safeFailureOnly
+      && self.noRuntimeAbort
+  }
+
+  pub fn reportable(self: ConcurrencySafetyDiagnostic) -> bool {
+    return self.nodeId > 0
+      && self.kind != ConcurrencySafetyDiagnosticKind.None
+      && self.sourceRangeReady
+      && self.safeFailureOnly
+      && self.noRuntimeAbort
+  }
+
+  pub fn canOfferFixIt(self: ConcurrencySafetyDiagnostic) -> bool {
+    return self.reportable() && self.fixItReady
+  }
+}
+
+pub struct ConcurrencyBoundaryProof {
+  nodeId: u64,
+  sendBoundaryChecked: bool,
+  syncBoundaryChecked: bool,
+  borrowAcrossAwaitChecked: bool,
+  actorMessageChecked: bool,
+  dataRaceChecked: bool,
+}
+
+impl ConcurrencyBoundaryProof {
+  pub fn init(
+    nodeId: u64,
+    sendBoundaryChecked: bool,
+    syncBoundaryChecked: bool,
+    borrowAcrossAwaitChecked: bool,
+    actorMessageChecked: bool,
+    dataRaceChecked: bool,
+  ) -> ConcurrencyBoundaryProof {
+    return ConcurrencyBoundaryProof {
+      nodeId: nodeId,
+      sendBoundaryChecked: sendBoundaryChecked,
+      syncBoundaryChecked: syncBoundaryChecked,
+      borrowAcrossAwaitChecked: borrowAcrossAwaitChecked,
+      actorMessageChecked: actorMessageChecked,
+      dataRaceChecked: dataRaceChecked,
+    }
+  }
+
+  pub fn complete(self: ConcurrencyBoundaryProof) -> bool {
+    return self.nodeId > 0
+      && self.sendBoundaryChecked
+      && self.syncBoundaryChecked
+      && self.borrowAcrossAwaitChecked
+      && self.actorMessageChecked
+      && self.dataRaceChecked
+  }
+}

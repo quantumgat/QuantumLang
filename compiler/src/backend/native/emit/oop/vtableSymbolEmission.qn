@@ -1,0 +1,25 @@
+pub struct VtableSymbolEmission {
+  typeId: u64,
+  tableSymbolId: u64,
+  abiVersion: string,
+  methodCount: usize,
+  hiddenRuntimeBoundary: bool,
+  routeMetadata: bool,
+}
+
+pub fn vtableSymbolEmission(typeId: u64, tableSymbolId: u64, abiVersion: string, methodCount: usize, hiddenRuntimeBoundary: bool, routeMetadata: bool) -> VtableSymbolEmission {
+  return VtableSymbolEmission {
+    typeId: typeId,
+    tableSymbolId: tableSymbolId,
+    abiVersion: abiVersion,
+    methodCount: methodCount,
+    hiddenRuntimeBoundary: hiddenRuntimeBoundary,
+    routeMetadata: routeMetadata,
+  }
+}
+
+impl VtableSymbolEmission {
+  pub fn canEmit(self: VtableSymbolEmission) -> bool {
+    return self.typeId > 0 && self.tableSymbolId > 0 && self.abiVersion != "" && self.methodCount > 0 && self.hiddenRuntimeBoundary && self.routeMetadata
+  }
+}

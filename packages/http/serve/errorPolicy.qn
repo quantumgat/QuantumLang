@@ -1,0 +1,32 @@
+pub struct HttpErrorPolicy {
+  mapper: HttpErrorMapper,
+  customMapperAllowed: bool,
+}
+
+impl HttpErrorPolicy {
+  pub fn default() -> HttpErrorPolicy {
+    return HttpErrorPolicy {
+      mapper: HttpErrorMapper.default(),
+      customMapperAllowed: true,
+    }
+  }
+
+  pub fn custom<T>() -> HttpErrorPolicy {
+    return HttpErrorPolicy {
+      mapper: HttpErrorMapper.custom<T>(),
+      customMapperAllowed: true,
+    }
+  }
+
+  pub fn mapperType(self: HttpErrorPolicy) -> string {
+    return self.mapper.mapperType()
+  }
+
+  pub fn customEnabled(self: HttpErrorPolicy) -> bool {
+    return self.mapper.isCustom()
+  }
+
+  pub fn complete(self: HttpErrorPolicy) -> bool {
+    return self.customMapperAllowed && self.mapper.complete()
+  }
+}

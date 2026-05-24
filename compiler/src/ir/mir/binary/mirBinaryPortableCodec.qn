@@ -1,0 +1,24 @@
+pub struct MirBinaryPortableCodec {
+  instruction: u64,
+  typeName: string,
+  fieldCount: usize,
+  directFieldOps: bool,
+  paddingBytesRejected: bool,
+  nestedCodecInlined: bool,
+  lengthPrefixLowered: bool,
+  endianLowered: bool,
+  rawMemcpyRejectedForPortable: bool,
+}
+
+impl MirBinaryPortableCodec {
+  pub fn portableHotPath(self: MirBinaryPortableCodec) -> bool {
+    return self.instruction > 0
+      && self.typeName != ""
+      && self.directFieldOps
+      && self.paddingBytesRejected
+      && self.nestedCodecInlined
+      && self.lengthPrefixLowered
+      && self.endianLowered
+      && self.rawMemcpyRejectedForPortable
+  }
+}

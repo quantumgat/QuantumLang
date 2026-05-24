@@ -1,0 +1,21 @@
+pub enum QueryKind {
+  SourceQuery,
+  AstQuery,
+  TypeQuery,
+  IrQuery,
+  CompletionQuery,
+}
+
+pub struct QueryKey {
+  kind: QueryKind,
+  fileId: u64,
+  spanStart: usize,
+}
+
+pub fn queryKey(kind: QueryKind, fileId: u64, spanStart: usize) -> QueryKey {
+  return QueryKey {
+    kind: kind,
+    fileId: fileId,
+    spanStart: spanStart,
+  }
+}

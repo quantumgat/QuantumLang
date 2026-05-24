@@ -1,0 +1,50 @@
+pub enum IfSafeFailureKind {
+  NonBoolCondition
+  BranchTypeMismatch
+  InvalidPattern
+  GuardViolation
+  RangeTypeMismatch
+  TypeTestViolation
+  QuestionFlowViolation
+  AwaitQuestionViolation
+  StaticIfViolation
+  TargetFeatureViolation
+  QuantumProfileViolation
+}
+
+pub struct IfSafeFailure {
+  kind: IfSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+}
+
+pub fn ifSafeFailure(
+  kind: IfSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+) -> IfSafeFailure {
+  return IfSafeFailure {
+    kind: kind,
+    sourceRangeReady: sourceRangeReady,
+    fixitReady: fixitReady,
+    noCoredump: noCoredump,
+    recoverable: recoverable,
+  }
+}
+
+pub fn ifDefaultSafeFailure(kind: IfSafeFailureKind) -> IfSafeFailure {
+  return ifSafeFailure(kind, true, true, true, true)
+}
+
+impl IfSafeFailure {
+  pub fn safe(self: IfSafeFailure) -> bool {
+    return self.sourceRangeReady
+      && self.fixitReady
+      && self.noCoredump
+      && self.recoverable
+  }
+}

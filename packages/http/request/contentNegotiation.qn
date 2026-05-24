@@ -1,0 +1,47 @@
+pub struct ContentNegotiation {
+  accept: string,
+  acceptLanguage: string,
+  acceptEncoding: string,
+}
+
+impl ContentNegotiation {
+  pub fn init(accept: string, acceptLanguage: string, acceptEncoding: string) -> ContentNegotiation {
+    return ContentNegotiation {
+      accept: accept,
+      acceptLanguage: acceptLanguage,
+      acceptEncoding: acceptEncoding,
+    }
+  }
+
+  pub fn from(headers: HttpHeaderMap) -> ContentNegotiation {
+    return httpContentNegotiationSurface(headers)
+  }
+
+  pub fn wantsJson(self: ContentNegotiation) -> bool {
+    return httpAcceptsSurface(self.accept, "application/json")
+  }
+
+  pub fn wantsHtml(self: ContentNegotiation) -> bool {
+    return httpAcceptsSurface(self.accept, "text/html")
+  }
+
+  pub fn wantsText(self: ContentNegotiation) -> bool {
+    return httpAcceptsSurface(self.accept, "text/plain")
+  }
+
+  pub fn bestContentType(self: ContentNegotiation, offered: Vec<string>) -> string {
+    return httpBestAcceptedSurface(self.accept, offered)
+  }
+
+  pub fn bestLanguage(self: ContentNegotiation, offered: Vec<string>) -> string {
+    return httpBestAcceptedSurface(self.acceptLanguage, offered)
+  }
+
+  pub fn bestEncoding(self: ContentNegotiation, offered: Vec<string>) -> string {
+    return httpBestAcceptedSurface(self.acceptEncoding, offered)
+  }
+}
+
+fn httpContentNegotiationSurface(headers: HttpHeaderMap) -> ContentNegotiation
+fn httpAcceptsSurface(header: string, value: string) -> bool
+fn httpBestAcceptedSurface(header: string, offered: Vec<string>) -> string

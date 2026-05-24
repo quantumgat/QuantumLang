@@ -1,0 +1,15 @@
+pub struct RuntimeBlockingBoundary {
+  poolId: u64,
+  isolated: bool,
+  queueBounded: bool,
+  saturationDiagnosticReady: bool,
+}
+
+impl RuntimeBlockingBoundary {
+  pub fn safe(self: RuntimeBlockingBoundary) -> bool {
+    return self.poolId > 0
+      && self.isolated
+      && self.queueBounded
+      && self.saturationDiagnosticReady
+  }
+}

@@ -1,0 +1,10 @@
+[module]
+name = "machine"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-machine-ir-frame-legalize-regalloc-handoff"
+
+[dependencies]
+allowed = ["backend/native/debug", "backend/native/object"]
+forbidden = ["backend/c", "backend/llvm", "generated source fallback"]

@@ -1,0 +1,16 @@
+pub struct IosTargetVariants {
+  aarch64Device: TargetVariantId,
+  aarch64Simulator: TargetVariantId,
+  x8664Simulator: TargetVariantId,
+}
+
+impl IosTargetVariants {
+  pub fn coversDevice(self: IosTargetVariants) -> bool {
+    return self.aarch64Device == TargetVariantId.IosAarch64Device
+  }
+
+  pub fn coversSimulator(self: IosTargetVariants) -> bool {
+    return self.aarch64Simulator == TargetVariantId.IosAarch64Simulator
+      && self.x8664Simulator == TargetVariantId.IosX8664Simulator
+  }
+}

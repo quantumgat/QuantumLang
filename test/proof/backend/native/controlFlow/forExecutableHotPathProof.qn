@@ -1,0 +1,27 @@
+pub struct ForExecutableHotPathProof {
+  positiveExecutableEvidence: bool,
+  negativeExecutableEvidence: bool,
+  rangeExecutableEvidence: bool,
+  cursorExecutableEvidence: bool,
+  zipEnumerateEvidence: bool,
+  asyncParallelEvidence: bool,
+  domainLoopEvidence: bool,
+  qforEvidence: bool,
+  perFormMatrix: ForPerFormHotPathProof,
+  nativeLowering: NativeForLoopLowering,
+}
+
+impl ForExecutableHotPathProof {
+  pub fn complete(self: ForExecutableHotPathProof) -> bool {
+    return self.positiveExecutableEvidence
+      && self.negativeExecutableEvidence
+      && self.rangeExecutableEvidence
+      && self.cursorExecutableEvidence
+      && self.zipEnumerateEvidence
+      && self.asyncParallelEvidence
+      && self.domainLoopEvidence
+      && self.qforEvidence
+      && self.perFormMatrix.complete()
+      && self.nativeLowering.executableHotPathReady()
+  }
+}

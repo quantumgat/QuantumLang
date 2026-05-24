@@ -1,0 +1,91 @@
+pub enum PluginKind {
+  Stdlib,
+  CapabilityPack,
+}
+
+pub struct PluginManifest {
+  name: string,
+  version: string,
+  kind: PluginKind,
+  abi: PluginAbiContract,
+  stdlib: PluginStdlibRoot,
+  exports: PluginExports,
+  compiler: PluginCompilerContract,
+  runtime: PluginRuntimeContract,
+  targets: PluginTargetContract,
+  safety: PluginSafetyContract,
+  proof: PluginProofContract,
+}
+
+impl PluginManifest {
+  pub fn fromDocument(document: PluginTomlDocument, name: string, version: string) -> PluginManifest {
+    let mut publicRootCount: usize = 0
+    if document.hasStdlib {
+      publicRootCount = 1
+    }
+
+    let mut intrinsicCount: usize = 0
+    if document.hasExports || document.compileTimeExtension() {
+      intrinsicCount = 1
+    }
+
+    let mut kernelCount: usize = 0
+    if document.runtimeExtension() {
+      kernelCount = 1
+    }
+
+    if document.compileTimeExtension() || document.runtimeExtension() {
+      return PluginManifest.capabilityPack(name, version, publicRootCount, intrinsicCount, kernelCount)
+    }
+    return PluginManifest.stdlibOnly(name, version, publicRootCount)
+  }
+
+  pub fn stdlibOnly(name: string, version: string, publicRootCount: usize) -> PluginManifest {
+    return PluginManifest {
+      name: name,
+      version: version,
+      kind: PluginKind.Stdlib,
+      abi: PluginAbiContract.v1(">=0.1.0"),
+      stdlib: PluginStdlibRoot.mounted("stdlib", publicRootCount),
+      exports: PluginExports.stdlibOnly(),
+      compiler: PluginCompilerContract.none(),
+      runtime: PluginRuntimeContract.none(),
+      targets: PluginTargetContract.any(),
+      safety: PluginSafetyContract.required(),
+      proof: PluginProofContract.required(),
+    }
+  }
+
+  pub fn capabilityPack(name: string, version: string, publicRootCount: usize, intrinsicCount: usize, kernelCount: usize) -> PluginManifest {
+    return PluginManifest {
+      name: name,
+      version: version,
+      kind: PluginKind.CapabilityPack,
+      abi: PluginAbiContract.v1(">=0.1.0"),
+      stdlib: PluginStdlibRoot.mounted("stdlib", publicRootCount),
+      exports: PluginExports.capabilityPack(intrinsicCount, 1),
+      compiler: PluginCompilerContract.lowering(3, 1, 2, 2),
+      runtime: PluginRuntimeContract.kernels(kernelCount),
+      targets: PluginTargetContract.gated(3, 2, 2),
+      safety: PluginSafetyContract.required(),
+      proof: PluginProofContract.required(),
+    }
+  }
+
+  pub fn accepted(self: PluginManifest) -> bool {
+    return self.name != ""
+      && self.version != ""
+      && self.abi.accepted()
+      && self.stdlib.accepted()
+      && self.exports.accepted()
+      && self.compiler.accepted()
+      && self.runtime.accepted()
+      && self.targets.accepted()
+      && self.safety.accepted()
+      && self.proof.accepted()
+  }
+
+  pub fn needsRuntime(self: PluginManifest) -> bool {
+    return self.runtime.executableExtension()
+  }
+}

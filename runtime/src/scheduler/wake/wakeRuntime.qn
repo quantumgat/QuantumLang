@@ -1,0 +1,39 @@
+pub enum SchedulerWakeRoute {
+  LocalQueue
+  GlobalInject
+  RemoteUnpark
+}
+
+pub struct SchedulerWakeRuntime {
+  taskId: u64,
+  route: SchedulerWakeRoute,
+  coalesced: bool,
+  batched: bool,
+  lostWakePrevented: bool,
+}
+
+impl SchedulerWakeRuntime {
+  pub fn init(
+    taskId: u64,
+    route: SchedulerWakeRoute,
+    coalesced: bool,
+    batched: bool,
+    lostWakePrevented: bool,
+  ) -> SchedulerWakeRuntime {
+    return SchedulerWakeRuntime {
+      taskId: taskId,
+      route: route,
+      coalesced: coalesced,
+      batched: batched,
+      lostWakePrevented: lostWakePrevented,
+    }
+  }
+
+  pub fn accepted(self: SchedulerWakeRuntime) -> bool {
+    return self.taskId > 0 && self.lostWakePrevented
+  }
+
+  pub fn hotPath(self: SchedulerWakeRuntime) -> bool {
+    return self.accepted() && (self.coalesced || self.batched)
+  }
+}

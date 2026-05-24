@@ -1,0 +1,3 @@
+pub mod structValueRuntimeContract
+
+pub use structValueRuntimeContract.StructValueRuntimeContract

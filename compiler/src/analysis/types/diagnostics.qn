@@ -1,0 +1,16 @@
+pub enum TypeDiagnosticKind {
+  Mismatch
+  UnknownType
+  UnsatisfiedTrait
+  AmbiguousInference
+}
+
+pub struct TypeDiagnostic {
+  node: u64,
+  kind: TypeDiagnosticKind,
+  stableCode: u32,
+}
+
+pub fn typeDiagnostic(node: u64, kind: TypeDiagnosticKind, stableCode: u32) -> TypeDiagnostic {
+  return TypeDiagnostic { node: node, kind: kind, stableCode: stableCode }
+}

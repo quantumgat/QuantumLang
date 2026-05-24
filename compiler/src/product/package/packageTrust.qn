@@ -1,0 +1,27 @@
+pub struct PackageRegistryTrustPolicy {
+  signaturesRequired: bool,
+  trustedRegistryCount: usize,
+  trustedKeyCount: usize,
+  rejectUntrustedRegistry: bool,
+  rejectMissingKey: bool,
+}
+
+impl PackageRegistryTrustPolicy {
+  pub fn strict(trustedRegistryCount: usize, trustedKeyCount: usize) -> PackageRegistryTrustPolicy {
+    return PackageRegistryTrustPolicy {
+      signaturesRequired: true,
+      trustedRegistryCount: trustedRegistryCount,
+      trustedKeyCount: trustedKeyCount,
+      rejectUntrustedRegistry: true,
+      rejectMissingKey: true,
+    }
+  }
+
+  pub fn enforced(self: PackageRegistryTrustPolicy) -> bool {
+    return self.signaturesRequired
+      && self.trustedRegistryCount > 0
+      && self.trustedKeyCount > 0
+      && self.rejectUntrustedRegistry
+      && self.rejectMissingKey
+  }
+}

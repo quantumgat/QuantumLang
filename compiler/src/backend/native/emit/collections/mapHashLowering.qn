@@ -1,0 +1,71 @@
+pub enum MapHashLoweringKind {
+  Lookup,
+  Insert,
+  Remove,
+  Entry,
+}
+
+pub struct MapHashLowering {
+  kind: MapHashLoweringKind,
+  hashHoisted: bool,
+  probeLoopLowered: bool,
+  boundsProofRequired: bool,
+  loadFactorGuarded: bool,
+  entrySingleLookup: bool,
+  insertSlotLowered: bool,
+  directWriteLowered: bool,
+  uncheckedPayloadLowered: bool,
+  valueHashLowered: bool,
+  cachedHashReusedOnGrow: bool,
+  singleLookupSetInsert: bool,
+  sideEntryIndexElided: bool,
+  tupleReturnErased: bool,
+  orderedMapSeparated: bool,
+}
+
+pub fn mapHashLowering(kind: MapHashLoweringKind) -> MapHashLowering {
+  return MapHashLowering {
+    kind: kind,
+    hashHoisted: true,
+    probeLoopLowered: true,
+    boundsProofRequired: true,
+    loadFactorGuarded: true,
+    entrySingleLookup: kind == MapHashLoweringKind.Entry,
+    insertSlotLowered: true,
+    directWriteLowered: true,
+    uncheckedPayloadLowered: true,
+    valueHashLowered: true,
+    cachedHashReusedOnGrow: true,
+    singleLookupSetInsert: true,
+    sideEntryIndexElided: true,
+    tupleReturnErased: true,
+    orderedMapSeparated: true,
+  }
+}
+
+impl MapHashLowering {
+  pub fn canLowerLookup(self: MapHashLowering) -> bool {
+    return self.hashHoisted
+      && self.probeLoopLowered
+      && self.boundsProofRequired
+      && self.loadFactorGuarded
+      && self.tupleReturnErased
+  }
+
+  pub fn canLowerEntryFastPath(self: MapHashLowering) -> bool {
+    return self.canLowerLookup()
+      && self.entrySingleLookup
+      && self.orderedMapSeparated
+  }
+
+  pub fn canLowerInsertFastPath(self: MapHashLowering) -> bool {
+    return self.canLowerLookup()
+      && self.insertSlotLowered
+      && self.directWriteLowered
+      && self.uncheckedPayloadLowered
+      && self.valueHashLowered
+      && self.cachedHashReusedOnGrow
+      && self.singleLookupSetInsert
+      && self.sideEntryIndexElided
+  }
+}

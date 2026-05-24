@@ -1,0 +1,17 @@
+pub struct RuntimeStructImplTraitBoundary {
+  staticStructHasNoRuntimeEngine: bool,
+  implBlocksErasedAfterLowering: bool,
+  staticTraitsMonomorphized: bool,
+  dynTraitHandoffExplicit: bool,
+  noHiddenAllocation: bool,
+}
+
+impl RuntimeStructImplTraitBoundary {
+  pub fn complete(self: RuntimeStructImplTraitBoundary) -> bool {
+    return self.staticStructHasNoRuntimeEngine
+      && self.implBlocksErasedAfterLowering
+      && self.staticTraitsMonomorphized
+      && self.dynTraitHandoffExplicit
+      && self.noHiddenAllocation
+  }
+}

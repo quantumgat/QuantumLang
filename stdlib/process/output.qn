@@ -1,0 +1,16 @@
+pub struct ProcessOutput {
+  status: ExitStatus,
+  stdout: string,
+  stderr: string,
+  truncated: bool,
+}
+
+impl ProcessOutput {
+  pub fn success(self: ProcessOutput) -> bool {
+    return self.status.success()
+  }
+
+  pub fn text(self: ProcessOutput) -> string {
+    return self.stdout
+  }
+}

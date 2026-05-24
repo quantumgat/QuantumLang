@@ -1,0 +1,27 @@
+pub struct HirBinaryAcceleratedCodecLowering {
+  hirNode: u64,
+  generatedCodecSelected: bool,
+  borrowedViewRegionTracked: bool,
+  projectionFieldsResolved: bool,
+  predicateFieldResolved: bool,
+  layoutHashResolved: bool,
+  builderChainResolved: bool,
+  codecPlanReused: bool,
+  limitsResolved: bool,
+  unsafeEscapeRejected: bool,
+}
+
+impl HirBinaryAcceleratedCodecLowering {
+  pub fn accepted(self: HirBinaryAcceleratedCodecLowering) -> bool {
+    return self.hirNode > 0
+      && self.generatedCodecSelected
+      && self.borrowedViewRegionTracked
+      && self.projectionFieldsResolved
+      && self.predicateFieldResolved
+      && self.layoutHashResolved
+      && self.builderChainResolved
+      && self.codecPlanReused
+      && self.limitsResolved
+      && self.unsafeEscapeRejected
+  }
+}

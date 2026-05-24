@@ -1,0 +1,70 @@
+pub enum PluginPolicyRequirement {
+  Optional,
+  Required,
+  Forbidden,
+}
+
+pub enum PluginAbiDiagnosticKind {
+  Accepted,
+  MissingPluginSection,
+  UnsupportedAbi,
+  UnsupportedQtlcVersion,
+  OldTopLevelTypesRejected,
+  OldTopLevelFactsRejected,
+  OldTopLevelLoweringRejected,
+}
+
+pub struct PluginAbiContract {
+  abi: string,
+  qtlcRequirement: string,
+  supportedAbi: string,
+  qtlcCompatible: bool,
+  oldTopLevelTypesRejected: bool,
+  oldTopLevelFactsRejected: bool,
+  oldTopLevelLoweringRejected: bool,
+}
+
+impl PluginAbiContract {
+  pub fn v1(qtlcRequirement: string) -> PluginAbiContract {
+    return PluginAbiContract {
+      abi: "qtlc-plugin-abi-v1",
+      qtlcRequirement: qtlcRequirement,
+      supportedAbi: "qtlc-plugin-abi-v1",
+      qtlcCompatible: qtlcRequirement != "",
+      oldTopLevelTypesRejected: true,
+      oldTopLevelFactsRejected: true,
+      oldTopLevelLoweringRejected: true,
+    }
+  }
+
+  pub fn accepted(self: PluginAbiContract) -> bool {
+    return self.abi == self.supportedAbi
+      && self.qtlcCompatible
+      && self.rejectsOldSchema()
+  }
+
+  pub fn rejectsOldSchema(self: PluginAbiContract) -> bool {
+    return self.oldTopLevelTypesRejected
+      && self.oldTopLevelFactsRejected
+      && self.oldTopLevelLoweringRejected
+  }
+
+  pub fn diagnostic(self: PluginAbiContract) -> PluginAbiDiagnosticKind {
+    if self.abi != self.supportedAbi {
+      return PluginAbiDiagnosticKind.UnsupportedAbi
+    }
+    if !self.qtlcCompatible {
+      return PluginAbiDiagnosticKind.UnsupportedQtlcVersion
+    }
+    if !self.oldTopLevelTypesRejected {
+      return PluginAbiDiagnosticKind.OldTopLevelTypesRejected
+    }
+    if !self.oldTopLevelFactsRejected {
+      return PluginAbiDiagnosticKind.OldTopLevelFactsRejected
+    }
+    if !self.oldTopLevelLoweringRejected {
+      return PluginAbiDiagnosticKind.OldTopLevelLoweringRejected
+    }
+    return PluginAbiDiagnosticKind.Accepted
+  }
+}

@@ -1,0 +1,25 @@
+pub struct RuntimeLowLevelReport {
+  snapshot: RuntimeLowLevelSnapshot,
+  memoryDiagnostic: RuntimeMemoryDiagnostic,
+  syncDiagnostic: RuntimeSyncDiagnostic,
+  report: RuntimeReport,
+  replay: ReplayArtifact,
+  query: DiagnosticQuery,
+  redacted: bool,
+  emergencyNoAllocation: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeLowLevelReport {
+  pub fn publishable(self: RuntimeLowLevelReport) -> bool {
+    return self.snapshot.publishable()
+      && self.memoryDiagnostic.publishable()
+      && self.syncDiagnostic.productionSafe()
+      && self.report.isRuntimeOwned()
+      && self.replay.canReplayToTest()
+      && self.query.isPrivacySafe()
+      && self.redacted
+      && self.emergencyNoAllocation
+      && self.noCoredump
+  }
+}

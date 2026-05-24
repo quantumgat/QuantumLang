@@ -1,0 +1,29 @@
+pub struct Rational64 {
+  numerator: i64,
+  denominator: i64,
+}
+
+pub struct Rational<T> {
+  numerator: T,
+  denominator: T,
+}
+
+impl Rational64 {
+  pub fn numerator(self: Rational64) -> i64 {
+    return self.numerator
+  }
+
+  pub fn denominator(self: Rational64) -> i64 {
+    return self.denominator
+  }
+}
+
+impl<T> Rational<T> {
+  pub fn numerator(self: Rational<T>) -> T {
+    return self.numerator
+  }
+
+  pub fn denominator(self: Rational<T>) -> T {
+    return self.denominator
+  }
+}

@@ -1,0 +1,15 @@
+pub struct MpscChannel<T> {
+  senderCount: usize,
+  receiver: Receiver<T>,
+  bounded: bool,
+}
+
+impl MpscChannel<T> {
+  pub fn cloneSender(self: MpscChannel<T>) -> Result<Sender<T>, ChannelError>
+
+  pub fn recv(self: MpscChannel<T>) -> Result<T, ChannelError>
+
+  pub fn multiProducer(self: MpscChannel<T>) -> bool {
+    return self.senderCount > 1
+  }
+}

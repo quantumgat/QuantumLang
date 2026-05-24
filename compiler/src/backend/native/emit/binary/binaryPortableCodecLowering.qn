@@ -1,0 +1,27 @@
+pub struct BinaryPortableCodecLowering {
+  directFieldStores: bool,
+  directFieldLoads: bool,
+  nestedStructsInlined: bool,
+  optionResultTagsLowered: bool,
+  vecStringLengthPrefixLowered: bool,
+  mapStableOrderRequired: bool,
+  noRuntimeReflection: bool,
+  noRawStructMemcpy: bool,
+  noPaddingBytes: bool,
+  rawNativeRequiresUnsafe: bool,
+}
+
+impl BinaryPortableCodecLowering {
+  pub fn hotPath(self: BinaryPortableCodecLowering) -> bool {
+    return self.directFieldStores
+      && self.directFieldLoads
+      && self.nestedStructsInlined
+      && self.optionResultTagsLowered
+      && self.vecStringLengthPrefixLowered
+      && self.mapStableOrderRequired
+      && self.noRuntimeReflection
+      && self.noRawStructMemcpy
+      && self.noPaddingBytes
+      && self.rawNativeRequiresUnsafe
+  }
+}

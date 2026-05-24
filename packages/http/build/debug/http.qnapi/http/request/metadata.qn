@@ -1,0 +1,11 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct RequestMetadata {
+  peer: HttpPeerAddress
+  forwarded: ForwardedChain
+  schemeValue: string
+  hostValue: string
+  portValue: usize
+  protocolValue: string
+  tlsValue: TlsInfo
+  safetyValue: RequestSafetyReport
+}

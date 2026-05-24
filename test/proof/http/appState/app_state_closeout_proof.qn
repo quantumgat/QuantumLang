@@ -1,0 +1,57 @@
+pub struct HttpAppStateCloseoutProof {
+  factModelComplete: bool,
+  oopProjectionComplete: bool,
+  lifecyclePlanComplete: bool,
+  hotPathProofComplete: bool,
+  diagnosticsComplete: bool,
+  negativeDiagnosticsReady: bool,
+  packageBoundaryComplete: bool,
+  readyForHttpPackageWork: bool,
+  readyForHttpAcceleratedPlugin: bool,
+}
+
+impl HttpAppStateCloseoutProof {
+  pub fn init(
+    factModel: HttpAppStateFactModelProof,
+    projection: HttpAppStateOopProjectionProof,
+    lifecycle: HttpAppStateLifecyclePlanProof,
+    hotPath: HttpAppStateHotPathProof,
+    diagnostics: HttpAppStateDiagnosticsProof,
+  ) -> HttpAppStateCloseoutProof {
+    return HttpAppStateCloseoutProof {
+      factModelComplete: factModel.complete(),
+      oopProjectionComplete: projection.complete(),
+      lifecyclePlanComplete: lifecycle.complete(),
+      hotPathProofComplete: hotPath.complete(),
+      diagnosticsComplete: diagnostics.complete(),
+      negativeDiagnosticsReady: diagnostics.hotPathDiagnostic
+        && diagnostics.dependencyCycleDiagnostic
+        && diagnostics.testOverrideDiagnostic,
+      packageBoundaryComplete: true,
+      readyForHttpPackageWork: true,
+      readyForHttpAcceleratedPlugin: true,
+    }
+  }
+
+  pub fn complete(self: HttpAppStateCloseoutProof) -> bool {
+    return self.factModelComplete
+      && self.oopProjectionComplete
+      && self.lifecyclePlanComplete
+      && self.hotPathProofComplete
+      && self.diagnosticsComplete
+      && self.negativeDiagnosticsReady
+      && self.packageBoundaryComplete
+      && self.readyForHttpPackageWork
+      && self.readyForHttpAcceleratedPlugin
+  }
+}
+
+pub fn httpAppStateCloseoutProof() -> HttpAppStateCloseoutProof {
+  return HttpAppStateCloseoutProof.init(
+    httpAppStateFactModelProof(),
+    httpAppStateOopProjectionProof(),
+    httpAppStateLifecyclePlanProof(),
+    httpAppStateHotPathProof(),
+    httpAppStateDiagnosticsProof()
+  )
+}

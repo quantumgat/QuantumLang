@@ -1,0 +1,45 @@
+pub struct ParallelLoopLowering {
+  mir: MirParallelLoopOp,
+  emitsWorkerFanout: bool,
+  emitsBatchShard: bool,
+  emitsAtomicStop: bool,
+  emitsFirstResultWins: bool,
+  emitsWorkerCleanup: bool,
+  noLockHotBody: bool,
+  noGeneratedFallback: bool,
+}
+
+pub fn parallelLoopLowering(
+  mir: MirParallelLoopOp,
+  emitsWorkerFanout: bool,
+  emitsBatchShard: bool,
+  emitsAtomicStop: bool,
+  emitsFirstResultWins: bool,
+  emitsWorkerCleanup: bool,
+  noLockHotBody: bool,
+  noGeneratedFallback: bool,
+) -> ParallelLoopLowering {
+  return ParallelLoopLowering {
+    mir: mir,
+    emitsWorkerFanout: emitsWorkerFanout,
+    emitsBatchShard: emitsBatchShard,
+    emitsAtomicStop: emitsAtomicStop,
+    emitsFirstResultWins: emitsFirstResultWins,
+    emitsWorkerCleanup: emitsWorkerCleanup,
+    noLockHotBody: noLockHotBody,
+    noGeneratedFallback: noGeneratedFallback,
+  }
+}
+
+impl ParallelLoopLowering {
+  pub fn complete(self: ParallelLoopLowering) -> bool {
+    return self.mir.lowerable()
+      && self.emitsWorkerFanout
+      && self.emitsBatchShard
+      && self.emitsAtomicStop
+      && self.emitsFirstResultWins
+      && self.emitsWorkerCleanup
+      && self.noLockHotBody
+      && self.noGeneratedFallback
+  }
+}

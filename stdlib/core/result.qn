@@ -1,0 +1,106 @@
+pub enum Result<T, E> {
+  Ok(T),
+  Err(E),
+}
+
+pub fn isOk<T, E>(value: Result<T, E>) -> bool
+pub fn isErr<T, E>(value: Result<T, E>) -> bool
+pub fn unwrapOr<T, E>(value: Result<T, E>, fallback: T) -> T
+
+pub struct ResultPropagation<T, E> {
+  valueType: string,
+  errorType: string,
+  questionMarkAllowed: bool,
+  awaitQuestionMarkAllowed: bool,
+  typedConversionRequired: bool,
+  preservesCauseChain: bool,
+}
+
+impl<T, E> Result<T, E> {
+  /**
+    Maps the success value and leaves the error untouched.
+
+    example:
+      let id = loadUser()?.map(user => user.id)?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none unless mapper allocates
+    stability: public since 0.1
+  */
+  pub fn map<U>(self: Result<T, E>, mapper: fn(T) -> U) -> Result<U, E>
+
+  /**
+    Maps the error value and leaves success untouched.
+
+    example:
+      let user = loadUser().mapErr(err => err.withSource(source))?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none unless mapper allocates
+    stability: public since 0.1
+  */
+  pub fn mapErr<F>(self: Result<T, E>, mapper: fn(E) -> F) -> Result<T, F>
+
+  /**
+    Chains another fallible operation.
+
+    example:
+      let profile = loadUser().andThen(user => loadProfile(user.id))?
+
+    effects: pure unless mapper has effects
+    complexity: O(1)
+    allocation: none unless mapper allocates
+    stability: public since 0.1
+  */
+  pub fn andThen<U>(self: Result<T, E>, mapper: fn(T) -> Result<U, E>) -> Result<U, E>
+
+  /**
+    Recovers from a typed error.
+
+    example:
+      let user = loadUser().recover(err => defaultUser(err))?
+
+    effects: pure unless recovery has effects
+    complexity: O(1)
+    allocation: none unless recovery allocates
+    stability: public since 0.1
+  */
+  pub fn recover(self: Result<T, E>, recovery: fn(E) -> T) -> Result<T, E>
+
+  /**
+    Returns the success value or propagates the error with `?`.
+
+    example:
+      let user = loadUser()?
+
+    effects: early return on Err
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn try(self: Result<T, E>) -> T
+}
+
+impl<T, E> ResultPropagation<T, E> {
+  pub fn checked(valueType: string, errorType: string) -> ResultPropagation<T, E> {
+    return ResultPropagation<T, E> {
+      valueType: valueType,
+      errorType: errorType,
+      questionMarkAllowed: true,
+      awaitQuestionMarkAllowed: true,
+      typedConversionRequired: true,
+      preservesCauseChain: true,
+    }
+  }
+
+  pub fn accepted(self: ResultPropagation<T, E>) -> bool {
+    return self.valueType != ""
+      && self.errorType != ""
+      && self.questionMarkAllowed
+      && self.awaitQuestionMarkAllowed
+      && self.typedConversionRequired
+      && self.preservesCauseChain
+  }
+}

@@ -1,0 +1,10 @@
+[module]
+name = "link"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-link-plan-archive-selection-hidden-cache"
+
+[dependencies]
+allowed = ["backend/native/object", "backend/native/cache"]
+forbidden = ["runtime ABI definitions", "package dependency resolution"]

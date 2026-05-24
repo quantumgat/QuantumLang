@@ -1,0 +1,25 @@
+pub struct MirBinaryHotPathE2ePerf {
+  instruction: u64,
+  directLoads: bool,
+  directStores: bool,
+  endianOpsSelected: bool,
+  boundsChecksHoisted: bool,
+  resultBranchesNoAllocation: bool,
+  codecPlanConstants: bool,
+  viewBorrowsNoCopy: bool,
+  noRuntimeReflection: bool,
+}
+
+impl MirBinaryHotPathE2ePerf {
+  pub fn hotPath(self: MirBinaryHotPathE2ePerf) -> bool {
+    return self.instruction > 0
+      && self.directLoads
+      && self.directStores
+      && self.endianOpsSelected
+      && self.boundsChecksHoisted
+      && self.resultBranchesNoAllocation
+      && self.codecPlanConstants
+      && self.viewBorrowsNoCopy
+      && self.noRuntimeReflection
+  }
+}

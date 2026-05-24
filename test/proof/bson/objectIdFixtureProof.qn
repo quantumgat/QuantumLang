@@ -1,0 +1,27 @@
+pub struct BsonObjectIdFixtureProof {
+  objectIdLength: usize,
+  hexLength: usize,
+  timestampPrefixBytes: usize,
+  validatesHex: bool,
+  rejectsBadHex: bool,
+}
+
+impl BsonObjectIdFixtureProof {
+  pub fn required() -> BsonObjectIdFixtureProof {
+    return BsonObjectIdFixtureProof {
+      objectIdLength: 12,
+      hexLength: 24,
+      timestampPrefixBytes: 4,
+      validatesHex: true,
+      rejectsBadHex: true,
+    }
+  }
+
+  pub fn accepted(self: BsonObjectIdFixtureProof) -> bool {
+    return self.objectIdLength == 12
+      && self.hexLength == 24
+      && self.timestampPrefixBytes == 4
+      && self.validatesHex
+      && self.rejectsBadHex
+  }
+}

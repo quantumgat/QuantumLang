@@ -1,0 +1,17 @@
+pub struct TemplateKernelInput {
+  bytes: usize,
+}
+
+pub struct TemplateKernelOutput {
+  bytes: usize,
+}
+
+pub fn runKernel(input: TemplateKernelInput) -> Result<TemplateKernelOutput, TemplateError> {
+  return pluginTemplate.kernel(input)
+}
+
+pub enum TemplateError {
+  BadInput,
+  KernelUnavailable,
+}
+

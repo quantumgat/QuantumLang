@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct BinaryAcceleratedCodecKernel {
+  validationTokens: bool
+  zeroCopyBorrowGuards: bool
+  pageArenaBounds: bool
+  projectionRuntimeShape: bool
+  predicateCompareKernel: bool
+  columnBlockKernel: bool
+  stableKeyKernel: bool
+  rowDeltaKernel: bool
+  codecBuilderKernel: bool
+  limitsKernel: bool
+  compiledCodecCache: bool
+  diagnosticsNoCoredump: bool
+}

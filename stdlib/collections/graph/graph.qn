@@ -1,0 +1,245 @@
+pub struct NodeId {
+  value: usize,
+}
+
+pub struct Edge {
+  from: NodeId,
+  to: NodeId,
+  weight: usize,
+}
+
+pub struct GraphNode<T> {
+  id: NodeId,
+  value: T,
+  edges: Vec<Edge>,
+  alive: bool,
+}
+
+pub enum GraphError {
+  MissingNode,
+  CycleDetected,
+}
+
+pub struct Graph<T> {
+  nodes: Vec<GraphNode<T>>,
+  len: usize,
+  edgeCount: usize,
+  directed: bool,
+  generation: usize,
+}
+
+impl NodeId {
+  pub fn new(value: usize) -> NodeId {
+    return NodeId { value: value }
+  }
+}
+
+impl Edge {
+  pub fn new(from: NodeId, to: NodeId) -> Edge {
+    return Edge {
+      from: from,
+      to: to,
+      weight: 1,
+    }
+  }
+
+  pub fn weighted(from: NodeId, to: NodeId, weight: usize) -> Edge {
+    return Edge {
+      from: from,
+      to: to,
+      weight: weight,
+    }
+  }
+}
+
+impl<T> GraphNode<T> {
+  pub fn new(id: NodeId, value: T) -> GraphNode<T> {
+    return GraphNode<T> {
+      id: id,
+      value: value,
+      edges: Vec<Edge>.empty(),
+      alive: true,
+    }
+  }
+
+  pub fn addEdge(self: GraphNode<T>, edge: Edge) -> GraphNode<T> requires(alloc) {
+    return GraphNode<T> {
+      id: self.id,
+      value: self.value,
+      edges: self.edges.push(edge),
+      alive: self.alive,
+    }
+  }
+}
+
+impl<T> Graph<T> {
+  pub fn init() -> Graph<T> {
+    return Graph<T> {
+      nodes: Vec<GraphNode<T>>.empty(),
+      len: 0,
+      edgeCount: 0,
+      directed: true,
+      generation: 0,
+    }
+  }
+
+  pub fn empty() -> Graph<T> {
+    return Graph<T>.init()
+  }
+
+  pub fn directed() -> Graph<T> {
+    return Graph<T>.init()
+  }
+
+  pub fn undirected() -> Graph<T> {
+    return Graph<T>.init().withDirected(false)
+  }
+
+  pub fn withCapacity(capacity: usize) -> Graph<T> requires(alloc) {
+    return Graph<T> {
+      nodes: Vec<GraphNode<T>>.withCapacity(capacity),
+      len: 0,
+      edgeCount: 0,
+      directed: true,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> GraphBuilder<T> {
+    return GraphBuilder<T>.init()
+  }
+
+  pub fn len(self: Graph<T>) -> usize {
+    return self.len
+  }
+
+  pub fn nodeCount(self: Graph<T>) -> usize {
+    return self.len
+  }
+
+  pub fn edgesLen(self: Graph<T>) -> usize {
+    return self.edgeCount
+  }
+
+  pub fn isEmpty(self: Graph<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn addNode(self: Graph<T>, value: T) -> (Graph<T>, NodeId) requires(alloc) {
+    let id = NodeId.new(self.nodes.len)
+    let node = GraphNode<T>.new(id, value)
+    return (
+      Graph<T> {
+        nodes: self.nodes.push(node),
+        len: self.len + 1,
+        edgeCount: self.edgeCount,
+        directed: self.directed,
+        generation: self.generation + 1,
+      },
+      id
+    )
+  }
+
+  pub fn addEdge(self: Graph<T>, edge: Edge) -> Graph<T> requires(alloc) {
+    if !self.hasNode(edge.from) || !self.hasNode(edge.to) {
+      return self
+    }
+    let graph = self.writeEdge(edge)
+    if graph.directed {
+      return graph
+    }
+    return graph.writeEdge(Edge.weighted(edge.to, edge.from, edge.weight))
+  }
+
+  pub fn connect(self: Graph<T>, from: NodeId, to: NodeId) -> Graph<T> requires(alloc) {
+    return self.addEdge(Edge.new(from, to))
+  }
+
+  pub fn connectWeighted(self: Graph<T>, from: NodeId, to: NodeId, weight: usize) -> Graph<T> requires(alloc) {
+    return self.addEdge(Edge.weighted(from, to, weight))
+  }
+
+  pub fn hasNode(self: Graph<T>, id: NodeId) -> bool {
+    if id.value >= self.nodes.len {
+      return false
+    }
+    return self.nodes[id.value].alive
+  }
+
+  pub fn nodeValue(self: Graph<T>, id: NodeId) -> Option<T> {
+    if !self.hasNode(id) {
+      return None
+    }
+    return Some(self.nodes[id.value].value)
+  }
+
+  pub fn edgeAt(self: Graph<T>, from: NodeId, index: usize) -> Option<Edge> {
+    if !self.hasNode(from) {
+      return None
+    }
+    let edges = self.nodes[from.value].edges
+    if index >= edges.len {
+      return None
+    }
+    return Some(edges[index])
+  }
+
+  pub fn neighbors(self: Graph<T>, id: NodeId) -> Vec<NodeId> requires(alloc) {
+    let mut result = Vec<NodeId>.empty()
+    if !self.hasNode(id) {
+      return result
+    }
+    let edges = self.nodes[id.value].edges
+    let mut index: usize = 0
+    while index < edges.len {
+      result = result.push(edges[index].to)
+      index = index + 1
+    }
+    return result
+  }
+
+  pub fn iter(self: Graph<T>) -> GraphTraversalCursor<T> {
+    return self.depthFirstCursor(NodeId.new(0))
+  }
+
+  pub fn breadthFirstCursor(self: Graph<T>, start: NodeId) -> GraphTraversalCursor<T> requires(alloc) {
+    return GraphTraversalCursor<T>.fromStart(self, start, GraphTraversalKind.BreadthFirst)
+  }
+
+  pub fn depthFirstCursor(self: Graph<T>, start: NodeId) -> GraphTraversalCursor<T> requires(alloc) {
+    return GraphTraversalCursor<T>.fromStart(self, start, GraphTraversalKind.DepthFirst)
+  }
+
+  pub fn breadthFirst(self: Graph<T>, start: NodeId) -> Vec<NodeId> requires(alloc) {
+    return GraphTraversal.breadthFirst(self, start)
+  }
+
+  pub fn depthFirst(self: Graph<T>, start: NodeId) -> Vec<NodeId> requires(alloc) {
+    return GraphTraversal.depthFirst(self, start)
+  }
+
+  pub fn shortestPath(self: Graph<T>, from: NodeId, to: NodeId) -> Option<GraphPath> requires(alloc) {
+    return GraphPath.shortest(self, from, to)
+  }
+
+  pub fn writeEdge(self: Graph<T>, edge: Edge) -> Graph<T> requires(alloc) {
+    let fromNode = self.nodes[edge.from.value].addEdge(edge)
+    return Graph<T> {
+      nodes: self.nodes.set(edge.from.value, fromNode),
+      len: self.len,
+      edgeCount: self.edgeCount + 1,
+      directed: self.directed,
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn withDirected(self: Graph<T>, directed: bool) -> Graph<T> {
+    return Graph<T> {
+      nodes: self.nodes,
+      len: self.len,
+      edgeCount: self.edgeCount,
+      directed: directed,
+      generation: self.generation,
+    }
+  }
+}

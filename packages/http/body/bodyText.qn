@@ -1,0 +1,25 @@
+pub struct HttpBodyText {
+  text: string,
+}
+
+impl HttpBodyText {
+  pub fn init(text: string) -> HttpBodyText {
+    return HttpBodyText {
+      text: text,
+    }
+  }
+
+  pub fn empty() -> HttpBodyText {
+    return HttpBodyText {
+      text: "",
+    }
+  }
+
+  pub fn text(self: HttpBodyText) -> string {
+    return self.text
+  }
+
+  pub fn isEmpty(self: HttpBodyText) -> bool {
+    return self.text == ""
+  }
+}

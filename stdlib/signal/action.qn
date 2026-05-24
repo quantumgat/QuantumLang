@@ -1,0 +1,7 @@
+pub enum SignalAction {
+  Default
+  Ignore
+  Handler
+  Shutdown
+  Reload
+}

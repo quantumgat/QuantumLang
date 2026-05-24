@@ -1,0 +1,19 @@
+pub struct CfgBlock {
+  blockId: u64,
+  instructionCount: usize,
+  terminatorPresent: bool,
+}
+
+pub fn cfgBlock(blockId: u64, instructionCount: usize, terminatorPresent: bool) -> CfgBlock {
+  return CfgBlock {
+    blockId: blockId,
+    instructionCount: instructionCount,
+    terminatorPresent: terminatorPresent,
+  }
+}
+
+impl CfgBlock {
+  pub fn closed(self: CfgBlock) -> bool {
+    return self.terminatorPresent
+  }
+}

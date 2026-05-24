@@ -1,0 +1,3 @@
+pub interface DiagnosticSink {
+  pub fn emitDiagnostic(self: &DiagnosticSink, diagnostic: Diagnostic) -> ()
+}

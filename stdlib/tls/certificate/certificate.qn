@@ -1,0 +1,11 @@
+pub struct TlsCertificate {
+  subject: string,
+  fingerprint: string,
+  notAfterUnix: u64,
+}
+
+impl TlsCertificate {
+  pub fn pinned(self: TlsCertificate) -> bool {
+    return self.fingerprint != ""
+  }
+}

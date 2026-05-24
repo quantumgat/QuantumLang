@@ -1,0 +1,30 @@
+pub struct HandleTable {
+  capacity: usize,
+  generationChecked: bool,
+  quarantineOnFree: bool,
+  rejectsStaleHandles: bool,
+}
+
+pub fn handleTable(capacity: usize) -> HandleTable {
+  return HandleTable {
+    capacity: capacity,
+    generationChecked: true,
+    quarantineOnFree: true,
+    rejectsStaleHandles: true,
+  }
+}
+
+impl HandleTable {
+  pub fn validatesHandles(self) -> bool {
+    return self.generationChecked &&
+      self.quarantineOnFree &&
+      self.rejectsStaleHandles
+  }
+
+  pub fn validate(self: HandleTable, handle: RuntimeHandle, slot: usize, generation: usize, ownerSubsystem: string) -> Result<RuntimeHandle, HandleError> {
+    if self.validatesHandles() == false {
+      return Err(HandleError.StaleHandle)
+    }
+    return handle.validate(slot, generation, ownerSubsystem)
+  }
+}

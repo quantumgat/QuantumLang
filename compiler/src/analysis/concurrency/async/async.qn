@@ -1,0 +1,30 @@
+pub enum AsyncSafetyDiagnosticKind {
+  None
+  AwaitOutsideAsync
+  BorrowAcrossAwait
+  BlockingCallInAsync
+  NonSendCaptureAcrossWorker
+  UnboundedFanoutWithoutPolicy
+}
+
+pub struct AsyncSyntaxSafety {
+  nodeId: u64,
+  asyncContext: bool,
+  resultContext: bool,
+  suspensionCount: usize,
+  cleanupEdgeCount: usize,
+  diagnostic: AsyncSafetyDiagnosticKind,
+}
+
+impl AsyncSyntaxSafety {
+  pub fn accepted(self: AsyncSyntaxSafety) -> bool {
+    return self.nodeId > 0
+      && self.asyncContext
+      && self.cleanupEdgeCount >= self.suspensionCount
+      && self.diagnostic == AsyncSafetyDiagnosticKind.None
+  }
+
+  pub fn needsStateMachine(self: AsyncSyntaxSafety) -> bool {
+    return self.suspensionCount > 0
+  }
+}

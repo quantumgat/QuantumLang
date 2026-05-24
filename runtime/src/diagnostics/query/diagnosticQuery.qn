@@ -1,0 +1,15 @@
+pub struct DiagnosticQuery {
+  subsystem: string,
+  sinceMillis: u64,
+  redactedOnly: bool,
+}
+
+pub fn diagnosticQuery(subsystem: string, sinceMillis: u64) -> DiagnosticQuery {
+  return DiagnosticQuery { subsystem: subsystem, sinceMillis: sinceMillis, redactedOnly: true }
+}
+
+impl DiagnosticQuery {
+  pub fn isPrivacySafe(self: DiagnosticQuery) -> bool {
+    return self.redactedOnly
+  }
+}

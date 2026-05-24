@@ -1,0 +1,26 @@
+pub mod addressSpace
+pub mod offsetPointerFact
+pub mod pointerAccessFact
+pub mod pointerDerefFact
+pub mod pointerE2eExecutionFact
+pub mod pointerIntrinsicFact
+pub mod pointerLoweringProof
+pub mod pointerPolicy
+pub mod provenance
+pub mod relativePointerFact
+pub mod smartPointerFact
+pub mod targetPointerLoweringFact
+
+pub use addressSpace.AddressSpaceFact
+pub use offsetPointerFact.OffsetPointerFact
+pub use pointerAccessFact.PointerAccessFact
+pub use pointerDerefFact.PointerDerefFact
+pub use pointerE2eExecutionFact.PointerE2eExecutionFact
+pub use pointerIntrinsicFact.PointerIntrinsicFact
+pub use pointerLoweringProof.PointerLoweringProof
+pub use pointerPolicy.PointerPolicy
+pub use provenance.ProvenanceFact
+pub use relativePointerFact.RelativePointerFact
+pub use smartPointerFact.SmartPointerFact
+pub use smartPointerFact.SmartPointerKind
+pub use targetPointerLoweringFact.TargetPointerLoweringFact

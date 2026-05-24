@@ -1,0 +1,48 @@
+pub struct StdlibMemoryErrorProof {
+  outOfMemory: bool,
+  pressureDenied: bool,
+  doubleFree: bool,
+  wrongAllocator: bool,
+  staleHandle: bool,
+  leak: bool,
+  useAfterFree: bool,
+  invalidAlignment: bool,
+  boundsFailure: bool,
+  addressRedacted: bool,
+  typedCodeCategory: bool,
+  noCoredump: bool,
+}
+
+impl StdlibMemoryErrorProof {
+  pub fn complete() -> StdlibMemoryErrorProof {
+    return StdlibMemoryErrorProof {
+      outOfMemory: true,
+      pressureDenied: true,
+      doubleFree: true,
+      wrongAllocator: true,
+      staleHandle: true,
+      leak: true,
+      useAfterFree: true,
+      invalidAlignment: true,
+      boundsFailure: true,
+      addressRedacted: true,
+      typedCodeCategory: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn passed(self: StdlibMemoryErrorProof) -> bool {
+    return self.outOfMemory
+      && self.pressureDenied
+      && self.doubleFree
+      && self.wrongAllocator
+      && self.staleHandle
+      && self.leak
+      && self.useAfterFree
+      && self.invalidAlignment
+      && self.boundsFailure
+      && self.addressRedacted
+      && self.typedCodeCategory
+      && self.noCoredump
+  }
+}

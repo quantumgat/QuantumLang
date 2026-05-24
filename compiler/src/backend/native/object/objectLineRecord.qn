@@ -1,0 +1,27 @@
+pub struct ObjectLineRecord {
+  sourceLine: usize,
+  sourceColumn: usize,
+  sectionOffset: usize,
+}
+
+pub fn objectLineRecord(sourceLine: usize, sourceColumn: usize, sectionOffset: usize) -> ObjectLineRecord {
+  return ObjectLineRecord {
+    sourceLine: sourceLine,
+    sourceColumn: sourceColumn,
+    sectionOffset: sectionOffset,
+  }
+}
+
+impl ObjectLineRecord {
+  pub fn line(self: ObjectLineRecord) -> usize {
+    return self.sourceLine
+  }
+
+  pub fn column(self: ObjectLineRecord) -> usize {
+    return self.sourceColumn
+  }
+
+  pub fn offset(self: ObjectLineRecord) -> usize {
+    return self.sectionOffset
+  }
+}

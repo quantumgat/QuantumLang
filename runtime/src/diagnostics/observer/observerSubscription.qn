@@ -1,0 +1,15 @@
+pub struct ObserverSubscription {
+  observerId: u64,
+  subsystem: string,
+  active: bool,
+}
+
+pub fn observerSubscription(observerId: u64, subsystem: string) -> ObserverSubscription {
+  return ObserverSubscription { observerId: observerId, subsystem: subsystem, active: true }
+}
+
+impl ObserverSubscription {
+  pub fn canReceive(self: ObserverSubscription) -> bool {
+    return self.active
+  }
+}

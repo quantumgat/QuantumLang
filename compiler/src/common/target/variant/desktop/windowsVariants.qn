@@ -1,0 +1,18 @@
+pub struct WindowsTargetVariants {
+  x8664Msvc: TargetVariantId,
+  x8664Gnu: TargetVariantId,
+  i686Msvc: TargetVariantId,
+  aarch64Msvc: TargetVariantId,
+}
+
+impl WindowsTargetVariants {
+  pub fn coversDesktop(self: WindowsTargetVariants) -> bool {
+    return self.x8664Msvc == TargetVariantId.WindowsX8664Msvc
+      && self.x8664Gnu == TargetVariantId.WindowsX8664Gnu
+      && self.i686Msvc == TargetVariantId.WindowsI686Msvc
+  }
+
+  pub fn coversArm64(self: WindowsTargetVariants) -> bool {
+    return self.aarch64Msvc == TargetVariantId.WindowsAarch64Msvc
+  }
+}

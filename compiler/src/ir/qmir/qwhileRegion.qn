@@ -1,0 +1,17 @@
+pub struct QwhileRegion {
+  region: QuantumRegion,
+  bound: usize,
+  measurementControlledExit: bool,
+  qubitOwnershipPreserved: bool,
+  qirProfileName: string,
+}
+
+impl QwhileRegion {
+  pub fn qirReady(self: QwhileRegion) -> bool {
+    return self.region.qwhileReady()
+      && self.bound > 0
+      && self.measurementControlledExit
+      && self.qubitOwnershipPreserved
+      && self.qirProfileName != ""
+  }
+}

@@ -1,0 +1,19 @@
+pub struct PortableReactorRuntime {
+  pollReady: bool,
+  sleepReady: bool,
+  deterministicReady: bool,
+}
+
+impl PortableReactorRuntime {
+  pub fn init(pollReady: bool, sleepReady: bool, deterministicReady: bool) -> PortableReactorRuntime {
+    return PortableReactorRuntime {
+      pollReady: pollReady,
+      sleepReady: sleepReady,
+      deterministicReady: deterministicReady,
+    }
+  }
+
+  pub fn ready(self: PortableReactorRuntime) -> bool {
+    return self.pollReady && self.sleepReady && self.deterministicReady
+  }
+}

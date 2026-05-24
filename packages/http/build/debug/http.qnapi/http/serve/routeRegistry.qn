@@ -1,0 +1,8 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub abstract class RouteRegistry {
+  routeCount: usize
+  conflictCount: usize
+  pub init() {}
+  pub fn register(self: &mut RouteRegistry, routeName: string) -> bool
+  pub fn hasConflicts(self: RouteRegistry) -> bool
+}

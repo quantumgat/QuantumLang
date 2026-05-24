@@ -1,0 +1,43 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum BinaryRuntimeIntrinsicKind {
+  ReadFixedWidth,
+  WriteFixedWidth,
+  ReadBytes,
+  WriteBytes,
+  ReadVarU64,
+  WriteVarU64,
+  FinishWriter,
+  EncodePortable,
+  DecodePortable,
+  DecodeView,
+  EncodeInto,
+  EncodedSize,
+  RawNative,
+  BuildCodec,
+  CodecValidate,
+  CodecView,
+  CodecWrite,
+  CodecSize,
+  ProjectionView,
+  PredicateMatch,
+  ColumnBlockDecode,
+  StableKeyEncode,
+  DeltaEncode,
+  ReadBits,
+  Crc32,
+}
+pub struct BinaryRuntimeIntrinsic {
+  kind: BinaryRuntimeIntrinsicKind
+  intrinsicName: string
+  loweredByCompiler: bool
+  runtimeDiagnosticFallback: bool
+  noCoredump: bool
+  allocationBytesOnHotPath: usize
+  boundsChecked: bool
+}
+pub extern "qnpkg" {
+  pub fn binaryRuntimeIntrinsic(kind: BinaryRuntimeIntrinsicKind, intrinsicName: string) -> BinaryRuntimeIntrinsic
+}
+pub extern "qnpkg" {
+  pub fn binaryRuntimeIntrinsicForName(intrinsicName: string) -> BinaryRuntimeIntrinsic
+}

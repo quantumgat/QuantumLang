@@ -1,0 +1,23 @@
+pub struct SafeFailureGuaranteeFact {
+  node: u64,
+  safeCode: bool,
+  diagnosticCode: string,
+  resultOrPanicBridge: bool,
+  sourceMapAttached: bool,
+  noCoredump: bool,
+  noProcessAbort: bool,
+  unsafeBoundaryRejected: bool,
+}
+
+impl SafeFailureGuaranteeFact {
+  pub fn accepted(self: SafeFailureGuaranteeFact) -> bool {
+    return self.node > 0
+      && self.safeCode
+      && self.diagnosticCode != ""
+      && self.resultOrPanicBridge
+      && self.sourceMapAttached
+      && self.noCoredump
+      && self.noProcessAbort
+      && self.unsafeBoundaryRejected
+  }
+}

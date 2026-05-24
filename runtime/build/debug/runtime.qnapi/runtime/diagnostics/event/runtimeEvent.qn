@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeDiagnosticSeverity {
+  RuntimeInfo
+  RuntimeWarning
+  RuntimeError
+  RuntimeFatal
+}
+pub struct RuntimeDiagnosticEvent {
+  subsystem: string
+  code: u32
+  severity: RuntimeDiagnosticSeverity
+  redacted: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeDiagnosticEvent(subsystem: string, code: u32, severity: RuntimeDiagnosticSeverity) -> RuntimeDiagnosticEvent
+}

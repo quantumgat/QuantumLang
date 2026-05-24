@@ -1,0 +1,18 @@
+pub struct QwhileShotLoop {
+  shotPlan: ShotPlan,
+  staticBound: usize,
+  providerReady: bool,
+  qubitHandlesStable: bool,
+  resultHandlesStable: bool,
+  noCoredump: bool,
+}
+
+impl QwhileShotLoop {
+  pub fn safe(self: QwhileShotLoop) -> bool {
+    return self.staticBound > 0
+      && self.providerReady
+      && self.qubitHandlesStable
+      && self.resultHandlesStable
+      && self.noCoredump
+  }
+}

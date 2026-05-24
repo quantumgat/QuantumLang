@@ -1,0 +1,45 @@
+pub enum ResultRecoveryKind {
+  Map,
+  MapErr,
+  AndThen,
+  Recover,
+  OrElse,
+}
+
+pub struct ResultRecoveryPolicy {
+  kind: ResultRecoveryKind,
+  typedError: bool,
+  preservesOriginalCause: bool,
+  patternMatchExhaustive: bool,
+  noImplicitPanic: bool,
+}
+
+impl ResultRecoveryPolicy {
+  /**
+    Describes safe typed recovery from `Err`.
+
+    example:
+      let user = loadUser().recover(err => guestUser(err))?
+
+    effects: pure unless recovery has effects
+    complexity: O(1)
+    allocation: none unless recovery allocates
+    stability: public since 0.1
+  */
+  pub fn typed(kind: ResultRecoveryKind) -> ResultRecoveryPolicy {
+    return ResultRecoveryPolicy {
+      kind: kind,
+      typedError: true,
+      preservesOriginalCause: true,
+      patternMatchExhaustive: true,
+      noImplicitPanic: true,
+    }
+  }
+
+  pub fn accepted(self: ResultRecoveryPolicy) -> bool {
+    return self.typedError
+      && self.preservesOriginalCause
+      && self.patternMatchExhaustive
+      && self.noImplicitPanic
+  }
+}

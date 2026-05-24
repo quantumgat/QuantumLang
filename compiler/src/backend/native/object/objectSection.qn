@@ -1,0 +1,30 @@
+pub enum ObjectSectionKind {
+  TextSection
+  DataSection
+  RodataSection
+  DebugSection
+}
+
+pub struct ObjectSection {
+  name: string,
+  kind: ObjectSectionKind,
+  byteCount: usize,
+}
+
+pub fn objectSection(name: string, kind: ObjectSectionKind, byteCount: usize) -> ObjectSection {
+  return ObjectSection { name: name, kind: kind, byteCount: byteCount }
+}
+
+impl ObjectSection {
+  pub fn sectionName(self: ObjectSection) -> string {
+    return self.name
+  }
+
+  pub fn sectionKind(self: ObjectSection) -> ObjectSectionKind {
+    return self.kind
+  }
+
+  pub fn bytes(self: ObjectSection) -> usize {
+    return self.byteCount
+  }
+}

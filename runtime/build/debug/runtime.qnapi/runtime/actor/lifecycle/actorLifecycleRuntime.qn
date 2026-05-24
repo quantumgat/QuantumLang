@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeActorLifecycleState {
+  Starting
+  Running
+  Stopping
+  Stopped
+  Failed
+}
+pub struct RuntimeActorLifecycle {
+  actorId: ActorId
+  state: RuntimeActorLifecycleState
+  cleanupRegistered: bool
+  diagnosticsReady: bool
+}

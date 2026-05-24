@@ -1,0 +1,15 @@
+pub struct QubitHandle {
+  handleId: u64,
+  providerOwned: bool,
+  generationChecked: bool,
+}
+
+pub fn qubitHandle(handleId: u64) -> QubitHandle {
+  return QubitHandle { handleId: handleId, providerOwned: true, generationChecked: true }
+}
+
+impl QubitHandle {
+  pub fn canUse(self: QubitHandle) -> bool {
+    return self.handleId > 0 && self.providerOwned && self.generationChecked
+  }
+}

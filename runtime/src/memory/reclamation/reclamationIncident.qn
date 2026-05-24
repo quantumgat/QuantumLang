@@ -1,0 +1,23 @@
+pub enum ReclamationIncidentKind {
+  UnprotectedHazardLoad,
+  AbaVersionMissing,
+  PrematureFree,
+  StalePointer,
+  MissedWake,
+}
+
+pub struct ReclamationIncident {
+  kind: ReclamationIncidentKind,
+  address: usize,
+  recoverable: bool,
+}
+
+impl ReclamationIncident {
+  pub fn init(kind: ReclamationIncidentKind, address: usize) -> ReclamationIncident {
+    return ReclamationIncident {
+      kind: kind,
+      address: address,
+      recoverable: true,
+    }
+  }
+}

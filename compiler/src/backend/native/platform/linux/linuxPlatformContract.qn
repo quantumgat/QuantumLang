@@ -1,0 +1,12 @@
+pub struct LinuxPlatformContract {
+  target: string,
+  epollAvailable: bool,
+  procfsAvailable: bool,
+  ioUringOptional: bool,
+}
+
+impl LinuxPlatformContract {
+  pub fn accepted(self: LinuxPlatformContract) -> bool {
+    return self.target != "" && self.epollAvailable
+  }
+}

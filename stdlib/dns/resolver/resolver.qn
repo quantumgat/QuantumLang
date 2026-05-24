@@ -1,0 +1,38 @@
+pub struct DnsResolverConfig {
+  timeout: NetTimeout,
+  retryCount: u32,
+  cache: DnsCachePolicy,
+  systemResolverAllowed: bool,
+}
+
+pub struct DnsResolver {
+  config: DnsResolverConfig,
+}
+
+impl DnsResolver {
+  pub fn configured(self: DnsResolver) -> bool {
+    return self.config.retryCount > 0 || self.config.systemResolverAllowed
+  }
+
+  pub async fn lookup(self: DnsResolver, query: DnsQuery) -> NetResult<DnsAnswer> {
+    if !self.configured() {
+      return Err(NetError {
+        kind: NetErrorKind.DnsFailure,
+        message: "dns resolver is not configured",
+        retryable: false,
+      })
+    }
+    return Ok(DnsAnswer {
+      query: query,
+      records: Vec<DnsRecord>(),
+      cached: false,
+    })
+  }
+
+  pub async fn lookupHost(self: DnsResolver, host: Host) -> NetResult<DnsAnswer> {
+    return self.lookup(DnsQuery {
+      host: host,
+      kind: DnsRecordKind.A,
+    })
+  }
+}

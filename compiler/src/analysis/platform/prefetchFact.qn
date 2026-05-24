@@ -1,0 +1,19 @@
+pub struct PrefetchFact {
+  supported: bool,
+  distanceBytes: usize,
+  localityKnown: bool,
+}
+
+impl PrefetchFact {
+  pub fn init(supported: bool, distanceBytes: usize, localityKnown: bool) -> PrefetchFact {
+    return PrefetchFact {
+      supported: supported,
+      distanceBytes: distanceBytes,
+      localityKnown: localityKnown,
+    }
+  }
+
+  pub fn accepted(self: PrefetchFact) -> bool {
+    return self.supported && self.distanceBytes > 0 && self.localityKnown
+  }
+}

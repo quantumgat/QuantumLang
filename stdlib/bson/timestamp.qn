@@ -1,0 +1,21 @@
+pub struct BsonTimestamp {
+  seconds: u32,
+  increment: u32,
+}
+
+impl BsonTimestamp {
+  pub fn init(seconds: u32, increment: u32) -> BsonTimestamp {
+    return BsonTimestamp {
+      seconds: seconds,
+      increment: increment,
+    }
+  }
+
+  pub fn unixSeconds(self: BsonTimestamp) -> u32 {
+    return self.seconds
+  }
+
+  pub fn ordinal(self: BsonTimestamp) -> u32 {
+    return self.increment
+  }
+}

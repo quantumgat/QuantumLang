@@ -1,0 +1,16 @@
+qnpkg-v1
+name=runtime
+version=0.1.0
+edition=2026
+kind=qtlc-native-package
+backend=native
+profile=debug
+triple=x86_64-unknown-linux-gnu
+source_units=550
+emitted_units=550
+qna=libruntime.qna
+static=libruntime.a
+shared=libruntime.so
+api=runtime.qnapi
+no_c_fallback=true
+dependency_boundary=artifact-first

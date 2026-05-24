@@ -1,0 +1,64 @@
+pub enum RuntimeAllocationState {
+  Live,
+  Freed,
+  Revoked,
+}
+
+pub struct AllocationRecord {
+  allocationId: u64,
+  generation: u64,
+  domainId: u64,
+  bytes: usize,
+  state: RuntimeAllocationState,
+}
+
+impl AllocationRecord {
+  pub fn init(allocationId: u64, generation: u64, domainId: u64, bytes: usize) -> AllocationRecord {
+    return AllocationRecord {
+      allocationId: allocationId,
+      generation: generation,
+      domainId: domainId,
+      bytes: bytes,
+      state: RuntimeAllocationState.Live,
+    }
+  }
+
+  pub fn live(self: AllocationRecord) -> bool {
+    return self.state == RuntimeAllocationState.Live
+  }
+
+  pub fn matchesDomain(self: AllocationRecord, domainId: u64) -> bool {
+    return self.domainId == domainId
+  }
+
+  pub fn matchesGeneration(self: AllocationRecord, generation: u64) -> bool {
+    return self.generation == generation
+  }
+
+  pub fn bytes(self: AllocationRecord) -> usize {
+    return self.bytes
+  }
+
+  pub fn validate(self: AllocationRecord, generation: u64, domainId: u64) -> Result<AllocationRecord, RuntimeMemoryError> {
+    if self.live() == false {
+      return Err(RuntimeMemoryError.StaleAllocation)
+    }
+    if self.matchesGeneration(generation) == false {
+      return Err(RuntimeMemoryError.WrongGeneration)
+    }
+    if self.matchesDomain(domainId) == false {
+      return Err(RuntimeMemoryError.WrongAllocatorDomain)
+    }
+    return Ok(self)
+  }
+
+  pub fn markFreed(self: AllocationRecord) -> AllocationRecord {
+    return AllocationRecord {
+      allocationId: self.allocationId,
+      generation: self.generation,
+      domainId: self.domainId,
+      bytes: self.bytes,
+      state: RuntimeAllocationState.Freed,
+    }
+  }
+}

@@ -1,0 +1,140 @@
+pub enum NativeMatchLoweringKind {
+  IntegerJumpTable
+  EnumTagSwitch
+  RangeBranchTree
+  StringPerfectHash
+  BinaryPrefixLoads
+  StructFieldChecks
+  UnionTagNarrowing
+  GuardedBranch
+}
+
+pub struct NativeMatchLowering {
+  kind: NativeMatchLoweringKind,
+  mirMatch: MirMatchOp,
+  directLoads: bool,
+  directBranches: bool,
+  destructureFieldChecksDirect: bool,
+  orPatternMergeDirect: bool,
+  typeTestDirect: bool,
+  guardBranchDirect: bool,
+  executableEvidenceReady: bool,
+  noHeapAllocation: bool,
+  noGeneratedFallback: bool,
+}
+
+pub struct NativeMatchInput {
+  mir: MirMatchOp,
+  kind: NativeMatchLoweringKind,
+  runtimeFailure: MatchSafeFailure,
+  branchTableReady: bool,
+  directLoadReady: bool,
+  directFieldCheckReady: bool,
+  directGuardReady: bool,
+}
+
+pub struct NativeMatchBuild {
+  lowering: NativeMatchLowering,
+  emittedInstruction: u64,
+  runtimeSafeFailureReady: bool,
+}
+
+pub fn nativeMatchLowering(
+  kind: NativeMatchLoweringKind,
+  mirMatch: MirMatchOp,
+  directLoads: bool,
+  directBranches: bool,
+  destructureFieldChecksDirect: bool,
+  orPatternMergeDirect: bool,
+  typeTestDirect: bool,
+  guardBranchDirect: bool,
+  executableEvidenceReady: bool,
+  noHeapAllocation: bool,
+  noGeneratedFallback: bool,
+) -> NativeMatchLowering {
+  return NativeMatchLowering {
+    kind: kind,
+    mirMatch: mirMatch,
+    directLoads: directLoads,
+    directBranches: directBranches,
+    destructureFieldChecksDirect: destructureFieldChecksDirect,
+    orPatternMergeDirect: orPatternMergeDirect,
+    typeTestDirect: typeTestDirect,
+    guardBranchDirect: guardBranchDirect,
+    executableEvidenceReady: executableEvidenceReady,
+    noHeapAllocation: noHeapAllocation,
+    noGeneratedFallback: noGeneratedFallback,
+  }
+}
+
+pub fn nativeMatchInput(
+  mir: MirMatchOp,
+  kind: NativeMatchLoweringKind,
+  runtimeFailure: MatchSafeFailure,
+  branchTableReady: bool,
+  directLoadReady: bool,
+  directFieldCheckReady: bool,
+  directGuardReady: bool,
+) -> NativeMatchInput {
+  return NativeMatchInput {
+    mir: mir,
+    kind: kind,
+    runtimeFailure: runtimeFailure,
+    branchTableReady: branchTableReady,
+    directLoadReady: directLoadReady,
+    directFieldCheckReady: directFieldCheckReady,
+    directGuardReady: directGuardReady,
+  }
+}
+
+pub fn emitMatch(input: NativeMatchInput) -> NativeMatchBuild {
+  let mirReady = input.mir.executableHotPathReady()
+  let runtimeReady = input.runtimeFailure.executableReady()
+  let lowering = nativeMatchLowering(
+    input.kind,
+    input.mir,
+    input.directLoadReady,
+    input.branchTableReady,
+    input.directFieldCheckReady,
+    mirReady,
+    mirReady,
+    input.directGuardReady,
+    mirReady && runtimeReady,
+    true,
+    true
+  )
+
+  return NativeMatchBuild {
+    lowering: lowering,
+    emittedInstruction: input.mir.instructionId() + input.mir.armTotal() + 1,
+    runtimeSafeFailureReady: runtimeReady,
+  }
+}
+
+impl NativeMatchLowering {
+  pub fn complete(self: NativeMatchLowering) -> bool {
+    return self.mirMatch.hotLowerable()
+      && self.directLoads
+      && self.noHeapAllocation
+      && self.noGeneratedFallback
+  }
+
+  pub fn executableHotPathReady(self: NativeMatchLowering) -> bool {
+    return self.complete()
+      && self.mirMatch.executableHotPathReady()
+      && self.directBranches
+      && self.destructureFieldChecksDirect
+      && self.orPatternMergeDirect
+      && self.typeTestDirect
+      && self.guardBranchDirect
+      && self.executableEvidenceReady
+  }
+}
+
+impl NativeMatchBuild {
+  pub fn complete(self: NativeMatchBuild) -> bool {
+    return self.lowering.executableHotPathReady()
+      && self.emittedInstruction > 0
+      && self.runtimeSafeFailureReady
+  }
+}

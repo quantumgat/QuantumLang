@@ -1,0 +1,6 @@
+[module]
+name = "parallel"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "parallel"

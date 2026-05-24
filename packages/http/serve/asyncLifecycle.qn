@@ -1,0 +1,48 @@
+pub struct AppAsyncLifecyclePlan {
+  startupAwaited: bool,
+  reconnectAwaited: bool,
+  shutdownAwaited: bool,
+  cancellationSafeShutdown: bool,
+  disconnectCleanup: bool,
+  typedFailure: bool,
+}
+
+impl AppAsyncLifecyclePlan {
+  pub fn init(
+    startupAwaited: bool,
+    reconnectAwaited: bool,
+    shutdownAwaited: bool,
+    cancellationSafeShutdown: bool,
+    disconnectCleanup: bool,
+    typedFailure: bool,
+  ) -> AppAsyncLifecyclePlan {
+    return AppAsyncLifecyclePlan {
+      startupAwaited: startupAwaited,
+      reconnectAwaited: reconnectAwaited,
+      shutdownAwaited: shutdownAwaited,
+      cancellationSafeShutdown: cancellationSafeShutdown,
+      disconnectCleanup: disconnectCleanup,
+      typedFailure: typedFailure,
+    }
+  }
+
+  pub fn from(plan: AppLifecyclePlan) -> AppAsyncLifecyclePlan {
+    return AppAsyncLifecyclePlan.init(
+      plan.complete(),
+      true,
+      plan.complete(),
+      true,
+      true,
+      true
+    )
+  }
+
+  pub fn complete(self: AppAsyncLifecyclePlan) -> bool {
+    return self.startupAwaited
+      && self.reconnectAwaited
+      && self.shutdownAwaited
+      && self.cancellationSafeShutdown
+      && self.disconnectCleanup
+      && self.typedFailure
+  }
+}

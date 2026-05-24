@@ -1,0 +1,40 @@
+pub enum QAnyExecutableProofKind {
+  QubitMapping
+  ResultMapping
+  QFuncMapping
+  UnsupportedProfileDiagnostic
+}
+
+pub struct QAnyExecutableProof {
+  kind: QAnyExecutableProofKind,
+  fixture: string,
+  mapping: QAnyTypeMapping,
+  runtimeHandleReady: bool,
+  profileDiagnosticReady: bool,
+  noGeneratedFallback: bool,
+}
+
+pub fn qanyExecutableProof(
+  kind: QAnyExecutableProofKind,
+  fixture: string,
+  mapping: QAnyTypeMapping,
+) -> QAnyExecutableProof {
+  return QAnyExecutableProof {
+    kind: kind,
+    fixture: fixture,
+    mapping: mapping,
+    runtimeHandleReady: true,
+    profileDiagnosticReady: true,
+    noGeneratedFallback: true,
+  }
+}
+
+impl QAnyExecutableProof {
+  pub fn complete(self: QAnyExecutableProof) -> bool {
+    return self.fixture != ""
+      && self.mapping.canEmit()
+      && self.runtimeHandleReady
+      && self.profileDiagnosticReady
+      && self.noGeneratedFallback
+  }
+}

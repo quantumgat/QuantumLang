@@ -1,0 +1,29 @@
+pub struct FileInfo {
+  size: u64,
+  file: bool,
+  directory: bool,
+  symlink: bool,
+  readonly: bool,
+  modifiedUnixNanos: u64,
+}
+
+pub fn info(path: PathBuf) -> FsResult<FileInfo>
+pub fn metadata(path: PathBuf) -> FsResult<FileInfo>
+
+impl FileInfo {
+  pub fn isFile(self: FileInfo) -> bool {
+    return self.file
+  }
+
+  pub fn isDir(self: FileInfo) -> bool {
+    return self.directory
+  }
+
+  pub fn isSymlink(self: FileInfo) -> bool {
+    return self.symlink
+  }
+
+  pub fn isReadonly(self: FileInfo) -> bool {
+    return self.readonly
+  }
+}

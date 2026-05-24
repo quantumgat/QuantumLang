@@ -1,0 +1,27 @@
+pub struct HttpWriterHotPathLowering {
+  asyncWrite: bool,
+  scatterGather: bool,
+  sendfileEligible: bool,
+  backpressureQueue: bool,
+  disconnectAware: bool,
+}
+
+impl HttpWriterHotPathLowering {
+  pub fn fromTransport(transport: HttpAsyncTransportPlan) -> HttpWriterHotPathLowering {
+    return HttpWriterHotPathLowering {
+      asyncWrite: transport.accepted(),
+      scatterGather: true,
+      sendfileEligible: true,
+      backpressureQueue: true,
+      disconnectAware: true,
+    }
+  }
+
+  pub fn accepted(self: HttpWriterHotPathLowering) -> bool {
+    return self.asyncWrite
+      && self.scatterGather
+      && self.sendfileEligible
+      && self.backpressureQueue
+      && self.disconnectAware
+  }
+}

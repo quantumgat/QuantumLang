@@ -1,0 +1,106 @@
+import response::{IntoHttpError}
+
+pub enum SessionStoreKind {
+  Cookie
+  Server
+  Redis
+  Database
+}
+
+pub struct SessionStorePolicy {
+  kind: SessionStoreKind,
+  signedValue: bool,
+  encryptedValue: bool,
+  ttlSeconds: usize,
+  rotationSafe: bool,
+}
+
+pub trait SessionStore<S> {
+  pub async fn load(self: S, id: HttpSessionId) -> Result<HttpSessionHandle, HttpError>
+  pub async fn save(self: S, session: HttpSessionHandle) -> Result<Unit, HttpError>
+  pub async fn destroy(self: S, id: HttpSessionId) -> Result<Unit, HttpError>
+}
+
+pub struct CookieSessionStore {
+  policy: SessionStorePolicy,
+}
+
+pub struct ServerSessionStore {
+  policy: SessionStorePolicy,
+}
+
+pub struct RedisSessionStore {
+  url: string,
+  policy: SessionStorePolicy,
+}
+
+pub struct DatabaseSessionStore {
+  tableName: string,
+  policy: SessionStorePolicy,
+}
+
+impl SessionStorePolicy {
+  pub fn init(kind: SessionStoreKind) -> SessionStorePolicy {
+    return SessionStorePolicy {
+      kind: kind,
+      signedValue: true,
+      encryptedValue: true,
+      ttlSeconds: 1209600,
+      rotationSafe: true,
+    }
+  }
+
+  pub fn complete(self: SessionStorePolicy) -> bool {
+    return self.signedValue && self.encryptedValue && self.ttlSeconds > 0 && self.rotationSafe
+  }
+}
+
+impl CookieSessionStore {
+  pub fn secure() -> CookieSessionStore {
+    return CookieSessionStore {
+      policy: SessionStorePolicy.init(SessionStoreKind.Cookie),
+    }
+  }
+
+  pub fn policy(self: CookieSessionStore) -> SessionStorePolicy {
+    return self.policy
+  }
+}
+
+impl ServerSessionStore {
+  pub fn memory() -> ServerSessionStore {
+    return ServerSessionStore {
+      policy: SessionStorePolicy.init(SessionStoreKind.Server),
+    }
+  }
+
+  pub fn policy(self: ServerSessionStore) -> SessionStorePolicy {
+    return self.policy
+  }
+}
+
+impl RedisSessionStore {
+  pub fn connect(url: string) -> RedisSessionStore {
+    return RedisSessionStore {
+      url: url,
+      policy: SessionStorePolicy.init(SessionStoreKind.Redis),
+    }
+  }
+
+  pub fn policy(self: RedisSessionStore) -> SessionStorePolicy {
+    return self.policy
+  }
+}
+
+impl DatabaseSessionStore {
+  pub fn table(tableName: string) -> DatabaseSessionStore {
+    return DatabaseSessionStore {
+      tableName: tableName,
+      policy: SessionStorePolicy.init(SessionStoreKind.Database),
+    }
+  }
+
+  pub fn policy(self: DatabaseSessionStore) -> SessionStorePolicy {
+    return self.policy
+  }
+}

@@ -1,0 +1,20 @@
+pub enum MailboxPolicy {
+  Bounded
+  DropNewest
+  DropOldest
+  Fail
+}
+
+pub struct MailboxOptions {
+  capacity: usize,
+  policy: MailboxPolicy,
+}
+
+impl MailboxOptions {
+  pub fn bounded(capacity: usize) -> MailboxOptions {
+    return MailboxOptions {
+      capacity: capacity,
+      policy: MailboxPolicy.Bounded,
+    }
+  }
+}

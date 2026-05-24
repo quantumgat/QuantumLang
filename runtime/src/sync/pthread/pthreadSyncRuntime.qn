@@ -1,0 +1,12 @@
+pub struct PthreadSyncRuntime {
+  target: string,
+  mutex: bool,
+  conditionVariable: bool,
+  rwlockOptional: bool,
+}
+
+impl PthreadSyncRuntime {
+  pub fn accepted(self: PthreadSyncRuntime) -> bool {
+    return self.target != "" && self.mutex && self.conditionVariable
+  }
+}

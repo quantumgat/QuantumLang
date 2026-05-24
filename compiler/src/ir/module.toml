@@ -1,0 +1,24 @@
+[module]
+name = "ir"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "hir-mir-tir-qmir-bir-lowering"
+
+[submodules]
+hir = "hir/mod.qn"
+cfg = "cfg/mod.qn"
+mir = "mir/mod.qn"
+tir = "tir/mod.qn"
+qmir = "qmir/mod.qn"
+bir = "bir/mod.qn"
+executableBody = "executableBody/mod.qn"
+optimizer = "optimizer/mod.qn"
+async = "async/mod.qn"
+
+[dependencies]
+allowed = ["common", "frontend", "analysis"]
+forbidden = ["backend/c", "backend/llvm", "runtime internals"]
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

@@ -1,0 +1,51 @@
+pub struct Event {
+  eventName: string,
+  dataBytes: usize,
+  id: string,
+  retryMillis: usize,
+}
+
+impl Event {
+  pub fn init(eventName: string, dataBytes: usize) -> Event {
+    return Event {
+      eventName: eventName,
+      dataBytes: dataBytes,
+      id: "",
+      retryMillis: 0,
+    }
+  }
+
+  pub fn data(dataBytes: usize) -> Event {
+    return Event.init("message", dataBytes)
+  }
+
+  pub fn named(eventName: string, dataBytes: usize) -> Event {
+    return Event.init(eventName, dataBytes)
+  }
+
+  pub fn withId(self: Event, id: string) -> Event {
+    return Event {
+      eventName: self.eventName,
+      dataBytes: self.dataBytes,
+      id: id,
+      retryMillis: self.retryMillis,
+    }
+  }
+
+  pub fn withRetry(self: Event, retryMillis: usize) -> Event {
+    return Event {
+      eventName: self.eventName,
+      dataBytes: self.dataBytes,
+      id: self.id,
+      retryMillis: retryMillis,
+    }
+  }
+
+  pub fn eventName(self: Event) -> string {
+    return self.eventName
+  }
+
+  pub fn dataBytes(self: Event) -> usize {
+    return self.dataBytes
+  }
+}

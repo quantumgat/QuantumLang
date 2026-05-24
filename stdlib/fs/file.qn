@@ -1,0 +1,21 @@
+pub struct File {
+  handle: OsHandle,
+  path: PathBuf,
+  mode: FsOpenMode,
+}
+
+pub fn open(path: PathBuf, mode: FsOpenMode) -> FsResult<File>
+
+impl File {
+  pub fn valid(self: File) -> bool {
+    return self.handle.state == OsHandleState.Open
+  }
+
+  pub fn readBytes(self: File, maxBytes: usize) -> FsResult<Bytes>
+
+  pub fn writeBytes(self: File, value: Bytes) -> FsResult<Unit>
+
+  pub fn flush(self: File) -> FsResult<Unit>
+
+  pub fn close(self: File) -> FsResult<Unit>
+}

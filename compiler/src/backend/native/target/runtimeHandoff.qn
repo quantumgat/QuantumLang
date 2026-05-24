@@ -1,0 +1,34 @@
+pub enum RuntimeHandoffMode {
+  HiddenArchiveHandoff
+  StaticRuntimeHandoff
+  DynamicRuntimeHandoff
+  UnsupportedRuntimeHandoff
+}
+
+pub struct RuntimeHandoff {
+  mode: RuntimeHandoffMode,
+  routeMetadataRequired: bool,
+  supported: bool,
+}
+
+pub fn runtimeHandoff(mode: RuntimeHandoffMode, routeMetadataRequired: bool, supported: bool) -> RuntimeHandoff {
+  return RuntimeHandoff {
+    mode: mode,
+    routeMetadataRequired: routeMetadataRequired,
+    supported: supported,
+  }
+}
+
+impl RuntimeHandoff {
+  pub fn handoffMode(self: RuntimeHandoff) -> RuntimeHandoffMode {
+    return self.mode
+  }
+
+  pub fn needsRouteMetadata(self: RuntimeHandoff) -> bool {
+    return self.routeMetadataRequired
+  }
+
+  pub fn isSupported(self: RuntimeHandoff) -> bool {
+    return self.supported && self.routeMetadataRequired
+  }
+}

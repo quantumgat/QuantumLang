@@ -1,0 +1,23 @@
+pub struct VtableEntry {
+  methodId: u64,
+  functionPtr: u64,
+  order: usize,
+}
+
+pub fn vtableEntry(methodId: u64, functionPtr: u64, order: usize) -> VtableEntry {
+  return VtableEntry { methodId: methodId, functionPtr: functionPtr, order: order }
+}
+
+impl VtableEntry {
+  pub fn method(self: VtableEntry) -> u64 {
+    return self.methodId
+  }
+
+  pub fn target(self: VtableEntry) -> u64 {
+    return self.functionPtr
+  }
+
+  pub fn methodOrder(self: VtableEntry) -> usize {
+    return self.order
+  }
+}

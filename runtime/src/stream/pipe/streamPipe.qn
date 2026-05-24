@@ -1,0 +1,19 @@
+pub struct StreamPipe {
+  sourceHandle: u64,
+  targetHandle: u64,
+  backpressureAware: bool,
+}
+
+pub fn streamPipe(sourceHandle: u64, targetHandle: u64) -> StreamPipe {
+  return StreamPipe {
+    sourceHandle: sourceHandle,
+    targetHandle: targetHandle,
+    backpressureAware: true,
+  }
+}
+
+impl StreamPipe {
+  pub fn canPropagatePressure(self: StreamPipe) -> bool {
+    return self.backpressureAware
+  }
+}

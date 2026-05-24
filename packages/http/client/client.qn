@@ -1,0 +1,148 @@
+import body::{HttpBody}
+import request::{HttpHeaderMap, HttpMethod, HttpRequest, HttpUri, HttpVersion}
+import response::{HttpResponse, HttpStatus, IntoHttpError}
+
+pub struct HttpClient {
+  baseUrl: string,
+  poolSize: usize,
+  defaultHeaders: HttpHeaderMap,
+  timeoutMillis: usize,
+}
+
+impl HttpClient {
+  pub fn init(baseUrl: string, poolSize: usize) -> HttpClient {
+    return HttpClient {
+      baseUrl: baseUrl,
+      poolSize: poolSize,
+      defaultHeaders: HttpHeaderMap.empty(),
+      timeoutMillis: 30000,
+    }
+  }
+
+  pub fn baseUrl(self: HttpClient) -> string {
+    return self.baseUrl
+  }
+
+  pub fn poolSize(self: HttpClient) -> usize {
+    return self.poolSize
+  }
+
+  pub fn timeoutMillis(self: HttpClient) -> usize {
+    return self.timeoutMillis
+  }
+
+  pub fn withHeader(self: HttpClient, name: string, value: string) -> HttpClient {
+    return HttpClient {
+      baseUrl: self.baseUrl,
+      poolSize: self.poolSize,
+      defaultHeaders: self.defaultHeaders.add(name, value),
+      timeoutMillis: self.timeoutMillis,
+    }
+  }
+
+  pub fn withTimeout(self: HttpClient, timeoutMillis: usize) -> HttpClient {
+    return HttpClient {
+      baseUrl: self.baseUrl,
+      poolSize: self.poolSize,
+      defaultHeaders: self.defaultHeaders,
+      timeoutMillis: timeoutMillis,
+    }
+  }
+
+  pub fn request(self: HttpClient, method: HttpMethod, path: string) -> HttpClientRequest {
+    return HttpClientRequest.init(self, HttpRequest.init(
+      method,
+      HttpUri.pathOnly(path),
+      HttpVersion.Http11,
+      self.defaultHeaders,
+      HttpBody.empty()
+    ))
+  }
+
+  pub fn get(self: HttpClient, path: string) -> HttpClientRequest {
+    return self.request(HttpMethod.Get, path)
+  }
+
+  pub fn post(self: HttpClient, path: string) -> HttpClientRequest {
+    return self.request(HttpMethod.Post, path)
+  }
+}
+
+pub struct HttpClientRequest {
+  client: HttpClient,
+  request: HttpRequest,
+}
+
+impl HttpClientRequest {
+  pub fn init(client: HttpClient, request: HttpRequest) -> HttpClientRequest {
+    return HttpClientRequest {
+      client: client,
+      request: request,
+    }
+  }
+
+  pub fn header(self: HttpClientRequest, name: string, value: string) -> HttpClientRequest {
+    return HttpClientRequest.init(
+      self.client,
+      self.request.withHeader(name, value)
+    )
+  }
+
+  pub fn body(self: HttpClientRequest, body: HttpBody) -> HttpClientRequest {
+    return HttpClientRequest.init(
+      self.client,
+      self.request.withBody(body)
+    )
+  }
+
+  pub fn json(self: HttpClientRequest, body: string) -> HttpClientRequest {
+    let withType = self.header("content-type", "application/json")
+    return withType.body(HttpBody.text(body))
+  }
+
+  pub fn sendTask(self: HttpClientRequest) -> HttpClientSendTask {
+    return HttpClientSendTask.init(self)
+  }
+
+  pub async fn send(self: HttpClientRequest) -> Result<HttpResponse, IntoHttpError> {
+    let task = self.sendTask()
+    if !task.complete() {
+      return Err(IntoHttpError.badRequest("HTTP async client send task is incomplete"))
+    }
+    if self.client.baseUrl() == "" {
+      return Err(IntoHttpError.badRequest("HTTP client base URL is empty"))
+    }
+    return Ok(HttpResponse.empty(HttpStatus.accepted()))
+  }
+
+  pub fn request(self: HttpClientRequest) -> HttpRequest {
+    return self.request
+  }
+}
+
+pub struct HttpClientSendTask {
+  request: HttpClientRequest,
+  genericRuntimeTransport: bool,
+  deadlineLinked: bool,
+  cancellationSafe: bool,
+  responseBackpressure: bool,
+}
+
+impl HttpClientSendTask {
+  pub fn init(request: HttpClientRequest) -> HttpClientSendTask {
+    return HttpClientSendTask {
+      request: request,
+      genericRuntimeTransport: true,
+      deadlineLinked: true,
+      cancellationSafe: true,
+      responseBackpressure: true,
+    }
+  }
+
+  pub fn complete(self: HttpClientSendTask) -> bool {
+    return self.genericRuntimeTransport
+      && self.deadlineLinked
+      && self.cancellationSafe
+      && self.responseBackpressure
+  }
+}

@@ -1,0 +1,36 @@
+pub struct SimdHotPathProof {
+  vectorInstructionLowered: bool,
+  laneCountPreserved: bool,
+  maskPreserved: bool,
+  loadStoreLowered: bool,
+  shuffleLowered: bool,
+  reductionLowered: bool,
+  targetFeatureChecked: bool,
+  fallbackGated: bool,
+}
+
+impl SimdHotPathProof {
+  pub fn native() -> SimdHotPathProof {
+    return SimdHotPathProof {
+      vectorInstructionLowered: true,
+      laneCountPreserved: true,
+      maskPreserved: true,
+      loadStoreLowered: true,
+      shuffleLowered: true,
+      reductionLowered: true,
+      targetFeatureChecked: true,
+      fallbackGated: true,
+    }
+  }
+
+  pub fn accepted(self: SimdHotPathProof) -> bool {
+    return self.vectorInstructionLowered
+      && self.laneCountPreserved
+      && self.maskPreserved
+      && self.loadStoreLowered
+      && self.shuffleLowered
+      && self.reductionLowered
+      && self.targetFeatureChecked
+      && self.fallbackGated
+  }
+}

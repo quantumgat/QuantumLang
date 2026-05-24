@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct GraphKernel {
+  adjacencyVecBacked: bool
+  typedNodeIds: bool
+  edgeAppendDirect: bool
+  bfsUsesFrontierCursor: bool
+  dfsUsesFrontierCursor: bool
+  cursorErased: bool
+  cursorUsesVisitedSet: bool
+  neighborLoopDirectEdges: bool
+  shortestPathUsesBfs: bool
+  predecessorMapBacked: bool
+  topologicalSortUsesIndegreeVec: bool
+  callableTraversalInlineable: bool
+}

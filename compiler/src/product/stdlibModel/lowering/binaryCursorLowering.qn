@@ -1,0 +1,19 @@
+pub struct StdlibBinaryCursorLowering {
+  symbolName: string,
+  pointerLoweringRequired: bool,
+  cursorLoweringRequired: bool,
+  writerLoweringRequired: bool,
+  fixedWidthCarrierRequired: bool,
+  boundsDiagnosticRequired: bool,
+}
+
+impl StdlibBinaryCursorLowering {
+  pub fn accepted(self: StdlibBinaryCursorLowering) -> bool {
+    return self.symbolName != ""
+      && self.pointerLoweringRequired
+      && self.cursorLoweringRequired
+      && self.writerLoweringRequired
+      && self.fixedWidthCarrierRequired
+      && self.boundsDiagnosticRequired
+  }
+}

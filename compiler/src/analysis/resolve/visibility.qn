@@ -1,0 +1,22 @@
+pub enum VisibilityKind {
+  Private
+  Module
+  Package
+  Public
+}
+
+pub struct Visibility {
+  symbolId: u64,
+  kind: VisibilityKind,
+  exported: bool,
+}
+
+pub fn visibility(symbolId: u64, kind: VisibilityKind, exported: bool) -> Visibility {
+  return Visibility { symbolId: symbolId, kind: kind, exported: exported }
+}
+
+impl Visibility {
+  pub fn externallyVisible(self: Visibility) -> bool {
+    return self.exported || self.kind == VisibilityKind.Public
+  }
+}

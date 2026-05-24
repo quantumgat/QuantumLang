@@ -1,0 +1,89 @@
+pub enum AdvancedTraitCapabilityKind {
+  AssociatedType
+  AssociatedConst
+  TraitAlias
+  Specialization
+  SealedTrait
+  NegativeBound
+  WhereClause
+  ReceiverExtension
+  StaticTraitMethod
+  OperatorTrait
+  DeriveCodegen
+  AutoTrait
+  MarkerTrait
+  BlanketImpl
+  CoherenceRule
+  ExtensionPriority
+  GenericAssociatedType
+  AsyncTraitMethod
+  DynInterface
+  ObjectSafety
+  DefaultTraitMethod
+}
+
+pub enum AdvancedTraitCapabilityStatus {
+  SupportedBasic
+  Partial
+  Gap
+}
+
+pub struct AdvancedTraitCapability {
+  kind: AdvancedTraitCapabilityKind,
+  status: AdvancedTraitCapabilityStatus,
+  parserRequired: bool,
+  semanticRequired: bool,
+  loweringRequired: bool,
+  diagnosticRequired: bool,
+  executableProofRequired: bool,
+  hotPathProofRequired: bool,
+}
+
+impl AdvancedTraitCapability {
+  pub fn supportedBasic(kind: AdvancedTraitCapabilityKind) -> AdvancedTraitCapability {
+    return AdvancedTraitCapability.init(kind, AdvancedTraitCapabilityStatus.SupportedBasic, true, true, false, true, true, false)
+  }
+
+  pub fn partial(kind: AdvancedTraitCapabilityKind) -> AdvancedTraitCapability {
+    return AdvancedTraitCapability.init(kind, AdvancedTraitCapabilityStatus.Partial, true, true, true, true, true, true)
+  }
+
+  pub fn gap(kind: AdvancedTraitCapabilityKind) -> AdvancedTraitCapability {
+    return AdvancedTraitCapability.init(kind, AdvancedTraitCapabilityStatus.Gap, true, true, true, true, true, true)
+  }
+
+  pub fn init(
+    kind: AdvancedTraitCapabilityKind,
+    status: AdvancedTraitCapabilityStatus,
+    parserRequired: bool,
+    semanticRequired: bool,
+    loweringRequired: bool,
+    diagnosticRequired: bool,
+    executableProofRequired: bool,
+    hotPathProofRequired: bool,
+  ) -> AdvancedTraitCapability {
+    return AdvancedTraitCapability {
+      kind: kind,
+      status: status,
+      parserRequired: parserRequired,
+      semanticRequired: semanticRequired,
+      loweringRequired: loweringRequired,
+      diagnosticRequired: diagnosticRequired,
+      executableProofRequired: executableProofRequired,
+      hotPathProofRequired: hotPathProofRequired,
+    }
+  }
+
+  pub fn complete(self: AdvancedTraitCapability) -> bool {
+    return self.status == AdvancedTraitCapabilityStatus.SupportedBasic
+      && self.parserRequired
+      && self.semanticRequired
+      && self.diagnosticRequired
+      && self.executableProofRequired
+  }
+
+  pub fn needsClosure(self: AdvancedTraitCapability) -> bool {
+    return self.status != AdvancedTraitCapabilityStatus.SupportedBasic
+  }
+}
+

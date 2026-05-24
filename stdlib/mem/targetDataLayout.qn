@@ -1,0 +1,39 @@
+pub struct TargetDataLayout {
+  pointer: Layout,
+  endian: Endian,
+  aggregateAlignment: usize,
+  maxScalarAlignment: usize,
+}
+
+impl TargetDataLayout {
+  pub fn init(pointer: Layout, endian: Endian, aggregateAlignment: usize, maxScalarAlignment: usize) -> TargetDataLayout {
+    return TargetDataLayout {
+      pointer: pointer,
+      endian: endian,
+      aggregateAlignment: aggregateAlignment,
+      maxScalarAlignment: maxScalarAlignment,
+    }
+  }
+
+  pub fn pointerLayout(self: TargetDataLayout) -> Layout {
+    return self.pointer
+  }
+
+  pub fn endian(self: TargetDataLayout) -> Endian {
+    return self.endian
+  }
+
+  pub fn supportsAlignment(self: TargetDataLayout, alignment: usize) -> bool {
+    return alignment > 0 && alignment <= self.maxScalarAlignment
+  }
+
+  pub fn aggregateAlignment(self: TargetDataLayout) -> usize {
+    return self.aggregateAlignment
+  }
+}
+
+pub fn targetDataLayout() -> TargetDataLayout {
+  return compilerTargetDataLayout()
+}
+
+fn compilerTargetDataLayout() -> TargetDataLayout

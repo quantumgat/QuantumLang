@@ -1,0 +1,43 @@
+pub enum JsonBaselineKind {
+  SimdjsonStyleStructuralScan
+  SerdeJsonStyleTypedDecode
+  GoEncodingJsonStyleFieldLookup
+  QuantumLangScalarFallback
+  QuantumLangSimdTypedCodec
+}
+
+pub struct JsonBaselineComparison {
+  baseline: JsonBaselineKind,
+  sourceHashRecorded: bool,
+  versionRecorded: bool,
+  targetTripleRecorded: bool,
+  cpuModelRecorded: bool,
+  simdFeaturesRecorded: bool,
+  compilerFlagsRecorded: bool,
+  sameInputCorpus: bool,
+}
+
+impl JsonBaselineComparison {
+  pub fn required(baseline: JsonBaselineKind) -> JsonBaselineComparison {
+    return JsonBaselineComparison {
+      baseline: baseline,
+      sourceHashRecorded: false,
+      versionRecorded: false,
+      targetTripleRecorded: false,
+      cpuModelRecorded: false,
+      simdFeaturesRecorded: false,
+      compilerFlagsRecorded: false,
+      sameInputCorpus: false,
+    }
+  }
+
+  pub fn comparable(self: JsonBaselineComparison) -> bool {
+    return self.sourceHashRecorded
+      && self.versionRecorded
+      && self.targetTripleRecorded
+      && self.cpuModelRecorded
+      && self.simdFeaturesRecorded
+      && self.compilerFlagsRecorded
+      && self.sameInputCorpus
+  }
+}

@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeOnceState {
+  Empty
+  Running
+  Complete
+  Poisoned
+}
+pub struct RuntimeOnce {
+  handle: SyncHandle
+  state: RuntimeOnceState
+  waiterCount: usize
+}

@@ -1,0 +1,15 @@
+pub struct MaybeUninit<T> {
+  initialized: bool,
+}
+
+impl<T> MaybeUninit<T> {
+  pub fn uninit() -> MaybeUninit<T> {
+    MaybeUninit<T> {
+      initialized: false,
+    }
+  }
+
+  pub fn initialized(self: MaybeUninit<T>) -> bool {
+    self.initialized
+  }
+}

@@ -1,0 +1,5 @@
+pub interface AnalysisRule {
+  pub fn name(self: &AnalysisRule) -> string
+  pub fn domain(self: &AnalysisRule) -> string
+  pub fn run(self: &mut AnalysisRule) -> bool
+}

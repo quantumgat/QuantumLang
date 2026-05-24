@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum SchedulerIncidentKind {
+  QueuePressure
+  WakeStorm
+  Starvation
+  BlockingBoundaryViolation
+  StaleHandle
+  PollBudgetOverrun
+}
+pub struct SchedulerIncident {
+  kind: SchedulerIncidentKind
+  diagnosticCode: string
+  subject: string
+  noAllocationRequired: bool
+}

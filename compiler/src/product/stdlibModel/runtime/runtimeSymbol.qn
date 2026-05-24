@@ -1,0 +1,11 @@
+pub struct StdlibRuntimeSymbol {
+  symbolName: string,
+  abiName: string,
+  privateBridge: bool,
+}
+
+impl StdlibRuntimeSymbol {
+  pub fn accepted(self: StdlibRuntimeSymbol) -> bool {
+    return self.symbolName != "" && self.abiName != "" && self.privateBridge
+  }
+}

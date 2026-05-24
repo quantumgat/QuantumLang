@@ -1,0 +1,10 @@
+pub enum ArenaRuntimeError {
+  Released,
+  WrongGeneration,
+  WrongRegion,
+  UseAfterReset,
+  DoubleRelease,
+  DanglingArenaBox,
+  DanglingArenaSlice,
+  InvalidLayout,
+}

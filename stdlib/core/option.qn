@@ -1,0 +1,8 @@
+pub enum Option<T> {
+  Some(T),
+  None,
+}
+
+pub fn isSome<T>(value: Option<T>) -> bool
+pub fn isNone<T>(value: Option<T>) -> bool
+pub fn unwrapOr<T>(value: Option<T>, fallback: T) -> T

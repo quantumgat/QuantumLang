@@ -1,0 +1,19 @@
+pub struct RequestId {
+  value: string,
+}
+
+impl RequestId {
+  pub fn init(value: string) -> RequestId {
+    return RequestId {
+      value: value,
+    }
+  }
+
+  pub fn value(self: RequestId) -> string {
+    return self.value
+  }
+
+  pub fn headerName() -> string {
+    return "x-request-id"
+  }
+}

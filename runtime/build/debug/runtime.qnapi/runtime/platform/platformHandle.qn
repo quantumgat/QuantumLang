@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PlatformHandle {
+  rawHandle: u64
+  generation: usize
+  ownerSubsystem: string
+  state: HandleState
+  owned: bool
+}
+pub extern "qnpkg" {
+  pub fn platformHandle(rawHandle: u64, owned: bool) -> PlatformHandle
+}

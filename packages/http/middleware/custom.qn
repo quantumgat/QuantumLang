@@ -1,0 +1,102 @@
+pub struct HttpNext {
+}
+
+pub enum HttpMiddlewareStage {
+  Init
+  Start
+  Before
+  Handle
+  After
+  Error
+  Shutdown
+}
+
+pub struct HttpMiddlewareRuntime {
+  name: string,
+  started: bool,
+  beforeRequest: bool,
+  afterRequest: bool,
+  errorAware: bool,
+  contextDataWrites: usize,
+}
+
+pub trait HttpMiddleware<M> {
+  pub fn handle(self: M, ctx: HttpCtx, next: HttpNext) -> Result<HttpResponse, HttpError>
+}
+
+pub trait HttpAsyncMiddleware<M> {
+  pub async fn handle(self: M, ctx: HttpCtx, next: HttpNext) -> Result<HttpResponse, HttpError>
+}
+
+pub trait HttpMiddlewareLifecycle<M> {
+  pub async fn start(self: &mut M, app: AppStateGraph) -> Result<Unit, HttpError>
+  pub async fn shutdown(self: &mut M) -> Result<Unit, HttpError>
+}
+
+pub trait HttpMiddlewareHooks<M> {
+  pub async fn before(self: M, ctx: HttpCtx) -> Result<HttpCtx, HttpError>
+  pub async fn after(self: M, ctx: HttpCtx, response: HttpResponse) -> Result<HttpResponse, HttpError>
+  pub async fn onError(self: M, ctx: HttpCtx, error: HttpError) -> Result<HttpResponse, HttpError>
+}
+
+impl HttpMiddlewareRuntime {
+  pub fn init(name: string) -> HttpMiddlewareRuntime {
+    return HttpMiddlewareRuntime {
+      name: name,
+      started: false,
+      beforeRequest: false,
+      afterRequest: false,
+      errorAware: false,
+      contextDataWrites: 0,
+    }
+  }
+
+  pub fn withLifecycle(self: HttpMiddlewareRuntime) -> HttpMiddlewareRuntime {
+    return HttpMiddlewareRuntime {
+      name: self.name,
+      started: true,
+      beforeRequest: self.beforeRequest,
+      afterRequest: self.afterRequest,
+      errorAware: self.errorAware,
+      contextDataWrites: self.contextDataWrites,
+    }
+  }
+
+  pub fn withHooks(self: HttpMiddlewareRuntime) -> HttpMiddlewareRuntime {
+    return HttpMiddlewareRuntime {
+      name: self.name,
+      started: self.started,
+      beforeRequest: true,
+      afterRequest: true,
+      errorAware: true,
+      contextDataWrites: self.contextDataWrites,
+    }
+  }
+
+  pub fn writesContextData(self: HttpMiddlewareRuntime) -> HttpMiddlewareRuntime {
+    return HttpMiddlewareRuntime {
+      name: self.name,
+      started: self.started,
+      beforeRequest: self.beforeRequest,
+      afterRequest: self.afterRequest,
+      errorAware: self.errorAware,
+      contextDataWrites: self.contextDataWrites + 1,
+    }
+  }
+
+  pub fn complete(self: HttpMiddlewareRuntime) -> bool {
+    return self.name != "" && self.started && self.beforeRequest && self.afterRequest
+  }
+
+  pub fn contextDataWriteCount(self: HttpMiddlewareRuntime) -> usize {
+    return self.contextDataWrites
+  }
+}
+
+impl HttpNext {
+  pub async fn call(self: HttpNext, ctx: HttpCtx) -> Result<HttpResponse, HttpError> {
+    return httpNextAsyncSurface(ctx)
+  }
+}
+
+fn httpNextAsyncSurface(ctx: HttpCtx) -> Result<HttpResponse, HttpError>

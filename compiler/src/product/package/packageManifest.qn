@@ -1,0 +1,119 @@
+pub enum PackageKind {
+  Executable,
+  Library,
+}
+
+pub enum PackageDependencySource {
+  Workspace,
+  Path,
+  Registry,
+  Git,
+}
+
+pub struct PackageSourcePolicy {
+  root: string,
+  includeGlob: string,
+  excludeBuildCache: bool,
+  defaultsApplied: bool,
+}
+
+impl PackageSourcePolicy {
+  pub fn defaultSrc() -> PackageSourcePolicy {
+    return PackageSourcePolicy {
+      root: "src",
+      includeGlob: "**/*.qn",
+      excludeBuildCache: true,
+      defaultsApplied: true,
+    }
+  }
+
+  pub fn recursive(self: PackageSourcePolicy) -> bool {
+    return self.includeGlob == "**/*.qn" && self.excludeBuildCache
+  }
+}
+
+pub struct PackageDependency {
+  name: string,
+  requirement: string,
+  source: PackageDependencySource,
+  registry: string,
+  signingKey: string,
+}
+
+impl PackageDependency {
+  pub fn registry(name: string, requirement: string, registry: string, signingKey: string) -> PackageDependency {
+    return PackageDependency {
+      name: name,
+      requirement: requirement,
+      source: PackageDependencySource.Registry,
+      registry: registry,
+      signingKey: signingKey,
+    }
+  }
+
+  pub fn requiresTrust(self: PackageDependency) -> bool {
+    return self.source == PackageDependencySource.Registry
+  }
+}
+
+pub struct PackageSupplyChainPolicy {
+  lockfileRequired: bool,
+  signaturesRequired: bool,
+  trustedRegistryCount: usize,
+  trustedKeyCount: usize,
+  provenanceRequired: bool,
+}
+
+impl PackageSupplyChainPolicy {
+  pub fn strict(trustedRegistryCount: usize, trustedKeyCount: usize) -> PackageSupplyChainPolicy {
+    return PackageSupplyChainPolicy {
+      lockfileRequired: true,
+      signaturesRequired: true,
+      trustedRegistryCount: trustedRegistryCount,
+      trustedKeyCount: trustedKeyCount,
+      provenanceRequired: true,
+    }
+  }
+
+  pub fn enforcesRegistryTrust(self: PackageSupplyChainPolicy) -> bool {
+    return self.signaturesRequired && self.trustedRegistryCount > 0 && self.trustedKeyCount > 0
+  }
+}
+
+pub struct PackageManifest {
+  name: string,
+  version: string,
+  kind: PackageKind,
+  source: PackageSourcePolicy,
+  dependencyCount: usize,
+  targetCount: usize,
+  internalLibraryCount: usize,
+  supplyChain: PackageSupplyChainPolicy,
+}
+
+impl PackageManifest {
+  pub fn executable(name: string, version: string) -> PackageManifest {
+    return PackageManifest {
+      name: name,
+      version: version,
+      kind: PackageKind.Executable,
+      source: PackageSourcePolicy.defaultSrc(),
+      dependencyCount: 0,
+      targetCount: 1,
+      internalLibraryCount: 0,
+      supplyChain: PackageSupplyChainPolicy.strict(0, 0),
+    }
+  }
+
+  pub fn isExecutable(self: PackageManifest) -> bool {
+    return self.kind == PackageKind.Executable
+  }
+
+  pub fn recursiveSource(self: PackageManifest) -> bool {
+    return self.source.recursive()
+  }
+
+  pub fn needsMain(self: PackageManifest) -> bool {
+    return self.kind == PackageKind.Executable
+  }
+}

@@ -1,0 +1,31 @@
+pub struct StdlibErrorSurface {
+  symbolName: string,
+  errorType: string,
+  questionMarkSupported: bool,
+  typedCodeChecked: bool,
+  typedCategoryChecked: bool,
+  typedFieldsChecked: bool,
+  sourceLocationChecked: bool,
+  causeChainChecked: bool,
+  stableRenderChecked: bool,
+  conversionPolicyChecked: bool,
+  stringOnlyRejected: bool,
+  secretRedactionChecked: bool,
+}
+
+impl StdlibErrorSurface {
+  pub fn accepted(self: StdlibErrorSurface) -> bool {
+    return self.symbolName != ""
+      && self.errorType != ""
+      && self.questionMarkSupported
+      && self.typedCodeChecked
+      && self.typedCategoryChecked
+      && self.typedFieldsChecked
+      && self.sourceLocationChecked
+      && self.causeChainChecked
+      && self.stableRenderChecked
+      && self.conversionPolicyChecked
+      && self.stringOnlyRejected
+      && self.secretRedactionChecked
+  }
+}

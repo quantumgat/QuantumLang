@@ -1,0 +1,38 @@
+pub enum HirSyncPrimitiveKind {
+  MutexLock
+  RwLockRead
+  RwLockWrite
+  SemaphoreAcquire
+  EventWait
+  BarrierWait
+  OnceCall
+  WaitGroupWait
+  CondvarWait
+}
+
+pub struct HirSyncPrimitiveHandoff {
+  nodeId: u64,
+  kind: HirSyncPrimitiveKind,
+  timeoutAware: bool,
+  cancellationAware: bool,
+}
+
+impl HirSyncPrimitiveHandoff {
+  pub fn init(
+    nodeId: u64,
+    kind: HirSyncPrimitiveKind,
+    timeoutAware: bool,
+    cancellationAware: bool,
+  ) -> HirSyncPrimitiveHandoff {
+    return HirSyncPrimitiveHandoff {
+      nodeId: nodeId,
+      kind: kind,
+      timeoutAware: timeoutAware,
+      cancellationAware: cancellationAware,
+    }
+  }
+
+  pub fn accepted(self: HirSyncPrimitiveHandoff) -> bool {
+    return self.nodeId > 0 && self.timeoutAware && self.cancellationAware
+  }
+}

@@ -1,0 +1,44 @@
+pub enum DynamicTypeLoweringProofKind {
+  UnionTaggedRepresentation
+  AnyBoxUnbox
+  QAnyHandleBoundary
+  NarrowingCheck
+  MatchExhaustiveness
+  HotPathCostDiagnostic
+}
+
+pub struct DynamicTypeLoweringProof {
+  kind: DynamicTypeLoweringProofKind,
+  sourcePattern: string,
+  lowering: string,
+  runtimeCheckVisible: bool,
+  allocationVisible: bool,
+  qirProfileChecked: bool,
+  noGeneratedFallback: bool,
+}
+
+pub fn dynamicTypeLoweringProof(
+  kind: DynamicTypeLoweringProofKind,
+  sourcePattern: string,
+  lowering: string,
+) -> DynamicTypeLoweringProof {
+  return DynamicTypeLoweringProof {
+    kind: kind,
+    sourcePattern: sourcePattern,
+    lowering: lowering,
+    runtimeCheckVisible: true,
+    allocationVisible: true,
+    qirProfileChecked: kind == DynamicTypeLoweringProofKind.QAnyHandleBoundary,
+    noGeneratedFallback: true,
+  }
+}
+
+impl DynamicTypeLoweringProof {
+  pub fn complete(self: DynamicTypeLoweringProof) -> bool {
+    return self.sourcePattern != ""
+      && self.lowering != ""
+      && self.runtimeCheckVisible
+      && self.allocationVisible
+      && self.noGeneratedFallback
+  }
+}

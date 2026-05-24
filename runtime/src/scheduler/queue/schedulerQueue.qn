@@ -1,0 +1,44 @@
+pub enum SchedulerQueueKind {
+  LocalRun
+  GlobalInject
+  Wake
+  Blocking
+}
+
+pub struct SchedulerQueueRuntime {
+  queueId: u64,
+  kind: SchedulerQueueKind,
+  bound: usize,
+  depth: usize,
+  pressureEvents: usize,
+}
+
+impl SchedulerQueueRuntime {
+  pub fn init(
+    queueId: u64,
+    kind: SchedulerQueueKind,
+    bound: usize,
+    depth: usize,
+    pressureEvents: usize,
+  ) -> SchedulerQueueRuntime {
+    return SchedulerQueueRuntime {
+      queueId: queueId,
+      kind: kind,
+      bound: bound,
+      depth: depth,
+      pressureEvents: pressureEvents,
+    }
+  }
+
+  pub fn bounded(self: SchedulerQueueRuntime) -> bool {
+    return self.bound > 0
+  }
+
+  pub fn acceptsPush(self: SchedulerQueueRuntime) -> bool {
+    return self.bound == 0 || self.depth < self.bound
+  }
+
+  pub fn pressureVisible(self: SchedulerQueueRuntime) -> bool {
+    return self.pressureEvents > 0 || self.acceptsPush() == false
+  }
+}

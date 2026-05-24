@@ -1,0 +1,11 @@
+pub struct StdlibEffectSurface {
+  symbolName: string,
+  effectName: string,
+  pureWhenPossible: bool,
+}
+
+impl StdlibEffectSurface {
+  pub fn accepted(self: StdlibEffectSurface) -> bool {
+    return self.symbolName != "" && self.effectName != ""
+  }
+}

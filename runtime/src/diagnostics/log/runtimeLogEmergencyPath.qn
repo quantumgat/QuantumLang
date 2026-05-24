@@ -1,0 +1,33 @@
+pub struct RuntimeLogEmergencyPath {
+  incident: RuntimeIncident,
+  stderrBoundedBytes: usize,
+  allocationFree: bool,
+  redactsSecrets: bool,
+  panicSafe: bool,
+  preservesIncidentOrdering: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeLogEmergencyPath {
+  pub fn incident(incident: RuntimeIncident, stderrBoundedBytes: usize) -> RuntimeLogEmergencyPath {
+    return RuntimeLogEmergencyPath {
+      incident: incident,
+      stderrBoundedBytes: stderrBoundedBytes,
+      allocationFree: true,
+      redactsSecrets: true,
+      panicSafe: true,
+      preservesIncidentOrdering: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeLogEmergencyPath) -> bool {
+    return self.incident.safe()
+      && self.stderrBoundedBytes > 0
+      && self.allocationFree
+      && self.redactsSecrets
+      && self.panicSafe
+      && self.preservesIncidentOrdering
+      && self.noCoredump
+  }
+}

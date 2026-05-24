@@ -1,0 +1,19 @@
+pub struct FinalClassKindPolicyFact {
+  ownerId: u64,
+  subtypeRejected: bool,
+  overrideRejected: bool,
+  devirtualizationEligible: bool,
+  layoutFrozen: bool,
+  sourceMapBound: bool,
+}
+
+impl FinalClassKindPolicyFact {
+  pub fn complete(self: FinalClassKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.subtypeRejected
+      && self.overrideRejected
+      && self.devirtualizationEligible
+      && self.layoutFrozen
+      && self.sourceMapBound
+  }
+}

@@ -1,0 +1,12 @@
+pub struct SysvAbiContract {
+  target: string,
+  aggregateRules: bool,
+  varargsRules: bool,
+  redZoneAllowed: bool,
+}
+
+impl SysvAbiContract {
+  pub fn accepted(self: SysvAbiContract) -> bool {
+    return self.target != "" && self.aggregateRules && self.varargsRules
+  }
+}

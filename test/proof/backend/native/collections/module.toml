@@ -1,0 +1,6 @@
+[module]
+name = "nativeCollectionsProof"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-collections-proof-evidence"

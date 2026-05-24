@@ -1,0 +1,125 @@
+pub enum DiagnosticSeverity {
+  Note
+  Warning
+  Error
+  Fatal
+}
+
+pub struct Diagnostic {
+  severity: DiagnosticSeverity,
+  category: DiagnosticCategory,
+  code: DiagnosticCode,
+  primaryRange: SourceRange,
+  labelCount: usize,
+  noteCount: usize,
+  fixItCount: usize,
+  helpAvailable: bool,
+  explanation: string,
+  message: string,
+  redacted: bool,
+  machineReadable: bool,
+}
+
+pub fn error(codeFamily: string, codeNumber: u32, file: u32, start: usize, end: usize, message: string) -> Diagnostic {
+  return Diagnostic {
+    severity: DiagnosticSeverity.Error,
+    category: DiagnosticCategory.Type,
+    code: diagnosticCode(codeFamily, codeNumber),
+    primaryRange: SourceRange.init(file, start, end),
+    labelCount: 1,
+    noteCount: 0,
+    fixItCount: 0,
+    helpAvailable: true,
+    explanation: message,
+    message: message,
+    redacted: true,
+    machineReadable: true,
+  }
+}
+
+pub fn warning(codeFamily: string, codeNumber: u32, file: u32, start: usize, end: usize, message: string) -> Diagnostic {
+  return Diagnostic {
+    severity: DiagnosticSeverity.Warning,
+    category: DiagnosticCategory.Type,
+    code: diagnosticCode(codeFamily, codeNumber),
+    primaryRange: SourceRange.init(file, start, end),
+    labelCount: 1,
+    noteCount: 0,
+    fixItCount: 0,
+    helpAvailable: true,
+    explanation: message,
+    message: message,
+    redacted: true,
+    machineReadable: true,
+  }
+}
+
+pub fn note(codeFamily: string, codeNumber: u32, file: u32, start: usize, end: usize, message: string) -> Diagnostic {
+  return Diagnostic {
+    severity: DiagnosticSeverity.Note,
+    category: DiagnosticCategory.Type,
+    code: diagnosticCode(codeFamily, codeNumber),
+    primaryRange: SourceRange.init(file, start, end),
+    labelCount: 1,
+    noteCount: 0,
+    fixItCount: 0,
+    helpAvailable: true,
+    explanation: message,
+    message: message,
+    redacted: true,
+    machineReadable: true,
+  }
+}
+
+impl Diagnostic {
+  pub fn model(
+    code: DiagnosticCode,
+    category: DiagnosticCategory,
+    severity: DiagnosticSeverity,
+    primaryRange: SourceRange,
+    message: string,
+  ) -> Diagnostic {
+    return Diagnostic {
+      severity: severity,
+      category: category,
+      code: code,
+      primaryRange: primaryRange,
+      labelCount: 1,
+      noteCount: 0,
+      fixItCount: 0,
+      helpAvailable: true,
+      explanation: message,
+      message: message,
+      redacted: true,
+      machineReadable: true,
+    }
+  }
+
+  pub fn isError(self: Diagnostic) -> bool {
+    return self.severity == DiagnosticSeverity.Error
+      || self.severity == DiagnosticSeverity.Fatal
+  }
+
+  pub fn family(self: Diagnostic) -> string {
+    return self.code.familyName()
+  }
+
+  pub fn number(self: Diagnostic) -> u32 {
+    return self.code.codeNumber()
+  }
+
+  pub fn text(self: Diagnostic) -> string {
+    return self.message
+  }
+
+  pub fn complete(self: Diagnostic) -> bool {
+    return self.code.valid()
+      && self.primaryRange.exact()
+      && self.labelCount > 0
+      && self.helpAvailable
+      && self.explanation != ""
+      && self.message != ""
+      && self.redacted
+      && self.machineReadable
+  }
+}

@@ -1,0 +1,20 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum HttpDefaultPreset {
+  None,
+  Production,
+  Api,
+  PublicWeb,
+  Internal,
+}
+pub struct HttpDefaultMiddlewarePolicy {
+  preset: HttpDefaultPreset
+  responseCore: bool
+  securityDefaults: bool
+  requestIdAuto: bool
+  traceAuto: bool
+  noServerLeak: bool
+  crashlessErrorJson: bool
+  corsConfigured: bool
+}
+pub struct Defaults {
+}

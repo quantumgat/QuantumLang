@@ -1,0 +1,38 @@
+pub enum NativeForRangeCollectionLoweringKind {
+  RangeCounterLoop
+  ArrayLiteralLoop
+  FixedArrayLoop
+  BytesViewLoop
+  CollectionCursorLoop
+}
+
+pub struct NativeForRangeCollectionLowering {
+  kind: NativeForRangeCollectionLoweringKind,
+  mir: MirForRangeCollectionOp,
+  emitsCounterInit: bool,
+  emitsCompareBranch: bool,
+  emitsElementLoad: bool,
+  emitsElementBind: bool,
+  emitsContinueJump: bool,
+  emitsEndLabel: bool,
+  emitsInvalidationCheck: bool,
+  noHeapAllocation: bool,
+  noRuntimeDispatch: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeForRangeCollectionLowering {
+  pub fn complete(self: NativeForRangeCollectionLowering) -> bool {
+    return self.mir.complete()
+      && self.emitsCounterInit
+      && self.emitsCompareBranch
+      && self.emitsElementLoad
+      && self.emitsElementBind
+      && self.emitsContinueJump
+      && self.emitsEndLabel
+      && self.emitsInvalidationCheck
+      && self.noHeapAllocation
+      && self.noRuntimeDispatch
+      && self.noGeneratedFallback
+  }
+}

@@ -1,0 +1,23 @@
+pub struct SignalSubscription {
+  signal: Signal,
+  action: SignalAction,
+  installed: bool,
+}
+
+pub fn signalSubscription(signal: Signal, action: SignalAction) -> SignalSubscription
+pub fn restore(subscription: SignalSubscription) -> Result<Unit, OsError>
+pub fn close(subscription: SignalSubscription) -> Result<Unit, OsError>
+
+impl SignalSubscription {
+  pub fn active(self: SignalSubscription) -> bool {
+    return self.installed && self.signal.valid()
+  }
+
+  pub fn close(self: SignalSubscription) -> Result<Unit, OsError> {
+    return close(self)
+  }
+
+  pub fn restore(self: SignalSubscription) -> Result<Unit, OsError> {
+    return restore(self)
+  }
+}

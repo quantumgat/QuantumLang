@@ -1,0 +1,37 @@
+pub enum BlockTailKind {
+  None
+  FinalExpression
+  TerminatedExpression
+}
+
+pub struct BlockTail {
+  node: AstNode,
+  kind: BlockTailKind,
+  hasTerminator: bool,
+}
+
+pub fn blockTail(node: AstNode, kind: BlockTailKind, hasTerminator: bool) -> BlockTail {
+  return BlockTail {
+    node: node,
+    kind: kind,
+    hasTerminator: hasTerminator,
+  }
+}
+
+impl BlockTail {
+  pub fn ast(self: BlockTail) -> AstNode {
+    return self.node
+  }
+
+  pub fn tailKind(self: BlockTail) -> BlockTailKind {
+    return self.kind
+  }
+
+  pub fn isFinalExpression(self: BlockTail) -> bool {
+    return self.kind == BlockTailKind.FinalExpression && self.hasTerminator == false
+  }
+
+  pub fn isSuppressedByTerminator(self: BlockTail) -> bool {
+    return self.kind == BlockTailKind.TerminatedExpression || self.hasTerminator
+  }
+}

@@ -1,0 +1,25 @@
+pub enum RuntimeJoinState {
+  Pending
+  Ready
+  Joined
+  DuplicateJoin
+  StaleHandle
+}
+
+pub struct RuntimeJoinHandle {
+  task: TaskId,
+  state: RuntimeJoinState,
+  structured: bool,
+  ownerScope: u64,
+}
+
+impl RuntimeJoinHandle {
+  pub fn valid(self: RuntimeJoinHandle) -> bool {
+    return self.task.raw() > 0
+      && self.state != RuntimeJoinState.StaleHandle
+  }
+
+  pub fn duplicateJoin(self: RuntimeJoinHandle) -> bool {
+    return self.state == RuntimeJoinState.DuplicateJoin
+  }
+}

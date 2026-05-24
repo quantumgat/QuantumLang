@@ -1,0 +1,43 @@
+[package]
+name = "http"
+version = "0.1.0"
+edition = "2026"
+
+[library]
+type = "static"
+
+[source]
+root = "."
+include = ["**/*.qn"]
+exclude = ["**/test/**", "**/*.bench.qn", "build/**"]
+
+[package_owner]
+public_root = "http"
+framework_owned = true
+compiler_core_http = false
+runtime_core_http = false
+
+[publicBinaryPolicy]
+command = "qtlc"
+role = "official-package-artifacts"
+publicCompilerBinary = false
+embeddedInCompilerByDefault = false
+shippedArtifacts = ["package-qnapi", "package-qna", "package-a"]
+consumedByQtlcBuild = true
+defaultAppOutput = "static-one-executable"
+extraRuntimeFilesInDefaultStaticMode = false
+nativeBackendOnly = true
+
+[policy]
+unsafeAllowed = false
+runtimeBacked = false
+hotPath = true
+oldMetadataAllowed = false
+generatedSourceFallback = false
+generatedCppFallback = false
+generatedHeaderFallback = false
+
+[acceleration]
+officialPlugin = "httpAccelerated"
+pluginRequired = false
+genericHooksOnly = true

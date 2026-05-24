@@ -1,0 +1,39 @@
+pub struct StackLowering {
+  vecBacked: bool,
+  topIndexDirect: bool,
+  pushLoweredToVecPush: bool,
+  popLoweredToTopLoadAndLenDec: bool,
+  peekLoweredToDirectLoad: bool,
+  reverseIteratorLowered: bool,
+  zeroCopyFromVec: bool,
+  callableLoopsInlined: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn stackLowering() -> StackLowering {
+  return StackLowering {
+    vecBacked: true,
+    topIndexDirect: true,
+    pushLoweredToVecPush: true,
+    popLoweredToTopLoadAndLenDec: true,
+    peekLoweredToDirectLoad: true,
+    reverseIteratorLowered: true,
+    zeroCopyFromVec: true,
+    callableLoopsInlined: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl StackLowering {
+  pub fn hotPathReady(self: StackLowering) -> bool {
+    return self.vecBacked
+      && self.topIndexDirect
+      && self.pushLoweredToVecPush
+      && self.popLoweredToTopLoadAndLenDec
+      && self.peekLoweredToDirectLoad
+      && self.reverseIteratorLowered
+      && self.zeroCopyFromVec
+      && self.callableLoopsInlined
+      && self.boundsProofRequired
+  }
+}

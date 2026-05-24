@@ -1,0 +1,27 @@
+pub struct ForIteratorAlgorithmRealImplProof {
+  parserRows: usize,
+  analysisRows: usize,
+  hirRows: usize,
+  mirRows: usize,
+  nativeRows: usize,
+  executableRows: usize,
+  negativeRows: usize,
+  pipelineEvidenceRows: usize,
+  directHelperEvidenceRows: usize,
+  lowering: NativeForIteratorAlgorithmLowering,
+}
+
+impl ForIteratorAlgorithmRealImplProof {
+  pub fn complete(self: ForIteratorAlgorithmRealImplProof) -> bool {
+    return self.parserRows >= 14
+      && self.analysisRows >= 12
+      && self.hirRows >= 10
+      && self.mirRows >= 7
+      && self.nativeRows >= 6
+      && self.executableRows >= 14
+      && self.negativeRows >= 3
+      && self.pipelineEvidenceRows >= 3
+      && self.directHelperEvidenceRows >= 10
+      && self.lowering.complete()
+  }
+}

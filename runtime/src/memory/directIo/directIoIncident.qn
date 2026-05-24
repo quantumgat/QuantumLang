@@ -1,0 +1,21 @@
+pub enum DirectIoIncidentKind {
+  BadAlignment,
+  BufferNotPinned,
+  PageLockMissing,
+  PartialErrorLost,
+  CancellationCleanupMissing,
+}
+
+pub struct DirectIoIncident {
+  kind: DirectIoIncidentKind,
+  recoverable: bool,
+}
+
+impl DirectIoIncident {
+  pub fn init(kind: DirectIoIncidentKind) -> DirectIoIncident {
+    return DirectIoIncident {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+}

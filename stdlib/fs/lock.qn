@@ -1,0 +1,19 @@
+pub enum FileLockMode {
+  Shared
+  Exclusive
+}
+
+pub struct FileLock {
+  file: File,
+  mode: FileLockMode,
+  active: bool,
+}
+
+pub fn lock(file: File, mode: FileLockMode) -> FsResult<FileLock>
+pub fn tryLock(file: File, mode: FileLockMode) -> FsResult<Option<FileLock>>
+
+impl FileLock {
+  pub fn active(self: FileLock) -> bool {
+    return self.active
+  }
+}

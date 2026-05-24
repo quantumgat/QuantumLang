@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopDropShutdownLifecycleGuard {
+  objectId: u64
+  ownerTypeName: string
+  generation: u64
+  active: bool
+  shutdownCompleted: bool
+  dropped: bool
+  shutdownBeforeDropSatisfied: bool
+  doubleDropDiagnosticBound: bool
+  useAfterDropDiagnosticBound: bool
+  noCoredumpFailure: bool
+}

@@ -1,0 +1,55 @@
+pub struct SlotVecIter<T> {
+  vec: SlotVec<T>,
+  index: usize,
+  generation: usize,
+}
+
+pub struct SlotMapIter<K, V> {
+  map: SlotMap<K, V>,
+  index: usize,
+  generation: usize,
+}
+
+impl<T> SlotVecIter<T> {
+  pub fn next(self: SlotVecIter<T>) -> Option<T> {
+    let mut index = self.index
+    while index < self.vec.entries.len {
+      let entry = self.vec.entries[index]
+      if entry.occupied {
+        return entry.value
+      }
+      index = index + 1
+    }
+    return None
+  }
+
+  pub fn advance(self: SlotVecIter<T>) -> SlotVecIter<T> {
+    return SlotVecIter<T> {
+      vec: self.vec,
+      index: self.index + 1,
+      generation: self.generation,
+    }
+  }
+}
+
+impl<K, V> SlotMapIter<K, V> {
+  pub fn next(self: SlotMapIter<K, V>) -> Option<(K, V)> {
+    let found = self.map.entries.entryAt(self.index)
+    match found {
+      Some(pair) => {
+        return Some((pair.0, pair.1.value))
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn advance(self: SlotMapIter<K, V>) -> SlotMapIter<K, V> {
+    return SlotMapIter<K, V> {
+      map: self.map,
+      index: self.index + 1,
+      generation: self.generation,
+    }
+  }
+}

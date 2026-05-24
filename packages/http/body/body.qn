@@ -1,0 +1,47 @@
+pub struct HttpBody {
+  bytes: HttpBodyBytes,
+  textValue: string,
+  contentType: string,
+}
+
+impl HttpBody {
+  pub fn init(bytes: HttpBodyBytes, textValue: string, contentType: string) -> HttpBody {
+    return HttpBody {
+      bytes: bytes,
+      textValue: textValue,
+      contentType: contentType,
+    }
+  }
+
+  pub fn empty() -> HttpBody {
+    return HttpBody.init(HttpBodyBytes.empty(), "", "")
+  }
+
+  pub fn text(text: string) -> HttpBody {
+    return HttpBody.init(HttpBodyBytes.empty(), text, "text/plain; charset=utf-8")
+  }
+
+  pub fn json(text: string) -> HttpBody {
+    return HttpBody.init(HttpBodyBytes.empty(), text, "application/json")
+  }
+
+  pub fn bytes(bytes: Vec<u8>, contentType: string) -> HttpBody {
+    return HttpBody.init(HttpBodyBytes.init(bytes), "", contentType)
+  }
+
+  pub fn text(self: HttpBody) -> string {
+    return self.textValue
+  }
+
+  pub fn bytes(self: HttpBody) -> HttpBodyBytes {
+    return self.bytes
+  }
+
+  pub fn contentType(self: HttpBody) -> string {
+    return self.contentType
+  }
+
+  pub fn isEmpty(self: HttpBody) -> bool {
+    return self.bytes.isEmpty() && self.textValue == ""
+  }
+}

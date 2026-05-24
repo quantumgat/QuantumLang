@@ -1,0 +1,21 @@
+pub struct AbiVtableIdentity {
+  typeId: u64,
+  tableSymbolId: u64,
+  abiVersion: string,
+  methodCount: usize,
+}
+
+pub fn abiVtableIdentity(typeId: u64, tableSymbolId: u64, abiVersion: string, methodCount: usize) -> AbiVtableIdentity {
+  return AbiVtableIdentity {
+    typeId: typeId,
+    tableSymbolId: tableSymbolId,
+    abiVersion: abiVersion,
+    methodCount: methodCount,
+  }
+}
+
+impl AbiVtableIdentity {
+  pub fn hasStableIdentity(self: AbiVtableIdentity) -> bool {
+    return self.typeId > 0 && self.tableSymbolId > 0 && self.abiVersion != "" && self.methodCount > 0
+  }
+}

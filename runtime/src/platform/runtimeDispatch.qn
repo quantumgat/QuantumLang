@@ -1,0 +1,26 @@
+pub enum RuntimeDispatchMode {
+  Static,
+  Runtime,
+  Fallback,
+  Rejected,
+}
+
+pub struct RuntimeDispatchDecision {
+  mode: RuntimeDispatchMode,
+  featureSupported: bool,
+  fallbackAvailable: bool,
+}
+
+impl RuntimeDispatchDecision {
+  pub fn init(mode: RuntimeDispatchMode, featureSupported: bool, fallbackAvailable: bool) -> RuntimeDispatchDecision {
+    return RuntimeDispatchDecision {
+      mode: mode,
+      featureSupported: featureSupported,
+      fallbackAvailable: fallbackAvailable,
+    }
+  }
+
+  pub fn accepted(self: RuntimeDispatchDecision) -> bool {
+    return self.featureSupported || self.fallbackAvailable
+  }
+}

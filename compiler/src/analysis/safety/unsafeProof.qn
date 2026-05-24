@@ -1,0 +1,12 @@
+pub struct UnsafeProof {
+  capability: string,
+  permitKnown: bool,
+  proofAttached: bool,
+  diagnosticReady: bool,
+}
+
+impl UnsafeProof {
+  pub fn accepted(self: UnsafeProof) -> bool {
+    return self.permitKnown && self.proofAttached && self.diagnosticReady
+  }
+}

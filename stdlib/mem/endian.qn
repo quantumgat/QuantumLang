@@ -1,0 +1,14 @@
+pub enum Endian {
+  Little,
+  Big,
+}
+
+impl Endian {
+  pub fn isLittle(self: Endian) -> bool {
+    return self == Endian.Little
+  }
+
+  pub fn isBig(self: Endian) -> bool {
+    return self == Endian.Big
+  }
+}

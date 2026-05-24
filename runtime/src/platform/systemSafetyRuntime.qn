@@ -1,0 +1,31 @@
+pub enum RuntimeSystemSafetyKind {
+  Filesystem
+  Path
+  Environment
+  Process
+  Terminal
+  Signal
+  SysCapability
+  SysTargetGate
+  SysUnsupported
+  RawHandle
+}
+
+pub struct RuntimeSystemSafety {
+  kind: RuntimeSystemSafetyKind,
+  capabilityChecked: bool,
+  memoryBounded: bool,
+  blockingBounded: bool,
+  incidentRecorded: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeSystemSafety {
+  pub fn accepted(self: RuntimeSystemSafety) -> bool {
+    return self.capabilityChecked
+      && self.memoryBounded
+      && self.blockingBounded
+      && self.incidentRecorded
+      && self.noCoredump
+  }
+}

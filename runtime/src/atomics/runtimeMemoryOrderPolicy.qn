@@ -1,0 +1,39 @@
+pub enum RuntimeAtomicOperationKind {
+  Load,
+  Store,
+  ReadModifyWrite,
+  CompareExchange,
+  Wait,
+  Wake,
+  Fence,
+}
+
+pub struct RuntimeMemoryOrderPolicy {
+  operation: RuntimeAtomicOperationKind,
+  order: RuntimeMemoryOrder,
+}
+
+impl RuntimeMemoryOrderPolicy {
+  pub fn init(operation: RuntimeAtomicOperationKind, order: RuntimeMemoryOrder) -> RuntimeMemoryOrderPolicy {
+    return RuntimeMemoryOrderPolicy {
+      operation: operation,
+      order: order,
+    }
+  }
+
+  pub fn valid(self: RuntimeMemoryOrderPolicy) -> bool {
+    if self.operation == RuntimeAtomicOperationKind.Load {
+      return self.order != RuntimeMemoryOrder.Release && self.order != RuntimeMemoryOrder.AcqRel
+    }
+    if self.operation == RuntimeAtomicOperationKind.Store {
+      return self.order != RuntimeMemoryOrder.Acquire && self.order != RuntimeMemoryOrder.AcqRel
+    }
+    if self.operation == RuntimeAtomicOperationKind.Wait {
+      return self.order != RuntimeMemoryOrder.Release && self.order != RuntimeMemoryOrder.AcqRel
+    }
+    if self.operation == RuntimeAtomicOperationKind.Fence {
+      return self.order != RuntimeMemoryOrder.Relaxed
+    }
+    return true
+  }
+}

@@ -1,0 +1,21 @@
+pub struct RingBufferLogSink {
+  capacity: usize,
+  overwriteOldest: bool,
+  droppedRecords: usize,
+  redactsBeforeWrite: bool,
+}
+
+impl RingBufferLogSink {
+  pub fn fixed(capacity: usize) -> RingBufferLogSink {
+    return RingBufferLogSink {
+      capacity: capacity,
+      overwriteOldest: true,
+      droppedRecords: 0,
+      redactsBeforeWrite: true,
+    }
+  }
+
+  pub fn safe(self: RingBufferLogSink) -> bool {
+    return self.capacity > 0 && self.redactsBeforeWrite
+  }
+}

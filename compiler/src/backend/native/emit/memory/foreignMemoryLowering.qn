@@ -1,0 +1,19 @@
+pub struct ForeignMemoryLowering {
+  preservesLifetimeToken: bool,
+  preservesAliasPolicy: bool,
+  preservesDeleter: bool,
+}
+
+impl ForeignMemoryLowering {
+  pub fn init(preservesLifetimeToken: bool, preservesAliasPolicy: bool, preservesDeleter: bool) -> ForeignMemoryLowering {
+    return ForeignMemoryLowering {
+      preservesLifetimeToken: preservesLifetimeToken,
+      preservesAliasPolicy: preservesAliasPolicy,
+      preservesDeleter: preservesDeleter,
+    }
+  }
+
+  pub fn accepted(self: ForeignMemoryLowering) -> bool {
+    return self.preservesLifetimeToken && self.preservesAliasPolicy && self.preservesDeleter
+  }
+}

@@ -1,0 +1,13 @@
+pub struct PlatformCapabilityMatrix {
+  target: string,
+  filesystem: bool,
+  network: bool,
+  process: bool,
+  terminal: bool,
+}
+
+impl PlatformCapabilityMatrix {
+  pub fn accepted(self: PlatformCapabilityMatrix) -> bool {
+    return self.target != ""
+  }
+}

@@ -1,0 +1,156 @@
+pub enum ReportExplainRowKind {
+  PrintFormat
+  LogHotPath
+  ErrorResult
+  MemoryIncident
+  RuntimeDiagnostic
+  LowLevelProof
+  HotPathWarning
+}
+
+pub struct ReportExplainRow {
+  kind: ReportExplainRowKind,
+  diagnostic: Diagnostic,
+  machine: MachineDiagnostic,
+  proof: ProofExplanation,
+  hotPath: HotPathWarning,
+  sourceRange: SourceRange,
+  fileLineColumnAvailable: bool,
+  fixItAvailable: bool,
+  correctionAvailable: bool,
+  redacted: bool,
+  existingFactsOnly: bool,
+}
+
+pub fn reportExplainRow(
+  kind: ReportExplainRowKind,
+  file: u32,
+  start: usize,
+  end: usize,
+  codeFamily: string,
+  codeNumber: u32,
+  message: string,
+) -> ReportExplainRow {
+  let range = SourceRange.init(file, start, end)
+  let diagnostic = Diagnostic.model(
+    diagnosticCode(codeFamily, codeNumber),
+    kind.category(),
+    DiagnosticSeverity.Error,
+    range,
+    message
+  )
+  return ReportExplainRow {
+    kind: kind,
+    diagnostic: diagnostic,
+    machine: MachineDiagnostic.fromDiagnostic(diagnostic),
+    proof: ProofExplanation.init(kind.ruleName(), message, range),
+    hotPath: HotPathWarning.init(range, kind.hotPathReason(), true),
+    sourceRange: range,
+    fileLineColumnAvailable: true,
+    fixItAvailable: true,
+    correctionAvailable: true,
+    redacted: true,
+    existingFactsOnly: true,
+  }
+}
+
+impl ReportExplainRowKind {
+  pub fn category(self: ReportExplainRowKind) -> DiagnosticCategory {
+    match self {
+      ReportExplainRowKind.PrintFormat => { return DiagnosticCategory.Format }
+      ReportExplainRowKind.LogHotPath => { return DiagnosticCategory.Log }
+      ReportExplainRowKind.ErrorResult => { return DiagnosticCategory.Type }
+      ReportExplainRowKind.MemoryIncident => { return DiagnosticCategory.Memory }
+      ReportExplainRowKind.RuntimeDiagnostic => { return DiagnosticCategory.Runtime }
+      ReportExplainRowKind.LowLevelProof => { return DiagnosticCategory.Unsafe }
+      ReportExplainRowKind.HotPathWarning => { return DiagnosticCategory.Backend }
+    }
+  }
+
+  pub fn ruleName(self: ReportExplainRowKind) -> string {
+    match self {
+      ReportExplainRowKind.PrintFormat => { return "print-format-checking" }
+      ReportExplainRowKind.LogHotPath => { return "log-elision-lowering" }
+      ReportExplainRowKind.ErrorResult => { return "typed-error-flow" }
+      ReportExplainRowKind.MemoryIncident => { return "memory-incident-report" }
+      ReportExplainRowKind.RuntimeDiagnostic => { return "runtime-diagnostic-report" }
+      ReportExplainRowKind.LowLevelProof => { return "low-level-proof" }
+      ReportExplainRowKind.HotPathWarning => { return "hot-path-warning" }
+    }
+  }
+
+  pub fn hotPathReason(self: ReportExplainRowKind) -> string {
+    match self {
+      ReportExplainRowKind.PrintFormat => { return "format checking must finish before runtime formatting" }
+      ReportExplainRowKind.LogHotPath => { return "disabled logs must erase before record construction" }
+      ReportExplainRowKind.ErrorResult => { return "typed errors must explain safe propagation" }
+      ReportExplainRowKind.MemoryIncident => { return "memory incidents must report without coredump" }
+      ReportExplainRowKind.RuntimeDiagnostic => { return "runtime diagnostics must preserve bounded reporting" }
+      ReportExplainRowKind.LowLevelProof => { return "low-level operations require proof before lowering" }
+      ReportExplainRowKind.HotPathWarning => { return "hot paths require proof for allocation or dispatch cost" }
+    }
+  }
+}
+
+impl ReportExplainRow {
+  pub fn renderable(self: ReportExplainRow) -> bool {
+    return self.diagnostic.complete()
+      && self.machine.safe()
+      && self.proof.publishable()
+      && self.hotPath.reportable()
+      && self.sourceRange.exact()
+      && self.fileLineColumnAvailable
+      && self.fixItAvailable
+      && self.correctionAvailable
+      && self.redacted
+      && self.existingFactsOnly
+  }
+}
+
+pub struct ReportExplainProjection {
+  printFormat: ReportExplainRow,
+  logHotPath: ReportExplainRow,
+  errorResult: ReportExplainRow,
+  memoryIncident: ReportExplainRow,
+  runtimeDiagnostic: ReportExplainRow,
+  lowLevelProof: ReportExplainRow,
+  hotPathWarning: ReportExplainRow,
+  renderer: DiagnosticRenderer,
+  dumpReport: DumpReport,
+  explainReport: ExplainReport,
+  readOnlyRenderer: bool,
+  computesNoFacts: bool,
+}
+
+impl ReportExplainProjection {
+  pub fn standard(file: u32) -> ReportExplainProjection {
+    return ReportExplainProjection {
+      printFormat: reportExplainRow(ReportExplainRowKind.PrintFormat, file, 1, 2, "QLTEXT", 5, "value cannot be printed with this formatter"),
+      logHotPath: reportExplainRow(ReportExplainRowKind.LogHotPath, file, 3, 4, "QLLOG", 1001, "hot log path cannot allocate"),
+      errorResult: reportExplainRow(ReportExplainRowKind.ErrorResult, file, 5, 6, "QLERR", 2001, "error result must be handled or propagated"),
+      memoryIncident: reportExplainRow(ReportExplainRowKind.MemoryIncident, file, 7, 8, "LOW", 2001, "memory incident is reported through safe failure"),
+      runtimeDiagnostic: reportExplainRow(ReportExplainRowKind.RuntimeDiagnostic, file, 9, 10, "QLRT", 3001, "runtime diagnostic is bounded and redacted"),
+      lowLevelProof: reportExplainRow(ReportExplainRowKind.LowLevelProof, file, 11, 12, "LOW", 2008, "low-level operation requires proof"),
+      hotPathWarning: reportExplainRow(ReportExplainRowKind.HotPathWarning, file, 13, 14, "QLHOT", 4001, "hot path requires lowering proof"),
+      renderer: DiagnosticRenderer.pure(DiagnosticRenderPolicy.ide()),
+      dumpReport: dumpReport("report-explain", 7),
+      explainReport: explainReport("diagnostics", "QLTEXT0005"),
+      readOnlyRenderer: true,
+      computesNoFacts: true,
+    }
+  }
+
+  pub fn complete(self: ReportExplainProjection) -> bool {
+    return self.printFormat.renderable()
+      && self.logHotPath.renderable()
+      && self.errorResult.renderable()
+      && self.memoryIncident.renderable()
+      && self.runtimeDiagnostic.renderable()
+      && self.lowLevelProof.renderable()
+      && self.hotPathWarning.renderable()
+      && self.dumpReport.usesExistingFacts()
+      && self.explainReport.isReadOnly()
+      && self.readOnlyRenderer
+      && self.computesNoFacts
+  }
+}

@@ -1,0 +1,20 @@
+pub enum QirBackendDiagnosticKind {
+  UnsupportedQuantumType,
+  MissingProviderMetadata,
+  InvalidQirProfile,
+  SymbolMangleFailure,
+  QwhileRequiresStaticBound,
+  QwhileUnsupportedProfile,
+}
+
+pub struct QirBackendDiagnostic {
+  kind: QirBackendDiagnosticKind,
+  message: string,
+  blocking: bool,
+}
+
+impl QirBackendDiagnostic {
+  pub fn accepted(self: QirBackendDiagnostic) -> bool {
+    return self.message != "" && self.blocking
+  }
+}

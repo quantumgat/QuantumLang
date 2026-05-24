@@ -1,0 +1,41 @@
+pub enum MirChannelSelectOpKind {
+  CreateBounded
+  CreateUnbounded
+  CreateOneshot
+  CreateBroadcast
+  CreateWatch
+  Send
+  Receive
+  Close
+  RegisterSelectWaiter
+  CleanupSelectWaiter
+  WakeReceiver
+  WakeSender
+}
+
+pub struct MirChannelSelectOp {
+  instruction: u64,
+  kind: MirChannelSelectOpKind,
+  runtimeCallRequired: bool,
+  lostWakeProofRequired: bool,
+}
+
+impl MirChannelSelectOp {
+  pub fn init(
+    instruction: u64,
+    kind: MirChannelSelectOpKind,
+    runtimeCallRequired: bool,
+    lostWakeProofRequired: bool,
+  ) -> MirChannelSelectOp {
+    return MirChannelSelectOp {
+      instruction: instruction,
+      kind: kind,
+      runtimeCallRequired: runtimeCallRequired,
+      lostWakeProofRequired: lostWakeProofRequired,
+    }
+  }
+
+  pub fn accepted(self: MirChannelSelectOp) -> bool {
+    return self.instruction > 0 && self.runtimeCallRequired && self.lostWakeProofRequired
+  }
+}

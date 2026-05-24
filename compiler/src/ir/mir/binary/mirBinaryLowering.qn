@@ -1,0 +1,21 @@
+pub struct MirBinaryLowering {
+  hirNode: u64,
+  instruction: u64,
+  opAccepted: bool,
+  boundsDiagnosticAccepted: bool,
+  endianLoweringRequired: bool,
+  nativeEmissionRequired: bool,
+  runtimeFallbackRejected: bool,
+}
+
+impl MirBinaryLowering {
+  pub fn accepted(self: MirBinaryLowering) -> bool {
+    return self.hirNode > 0
+      && self.instruction > 0
+      && self.opAccepted
+      && self.boundsDiagnosticAccepted
+      && self.endianLoweringRequired
+      && self.nativeEmissionRequired
+      && self.runtimeFallbackRejected
+  }
+}

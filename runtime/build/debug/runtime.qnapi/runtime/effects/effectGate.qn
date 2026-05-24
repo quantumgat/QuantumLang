@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct EffectGate {
+  capabilityName: string
+  allowed: bool
+  diagnosticCode: u32
+}
+pub extern "qnpkg" {
+  pub fn effectGate(capabilityName: string, allowed: bool, diagnosticCode: u32) -> EffectGate
+}

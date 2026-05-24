@@ -1,0 +1,82 @@
+pub class Allocator {
+  accountingEnabled: bool,
+  pressureAware: bool,
+  hiddenNativeSubstrate: bool,
+  running: bool,
+  nextAllocationId: u64,
+
+  pub init() {
+    self.accountingEnabled = true
+    self.pressureAware = true
+    self.hiddenNativeSubstrate = true
+    self.running = false
+    self.nextAllocationId = 1
+  }
+
+  pub fn start(self: &mut Allocator) -> bool {
+    self.running = true
+    return self.running
+  }
+
+  pub fn shutdown(self: &mut Allocator) -> bool {
+    self.running = false
+    return self.running == false
+  }
+
+  pub fn drop(self: &mut Allocator) -> bool {
+    return self.shutdown()
+  }
+
+  pub fn tracksPressure(self: &Allocator) -> bool {
+    return self.accountingEnabled && self.pressureAware
+  }
+
+  pub fn reserveId(self: &mut Allocator) -> u64 {
+    let id = self.nextAllocationId
+    self.nextAllocationId = self.nextAllocationId + 1
+    return id
+  }
+
+  pub fn allocateRecord(
+    self: &mut Allocator,
+    domain: RuntimeAllocatorDomain,
+    bytes: usize,
+    pressure: MemoryPressure,
+  ) -> Result<AllocationRecord, RuntimeMemoryError> {
+    if self.running == false {
+      return Err(RuntimeMemoryError.AllocatorStopped)
+    }
+    if bytes == 0 {
+      return Err(RuntimeMemoryError.InvalidLayout)
+    }
+    if self.denyForPressure(domain, bytes, pressure) {
+      return Err(RuntimeMemoryError.PressureDenied)
+    }
+    let id = self.reserveId()
+    return Ok(AllocationRecord.init(id, 1, domain.id(), bytes))
+  }
+
+  pub fn denyForPressure(self: &Allocator, domain: RuntimeAllocatorDomain, bytes: usize, pressure: MemoryPressure) -> bool {
+    if self.pressureAware == false {
+      return false
+    }
+    if pressure.wouldExceed(bytes) {
+      return true
+    }
+    return domain.pressureLimit() > 0 && bytes > domain.pressureLimit()
+  }
+
+  pub fn failurePolicy(self: &Allocator, kind: RuntimeAllocatorFailureKind) -> RuntimeAllocatorFailurePolicy {
+    return RuntimeAllocatorFailurePolicy.init(kind)
+  }
+
+  pub fn checkFree(self: &Allocator, record: AllocationRecord, domain: RuntimeAllocatorDomain) -> Result<AllocationRecord, RuntimeMemoryError> {
+    if record.live() == false {
+      return Err(RuntimeMemoryError.DoubleFree)
+    }
+    if domain.accepts(record) == false {
+      return Err(RuntimeMemoryError.WrongAllocatorDomain)
+    }
+    return Ok(record.markFreed())
+  }
+}

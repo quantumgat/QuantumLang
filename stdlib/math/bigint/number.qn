@@ -1,0 +1,57 @@
+pub trait BigNumber<T> {
+  pub fn compare(self: T, right: T) -> i32
+  pub fn min(self: T, right: T) -> T
+  pub fn max(self: T, right: T) -> T
+  pub fn clamp(self: T, low: T, high: T) -> T
+  pub fn add(self: T, right: T) -> T
+  pub fn mul(self: T, right: T) -> T
+  pub fn div(self: T, right: T) -> Result<T, BigNumberError>
+  pub fn rem(self: T, right: T) -> Result<T, BigNumberError>
+  pub fn pow(self: T, exponent: u64) -> T
+  pub fn gcd(self: T, right: T) -> T
+  pub fn lcm(self: T, right: T) -> T
+  pub fn powMod(self: T, exponent: T, modulus: T) -> Result<T, BigNumberError>
+  pub fn modInv(self: T, modulus: T) -> Result<T, BigNumberError>
+  pub fn format(self: T) -> string
+  pub fn format(self: T, format: BigNumberFormat) -> string
+}
+
+pub trait SignedBigNumber<T> {
+  pub fn abs(self: T) -> T
+  pub fn neg(self: T) -> T
+  pub fn sign(self: T) -> i32
+  pub fn sub(self: T, right: T) -> T
+}
+
+pub trait UnsignedBigNumber<T> {
+  pub fn sub(self: T, right: T) -> Result<T, BigNumberError>
+}
+
+extend<T: BigNumber<T>> T {
+  pub fn compare(self: T, right: T) -> i32
+  pub fn min(self: T, right: T) -> T
+  pub fn max(self: T, right: T) -> T
+  pub fn clamp(self: T, low: T, high: T) -> T
+  pub fn add(self: T, right: T) -> T
+  pub fn mul(self: T, right: T) -> T
+  pub fn div(self: T, right: T) -> Result<T, BigNumberError>
+  pub fn rem(self: T, right: T) -> Result<T, BigNumberError>
+  pub fn pow(self: T, exponent: u64) -> T
+  pub fn gcd(self: T, right: T) -> T
+  pub fn lcm(self: T, right: T) -> T
+  pub fn powMod(self: T, exponent: T, modulus: T) -> Result<T, BigNumberError>
+  pub fn modInv(self: T, modulus: T) -> Result<T, BigNumberError>
+  pub fn format(self: T) -> string
+  pub fn format(self: T, format: BigNumberFormat) -> string
+}
+
+extend<T: SignedBigNumber<T>> T {
+  pub fn abs(self: T) -> T
+  pub fn neg(self: T) -> T
+  pub fn sign(self: T) -> i32
+  pub fn sub(self: T, right: T) -> T
+}
+
+extend<T: UnsignedBigNumber<T>> T {
+  pub fn sub(self: T, right: T) -> Result<T, BigNumberError>
+}

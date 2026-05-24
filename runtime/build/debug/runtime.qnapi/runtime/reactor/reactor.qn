@@ -1,0 +1,5 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub interface Reactor {
+  pub fn backendName(self: &Reactor) -> string
+  pub fn supportsTimers(self: &Reactor) -> bool
+}

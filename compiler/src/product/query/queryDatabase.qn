@@ -1,0 +1,25 @@
+pub class QueryDatabase {
+  memoized: bool,
+  tracksDependencies: bool,
+  invalidatesByFingerprint: bool,
+  mutableFactOwner: bool,
+
+  pub init() {
+    self.memoized = true
+    self.tracksDependencies = true
+    self.invalidatesByFingerprint = true
+    self.mutableFactOwner = false
+  }
+
+  pub fn invalidate(self: &mut QueryDatabase) -> bool {
+    self.invalidatesByFingerprint = true
+    return self.invalidatesByFingerprint
+  }
+}
+impl QueryDatabase {
+  pub fn isIncremental(self: &QueryDatabase) -> bool {
+    return self.memoized &&
+      self.tracksDependencies &&
+      self.invalidatesByFingerprint
+  }
+}

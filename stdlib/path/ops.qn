@@ -1,0 +1,18 @@
+pub fn join(left: PathBuf, right: string) -> PathBuf
+pub fn safeJoin(left: PathBuf, child: string) -> PathBuf
+pub fn normalize(value: PathBuf) -> PathBuf
+pub fn canonicalLexical(value: PathBuf) -> PathBuf
+pub fn parent(value: PathBuf) -> Option<PathBuf>
+pub fn fileName(value: PathBuf) -> Option<string>
+pub fn stem(value: PathBuf) -> Option<string>
+pub fn extension(value: PathBuf) -> Option<string>
+pub fn withFileName(value: PathBuf, name: string) -> PathBuf
+pub fn withExtension(value: PathBuf, extension: string) -> PathBuf
+pub fn isAbsolute(value: PathBuf) -> bool
+pub fn isRelative(value: PathBuf) -> bool
+pub fn startsWith(value: PathBuf, base: PathBuf) -> bool
+pub fn endsWith(value: PathBuf, suffix: string) -> bool
+pub fn stripPrefix(value: PathBuf, base: PathBuf) -> Option<PathBuf>
+pub fn relative(value: PathBuf, base: PathBuf) -> Option<PathBuf>
+pub fn parts(value: PathBuf) -> PathParts
+pub fn components(value: PathBuf) -> Vec<PathComponent>

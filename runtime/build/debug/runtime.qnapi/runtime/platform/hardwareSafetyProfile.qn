@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct HardwareSafetyProfile {
+  cheriCapability: bool
+  armMemoryTagging: bool
+  armPointerAuthentication: bool
+  x86MemoryProtectionKey: bool
+  wasmBounds: bool
+  softwareFallbackInstrumentation: bool
+}

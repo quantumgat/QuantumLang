@@ -1,0 +1,9 @@
+[module]
+name = "nativeOopProof"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-oop-proof-evidence"
+
+[dependencies]
+forbidden = ["backend/c", "backend/llvm", "generated source fallback"]

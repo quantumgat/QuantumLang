@@ -1,0 +1,12 @@
+pub struct BaremetalPlatformContract {
+  target: string,
+  noOs: bool,
+  startupObjectRequired: bool,
+  hostSyscallsForbidden: bool,
+}
+
+impl BaremetalPlatformContract {
+  pub fn accepted(self: BaremetalPlatformContract) -> bool {
+    return self.target != "" && self.noOs && self.hostSyscallsForbidden
+  }
+}

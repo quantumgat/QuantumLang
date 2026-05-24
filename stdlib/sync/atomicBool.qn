@@ -1,0 +1,93 @@
+pub struct AtomicBool {
+  value: bool,
+  targetSupported: bool,
+}
+
+impl AtomicBool {
+  pub fn init(value: bool) -> AtomicBool {
+    return AtomicBool {
+      value: value,
+      targetSupported: true,
+    }
+  }
+
+  pub fn usable(self: AtomicBool) -> bool {
+    return self.targetSupported
+  }
+
+  pub fn load(self: AtomicBool, order: Ordering) -> bool {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Load, order)
+    if policy.valid() == false {
+      return self.value
+    }
+    return self.value
+  }
+
+  pub fn store(self: AtomicBool, value: bool, order: Ordering) -> AtomicBool {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Store, order)
+    if policy.valid() == false {
+      return self
+    }
+    return AtomicBool {
+      value: value,
+      targetSupported: self.targetSupported,
+    }
+  }
+
+  pub fn exchange(self: AtomicBool, value: bool, order: Ordering) -> (AtomicBool, bool) {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.ReadModifyWrite, order)
+    if policy.valid() == false {
+      return (self, self.value)
+    }
+    return (self.store(value, order), self.value)
+  }
+
+  pub fn compareExchange(
+    self: AtomicBool,
+    expected: bool,
+    desired: bool,
+    success: Ordering,
+    failure: Ordering,
+  ) -> (AtomicBool, AtomicCompareExchangeResult<bool>) {
+    let successPolicy = MemoryOrderPolicy.init(AtomicOperationKind.CompareExchange, success)
+    let failurePolicy = MemoryOrderPolicy.init(AtomicOperationKind.Load, failure)
+    if successPolicy.valid() == false || failurePolicy.valid() == false {
+      return (self, AtomicCompareExchangeResult<bool>.init(self.value, false))
+    }
+    if self.value == expected {
+      return (self.store(desired, success), AtomicCompareExchangeResult<bool>.init(expected, true))
+    }
+    return (self, AtomicCompareExchangeResult<bool>.init(self.value, false))
+  }
+
+  pub fn wait(self: AtomicBool, expected: bool, order: Ordering, options: AtomicWaitOptions) -> AtomicWaitStatus {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Wait, order)
+    if self.targetSupported == false || policy.valid() == false {
+      return AtomicWaitStatus.Unsupported
+    }
+    if self.value != expected {
+      return AtomicWaitStatus.NotEqual
+    }
+    if options.cancellable {
+      return AtomicWaitStatus.Cancelled
+    }
+    if options.hasTimeout {
+      return AtomicWaitStatus.TimedOut
+    }
+    return AtomicWaitStatus.Woken
+  }
+
+  pub fn wakeOne(self: AtomicBool) -> usize {
+    if self.targetSupported == false {
+      return 0
+    }
+    return 1
+  }
+
+  pub fn wakeAll(self: AtomicBool) -> usize {
+    if self.targetSupported == false {
+      return 0
+    }
+    return 1
+  }
+}

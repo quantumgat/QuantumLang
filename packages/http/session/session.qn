@@ -1,0 +1,147 @@
+import response::{IntoHttpError}
+
+pub struct HttpSessionId {
+  value: string,
+}
+
+pub struct HttpSessionHandle {
+  id: HttpSessionId,
+  loaded: bool,
+  changed: bool,
+  destroyed: bool,
+}
+
+pub struct HttpSession<T> {
+  handle: HttpSessionHandle,
+  value: T,
+}
+
+pub struct SessionFlash<T> {
+  value: T,
+  consumed: bool,
+}
+
+impl HttpSessionId {
+  pub fn init(value: string) -> HttpSessionId {
+    return HttpSessionId { value: value }
+  }
+
+  pub fn value(self: HttpSessionId) -> string {
+    return self.value
+  }
+
+  pub fn valid(self: HttpSessionId) -> bool {
+    return self.value != ""
+  }
+}
+
+impl HttpSessionHandle {
+  pub fn init(id: HttpSessionId) -> HttpSessionHandle {
+    return HttpSessionHandle {
+      id: id,
+      loaded: true,
+      changed: false,
+      destroyed: false,
+    }
+  }
+
+  pub fn id(self: HttpSessionHandle) -> HttpSessionId {
+    return self.id
+  }
+
+  pub fn loaded(self: HttpSessionHandle) -> bool {
+    return self.loaded
+  }
+
+  pub fn changed(self: HttpSessionHandle) -> bool {
+    return self.changed
+  }
+
+  pub fn destroyed(self: HttpSessionHandle) -> bool {
+    return self.destroyed
+  }
+
+  pub fn get<T>(self: HttpSessionHandle, key: string) -> Result<T, HttpError> {
+    return httpSessionGetSurface<T>(self, key)
+  }
+
+  pub fn set<T>(self: HttpSessionHandle, key: string, value: T) -> Result<HttpSessionHandle, HttpError> {
+    return httpSessionSetSurface<T>(self, key, value)
+  }
+
+  pub fn take<T>(self: HttpSessionHandle, key: string) -> Result<T, HttpError> {
+    return httpSessionTakeSurface<T>(self, key)
+  }
+
+  pub fn remove(self: HttpSessionHandle, key: string) -> Result<HttpSessionHandle, HttpError> {
+    return httpSessionRemoveSurface(self, key)
+  }
+
+  pub fn clear(self: HttpSessionHandle) -> Result<HttpSessionHandle, HttpError> {
+    return httpSessionClearSurface(self)
+  }
+
+  pub fn rotate(self: HttpSessionHandle) -> Result<HttpSessionHandle, HttpError> {
+    return httpSessionRotateSurface(self)
+  }
+
+  pub fn destroy(self: HttpSessionHandle) -> Result<HttpSessionHandle, HttpError> {
+    return httpSessionDestroySurface(self)
+  }
+
+  pub fn csrfToken(self: HttpSessionHandle) -> Result<CsrfToken, HttpError> {
+    return httpSessionCsrfTokenSurface(self)
+  }
+}
+
+impl<T> HttpSession<T> {
+  pub fn init(handle: HttpSessionHandle, value: T) -> HttpSession<T> {
+    return HttpSession<T> {
+      handle: handle,
+      value: value,
+    }
+  }
+
+  pub fn handle(self: HttpSession<T>) -> HttpSessionHandle {
+    return self.handle
+  }
+
+  pub fn value(self: HttpSession<T>) -> Result<T, IntoHttpError> {
+    return Ok(self.value)
+  }
+
+  pub fn update(self: HttpSession<T>, value: T) -> Result<HttpSession<T>, HttpError> {
+    return httpTypedSessionUpdateSurface<T>(self, value)
+  }
+
+  pub fn destroy(self: HttpSession<T>) -> Result<HttpSessionHandle, HttpError> {
+    return self.handle.destroy()
+  }
+}
+
+impl<T> SessionFlash<T> {
+  pub fn init(value: T) -> SessionFlash<T> {
+    return SessionFlash<T> {
+      value: value,
+      consumed: false,
+    }
+  }
+
+  pub fn value(self: SessionFlash<T>) -> T {
+    return self.value
+  }
+
+  pub fn consumed(self: SessionFlash<T>) -> bool {
+    return self.consumed
+  }
+}
+
+fn httpSessionGetSurface<T>(session: HttpSessionHandle, key: string) -> Result<T, HttpError>
+fn httpSessionSetSurface<T>(session: HttpSessionHandle, key: string, value: T) -> Result<HttpSessionHandle, HttpError>
+fn httpSessionTakeSurface<T>(session: HttpSessionHandle, key: string) -> Result<T, HttpError>
+fn httpSessionRemoveSurface(session: HttpSessionHandle, key: string) -> Result<HttpSessionHandle, HttpError>
+fn httpSessionClearSurface(session: HttpSessionHandle) -> Result<HttpSessionHandle, HttpError>
+fn httpSessionRotateSurface(session: HttpSessionHandle) -> Result<HttpSessionHandle, HttpError>
+fn httpSessionDestroySurface(session: HttpSessionHandle) -> Result<HttpSessionHandle, HttpError>
+fn httpSessionCsrfTokenSurface(session: HttpSessionHandle) -> Result<CsrfToken, HttpError>
+fn httpTypedSessionUpdateSurface<T>(session: HttpSession<T>, value: T) -> Result<HttpSession<T>, HttpError>

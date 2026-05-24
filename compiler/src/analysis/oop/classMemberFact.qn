@@ -1,0 +1,27 @@
+pub enum ClassMemberKind {
+  Field
+  Method
+  Constructor
+  StaticMethod
+}
+
+pub struct ClassMemberFact {
+  classTypeId: u64,
+  memberId: u64,
+  kind: ClassMemberKind,
+  publicVisible: bool,
+}
+
+pub fn classMemberFact(
+  classTypeId: u64,
+  memberId: u64,
+  kind: ClassMemberKind,
+  publicVisible: bool,
+) -> ClassMemberFact {
+  return ClassMemberFact {
+    classTypeId: classTypeId,
+    memberId: memberId,
+    kind: kind,
+    publicVisible: publicVisible,
+  }
+}

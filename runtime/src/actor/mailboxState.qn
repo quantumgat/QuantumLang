@@ -1,0 +1,15 @@
+pub struct MailboxState {
+  actor: ActorId,
+  queuedMessages: usize,
+  closed: bool,
+}
+
+pub fn mailboxState(actor: ActorId, queuedMessages: usize, closed: bool) -> MailboxState {
+  return MailboxState { actor: actor, queuedMessages: queuedMessages, closed: closed }
+}
+
+impl MailboxState {
+  pub fn canReceive(self: MailboxState) -> bool {
+    return self.closed == false
+  }
+}

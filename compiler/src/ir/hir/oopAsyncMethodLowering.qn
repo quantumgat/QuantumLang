@@ -1,0 +1,61 @@
+pub enum OopAsyncMethodLoweringKind {
+  ClassMethodFrame
+  InterfaceContractFrame
+  TraitContractFrame
+  ServiceMethodFrame
+  ActorMailboxFrame
+  ReceiverCapture
+  AwaitSuspend
+  CancellationCleanup
+  PartialInitCleanup
+}
+
+pub struct OopAsyncMethodLowering {
+  ownerTypeId: u64,
+  methodId: u64,
+  kind: OopAsyncMethodLoweringKind,
+  astDeclBound: bool,
+  hirAsyncHandoffBound: bool,
+  receiverCaptureBound: bool,
+  selfCaptureAcrossAwaitChecked: bool,
+  immutableBorrowAcrossAwaitChecked: bool,
+  mutableBorrowAcrossAwaitRejectedOrPinned: bool,
+  cancellationCleanupBound: bool,
+  partialInitCleanupBound: bool,
+  stateMachineFrameBound: bool,
+  stackStateMachineEligible: bool,
+  hiddenAllocationRejected: bool,
+  mirReady: bool,
+  sourceMapBound: bool,
+}
+
+impl OopAsyncMethodLowering {
+  pub fn complete(self: OopAsyncMethodLowering) -> bool {
+    return self.ownerTypeId > 0
+      && self.methodId > 0
+      && self.astDeclBound
+      && self.hirAsyncHandoffBound
+      && self.receiverCaptureBound
+      && self.selfCaptureAcrossAwaitChecked
+      && self.immutableBorrowAcrossAwaitChecked
+      && self.mutableBorrowAcrossAwaitRejectedOrPinned
+      && self.cancellationCleanupBound
+      && self.partialInitCleanupBound
+      && self.stateMachineFrameBound
+      && self.hiddenAllocationRejected
+      && self.mirReady
+      && self.sourceMapBound
+  }
+
+  pub fn hotPathReady(self: OopAsyncMethodLowering) -> bool {
+    return self.complete()
+      && self.stackStateMachineEligible
+      && self.kind != OopAsyncMethodLoweringKind.ActorMailboxFrame
+  }
+
+  pub fn cleanupSafe(self: OopAsyncMethodLowering) -> bool {
+    return self.complete()
+      && self.cancellationCleanupBound
+      && self.partialInitCleanupBound
+  }
+}

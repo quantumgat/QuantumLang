@@ -1,0 +1,19 @@
+pub struct PlatformProcessFact {
+  target: string,
+  spawnAvailable: bool,
+  signalAvailable: bool,
+  diagnosticRequired: bool,
+  pipeProof: bool,
+  outputLimitProof: bool,
+  noCoredump: bool,
+}
+
+impl PlatformProcessFact {
+  pub fn accepted(self: PlatformProcessFact) -> bool {
+    return self.target != ""
+      && (self.spawnAvailable || self.diagnosticRequired)
+      && self.pipeProof
+      && self.outputLimitProof
+      && self.noCoredump
+  }
+}

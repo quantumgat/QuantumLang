@@ -1,0 +1,47 @@
+pub struct IdeDiagnosticPayload {
+  diagnostic: Diagnostic,
+  machine: MachineDiagnostic,
+  primaryRange: SourceRange,
+  hoverAvailable: bool,
+  quickFixAvailable: bool,
+  explainAvailable: bool,
+  problemListAvailable: bool,
+  jsonCompatible: bool,
+  lspCompatible: bool,
+  redacted: bool,
+  stableSourceRange: bool,
+  mutatesCompilerFacts: bool,
+}
+
+pub fn ideDiagnosticPayload(diagnostic: Diagnostic) -> IdeDiagnosticPayload {
+  return IdeDiagnosticPayload {
+    diagnostic: diagnostic,
+    machine: MachineDiagnostic.fromDiagnostic(diagnostic),
+    primaryRange: diagnostic.primaryRange,
+    hoverAvailable: true,
+    quickFixAvailable: diagnostic.fixItCount > 0,
+    explainAvailable: true,
+    problemListAvailable: true,
+    jsonCompatible: true,
+    lspCompatible: true,
+    redacted: diagnostic.redacted,
+    stableSourceRange: diagnostic.primaryRange.exact(),
+    mutatesCompilerFacts: false,
+  }
+}
+
+impl IdeDiagnosticPayload {
+  pub fn ready(self: IdeDiagnosticPayload) -> bool {
+    return self.diagnostic.complete()
+      && self.machine.safe()
+      && self.primaryRange.exact()
+      && self.hoverAvailable
+      && self.explainAvailable
+      && self.problemListAvailable
+      && self.jsonCompatible
+      && self.lspCompatible
+      && self.redacted
+      && self.stableSourceRange
+      && self.mutatesCompilerFacts == false
+  }
+}

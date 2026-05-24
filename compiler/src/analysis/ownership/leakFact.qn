@@ -1,0 +1,21 @@
+pub struct LeakFact {
+  allocationId: u64,
+  domainId: u64,
+  reachable: bool,
+  released: bool,
+}
+
+impl LeakFact {
+  pub fn init(allocationId: u64, domainId: u64, reachable: bool, released: bool) -> LeakFact {
+    return LeakFact {
+      allocationId: allocationId,
+      domainId: domainId,
+      reachable: reachable,
+      released: released,
+    }
+  }
+
+  pub fn leaks(self: LeakFact) -> bool {
+    return self.reachable == false && self.released == false
+  }
+}

@@ -1,0 +1,51 @@
+pub struct OopBoundaryProofSummary {
+  compilerOwnedDirect: usize,
+  compilerOwnedDevirtualized: usize,
+  runtimeOwnedVirtual: usize,
+  runtimeOwnedInterface: usize,
+  exactReceiverCalls: usize,
+  erasedReceiverCalls: usize,
+  openHierarchyCalls: usize,
+  sealedHierarchyCalls: usize,
+  proofRows: usize,
+  oop001Diagnostics: usize,
+}
+
+pub fn oopBoundaryProofSummary(
+  compilerOwnedDirect: usize,
+  compilerOwnedDevirtualized: usize,
+  runtimeOwnedVirtual: usize,
+  runtimeOwnedInterface: usize,
+  exactReceiverCalls: usize,
+  erasedReceiverCalls: usize,
+  openHierarchyCalls: usize,
+  sealedHierarchyCalls: usize,
+  proofRows: usize,
+  oop001Diagnostics: usize
+) -> OopBoundaryProofSummary {
+  return OopBoundaryProofSummary {
+    compilerOwnedDirect: compilerOwnedDirect,
+    compilerOwnedDevirtualized: compilerOwnedDevirtualized,
+    runtimeOwnedVirtual: runtimeOwnedVirtual,
+    runtimeOwnedInterface: runtimeOwnedInterface,
+    exactReceiverCalls: exactReceiverCalls,
+    erasedReceiverCalls: erasedReceiverCalls,
+    openHierarchyCalls: openHierarchyCalls,
+    sealedHierarchyCalls: sealedHierarchyCalls,
+    proofRows: proofRows,
+    oop001Diagnostics: oop001Diagnostics,
+  }
+}
+
+impl OopBoundaryProofSummary {
+  pub fn totalCalls(self: OopBoundaryProofSummary) -> usize {
+    return self.compilerOwnedDirect +
+      self.compilerOwnedDevirtualized +
+      self.runtimeOwnedVirtual +
+      self.runtimeOwnedInterface
+  }
+
+  pub fn hasProofRows(self: OopBoundaryProofSummary) -> bool {
+    return self.proofRows >= self.totalCalls()
+  }
+}

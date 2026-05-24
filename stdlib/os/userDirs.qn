@@ -1,0 +1,24 @@
+pub struct UserDirs {
+  home: PathBuf,
+  config: PathBuf,
+  cache: PathBuf,
+  data: PathBuf,
+  temp: PathBuf,
+}
+
+pub fn userDirs() -> Result<UserDirs, OsError>
+pub fn homeDir() -> Result<PathBuf, OsError>
+pub fn configDir() -> Result<PathBuf, OsError>
+pub fn cacheDir() -> Result<PathBuf, OsError>
+pub fn dataDir() -> Result<PathBuf, OsError>
+pub fn tempDir() -> PathBuf
+
+impl UserDirs {
+  pub fn homePath(self: UserDirs) -> PathBuf {
+    return self.home
+  }
+
+  pub fn tempPath(self: UserDirs) -> PathBuf {
+    return self.temp
+  }
+}

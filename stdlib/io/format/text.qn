@@ -1,0 +1,30 @@
+pub struct TextFormatPolicy {
+  toUpperMethod: bool,
+  toLowerMethod: bool,
+  trimMethod: bool,
+  toIntMethod: bool,
+  toFloatMethod: bool,
+  toDecimalMethod: bool,
+  toStringUniversal: bool,
+}
+
+pub fn toUpper(value: string) -> string
+pub fn toLower(value: string) -> string
+pub fn trim(value: string) -> string
+pub fn toInt(value: string) -> Result<i64, FormatError>
+pub fn toFloat(value: string) -> Result<f64, FormatError>
+pub fn toDecimal(value: string) -> Result<decimal, FormatError>
+
+impl TextFormatPolicy {
+  pub fn fastDevelopment() -> TextFormatPolicy {
+    return TextFormatPolicy {
+      toUpperMethod: true,
+      toLowerMethod: true,
+      trimMethod: true,
+      toIntMethod: true,
+      toFloatMethod: true,
+      toDecimalMethod: true,
+      toStringUniversal: true,
+    }
+  }
+}

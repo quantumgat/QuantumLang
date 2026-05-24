@@ -1,0 +1,50 @@
+pub enum ErrorFieldRedaction {
+  Public,
+  Secret,
+  Path,
+}
+
+pub enum ErrorFieldValueKind {
+  Text,
+  Int,
+  UInt,
+  Bool,
+  Code,
+}
+
+pub struct ErrorField {
+  key: string,
+  value: string,
+  kind: ErrorFieldValueKind,
+  redaction: ErrorFieldRedaction,
+}
+
+impl ErrorField {
+  /**
+    Creates a public diagnostic field.
+
+    example:
+      let field = ErrorField.text("path", "/tmp/data.qn", ErrorFieldRedaction.Path)
+
+    effects: pure
+    complexity: O(1)
+    allocation: stores caller-provided strings
+    stability: public since 0.1
+  */
+  pub fn text(key: string, value: string, redaction: ErrorFieldRedaction) -> ErrorField {
+    return ErrorField {
+      key: key,
+      value: value,
+      kind: ErrorFieldValueKind.Text,
+      redaction: redaction,
+    }
+  }
+
+  pub fn publicSafe(self: ErrorField) -> bool {
+    return self.key != "" && self.redaction == ErrorFieldRedaction.Public
+  }
+
+  pub fn redacted(self: ErrorField) -> bool {
+    return self.redaction != ErrorFieldRedaction.Public
+  }
+}

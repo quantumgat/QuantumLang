@@ -1,0 +1,38 @@
+pub enum HirPointerCallKind {
+  Get,
+  Set,
+  GetAt,
+  SetAt,
+  Slice,
+  MutSlice,
+  CheckReadable,
+  CheckWritable,
+  CheckNonNull,
+  Read,
+  Write,
+  Copy,
+  Move,
+  Fill,
+  Zero,
+}
+
+pub struct HirPointerCallLowering {
+  node: u64,
+  kind: HirPointerCallKind,
+  receiverType: string,
+  resultType: string,
+  questionMarkPropagates: bool,
+  diagnosticCode: string,
+  targetVariantRequired: bool,
+}
+
+impl HirPointerCallLowering {
+  pub fn accepted(self: HirPointerCallLowering) -> bool {
+    return self.node > 0
+      && self.receiverType != ""
+      && self.resultType != ""
+      && self.questionMarkPropagates
+      && self.diagnosticCode != ""
+      && self.targetVariantRequired
+  }
+}

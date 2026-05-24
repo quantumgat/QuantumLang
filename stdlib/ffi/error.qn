@@ -1,0 +1,44 @@
+pub enum FfiErrorKind {
+  LibraryNotFound
+  SymbolNotFound
+  CapabilityDenied
+  InvalidHandle
+  WrongThread
+  PanicBoundaryViolated
+  ForeignLifetimeExpired
+  UnsupportedTarget
+}
+
+pub struct FfiError {
+  kind: FfiErrorKind,
+  code: string,
+  recoverable: bool,
+  noCoredump: bool,
+}
+
+impl FfiError {
+  /**
+    Creates a typed FFI error for safe failure paths.
+
+    example:
+      return Err(FfiError.init(FfiErrorKind.SymbolNotFound, "QLFFI0002"))
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reports failures as values instead of unwinding across FFI
+    stability: public since 0.1
+  */
+  pub fn init(kind: FfiErrorKind, code: string) -> FfiError {
+    return FfiError {
+      kind: kind,
+      code: code,
+      recoverable: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: FfiError) -> bool {
+    return self.code != "" && self.recoverable && self.noCoredump
+  }
+}

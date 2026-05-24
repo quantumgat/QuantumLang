@@ -1,0 +1,17 @@
+pub struct ServiceClassRuntimeContract {
+  typeId: u64,
+  dependencyGraphBound: bool,
+  startupBound: bool,
+  shutdownBound: bool,
+  healthCheckBound: bool,
+}
+
+impl ServiceClassRuntimeContract {
+  pub fn complete(self: ServiceClassRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.dependencyGraphBound
+      && self.startupBound
+      && self.shutdownBound
+      && self.healthCheckBound
+  }
+}

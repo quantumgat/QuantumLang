@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct AsyncInterfaceRuntimeSafety {
+  interfaceTypeId: u64
+  asyncObligationRuntimeBound: bool
+  objectSafetyRuntimeBound: bool
+  dynAdapterBoundaryBound: bool
+  futureAbiRuntimeBound: bool
+  pollEntryRuntimeBound: bool
+  typedFailureNoCoredumpBound: bool
+  sourceMapBound: bool
+}

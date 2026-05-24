@@ -1,0 +1,49 @@
+pub enum ConstructorAccessKind {
+  StructLiteralInit
+  SelfFieldAssign
+  BaseConstructorCall
+  BuilderMutation
+}
+
+pub struct ConstructorAccessFact {
+  functionId: u64,
+  constructorId: u64,
+  ownerTypeId: u64,
+  fieldId: u64,
+  accessKind: ConstructorAccessKind,
+  sameOwner: bool,
+  publicField: bool,
+  allowed: bool,
+}
+
+pub fn constructorAccessFact(
+  functionId: u64,
+  constructorId: u64,
+  ownerTypeId: u64,
+  fieldId: u64,
+  accessKind: ConstructorAccessKind,
+  sameOwner: bool,
+  publicField: bool,
+  allowed: bool,
+) -> ConstructorAccessFact {
+  return ConstructorAccessFact {
+    functionId: functionId,
+    constructorId: constructorId,
+    ownerTypeId: ownerTypeId,
+    fieldId: fieldId,
+    accessKind: accessKind,
+    sameOwner: sameOwner,
+    publicField: publicField,
+    allowed: allowed,
+  }
+}
+
+impl ConstructorAccessFact {
+  pub fn expectedAllowed(self: ConstructorAccessFact) -> bool {
+    return self.sameOwner || self.publicField
+  }
+
+  pub fn emitsVisibilityDiagnostic(self: ConstructorAccessFact) -> bool {
+    return self.allowed == false || self.expectedAllowed() == false
+  }
+}

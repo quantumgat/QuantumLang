@@ -1,0 +1,175 @@
+import body::{HttpBody}
+import extractor::{Valid}
+import request::{HttpHeaderMap, HttpMethod, HttpRequest, HttpUri}
+import response::{IntoHttpError}
+import session::{HttpSession, HttpSessionHandle}
+
+pub struct HttpCtx<...Caps> {
+  slotCount: usize,
+  requestValue: HttpRequest,
+  clientIpValue: string,
+  dataCount: usize,
+}
+
+impl<...Caps> HttpCtx<...Caps> {
+  pub fn init() -> HttpCtx<...Caps> {
+    return HttpCtx<...Caps> {
+      slotCount: typeCount<Caps>(),
+      requestValue: HttpRequest.get("/"),
+      clientIpValue: "",
+      dataCount: 0,
+    }
+  }
+
+  pub fn fromRequest(request: HttpRequest) -> HttpCtx<...Caps> {
+    return HttpCtx<...Caps> {
+      slotCount: typeCount<Caps>(),
+      requestValue: request,
+      clientIpValue: "",
+      dataCount: 0,
+    }
+  }
+
+  pub fn withClientIp(self: HttpCtx<...Caps>, clientIp: string) -> HttpCtx<...Caps> {
+    return HttpCtx<...Caps> {
+      slotCount: self.slotCount,
+      requestValue: self.requestValue,
+      clientIpValue: clientIp,
+      dataCount: self.dataCount,
+    }
+  }
+
+  pub fn slotCount(self: HttpCtx<...Caps>) -> usize {
+    return self.slotCount
+  }
+
+  pub fn request(self: HttpCtx<...Caps>) -> HttpRequest {
+    return self.requestValue
+  }
+
+  pub fn method(self: HttpCtx<...Caps>) -> HttpMethod {
+    return self.requestValue.method()
+  }
+
+  pub fn uri(self: HttpCtx<...Caps>) -> HttpUri {
+    return self.requestValue.uri()
+  }
+
+  pub fn path(self: HttpCtx<...Caps>) -> string {
+    return self.requestValue.uri().path()
+  }
+
+  pub fn rawQuery(self: HttpCtx<...Caps>) -> string {
+    return self.requestValue.uri().query()
+  }
+
+  pub fn headers(self: HttpCtx<...Caps>) -> HttpHeaderMap {
+    return self.requestValue.headers()
+  }
+
+  pub fn body(self: HttpCtx<...Caps>) -> HttpBody {
+    return self.requestValue.body()
+  }
+
+  pub fn clientIp(self: HttpCtx<...Caps>) -> string {
+    return self.clientIpValue
+  }
+
+  pub fn has<T>(self: HttpCtx<...Caps>) -> bool {
+    return containsType<Caps, T>()
+  }
+
+  pub fn get<T>(self: HttpCtx<...Caps>) -> T {
+    return ctxSlot<Caps, T>(self)
+  }
+
+  pub fn require<T>(self: HttpCtx<...Caps>) -> Result<T, IntoHttpError> {
+    if self.has<T>() {
+      return Ok(self.get<T>())
+    }
+    return Err(IntoHttpError.badRequest("missing HTTP capability in context"))
+  }
+
+  pub fn set<T>(self: HttpCtx<...Caps>, value: T) -> HttpCtx<...Caps> {
+    ctxSet<Caps, T>(self, value)
+    return HttpCtx<...Caps> {
+      slotCount: self.slotCount,
+      requestValue: self.requestValue,
+      clientIpValue: self.clientIpValue,
+      dataCount: self.dataCount + 1,
+    }
+  }
+
+  pub fn put<T>(self: HttpCtx<...Caps>, value: T) -> HttpCtx<...Caps> {
+    return self.set<T>(value)
+  }
+
+  pub fn with<T>(self: HttpCtx<...Caps>, value: T) -> HttpCtx<...Caps> {
+    return self.set<T>(value)
+  }
+
+  pub fn data<T>(self: HttpCtx<...Caps>) -> T {
+    return self.get<T>()
+  }
+
+  pub fn dataCount(self: HttpCtx<...Caps>) -> usize {
+    return self.dataCount
+  }
+
+  pub fn session(self: HttpCtx<...Caps>) -> HttpSessionHandle {
+    return ctxSession<Caps>(self)
+  }
+
+  pub fn session<T>(self: HttpCtx<...Caps>) -> Result<HttpSession<T>, IntoHttpError> {
+    return ctxTypedSession<Caps, T>(self)
+  }
+
+  pub fn sessionData<T>(self: HttpCtx<...Caps>) -> Result<T, IntoHttpError> {
+    let sessionResult = self.session<T>()
+    match sessionResult {
+      Ok(session) => {
+        return session.value()
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn path<T>(self: HttpCtx<...Caps>, name: string) -> Result<T, IntoHttpError> {
+    return ctxPath<Caps, T>(self, name)
+  }
+
+  pub fn query<T>(self: HttpCtx<...Caps>) -> Result<T, IntoHttpError> {
+    return ctxQuery<Caps, T>(self)
+  }
+
+  pub fn query<T>(self: HttpCtx<...Caps>, name: string) -> Result<T, IntoHttpError> {
+    return ctxQueryNamed<Caps, T>(self, name)
+  }
+
+  pub fn body<T>(self: HttpCtx<...Caps>) -> Result<T, IntoHttpError> {
+    return ctxBody<Caps, T>(self)
+  }
+
+  pub fn valid<T>(self: HttpCtx<...Caps>) -> Result<Valid<T>, IntoHttpError> {
+    let bodyResult = self.body<T>()
+    match bodyResult {
+      Ok(value) => {
+        return Ok(Valid.init(value, "default"))
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+}
+
+fn ctxSlot<...Caps, T>(ctx: HttpCtx<...Caps>) -> T
+fn ctxSet<...Caps, T>(ctx: HttpCtx<...Caps>, value: T) -> ()
+fn ctxPath<...Caps, T>(ctx: HttpCtx<...Caps>, name: string) -> Result<T, IntoHttpError>
+fn ctxQuery<...Caps, T>(ctx: HttpCtx<...Caps>) -> Result<T, IntoHttpError>
+fn ctxQueryNamed<...Caps, T>(ctx: HttpCtx<...Caps>, name: string) -> Result<T, IntoHttpError>
+fn ctxBody<...Caps, T>(ctx: HttpCtx<...Caps>) -> Result<T, IntoHttpError>
+fn ctxSession<...Caps>(ctx: HttpCtx<...Caps>) -> HttpSessionHandle
+fn ctxTypedSession<...Caps, T>(ctx: HttpCtx<...Caps>) -> Result<HttpSession<T>, IntoHttpError>

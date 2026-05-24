@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeAllocatorDomain {
+  id: u64
+  name: string
+  isolated: bool
+  pressureLimitBytes: usize
+}

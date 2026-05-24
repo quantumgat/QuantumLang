@@ -1,0 +1,15 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct ForwardedChain {
+  clientIp: string
+  host: string
+  proto: string
+  port: usize
+  prefix: string
+  hops: Vec<string>
+  firstUntrustedIp: string
+  sourceHeader: string
+  trusted: bool
+  spoofed: bool
+}
+pub struct Forwarded {
+}

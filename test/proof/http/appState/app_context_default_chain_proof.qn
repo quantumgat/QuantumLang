@@ -1,0 +1,50 @@
+pub type ProductApiCtx = HttpCtx<AuthenticatedUser, TenantContext, TraceContext, ProductMiddlewareData>
+
+pub struct HttpAppContextDefaultChainProof {
+  contextApiAvailable: bool,
+  defaultChainReady: bool,
+  useOverrideStillAvailable: bool,
+  controllerRegistered: bool,
+  appValid: bool,
+  noManualMiddlewareRequired: bool,
+}
+
+impl HttpAppContextDefaultChainProof {
+  pub fn init(defaultApp: AppBuilder, overrideApp: AppBuilder, port: usize) -> HttpAppContextDefaultChainProof {
+    let defaultPlan = defaultApp.plan(port)
+    let overridePlan = overrideApp.plan(port)
+    return HttpAppContextDefaultChainProof {
+      contextApiAvailable: defaultPlan.contextPolicyCount() == 1,
+      defaultChainReady: defaultPlan.defaultContextChainReady(),
+      useOverrideStillAvailable: overridePlan.globalPolicyCount() == 2,
+      controllerRegistered: defaultPlan.controllerCount() == 1,
+      appValid: defaultPlan.valid() && overridePlan.valid(),
+      noManualMiddlewareRequired: defaultPlan.globalPolicyCount() == 0,
+    }
+  }
+
+  pub fn complete(self: HttpAppContextDefaultChainProof) -> bool {
+    return self.contextApiAvailable
+      && self.defaultChainReady
+      && self.useOverrideStillAvailable
+      && self.controllerRegistered
+      && self.appValid
+      && self.noManualMiddlewareRequired
+  }
+}
+
+pub fn httpAppContextDefaultChainProof() -> HttpAppContextDefaultChainProof {
+  let defaultApp = App()
+    .state(Database(config.db))
+    .context<ProductApiCtx>()
+    .controller<ProductApi>()
+
+  let overrideApp = App()
+    .state(Database(config.db))
+    .context<ProductApiCtx>()
+    .use(Cors.allowOrigins(["https://app.com"]))
+    .use(Auth.jwt(customJwtConfig))
+    .controller<ProductApi>()
+
+  return HttpAppContextDefaultChainProof.init(defaultApp, overrideApp, 8080)
+}

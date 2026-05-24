@@ -1,0 +1,193 @@
+import analysis.types::{BuiltinPrimitiveTypeId}
+
+pub enum PrimitiveOperatorKind {
+  Add
+  Subtract
+  Multiply
+  Divide
+  Remainder
+  Power
+  Equal
+  NotEqual
+  Less
+  LessEqual
+  Greater
+  GreaterEqual
+  BitAnd
+  BitOr
+  BitXor
+  BitNot
+  ShiftLeft
+  ShiftRight
+  UnaryPlus
+  UnaryMinus
+  PrefixIncrement
+  PrefixDecrement
+  PostfixIncrement
+  PostfixDecrement
+}
+
+pub enum PrimitiveOperatorPolicy {
+  DirectNative
+  CheckedTrap
+  ResultChecked
+  Wrapping
+  Saturating
+  Overflowing
+  RuntimeKernel
+  Rejected
+}
+
+pub enum PrimitiveOperatorDiagnosticKind {
+  None
+  DivideByZero
+  InvalidShift
+  Overflow
+  UnsupportedComplexOrdering
+  SilentMixingRejected
+  TargetFeatureRequired
+}
+
+pub struct PrimitiveOperatorRule {
+  operator: PrimitiveOperatorKind,
+  leftType: BuiltinPrimitiveTypeId,
+  rightType: BuiltinPrimitiveTypeId,
+  resultType: BuiltinPrimitiveTypeId,
+  policy: PrimitiveOperatorPolicy,
+  diagnostic: PrimitiveOperatorDiagnosticKind,
+  directNative: bool,
+  runtimeKernelRequired: bool,
+  mutatesOperand: bool,
+  mutableLvalueRequired: bool,
+  returnsOldValue: bool,
+  noImport: bool,
+  noCoredump: bool,
+}
+
+impl PrimitiveOperatorRule {
+  pub fn direct(
+    operator: PrimitiveOperatorKind,
+    leftType: BuiltinPrimitiveTypeId,
+    rightType: BuiltinPrimitiveTypeId,
+    resultType: BuiltinPrimitiveTypeId,
+  ) -> PrimitiveOperatorRule {
+    return PrimitiveOperatorRule {
+      operator: operator,
+      leftType: leftType,
+      rightType: rightType,
+      resultType: resultType,
+      policy: PrimitiveOperatorPolicy.DirectNative,
+      diagnostic: PrimitiveOperatorDiagnosticKind.None,
+      directNative: true,
+      runtimeKernelRequired: false,
+      mutatesOperand: false,
+      mutableLvalueRequired: false,
+      returnsOldValue: false,
+      noImport: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn checked(
+    operator: PrimitiveOperatorKind,
+    leftType: BuiltinPrimitiveTypeId,
+    rightType: BuiltinPrimitiveTypeId,
+    resultType: BuiltinPrimitiveTypeId,
+    diagnostic: PrimitiveOperatorDiagnosticKind,
+  ) -> PrimitiveOperatorRule {
+    return PrimitiveOperatorRule {
+      operator: operator,
+      leftType: leftType,
+      rightType: rightType,
+      resultType: resultType,
+      policy: PrimitiveOperatorPolicy.ResultChecked,
+      diagnostic: diagnostic,
+      directNative: false,
+      runtimeKernelRequired: false,
+      mutatesOperand: false,
+      mutableLvalueRequired: false,
+      returnsOldValue: false,
+      noImport: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn runtime(
+    operator: PrimitiveOperatorKind,
+    leftType: BuiltinPrimitiveTypeId,
+    rightType: BuiltinPrimitiveTypeId,
+    resultType: BuiltinPrimitiveTypeId,
+  ) -> PrimitiveOperatorRule {
+    return PrimitiveOperatorRule {
+      operator: operator,
+      leftType: leftType,
+      rightType: rightType,
+      resultType: resultType,
+      policy: PrimitiveOperatorPolicy.RuntimeKernel,
+      diagnostic: PrimitiveOperatorDiagnosticKind.None,
+      directNative: false,
+      runtimeKernelRequired: true,
+      mutatesOperand: false,
+      mutableLvalueRequired: false,
+      returnsOldValue: false,
+      noImport: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn increment(
+    operator: PrimitiveOperatorKind,
+    operandType: BuiltinPrimitiveTypeId,
+    returnsOldValue: bool,
+  ) -> PrimitiveOperatorRule {
+    return PrimitiveOperatorRule {
+      operator: operator,
+      leftType: operandType,
+      rightType: operandType,
+      resultType: operandType,
+      policy: PrimitiveOperatorPolicy.DirectNative,
+      diagnostic: PrimitiveOperatorDiagnosticKind.None,
+      directNative: true,
+      runtimeKernelRequired: false,
+      mutatesOperand: true,
+      mutableLvalueRequired: true,
+      returnsOldValue: returnsOldValue,
+      noImport: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn rejected(
+    operator: PrimitiveOperatorKind,
+    leftType: BuiltinPrimitiveTypeId,
+    rightType: BuiltinPrimitiveTypeId,
+    diagnostic: PrimitiveOperatorDiagnosticKind,
+  ) -> PrimitiveOperatorRule {
+    return PrimitiveOperatorRule {
+      operator: operator,
+      leftType: leftType,
+      rightType: rightType,
+      resultType: leftType,
+      policy: PrimitiveOperatorPolicy.Rejected,
+      diagnostic: diagnostic,
+      directNative: false,
+      runtimeKernelRequired: false,
+      mutatesOperand: false,
+      mutableLvalueRequired: false,
+      returnsOldValue: false,
+      noImport: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: PrimitiveOperatorRule) -> bool {
+    return self.noImport
+      && self.noCoredump
+      && (!self.mutatesOperand || self.mutableLvalueRequired)
+      && (
+        self.directNative
+        || self.runtimeKernelRequired
+        || self.diagnostic != PrimitiveOperatorDiagnosticKind.None
+      )
+  }
+}

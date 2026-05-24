@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct MethodOrderingProof {
+  tableSymbolId: u64
+  methodCount: usize
+  contiguousOrder: bool
+  stableSourceOrder: bool
+  duplicateSlots: usize
+}
+pub extern "qnpkg" {
+  pub fn methodOrderingProof(tableSymbolId: u64, methodCount: usize, contiguousOrder: bool, stableSourceOrder: bool, duplicateSlots: usize) -> MethodOrderingProof
+}

@@ -1,0 +1,9 @@
+[module]
+name = "mir"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots", "qtlc_qtlang_language_closure_callable_lambda_real_impl"]

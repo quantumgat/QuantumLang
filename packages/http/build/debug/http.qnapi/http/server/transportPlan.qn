@@ -1,0 +1,8 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpTransportPlan {
+  bindAddress: string
+  workers: usize
+  mode: HttpTransportMode
+  blockingPoolWorkers: usize
+  packageOwnedProtocol: bool
+}

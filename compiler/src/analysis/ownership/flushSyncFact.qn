@@ -1,0 +1,19 @@
+pub struct FlushSyncFact {
+  flushed: bool,
+  synced: bool,
+  partialErrorPreserved: bool,
+}
+
+impl FlushSyncFact {
+  pub fn init(flushed: bool, synced: bool, partialErrorPreserved: bool) -> FlushSyncFact {
+    return FlushSyncFact {
+      flushed: flushed,
+      synced: synced,
+      partialErrorPreserved: partialErrorPreserved,
+    }
+  }
+
+  pub fn accepted(self: FlushSyncFact) -> bool {
+    return self.flushed && self.synced && self.partialErrorPreserved
+  }
+}

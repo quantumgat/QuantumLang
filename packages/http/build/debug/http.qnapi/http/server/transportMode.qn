@@ -1,0 +1,24 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum HttpTransportMode {
+  Async
+  Hybrid
+  Blocking
+}
+pub struct HttpTransportModePlan {
+  mode: HttpTransportMode
+  workers: usize
+  workersAuto: bool
+  reactorShards: usize
+  perCoreSharding: bool
+  blockingPoolWorkers: usize
+  blockingPoolConfigured: bool
+  threadPerConnection: bool
+  genericRuntimeTransport: bool
+  pluginConsumableFacts: bool
+  policyValid: bool
+}
+pub struct HttpTransportModeDiagnostic {
+  code: string
+  message: string
+  help: string
+}

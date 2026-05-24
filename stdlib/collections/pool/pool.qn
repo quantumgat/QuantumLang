@@ -1,0 +1,234 @@
+/**
+  Free-list backed object pool with typed generational handles.
+
+  examples:
+    let pool = Pool<User>.withCapacity(1024)
+    let inserted = pool.insert(user)
+    let pool = inserted.0
+    let handle = inserted.1
+    let user = pool.get(handle)
+    let removed = pool.remove(handle)
+
+  effects: pure for reads; allocation only when the slot table grows
+  complexity: O(1) insert/get/remove when capacity is available
+  allocation: contiguous slot table with free-list reuse
+  stability: public since 0.1
+*/
+pub struct PoolHandle<T> {
+  index: usize,
+  generation: usize,
+}
+
+pub struct PoolSlot<T> {
+  value: Option<T>,
+  generation: usize,
+  nextFree: Option<usize>,
+  occupied: bool,
+}
+
+pub struct Pool<T> {
+  slots: Vec<PoolSlot<T>>,
+  freeHead: Option<usize>,
+  len: usize,
+  capacity: usize,
+  nextGeneration: usize,
+  generation: usize,
+}
+
+impl<T> PoolHandle<T> {
+  pub fn new(index: usize, generation: usize) -> PoolHandle<T> {
+    return PoolHandle<T> {
+      index: index,
+      generation: generation,
+    }
+  }
+}
+
+impl<T> PoolSlot<T> {
+  pub fn occupied(value: T, generation: usize) -> PoolSlot<T> {
+    return PoolSlot<T> {
+      value: Some(value),
+      generation: generation,
+      nextFree: None,
+      occupied: true,
+    }
+  }
+
+  pub fn free(generation: usize, nextFree: Option<usize>) -> PoolSlot<T> {
+    return PoolSlot<T> {
+      value: None,
+      generation: generation,
+      nextFree: nextFree,
+      occupied: false,
+    }
+  }
+}
+
+impl<T> Pool<T> {
+  pub fn init() -> Pool<T> requires(alloc) {
+    return Pool<T>.withCapacity(0)
+  }
+
+  pub fn empty() -> Pool<T> requires(alloc) {
+    return Pool<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Pool<T> requires(alloc) {
+    return Pool<T> {
+      slots: Vec<PoolSlot<T>>.withCapacity(capacity),
+      freeHead: None,
+      len: 0,
+      capacity: capacity,
+      nextGeneration: 1,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> PoolBuilder<T> {
+    return PoolBuilder<T>.init()
+  }
+
+  pub fn len(self: Pool<T>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Pool<T>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Pool<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn insert(self: Pool<T>, value: T) -> (Pool<T>, PoolHandle<T>) requires(alloc) {
+    match self.freeHead {
+      Some(index) => {
+        return self.insertIntoFree(index, value)
+      }
+      None => {
+        return self.insertAtTail(value)
+      }
+    }
+  }
+
+  pub fn get(self: Pool<T>, handle: PoolHandle<T>) -> Option<T> {
+    if handle.index >= self.slots.len {
+      return None
+    }
+    let slot = self.slots[handle.index]
+    if slot.occupied == false {
+      return None
+    }
+    if slot.generation != handle.generation {
+      return None
+    }
+    return slot.value
+  }
+
+  pub fn contains(self: Pool<T>, handle: PoolHandle<T>) -> bool {
+    if handle.index >= self.slots.len {
+      return false
+    }
+    let slot = self.slots[handle.index]
+    return slot.occupied && slot.generation == handle.generation
+  }
+
+  pub fn remove(self: Pool<T>, handle: PoolHandle<T>) -> (Pool<T>, Option<T>) requires(alloc) {
+    if self.contains(handle) == false {
+      return (self, None)
+    }
+    let slot = self.slots[handle.index]
+    let value = slot.value
+    let nextGeneration = slot.generation + 1
+    let slots = self.slots.set(handle.index, PoolSlot<T>.free(nextGeneration, self.freeHead))
+    return (
+      Pool<T> {
+        slots: slots,
+        freeHead: Some(handle.index),
+        len: self.len - 1,
+        capacity: self.capacity,
+        nextGeneration: self.nextGeneration,
+        generation: self.generation + 1,
+      },
+      value
+    )
+  }
+
+  pub fn clear(self: Pool<T>) -> Pool<T> requires(alloc) {
+    return Pool<T>.withCapacity(self.capacity).withGeneration(self.generation + 1)
+  }
+
+  pub fn iter(self: Pool<T>) -> PoolIter<T> {
+    return PoolIter<T>.fromPool(self)
+  }
+
+  pub fn toVec(self: Pool<T>) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut cursor = self.occupiedCursor()
+    while cursor.hasNext() {
+      result = result.push(cursor.valueUnchecked())
+      cursor = cursor.next()
+    }
+    return result
+  }
+
+  pub fn insertIntoFree(self: Pool<T>, index: usize, value: T) -> (Pool<T>, PoolHandle<T>) requires(alloc) {
+    let freeSlot = self.slots[index]
+    let generation = freeSlot.generation
+    let slots = self.slots.set(index, PoolSlot<T>.occupied(value, generation))
+    return (
+      Pool<T> {
+        slots: slots,
+        freeHead: freeSlot.nextFree,
+        len: self.len + 1,
+        capacity: self.capacity,
+        nextGeneration: self.nextGeneration,
+        generation: self.generation + 1,
+      },
+      PoolHandle<T>.new(index, generation)
+    )
+  }
+
+  pub fn insertAtTail(self: Pool<T>, value: T) -> (Pool<T>, PoolHandle<T>) requires(alloc) {
+    let index = self.slots.len
+    let generation = self.nextGeneration
+    let slots = self.slots.push(PoolSlot<T>.occupied(value, generation))
+    return (
+      Pool<T> {
+        slots: slots,
+        freeHead: None,
+        len: self.len + 1,
+        capacity: self.nextCapacity(1),
+        nextGeneration: self.nextGeneration + 1,
+        generation: self.generation + 1,
+      },
+      PoolHandle<T>.new(index, generation)
+    )
+  }
+
+  pub fn nextCapacity(self: Pool<T>, additional: usize) -> usize {
+    let needed = self.slots.len + additional
+    if needed <= self.capacity {
+      return self.capacity
+    }
+    if self.capacity == 0 {
+      return needed
+    }
+    let mut next = self.capacity
+    while next < needed {
+      next = next * 2
+    }
+    return next
+  }
+
+  pub fn withGeneration(self: Pool<T>, generation: usize) -> Pool<T> {
+    return Pool<T> {
+      slots: self.slots,
+      freeHead: self.freeHead,
+      len: self.len,
+      capacity: self.capacity,
+      nextGeneration: self.nextGeneration,
+      generation: generation,
+    }
+  }
+}

@@ -1,0 +1,51 @@
+pub enum AsyncSyntaxKind {
+  AsyncFn
+  AsyncBlock
+  AwaitExpr
+  AwaitQuestionExpr
+  AsyncClosure
+}
+
+pub enum AsyncSyntaxDiagnosticKind {
+  None
+  AwaitOutsideAsync
+  AwaitQuestionOutsideResult
+  AsyncClosureCaptureInvalid
+  BlockingCallInAsync
+}
+
+pub struct AsyncSyntaxParse {
+  kind: AsyncSyntaxKind,
+  sourceNode: u64,
+  bodyNode: u64,
+  asyncContext: bool,
+  resultContext: bool,
+  captureSyntaxReady: bool,
+  diagnostic: AsyncSyntaxDiagnosticKind,
+}
+
+impl AsyncSyntaxParse {
+  pub fn valid(self: AsyncSyntaxParse) -> bool {
+    return self.sourceNode > 0
+      && self.bodyNode > 0
+      && self.diagnostic == AsyncSyntaxDiagnosticKind.None
+  }
+
+  pub fn requiresAsyncContext(self: AsyncSyntaxParse) -> bool {
+    return self.kind == AsyncSyntaxKind.AwaitExpr
+      || self.kind == AsyncSyntaxKind.AwaitQuestionExpr
+  }
+
+  pub fn parsed(self: AsyncSyntaxParse) -> bool {
+    if self.requiresAsyncContext() && !self.asyncContext {
+      return false
+    }
+    if self.kind == AsyncSyntaxKind.AwaitQuestionExpr && !self.resultContext {
+      return false
+    }
+    if self.kind == AsyncSyntaxKind.AsyncClosure && !self.captureSyntaxReady {
+      return false
+    }
+    return self.valid()
+  }
+}

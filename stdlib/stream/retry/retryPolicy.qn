@@ -1,0 +1,19 @@
+pub struct RetryPolicy {
+  maxAttempts: usize,
+  backoffMillis: u64,
+  preservesPartialErrors: bool,
+}
+
+impl RetryPolicy {
+  pub fn fixed(maxAttempts: usize, backoffMillis: u64) -> RetryPolicy {
+    return RetryPolicy {
+      maxAttempts: maxAttempts,
+      backoffMillis: backoffMillis,
+      preservesPartialErrors: true,
+    }
+  }
+
+  pub fn valid(self: RetryPolicy) -> bool {
+    return self.maxAttempts > 0 && self.preservesPartialErrors
+  }
+}

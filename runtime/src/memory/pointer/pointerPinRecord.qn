@@ -1,0 +1,21 @@
+pub struct RuntimePointerPinRecord {
+  allocationId: u64,
+  generation: u64,
+  pinned: bool,
+  moveRejected: bool,
+}
+
+impl RuntimePointerPinRecord {
+  pub fn init(allocationId: u64, generation: u64, pinned: bool, moveRejected: bool) -> RuntimePointerPinRecord {
+    return RuntimePointerPinRecord {
+      allocationId: allocationId,
+      generation: generation,
+      pinned: pinned,
+      moveRejected: moveRejected,
+    }
+  }
+
+  pub fn accepted(self: RuntimePointerPinRecord) -> bool {
+    return self.allocationId > 0 && self.generation > 0 && self.pinned && self.moveRejected
+  }
+}

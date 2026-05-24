@@ -1,0 +1,47 @@
+pub enum HirForDomainDataLowLevelKind {
+  TableCursorScan
+  BinaryBorrowedView
+  ColumnBlockVectorScan
+  RowDeltaApply
+  PageDecodeCursor
+  BitWindowScan
+  ProbeTableLookup
+  MergeSortedStreams
+  PipelineStagePull
+  PointerRangeBorrow
+  CheckedSliceIndexLoop
+  MemoryRegionWalk
+  AtomicRetryHandoff
+  MmioVolatileRange
+  FileLineCursor
+  TextTokenCursor
+  GraphemeCursor
+  RetryBatchHandoff
+  TimeWindowHandoff
+  ResourceTransactionHandoff
+}
+
+pub struct HirForDomainDataLowLevelHandoff {
+  sourceNode: u64,
+  kind: HirForDomainDataLowLevelKind,
+  iterableNode: u64,
+  bodyNode: u64,
+  analysis: ForDomainDataLowLevelFact,
+  cursorHandoffReady: bool,
+  memoryHandoffReady: bool,
+  runtimeHandoffReady: bool,
+  mirReady: bool,
+}
+
+impl HirForDomainDataLowLevelHandoff {
+  pub fn complete(self: HirForDomainDataLowLevelHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.iterableNode > 0
+      && self.bodyNode > 0
+      && self.analysis.complete()
+      && self.cursorHandoffReady
+      && self.memoryHandoffReady
+      && self.runtimeHandoffReady
+      && self.mirReady
+  }
+}

@@ -1,0 +1,28 @@
+pub struct DeterministicIncidentId {
+  incidentId: u64,
+  seed: u64,
+  sequence: u64,
+  subsystemHash: u64,
+  stableAcrossReplay: bool,
+  privacySafe: bool,
+}
+
+impl DeterministicIncidentId {
+  pub fn derive(seed: u64, sequence: u64, subsystemHash: u64) -> DeterministicIncidentId {
+    return DeterministicIncidentId {
+      incidentId: seed + sequence + subsystemHash,
+      seed: seed,
+      sequence: sequence,
+      subsystemHash: subsystemHash,
+      stableAcrossReplay: true,
+      privacySafe: true,
+    }
+  }
+
+  pub fn safe(self: DeterministicIncidentId) -> bool {
+    return self.incidentId > 0
+      && self.sequence > 0
+      && self.stableAcrossReplay
+      && self.privacySafe
+  }
+}

@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub abstract class ArenaManager {
+  arenaCount: usize
+  resetEpoch: u64
+  active: bool
+  pub init() {}
+  pub fn start(self: &mut ArenaManager) -> bool
+  pub fn shutdown(self: &mut ArenaManager) -> bool
+  pub fn validate(self: &ArenaManager, handle: ArenaHandle) -> Result<ArenaHandle, ArenaRuntimeError>
+  pub fn reset(self: &mut ArenaManager, handle: ArenaHandle) -> Result<ArenaHandle, ArenaRuntimeError>
+  pub fn release(self: &mut ArenaManager, handle: ArenaHandle) -> Result<ArenaHandle, ArenaRuntimeError>
+  pub fn drop(self: &mut ArenaManager) -> bool
+  pub fn ownsArenas(self: &ArenaManager) -> bool
+}

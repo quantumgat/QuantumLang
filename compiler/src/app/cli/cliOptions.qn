@@ -1,0 +1,17 @@
+pub struct CliOptions {
+  mode: string,
+  target: string,
+  backend: string,
+  workers: usize,
+  strictNative: bool,
+}
+
+pub fn defaultCliOptions() -> CliOptions {
+  return CliOptions {
+    mode: "build",
+    target: ".",
+    backend: "native",
+    workers: 0,
+    strictNative: true,
+  }
+}

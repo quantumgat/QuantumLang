@@ -1,0 +1,45 @@
+pub struct RuntimeNetReactorShard {
+  shard: usize,
+  backend: RuntimeNetPlatformBackend,
+  registeredSockets: usize,
+  pendingWakeups: usize,
+  cancellationSafe: bool,
+}
+
+pub struct RuntimeNetWake {
+  socket: RuntimeSocketHandle,
+  readable: bool,
+  writable: bool,
+  cancelled: bool,
+  deadlineExpired: bool,
+}
+
+pub struct RuntimeNetReactor {
+  shardCount: usize,
+  deterministicTestBackend: bool,
+  perCoreSharding: bool,
+  crashlessFailure: bool,
+  cancellationCleanup: bool,
+}
+
+impl RuntimeNetReactorShard {
+  pub fn ready(self: RuntimeNetReactorShard) -> bool {
+    return self.backend.accepted() && self.cancellationSafe
+  }
+}
+
+impl RuntimeNetWake {
+  pub fn active(self: RuntimeNetWake) -> bool {
+    return self.socket.valid()
+      && (self.readable || self.writable || self.cancelled || self.deadlineExpired)
+  }
+}
+
+impl RuntimeNetReactor {
+  pub fn accepted(self: RuntimeNetReactor) -> bool {
+    return self.shardCount > 0
+      && self.perCoreSharding
+      && self.crashlessFailure
+      && self.cancellationCleanup
+  }
+}

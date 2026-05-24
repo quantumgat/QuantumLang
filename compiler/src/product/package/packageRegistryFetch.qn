@@ -1,0 +1,86 @@
+pub enum PackageRegistryFetchSourceKind {
+  File,
+  Cache,
+  Http,
+  HttpsVerified,
+}
+
+pub struct PackageRegistryFetchPlan {
+  source: string,
+  destination: string,
+  sourceKind: PackageRegistryFetchSourceKind,
+  timeoutMillis: u64,
+  maxBytes: usize,
+  checksumRequired: bool,
+  writesGlobalPackageCache: bool,
+  networkRequired: bool,
+  stdNetTransport: bool,
+  stdTlsVerified: bool,
+  noCustomCryptoShortcut: bool,
+}
+
+impl PackageRegistryFetchPlan {
+  pub fn file(source: string, packageCacheRoot: string) -> PackageRegistryFetchPlan {
+    return PackageRegistryFetchPlan {
+      source: source,
+      destination: packageCacheRoot + "/registry/index.toml",
+      sourceKind: PackageRegistryFetchSourceKind.File,
+      timeoutMillis: 5000,
+      maxBytes: 1048576,
+      checksumRequired: false,
+      writesGlobalPackageCache: true,
+      networkRequired: false,
+      stdNetTransport: false,
+      stdTlsVerified: false,
+      noCustomCryptoShortcut: true,
+    }
+  }
+
+  pub fn http(source: string, packageCacheRoot: string) -> PackageRegistryFetchPlan {
+    return PackageRegistryFetchPlan {
+      source: source,
+      destination: packageCacheRoot + "/registry/index.toml",
+      sourceKind: PackageRegistryFetchSourceKind.Http,
+      timeoutMillis: 5000,
+      maxBytes: 1048576,
+      checksumRequired: true,
+      writesGlobalPackageCache: true,
+      networkRequired: true,
+      stdNetTransport: true,
+      stdTlsVerified: false,
+      noCustomCryptoShortcut: true,
+    }
+  }
+
+  pub fn https(source: string, packageCacheRoot: string) -> PackageRegistryFetchPlan {
+    return PackageRegistryFetchPlan {
+      source: source,
+      destination: packageCacheRoot + "/registry/index.toml",
+      sourceKind: PackageRegistryFetchSourceKind.HttpsVerified,
+      timeoutMillis: 5000,
+      maxBytes: 1048576,
+      checksumRequired: true,
+      writesGlobalPackageCache: true,
+      networkRequired: true,
+      stdNetTransport: true,
+      stdTlsVerified: true,
+      noCustomCryptoShortcut: true,
+    }
+  }
+
+  pub fn offlineSafe(self: PackageRegistryFetchPlan) -> bool {
+    return self.writesGlobalPackageCache && self.networkRequired == false
+  }
+
+  pub fn verifiedNetworkFetch(self: PackageRegistryFetchPlan) -> bool {
+    if !self.networkRequired {
+      return true
+    }
+    if self.sourceKind == PackageRegistryFetchSourceKind.HttpsVerified {
+      return self.stdNetTransport && self.stdTlsVerified && self.noCustomCryptoShortcut
+    }
+    return self.sourceKind == PackageRegistryFetchSourceKind.Http
+      && self.stdNetTransport
+      && self.noCustomCryptoShortcut
+  }
+}

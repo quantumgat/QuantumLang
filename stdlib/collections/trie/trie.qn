@@ -1,0 +1,263 @@
+pub struct TrieNode<V> {
+  children: Map<char, usize>,
+  value: Option<V>,
+  key: string,
+  terminal: bool,
+}
+
+pub struct Trie<V> {
+  nodes: Vec<TrieNode<V>>,
+  root: usize,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<V> TrieNode<V> {
+  pub fn empty(key: string) -> TrieNode<V> requires(alloc) {
+    return TrieNode<V> {
+      children: Map<char, usize>.withCapacity(4),
+      value: None,
+      key: key,
+      terminal: false,
+    }
+  }
+
+  pub fn withValue(self: TrieNode<V>, key: string, value: V) -> TrieNode<V> {
+    return TrieNode<V> {
+      children: self.children,
+      value: Some(value),
+      key: key,
+      terminal: true,
+    }
+  }
+
+  pub fn withChild(self: TrieNode<V>, letter: char, index: usize) -> TrieNode<V> requires(alloc) {
+    return TrieNode<V> {
+      children: self.children.put(letter, index),
+      value: self.value,
+      key: self.key,
+      terminal: self.terminal,
+    }
+  }
+}
+
+impl<V> Trie<V> {
+  pub fn init() -> Trie<V> requires(alloc) {
+    return Trie<V>.withCapacity(16)
+  }
+
+  pub fn empty() -> Trie<V> requires(alloc) {
+    return Trie<V>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Trie<V> requires(alloc) {
+    let mut nodes = Vec<TrieNode<V>>.withCapacity(capacity)
+    nodes = nodes.push(TrieNode<V>.empty(""))
+    return Trie<V> {
+      nodes: nodes,
+      root: 0,
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> TrieBuilder<V> {
+    return TrieBuilder<V> { capacity: 16 }
+  }
+
+  pub fn len(self: Trie<V>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Trie<V>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Trie<V>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn insert(self: Trie<V>, key: string, value: V) -> Trie<V> requires(alloc) {
+    let walked = self.ensurePath(key)
+    let trie = walked.0
+    let nodeIndex = walked.1
+    let node = trie.nodes[nodeIndex]
+    let existed = node.terminal
+    let nodes = trie.nodes.set(nodeIndex, node.withValue(key, value))
+    let mut nextLen = trie.len
+    if existed == false {
+      nextLen = trie.len + 1
+    }
+    return Trie<V> {
+      nodes: nodes,
+      root: trie.root,
+      len: nextLen,
+      capacity: trie.capacity,
+      generation: trie.generation + 1,
+    }
+  }
+
+  pub fn get(self: Trie<V>, key: string) -> Option<V> {
+    let found = self.findNode(key)
+    match found {
+      Some(index) => {
+        let node = self.nodes[index]
+        if node.terminal {
+          return node.value
+        }
+        return None
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn containsKey(self: Trie<V>, key: string) -> bool {
+    let found = self.findNode(key)
+    match found {
+      Some(index) => {
+        return self.nodes[index].terminal
+      }
+      None => {
+        return false
+      }
+    }
+  }
+
+  pub fn containsPrefix(self: Trie<V>, prefix: string) -> bool {
+    return self.findNode(prefix) != None
+  }
+
+  pub fn startsWith(self: Trie<V>, prefix: string) -> Vec<string> requires(alloc) {
+    let found = self.findNode(prefix)
+    match found {
+      Some(index) => {
+        return self.collectKeysFrom(index, Vec<string>.withCapacity(self.len))
+      }
+      None => {
+        return Vec<string>.empty()
+      }
+    }
+  }
+
+  pub fn iter(self: Trie<V>) -> TrieIter<V> {
+    return TrieIter<V> {
+      trie: self,
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  pub fn clear(self: Trie<V>) -> Trie<V> requires(alloc) {
+    return Trie<V>.withCapacity(self.capacity).withGeneration(self.generation + 1)
+  }
+
+  pub fn ensurePath(self: Trie<V>, key: string) -> (Trie<V>, usize) requires(alloc) {
+    let mut trie = self
+    let mut current = trie.root
+    let mut index: usize = 0
+    while index < key.len {
+      let letter = key[index]
+      let ensured = trie.ensureChild(current, letter)
+      trie = ensured.0
+      current = ensured.1
+      index = index + 1
+    }
+    return (trie, current)
+  }
+
+  pub fn ensureChild(self: Trie<V>, nodeIndex: usize, letter: char) -> (Trie<V>, usize) requires(alloc) {
+    let node = self.nodes[nodeIndex]
+    let child = node.children.get(letter)
+    match child {
+      Some(index) => {
+        return (self, index)
+      }
+      None => {
+        let newIndex = self.nodes.len
+        let nodesWithChild = self.nodes.push(TrieNode<V>.empty(""))
+        let updatedNode = node.withChild(letter, newIndex)
+        let nodes = nodesWithChild.set(nodeIndex, updatedNode)
+        return (
+          Trie<V> {
+            nodes: nodes,
+            root: self.root,
+            len: self.len,
+            capacity: self.nextCapacity(1),
+            generation: self.generation + 1,
+          },
+          newIndex
+        )
+      }
+    }
+  }
+
+  pub fn findNode(self: Trie<V>, key: string) -> Option<usize> {
+    let mut current = self.root
+    let mut index: usize = 0
+    while index < key.len {
+      let letter = key[index]
+      let node = self.nodes[current]
+      let child = node.children.get(letter)
+      match child {
+        Some(next) => {
+          current = next
+        }
+        None => {
+          return None
+        }
+      }
+      index = index + 1
+    }
+    return Some(current)
+  }
+
+  pub fn collectKeysFrom(self: Trie<V>, nodeIndex: usize, keys: Vec<string>) -> Vec<string> requires(alloc) {
+    let node = self.nodes[nodeIndex]
+    let mut result = keys
+    if node.terminal {
+      result = result.push(node.key)
+    }
+    let mut childIndex: usize = 0
+    while childIndex < node.children.len {
+      let entry = node.children.entryAt(childIndex)
+      match entry {
+        Some(child) => {
+          result = self.collectKeysFrom(child.1, result)
+        }
+        None => {
+        }
+      }
+      childIndex = childIndex + 1
+    }
+    return result
+  }
+
+  pub fn nextCapacity(self: Trie<V>, additional: usize) -> usize {
+    let needed = self.nodes.len + additional
+    if needed <= self.capacity {
+      return self.capacity
+    }
+    if self.capacity == 0 {
+      return needed
+    }
+    let mut next = self.capacity
+    while next < needed {
+      next = next * 2
+    }
+    return next
+  }
+
+  pub fn withGeneration(self: Trie<V>, generation: usize) -> Trie<V> {
+    return Trie<V> {
+      nodes: self.nodes,
+      root: self.root,
+      len: self.len,
+      capacity: self.capacity,
+      generation: generation,
+    }
+  }
+}

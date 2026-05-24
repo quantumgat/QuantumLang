@@ -1,0 +1,55 @@
+[package]
+name = "qtlc"
+version = "0.1.0"
+edition = "2026"
+description = "Self-hosted QuantumLang compiler source root"
+
+[source]
+root = "src"
+include = ["**/*.qn"]
+exclude = ["build/**", ".qtlc/**", "**/target/**"]
+
+[targets.app]
+kind = "bin"
+main = "src/main.qn"
+backend = "native"
+
+[targets.library]
+kind = "lib"
+main = "src/mod.qn"
+backend = "native"
+
+[nativeBuild]
+publicBinary = "qtlc"
+runtimePackage = "../runtime"
+stdlibPackage = "../stdlib"
+onePublicBinary = true
+hiddenRuntimeArchive = true
+nativeObjectArtifacts = true
+nativeCacheArtifacts = true
+nativeLinkArtifacts = true
+generatedSourceFallback = false
+publicRuntimeHeaders = false
+
+[publicBinaryPolicy]
+command = "qtlc"
+role = "public-compiler-build-package-tool"
+workspaceDebugOutput = "../build/debug/qtlc"
+workspaceReleaseOutput = "../build/release/qtlc"
+workspacePublishedSnapshot = "../release/qtlc"
+nativeBackendOnly = true
+defaultAppOutput = "static-one-executable"
+embeds = ["compiler-frontend", "analysis", "ir", "native-backend", "linker-driver", "package-manager-commands", "plugin-loader", "stdlib-api-model", "runtime-abi-model"]
+consumesBuildArtifacts = ["stdlib-qnapi", "stdlib-qna", "stdlib-a", "runtime-qna", "runtime-a", "package-qnapi-qna-a", "plugin-metadata-native-kernels"]
+doesNotEmbed = ["all-stdlib-implementation-bodies", "all-runtime-implementation-bodies", "all-packages", "all-plugins"]
+
+[self_hosting]
+canonical_path = "qtlc/qtlang/compiler"
+bootstrap_path = "qtlc/compiler"
+generated_c_fallback = false
+generated_cpp_fallback = false
+generated_header_fallback = false
+native_backend_required = true
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots", "qtlc_qtlang_compiler_native_build_probe"]

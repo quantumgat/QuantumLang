@@ -1,0 +1,15 @@
+pub struct ReflectionRecord {
+  typeName: string,
+  sourceMapped: bool,
+  compilerAnalysisOwned: bool,
+}
+
+pub fn reflectionRecord(typeName: string) -> ReflectionRecord {
+  return ReflectionRecord { typeName: typeName, sourceMapped: true, compilerAnalysisOwned: true }
+}
+
+impl ReflectionRecord {
+  pub fn isRuntimeSafe(self: ReflectionRecord) -> bool {
+    return self.sourceMapped && self.compilerAnalysisOwned
+  }
+}

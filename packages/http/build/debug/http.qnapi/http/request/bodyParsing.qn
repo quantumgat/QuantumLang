@@ -1,0 +1,25 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum BodyParseKind {
+  Json,
+  Form,
+  Multipart,
+  Text,
+  Bytes,
+  Stream,
+}
+pub struct UploadedFile {
+  fieldName: string
+  filename: string
+  contentType: string
+  size: usize
+}
+pub struct MultipartForm {
+  fieldCount: usize
+  files: Vec<UploadedFile>
+}
+pub struct BodyParsePlan {
+  kind: BodyParseKind
+  contentType: string
+  maxBytes: usize
+  streaming: bool
+}

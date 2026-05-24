@@ -1,0 +1,19 @@
+pub struct MmioDiagnostic {
+  code: string,
+  hasRange: bool,
+  blocksUnsafeMmio: bool,
+}
+
+impl MmioDiagnostic {
+  pub fn init(code: string, hasRange: bool, blocksUnsafeMmio: bool) -> MmioDiagnostic {
+    return MmioDiagnostic {
+      code: code,
+      hasRange: hasRange,
+      blocksUnsafeMmio: blocksUnsafeMmio,
+    }
+  }
+
+  pub fn reportable(self: MmioDiagnostic) -> bool {
+    return self.code != "" && self.hasRange && self.blocksUnsafeMmio
+  }
+}

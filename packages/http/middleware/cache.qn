@@ -1,0 +1,48 @@
+pub enum CachePolicyKind {
+  NoStore,
+  NoCache,
+  PublicMaxAge,
+  PrivateMaxAge,
+}
+
+pub struct CachePolicy {
+  kind: CachePolicyKind,
+  seconds: usize,
+  etag: bool,
+}
+
+pub struct Cache {
+}
+
+impl Cache {
+  pub fn noStore() -> CachePolicy {
+    return CachePolicy.init(CachePolicyKind.NoStore, 0, false)
+  }
+
+  pub fn noCache() -> CachePolicy {
+    return CachePolicy.init(CachePolicyKind.NoCache, 0, true)
+  }
+
+  pub fn publicMaxAge(seconds: usize) -> CachePolicy {
+    return CachePolicy.init(CachePolicyKind.PublicMaxAge, seconds, true)
+  }
+
+  pub fn privateMaxAge(seconds: usize) -> CachePolicy {
+    return CachePolicy.init(CachePolicyKind.PrivateMaxAge, seconds, true)
+  }
+}
+
+impl CachePolicy {
+  pub fn init(kind: CachePolicyKind, seconds: usize, etag: bool) -> CachePolicy {
+    return CachePolicy { kind: kind, seconds: seconds, etag: etag }
+  }
+
+  pub fn headerValue(self: CachePolicy) -> string {
+    match self.kind {
+      CachePolicyKind.NoStore => return "no-store"
+      CachePolicyKind.NoCache => return "no-cache"
+      CachePolicyKind.PublicMaxAge => return "public, max-age=" + self.seconds.toString()
+      CachePolicyKind.PrivateMaxAge => return "private, max-age=" + self.seconds.toString()
+    }
+  }
+}

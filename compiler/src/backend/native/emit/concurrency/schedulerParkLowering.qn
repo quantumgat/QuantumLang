@@ -1,0 +1,21 @@
+pub struct SchedulerParkLowering {
+  emitsPark: bool,
+  guardSafe: bool,
+  timeoutSafe: bool,
+  cancellationSafe: bool,
+}
+
+impl SchedulerParkLowering {
+  pub fn init(emitsPark: bool, guardSafe: bool, timeoutSafe: bool, cancellationSafe: bool) -> SchedulerParkLowering {
+    return SchedulerParkLowering {
+      emitsPark: emitsPark,
+      guardSafe: guardSafe,
+      timeoutSafe: timeoutSafe,
+      cancellationSafe: cancellationSafe,
+    }
+  }
+
+  pub fn accepted(self: SchedulerParkLowering) -> bool {
+    return self.emitsPark && self.guardSafe && self.timeoutSafe && self.cancellationSafe
+  }
+}

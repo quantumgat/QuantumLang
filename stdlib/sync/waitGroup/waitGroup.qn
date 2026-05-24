@@ -1,0 +1,13 @@
+pub struct WaitGroup {
+  count: usize,
+}
+
+impl WaitGroup {
+  pub fn add(self: WaitGroup, count: usize) -> Result<Unit, SyncError>
+
+  pub fn done(self: WaitGroup) -> Result<Unit, SyncError>
+
+  pub fn wait(self: WaitGroup) -> Result<Unit, SyncError>
+
+  pub fn waitUntil(self: WaitGroup, deadline: Deadline) -> Result<Unit, SyncError>
+}

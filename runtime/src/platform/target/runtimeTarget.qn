@@ -1,0 +1,19 @@
+pub enum RuntimeTargetFamily {
+  DesktopRuntime,
+  MobileRuntime,
+  EmbeddedRuntime,
+  WasmRuntime,
+  QuantumProviderRuntime,
+}
+
+pub struct RuntimeTarget {
+  name: string,
+  family: RuntimeTargetFamily,
+  hosted: bool,
+}
+
+impl RuntimeTarget {
+  pub fn accepted(self: RuntimeTarget) -> bool {
+    return self.name != ""
+  }
+}

@@ -1,0 +1,13 @@
+pub struct CacheLease {
+  leaseExt: string,
+  processScoped: bool,
+  expires: bool,
+}
+
+pub fn cacheLease() -> CacheLease {
+  return CacheLease {
+    leaseExt: ".qcl",
+    processScoped: true,
+    expires: true,
+  }
+}

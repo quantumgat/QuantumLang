@@ -1,0 +1,23 @@
+pub struct SmartPointerRuntimeLowering {
+  constructorLowered: bool,
+  dropLowered: bool,
+  refcountLowered: bool,
+  weakUpgradeLowered: bool,
+  pinLowered: bool,
+}
+
+impl SmartPointerRuntimeLowering {
+  pub fn init(constructorLowered: bool, dropLowered: bool, refcountLowered: bool, weakUpgradeLowered: bool, pinLowered: bool) -> SmartPointerRuntimeLowering {
+    return SmartPointerRuntimeLowering {
+      constructorLowered: constructorLowered,
+      dropLowered: dropLowered,
+      refcountLowered: refcountLowered,
+      weakUpgradeLowered: weakUpgradeLowered,
+      pinLowered: pinLowered,
+    }
+  }
+
+  pub fn accepted(self: SmartPointerRuntimeLowering) -> bool {
+    return self.constructorLowered && self.dropLowered && self.refcountLowered && self.weakUpgradeLowered && self.pinLowered
+  }
+}

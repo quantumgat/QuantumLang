@@ -1,0 +1,120 @@
+pub struct RequestMetadata {
+  peer: HttpPeerAddress,
+  forwarded: ForwardedChain,
+  schemeValue: string,
+  hostValue: string,
+  portValue: usize,
+  protocolValue: string,
+  tlsValue: TlsInfo,
+  safetyValue: RequestSafetyReport,
+}
+
+impl RequestMetadata {
+  pub fn init(
+    peer: HttpPeerAddress,
+    forwarded: ForwardedChain,
+    schemeValue: string,
+    hostValue: string,
+    portValue: usize,
+    protocolValue: string,
+    tlsValue: TlsInfo,
+    safetyValue: RequestSafetyReport,
+  ) -> RequestMetadata {
+    return RequestMetadata {
+      peer: peer,
+      forwarded: forwarded,
+      schemeValue: schemeValue,
+      hostValue: hostValue,
+      portValue: portValue,
+      protocolValue: protocolValue,
+      tlsValue: tlsValue,
+      safetyValue: safetyValue,
+    }
+  }
+
+  pub fn from(request: HttpRequest, peer: HttpPeerAddress, policy: TrustedProxyPolicy) -> Result<RequestMetadata, RequestSafetyDiagnostic> {
+    return httpRequestMetadataSurface(request, peer, policy)
+  }
+
+  pub fn clientIp(self: RequestMetadata) -> string {
+    return self.forwarded.client()
+  }
+
+  pub fn realIp(self: RequestMetadata) -> string {
+    return self.forwarded.client()
+  }
+
+  pub fn remoteAddr(self: RequestMetadata) -> string {
+    return self.peer.remoteAddr()
+  }
+
+  pub fn remotePort(self: RequestMetadata) -> usize {
+    return self.peer.remotePort()
+  }
+
+  pub fn localAddr(self: RequestMetadata) -> string {
+    return self.peer.localAddr()
+  }
+
+  pub fn localPort(self: RequestMetadata) -> usize {
+    return self.peer.localPort()
+  }
+
+  pub fn scheme(self: RequestMetadata) -> string {
+    return self.schemeValue
+  }
+
+  pub fn host(self: RequestMetadata) -> string {
+    return self.hostValue
+  }
+
+  pub fn port(self: RequestMetadata) -> usize {
+    return self.portValue
+  }
+
+  pub fn authority(self: RequestMetadata) -> string {
+    return self.hostValue
+  }
+
+  pub fn originalHost(self: RequestMetadata) -> string {
+    return self.forwarded.originalHost()
+  }
+
+  pub fn originalScheme(self: RequestMetadata) -> string {
+    return self.forwarded.originalScheme()
+  }
+
+  pub fn forwardedPrefix(self: RequestMetadata) -> string {
+    return self.forwarded.forwardedPrefix()
+  }
+
+  pub fn ipChain(self: RequestMetadata) -> Vec<string> {
+    return self.forwarded.ipChain()
+  }
+
+  pub fn firstUntrustedIp(self: RequestMetadata) -> string {
+    return self.forwarded.firstUntrusted()
+  }
+
+  pub fn proxySpoofed(self: RequestMetadata) -> bool {
+    return self.forwarded.proxySpoofed()
+  }
+
+  pub fn badForwardedChain(self: RequestMetadata) -> bool {
+    return self.forwarded.badChain()
+  }
+
+  pub fn protocol(self: RequestMetadata) -> string {
+    return self.protocolValue
+  }
+
+  pub fn tls(self: RequestMetadata) -> TlsInfo {
+    return self.tlsValue
+  }
+
+  pub fn safety(self: RequestMetadata) -> RequestSafetyReport {
+    return self.safetyValue
+  }
+}
+
+fn httpRequestMetadataSurface(request: HttpRequest, peer: HttpPeerAddress, policy: TrustedProxyPolicy) -> Result<RequestMetadata, RequestSafetyDiagnostic>

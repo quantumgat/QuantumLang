@@ -1,0 +1,60 @@
+pub struct HttpPeerAddress {
+  remoteIp: string,
+  remotePort: usize,
+  localIp: string,
+  localPort: usize,
+}
+
+impl HttpPeerAddress {
+  pub fn init(remoteIp: string, remotePort: usize, localIp: string, localPort: usize) -> HttpPeerAddress {
+    return HttpPeerAddress {
+      remoteIp: remoteIp,
+      remotePort: remotePort,
+      localIp: localIp,
+      localPort: localPort,
+    }
+  }
+
+  pub fn unknown() -> HttpPeerAddress {
+    return HttpPeerAddress.init("", 0, "", 0)
+  }
+
+  pub fn remote(self: HttpPeerAddress) -> string {
+    return self.remoteIp
+  }
+
+  pub fn remoteAddr(self: HttpPeerAddress) -> string {
+    return self.remoteIp
+  }
+
+  pub fn remotePort(self: HttpPeerAddress) -> usize {
+    return self.remotePort
+  }
+
+  pub fn localAddr(self: HttpPeerAddress) -> string {
+    return self.localIp
+  }
+
+  pub fn localPort(self: HttpPeerAddress) -> usize {
+    return self.localPort
+  }
+
+  pub fn isLoopback(self: HttpPeerAddress) -> bool {
+    return self.remoteIp == "127.0.0.1" || self.remoteIp == "::1"
+  }
+
+  pub fn isPrivateIp(self: HttpPeerAddress) -> bool {
+    return httpPeerIsPrivateIpSurface(self.remoteIp)
+  }
+
+  pub fn isPublicIp(self: HttpPeerAddress) -> bool {
+    return httpPeerIsPublicIpSurface(self.remoteIp)
+  }
+
+  pub fn known(self: HttpPeerAddress) -> bool {
+    return self.remoteIp != "" && self.remotePort > 0
+  }
+}
+
+fn httpPeerIsPrivateIpSurface(ip: string) -> bool
+fn httpPeerIsPublicIpSurface(ip: string) -> bool

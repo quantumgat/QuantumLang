@@ -1,0 +1,12 @@
+pub struct BlockingTask<T> {
+  id: TaskId,
+  isolated: bool,
+}
+
+impl BlockingTask<T> {
+  pub fn await(self: BlockingTask<T>) -> Result<T, TaskError>
+
+  pub fn isIsolated(self: BlockingTask<T>) -> bool {
+    return self.isolated
+  }
+}

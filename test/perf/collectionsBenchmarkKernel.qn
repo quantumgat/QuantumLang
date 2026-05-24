@@ -1,0 +1,45 @@
+pub struct CollectionsBenchmarkKernel {
+  vecDirectIndexBench: bool,
+  mapRawTableBench: bool,
+  setDirectCursorBench: bool,
+  dequeRingBench: bool,
+  heapSiftBench: bool,
+  triePrefixBench: bool,
+  graphBfsCursorBench: bool,
+  generatedNativeRows: bool,
+  cppEquivalentRows: bool,
+  serialCiSafe: bool,
+  noGeneratedCppFallback: bool,
+}
+
+pub fn collectionsBenchmarkKernel() -> CollectionsBenchmarkKernel {
+  return CollectionsBenchmarkKernel {
+    vecDirectIndexBench: true,
+    mapRawTableBench: true,
+    setDirectCursorBench: true,
+    dequeRingBench: true,
+    heapSiftBench: true,
+    triePrefixBench: true,
+    graphBfsCursorBench: true,
+    generatedNativeRows: true,
+    cppEquivalentRows: true,
+    serialCiSafe: true,
+    noGeneratedCppFallback: true,
+  }
+}
+
+impl CollectionsBenchmarkKernel {
+  pub fn canValidateProof(self: CollectionsBenchmarkKernel) -> bool {
+    return self.vecDirectIndexBench
+      && self.mapRawTableBench
+      && self.setDirectCursorBench
+      && self.dequeRingBench
+      && self.heapSiftBench
+      && self.triePrefixBench
+      && self.graphBfsCursorBench
+      && self.generatedNativeRows
+      && self.cppEquivalentRows
+      && self.serialCiSafe
+      && self.noGeneratedCppFallback
+  }
+}

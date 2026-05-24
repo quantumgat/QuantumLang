@@ -1,0 +1,45 @@
+pub struct MemoryDiagnosticFact {
+  diagnosticNode: u64,
+  leakCovered: bool,
+  doubleFreeCovered: bool,
+  useAfterFreeCovered: bool,
+  wrongAllocatorCovered: bool,
+  staleHandleCovered: bool,
+  oomCovered: bool,
+  pressureDeniedCovered: bool,
+  redacted: bool,
+  emergencyNoAllocation: bool,
+  noCoredump: bool,
+}
+
+impl MemoryDiagnosticFact {
+  pub fn init(diagnosticNode: u64) -> MemoryDiagnosticFact {
+    return MemoryDiagnosticFact {
+      diagnosticNode: diagnosticNode,
+      leakCovered: true,
+      doubleFreeCovered: true,
+      useAfterFreeCovered: true,
+      wrongAllocatorCovered: true,
+      staleHandleCovered: true,
+      oomCovered: true,
+      pressureDeniedCovered: true,
+      redacted: true,
+      emergencyNoAllocation: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: MemoryDiagnosticFact) -> bool {
+    return self.diagnosticNode > 0
+      && self.leakCovered
+      && self.doubleFreeCovered
+      && self.useAfterFreeCovered
+      && self.wrongAllocatorCovered
+      && self.staleHandleCovered
+      && self.oomCovered
+      && self.pressureDeniedCovered
+      && self.redacted
+      && self.emergencyNoAllocation
+      && self.noCoredump
+  }
+}

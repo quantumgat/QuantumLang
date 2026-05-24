@@ -1,0 +1,38 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum WhileLoopSafeFailureKind {
+  NonBoolCondition
+  InvalidPattern
+  BreakValueMismatch
+  UnknownLabel
+  QuestionFlowViolation
+  AwaitQuestionViolation
+  TimeoutViolation
+  PollViolation
+  AsyncLoopCancellationViolation
+  AsyncLoopCleanupViolation
+  QwhileBoundViolation
+  QwhileQirProfileViolation
+  QwhileQubitOwnershipViolation
+  QuantumProfileViolation
+}
+pub struct WhileLoopSafeFailure {
+  kind: WhileLoopSafeFailureKind
+  sourceRangeReady: bool
+  fixitReady: bool
+  noCoredump: bool
+  recoverable: bool
+  executableNegativeCovered: bool
+}
+pub extern "qnpkg" {
+  pub fn whileLoopSafeFailure(
+  kind: WhileLoopSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+  executableNegativeCovered: bool,
+) -> WhileLoopSafeFailure
+}
+pub extern "qnpkg" {
+  pub fn whileDefaultSafeFailure(kind: WhileLoopSafeFailureKind) -> WhileLoopSafeFailure
+}

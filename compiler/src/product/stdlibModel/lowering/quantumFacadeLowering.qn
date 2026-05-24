@@ -1,0 +1,11 @@
+pub struct StdlibQuantumFacadeLowering {
+  symbolName: string,
+  qmirRequired: bool,
+  qirBridgeRequired: bool,
+}
+
+impl StdlibQuantumFacadeLowering {
+  pub fn accepted(self: StdlibQuantumFacadeLowering) -> bool {
+    return self.symbolName != "" && self.qmirRequired && self.qirBridgeRequired
+  }
+}

@@ -1,0 +1,12 @@
+pub enum BigNumberError {
+  InvalidSyntax
+  InvalidRadix
+  DivisionByZero
+  NegativeConversion
+  Overflow
+  NegativeShift
+  NegativeExponent
+  InvalidModulus
+  NotInvertible
+  UnsupportedOperation
+}

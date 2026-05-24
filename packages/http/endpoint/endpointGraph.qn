@@ -1,0 +1,67 @@
+import route::{HttpRouteConflict, HttpRouteTable}
+
+pub struct EndpointGraph {
+  endpoints: Vec<EndpointFact>,
+  diagnostics: Vec<EndpointDiagnostic>,
+}
+
+impl EndpointGraph {
+  pub fn empty() -> EndpointGraph {
+    return EndpointGraph {
+      endpoints: [],
+      diagnostics: [],
+    }
+  }
+
+  pub fn add(self: EndpointGraph, endpoint: EndpointFact) -> EndpointGraph {
+    if endpoint.queryInRoutePath() {
+      return self.addDiagnostic(EndpointDiagnostic.queryInManualRoute(endpoint.controllerName(), endpoint.sourceLine))
+    }
+    if !endpoint.validRoute() {
+      return self.addDiagnostic(EndpointDiagnostic.invalidManualRoute(endpoint.controllerName(), endpoint.sourceLine))
+    }
+    return EndpointGraph {
+      endpoints: self.endpoints.push(endpoint),
+      diagnostics: self.diagnostics,
+    }
+  }
+
+  pub fn addDiagnostic(self: EndpointGraph, diagnostic: EndpointDiagnostic) -> EndpointGraph {
+    return EndpointGraph {
+      endpoints: self.endpoints,
+      diagnostics: self.diagnostics.push(diagnostic),
+    }
+  }
+
+  pub fn endpointCount(self: EndpointGraph) -> usize {
+    return self.endpoints.len()
+  }
+
+  pub fn diagnosticCount(self: EndpointGraph) -> usize {
+    return self.diagnostics.len()
+  }
+
+  pub fn valid(self: EndpointGraph) -> bool {
+    return self.diagnostics.len() == 0
+  }
+
+  pub fn routeTable(self: EndpointGraph) -> Result<HttpRouteTable, HttpRouteConflict> {
+    let mut table = HttpRouteTable.empty()
+    let mut index: usize = 0
+    while index < self.endpoints.len() {
+      let endpoint = self.endpoints[index]
+      let route = endpoint.route()
+      let addResult = table.add(route.method(), route.path(), route.handlerName())
+      match addResult {
+        Ok(nextTable) => {
+          table = nextTable
+        }
+        Err(error) => {
+          return Err(error)
+        }
+      }
+      index = index + 1
+    }
+    return Ok(table)
+  }
+}

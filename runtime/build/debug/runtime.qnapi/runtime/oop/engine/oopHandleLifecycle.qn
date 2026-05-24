@@ -1,0 +1,26 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum OopHandleKind {
+  None
+  TypeMetadata
+  Vtable
+  InterfaceObject
+  DispatchEntry
+  ReflectionCatalog
+  RuntimeResource
+}
+pub struct OopHandleLifecycle {
+  slot: u64
+  generation: u64
+  kind: OopHandleKind
+  retired: bool
+  staleDiagnosticBound: bool
+}
+pub extern "qnpkg" {
+  pub fn oopHandleLifecycle(
+  slot: u64,
+  generation: u64,
+  kind: OopHandleKind,
+  retired: bool,
+  staleDiagnosticBound: bool,
+) -> OopHandleLifecycle
+}

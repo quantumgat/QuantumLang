@@ -1,0 +1,84 @@
+pub struct HttpAppStateDiagnosticsProof {
+  cleanPlanAccepted: bool,
+  missingStartDiagnostic: bool,
+  missingShutdownDiagnostic: bool,
+  missingDropDiagnostic: bool,
+  dependencyCycleDiagnostic: bool,
+  healthDiagnostic: bool,
+  reconnectDiagnostic: bool,
+  hiddenStaticDiagnostic: bool,
+  serviceLocatorDiagnostic: bool,
+  testOverrideDiagnostic: bool,
+  hotPathDiagnostic: bool,
+  fixesComplete: bool,
+}
+
+impl HttpAppStateDiagnosticsProof {
+  pub fn init(clean: AppStateDiagnosticReport, bad: AppStateDiagnosticReport) -> HttpAppStateDiagnosticsProof {
+    return HttpAppStateDiagnosticsProof {
+      cleanPlanAccepted: clean.clean(),
+      missingStartDiagnostic: bad.errorCount >= 1,
+      missingShutdownDiagnostic: bad.errorCount >= 2,
+      missingDropDiagnostic: bad.warningCount >= 1,
+      dependencyCycleDiagnostic: bad.errorCount >= 3,
+      healthDiagnostic: bad.errorCount >= 4,
+      reconnectDiagnostic: bad.errorCount >= 5,
+      hiddenStaticDiagnostic: bad.errorCount >= 6,
+      serviceLocatorDiagnostic: bad.errorCount >= 7,
+      testOverrideDiagnostic: bad.errorCount >= 8,
+      hotPathDiagnostic: bad.errorCount >= 9,
+      fixesComplete: bad.complete(),
+    }
+  }
+
+  pub fn complete(self: HttpAppStateDiagnosticsProof) -> bool {
+    return self.cleanPlanAccepted
+      && self.missingStartDiagnostic
+      && self.missingShutdownDiagnostic
+      && self.missingDropDiagnostic
+      && self.dependencyCycleDiagnostic
+      && self.healthDiagnostic
+      && self.reconnectDiagnostic
+      && self.hiddenStaticDiagnostic
+      && self.serviceLocatorDiagnostic
+      && self.testOverrideDiagnostic
+      && self.hotPathDiagnostic
+      && self.fixesComplete
+  }
+}
+
+pub fn httpAppStateDiagnosticsProof() -> HttpAppStateDiagnosticsProof {
+  let cleanLifecycle = AppStateLifecycle
+    .managed(true, true, true)
+    .withHealthCheck()
+    .withReconnect()
+  let cleanState = AppStateFact
+    .init("PostgresPool", 9101, AppStateFamily.Pool, cleanLifecycle, 0, false, false)
+  let cleanGraph = AppStateGraph.empty().add(cleanState)
+  let cleanPlan = AppLifecyclePlan.from(cleanGraph, LifecycleHooks.init())
+  let cleanHotPath = HttpHotPathPlan.init(true, true, true, true, true, true, true, true, true, true, true)
+  let cleanPolicy = AppStateDiagnosticPolicy.production().requireHealth().requireReconnect()
+  let cleanReport = AppStateDiagnosticReport.from(cleanGraph, cleanPlan, cleanHotPath, cleanPolicy)
+
+  let badLifecycle = AppStateLifecycle.init(true, false, false, false, false, false, false)
+  let badState = AppStateFact
+    .init("StaticDbPool", 9201, AppStateFamily.Pool, badLifecycle, 1, false, false)
+  let leakedOverride = AppStateFact
+    .init("TestDbPool", 9202, AppStateFamily.TestOverride, AppStateLifecycle.none(), 0, false, true)
+  let badGraph = AppStateGraph
+    .empty()
+    .add(badState)
+    .add(leakedOverride)
+    .addDependency(AppStateDependency.required(9201, 9201))
+  let badPlan = AppLifecyclePlan.from(badGraph, LifecycleHooks.init())
+  let badHotPath = HttpHotPathPlan.init(false, true, true, true, true, false, false, false, false, true, true)
+  let badPolicy = AppStateDiagnosticPolicy
+    .production()
+    .requireHealth()
+    .requireReconnect()
+    .withHiddenStaticState()
+    .withServiceLocator()
+  let badReport = AppStateDiagnosticReport.from(badGraph, badPlan, badHotPath, badPolicy)
+
+  return HttpAppStateDiagnosticsProof.init(cleanReport, badReport)
+}

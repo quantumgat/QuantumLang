@@ -1,0 +1,154 @@
+pub enum ErrorRootCauseKind {
+  UserInput,
+  ResourceUnavailable,
+  Permission,
+  Timeout,
+  Cancellation,
+  MemorySafety,
+  OsFailure,
+  IoFailure,
+  InternalInvariant,
+  Unknown,
+}
+
+pub struct ErrorSourceRange {
+  file: string,
+  startLine: u32,
+  startColumn: u32,
+  endLine: u32,
+  endColumn: u32,
+  available: bool,
+}
+
+pub struct ErrorTelemetry {
+  correlationId: string,
+  traceId: string,
+  spanId: u64,
+  redacted: bool,
+}
+
+pub struct ErrorAnalysis {
+  rootCause: string,
+  rootCauseKind: ErrorRootCauseKind,
+  subsystem: string,
+  sourceRange: ErrorSourceRange,
+  likelyFix: string,
+  recovery: ErrorRecovery,
+  telemetry: ErrorTelemetry,
+  confidencePercent: u8,
+  groupedReportReady: bool,
+  recoveryAvailable: bool,
+}
+
+pub struct ErrorAnalysisGroup {
+  groupKey: string,
+  count: usize,
+  highestSeverity: string,
+  rootCauseKind: ErrorRootCauseKind,
+  redacted: bool,
+}
+
+impl ErrorAnalysis {
+  /**
+    Creates an analysis record from a typed error.
+
+    example:
+      let analysis = ErrorAnalysis.fromError(err, "runtime")
+
+    effects: pure unless analyzer reads runtime reports
+    complexity: O(fields + causes)
+    allocation: bounded by report text
+    stability: public since 0.1
+  */
+  pub fn fromError(error: Error, subsystem: string) -> ErrorAnalysis {
+    return ErrorAnalysis {
+      rootCause: error.message(),
+      rootCauseKind: ErrorRootCauseKind.Unknown,
+      subsystem: subsystem,
+      sourceRange: ErrorSourceRange.unknown(),
+      likelyFix: "inspect typed error code and source range",
+      recovery: ErrorRecovery.none(),
+      telemetry: ErrorTelemetry.empty(),
+      confidencePercent: 60,
+      groupedReportReady: true,
+      recoveryAvailable: false,
+    }
+  }
+
+  pub fn useful(self: ErrorAnalysis) -> bool {
+    return self.rootCause != ""
+      && self.subsystem != ""
+      && self.likelyFix != ""
+      && self.telemetry.safe()
+      && self.confidencePercent > 0
+  }
+}
+
+impl ErrorSourceRange {
+  pub fn known(file: string, startLine: u32, startColumn: u32, endLine: u32, endColumn: u32) -> ErrorSourceRange {
+    return ErrorSourceRange {
+      file: file,
+      startLine: startLine,
+      startColumn: startColumn,
+      endLine: endLine,
+      endColumn: endColumn,
+      available: true,
+    }
+  }
+
+  pub fn unknown() -> ErrorSourceRange {
+    return ErrorSourceRange {
+      file: "",
+      startLine: 0,
+      startColumn: 0,
+      endLine: 0,
+      endColumn: 0,
+      available: false,
+    }
+  }
+
+  pub fn valid(self: ErrorSourceRange) -> bool {
+    return self.available == false
+      || (self.file != "" && self.endLine >= self.startLine)
+  }
+}
+
+impl ErrorTelemetry {
+  pub fn empty() -> ErrorTelemetry {
+    return ErrorTelemetry {
+      correlationId: "",
+      traceId: "",
+      spanId: 0,
+      redacted: true,
+    }
+  }
+
+  pub fn correlated(correlationId: string, traceId: string, spanId: u64) -> ErrorTelemetry {
+    return ErrorTelemetry {
+      correlationId: correlationId,
+      traceId: traceId,
+      spanId: spanId,
+      redacted: true,
+    }
+  }
+
+  pub fn safe(self: ErrorTelemetry) -> bool {
+    return self.redacted
+  }
+}
+
+impl ErrorAnalysisGroup {
+  pub fn grouped(groupKey: string, count: usize, rootCauseKind: ErrorRootCauseKind) -> ErrorAnalysisGroup {
+    return ErrorAnalysisGroup {
+      groupKey: groupKey,
+      count: count,
+      highestSeverity: "error",
+      rootCauseKind: rootCauseKind,
+      redacted: true,
+    }
+  }
+
+  pub fn useful(self: ErrorAnalysisGroup) -> bool {
+    return self.groupKey != "" && self.count > 0 && self.redacted
+  }
+}

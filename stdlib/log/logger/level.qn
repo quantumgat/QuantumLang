@@ -1,0 +1,33 @@
+pub enum LogLevel {
+  Trace,
+  Debug,
+  Info,
+  Warn,
+  Error,
+  Fatal,
+  Off,
+}
+
+impl LogLevel {
+  pub fn enabled(self: LogLevel, minLevel: LogLevel) -> bool {
+    if self == LogLevel.Off {
+      return false
+    }
+    if minLevel == LogLevel.Off {
+      return false
+    }
+    return self.priority() >= minLevel.priority()
+  }
+
+  pub fn priority(self: LogLevel) -> u8 {
+    match self {
+      LogLevel.Trace => { return 10 }
+      LogLevel.Debug => { return 20 }
+      LogLevel.Info => { return 30 }
+      LogLevel.Warn => { return 40 }
+      LogLevel.Error => { return 50 }
+      LogLevel.Fatal => { return 60 }
+      LogLevel.Off => { return 255 }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+pub struct InvalidOrderingDiagnostic {
+  node: u64,
+  code: string,
+  hasRange: bool,
+  fixItAvailable: bool,
+}
+
+impl InvalidOrderingDiagnostic {
+  pub fn init(node: u64, code: string, hasRange: bool, fixItAvailable: bool) -> InvalidOrderingDiagnostic {
+    return InvalidOrderingDiagnostic {
+      node: node,
+      code: code,
+      hasRange: hasRange,
+      fixItAvailable: fixItAvailable,
+    }
+  }
+
+  pub fn reportable(self: InvalidOrderingDiagnostic) -> bool {
+    return self.code != "" && self.hasRange
+  }
+}

@@ -1,0 +1,9 @@
+[module]
+name = "safety"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "unsafe-proof-raw-boundary-diagnostics-analysis"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

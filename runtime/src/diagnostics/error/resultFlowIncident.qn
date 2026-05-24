@@ -1,0 +1,42 @@
+pub enum ResultFlowIncidentKind {
+  ErrPropagated,
+  AwaitErrPropagated,
+  ConversionMissing,
+  PatternMatchIncomplete,
+}
+
+pub struct ResultFlowIncident {
+  kind: ResultFlowIncidentKind,
+  errorCode: string,
+  sourceAvailable: bool,
+  causeChainPreserved: bool,
+  taskContextPreserved: bool,
+  redacted: bool,
+  noPanic: bool,
+  noCoredump: bool,
+}
+
+impl ResultFlowIncident {
+  pub fn propagated(kind: ResultFlowIncidentKind, errorCode: string) -> ResultFlowIncident {
+    return ResultFlowIncident {
+      kind: kind,
+      errorCode: errorCode,
+      sourceAvailable: true,
+      causeChainPreserved: true,
+      taskContextPreserved: true,
+      redacted: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: ResultFlowIncident) -> bool {
+    return self.errorCode != ""
+      && self.sourceAvailable
+      && self.causeChainPreserved
+      && self.taskContextPreserved
+      && self.redacted
+      && self.noPanic
+      && self.noCoredump
+  }
+}

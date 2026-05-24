@@ -1,0 +1,35 @@
+pub enum LinkerFamilyKind {
+  GnuLd
+  Lld
+  AppleLd
+  MsvcLink
+  UnsupportedLinker
+}
+
+pub struct LinkerFamily {
+  kind: LinkerFamilyKind,
+  supportsHiddenArchives: bool,
+  supported: bool,
+}
+
+pub fn linkerFamily(kind: LinkerFamilyKind, supportsHiddenArchives: bool, supported: bool) -> LinkerFamily {
+  return LinkerFamily {
+    kind: kind,
+    supportsHiddenArchives: supportsHiddenArchives,
+    supported: supported,
+  }
+}
+
+impl LinkerFamily {
+  pub fn linkerKind(self: LinkerFamily) -> LinkerFamilyKind {
+    return self.kind
+  }
+
+  pub fn hidesArchives(self: LinkerFamily) -> bool {
+    return self.supportsHiddenArchives
+  }
+
+  pub fn isSupported(self: LinkerFamily) -> bool {
+    return self.supported
+  }
+}

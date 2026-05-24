@@ -1,0 +1,19 @@
+pub struct CachePaddingLowering {
+  emitsAlignment: bool,
+  emitsPadding: bool,
+  preventsFalseSharing: bool,
+}
+
+impl CachePaddingLowering {
+  pub fn init(emitsAlignment: bool, emitsPadding: bool, preventsFalseSharing: bool) -> CachePaddingLowering {
+    return CachePaddingLowering {
+      emitsAlignment: emitsAlignment,
+      emitsPadding: emitsPadding,
+      preventsFalseSharing: preventsFalseSharing,
+    }
+  }
+
+  pub fn accepted(self: CachePaddingLowering) -> bool {
+    return self.emitsAlignment && self.emitsPadding && self.preventsFalseSharing
+  }
+}

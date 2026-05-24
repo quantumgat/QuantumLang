@@ -1,0 +1,26 @@
+pub enum SpecializedLoopProofKind {
+  AsyncLoopProof
+  ParallelLoopProof
+  DomainDataLoopProof
+  LowLevelLoopProof
+  QuantumLoopProof
+  ComptimeStaticLoopProof
+  FinalLoopFamilyAudit
+}
+
+pub struct SpecializedLoopProof {
+  kind: SpecializedLoopProofKind,
+  fixture: string,
+  formCount: usize,
+  nativeLowering: NativeSpecializedLoopLowering,
+  negativeFixtureCaptured: bool,
+}
+
+impl SpecializedLoopProof {
+  pub fn complete(self: SpecializedLoopProof) -> bool {
+    return self.fixture != ""
+      && self.formCount >= 22
+      && self.nativeLowering.complete()
+      && self.negativeFixtureCaptured
+  }
+}

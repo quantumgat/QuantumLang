@@ -1,0 +1,41 @@
+pub enum HirNodeKind {
+  ModuleItem
+  ImportItem
+  FunctionItem
+  TypeItem
+  TraitItem
+  ClassItem
+  InterfaceItem
+  StatementNode
+  ExpressionNode
+  QuantumNode
+}
+
+pub struct HirNode {
+  id: u64,
+  kind: HirNodeKind,
+  spanStart: usize,
+  spanEnd: usize,
+}
+
+pub fn hirNode(id: u64, kind: HirNodeKind, spanStart: usize, spanEnd: usize) -> HirNode {
+  return HirNode { id: id, kind: kind, spanStart: spanStart, spanEnd: spanEnd }
+}
+
+impl HirNode {
+  pub fn nodeId(self: HirNode) -> u64 {
+    return self.id
+  }
+
+  pub fn nodeKind(self: HirNode) -> HirNodeKind {
+    return self.kind
+  }
+
+  pub fn startOffset(self: HirNode) -> usize {
+    return self.spanStart
+  }
+
+  pub fn endOffset(self: HirNode) -> usize {
+    return self.spanEnd
+  }
+}

@@ -1,0 +1,21 @@
+pub struct RuntimeReactorWakeup {
+  wakeId: u64,
+  coalesced: bool,
+  lostWakePrevented: bool,
+  schedulerLinked: bool,
+}
+
+impl RuntimeReactorWakeup {
+  pub fn init(wakeId: u64, coalesced: bool, lostWakePrevented: bool, schedulerLinked: bool) -> RuntimeReactorWakeup {
+    return RuntimeReactorWakeup {
+      wakeId: wakeId,
+      coalesced: coalesced,
+      lostWakePrevented: lostWakePrevented,
+      schedulerLinked: schedulerLinked,
+    }
+  }
+
+  pub fn safe(self: RuntimeReactorWakeup) -> bool {
+    return self.wakeId > 0 && self.lostWakePrevented && self.schedulerLinked
+  }
+}

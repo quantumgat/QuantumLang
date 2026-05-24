@@ -1,0 +1,43 @@
+pub struct ParallelLoopProductionFanoutProof {
+  parserCarriesHeader: bool,
+  workerBindingTyped: bool,
+  boundedWorkLowering: bool,
+  stopValueExecutable: bool,
+  breakExecutable: bool,
+  continueExecutable: bool,
+  executableFixture: string,
+  noGeneratedFallback: bool,
+}
+
+pub fn parallelLoopProductionFanoutProof(
+  parserCarriesHeader: bool,
+  workerBindingTyped: bool,
+  boundedWorkLowering: bool,
+  stopValueExecutable: bool,
+  breakExecutable: bool,
+  continueExecutable: bool,
+) -> ParallelLoopProductionFanoutProof {
+  return ParallelLoopProductionFanoutProof {
+    parserCarriesHeader: parserCarriesHeader,
+    workerBindingTyped: workerBindingTyped,
+    boundedWorkLowering: boundedWorkLowering,
+    stopValueExecutable: stopValueExecutable,
+    breakExecutable: breakExecutable,
+    continueExecutable: continueExecutable,
+    executableFixture: "parallel_loop_production_fanout_ok.qn",
+    noGeneratedFallback: true,
+  }
+}
+
+impl ParallelLoopProductionFanoutProof {
+  pub fn accepted(self: ParallelLoopProductionFanoutProof) -> bool {
+    return self.parserCarriesHeader
+      && self.workerBindingTyped
+      && self.boundedWorkLowering
+      && self.stopValueExecutable
+      && self.breakExecutable
+      && self.continueExecutable
+      && self.executableFixture == "parallel_loop_production_fanout_ok.qn"
+      && self.noGeneratedFallback
+  }
+}

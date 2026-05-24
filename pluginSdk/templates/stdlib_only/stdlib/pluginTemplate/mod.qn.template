@@ -1,0 +1,18 @@
+pub struct TemplateValue<T> {
+  value: T,
+}
+
+impl<T> TemplateValue<T> {
+  pub fn new(value: T) -> TemplateValue<T> {
+    return TemplateValue<T> { value: value }
+  }
+
+  pub fn get(self: TemplateValue<T>) -> T {
+    return self.value
+  }
+}
+
+pub fn templateValue<T>(value: T) -> TemplateValue<T> {
+  return TemplateValue<T>.new(value)
+}
+

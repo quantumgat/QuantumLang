@@ -1,0 +1,32 @@
+/**
+  Builder for owned storage that can be exposed as a Slice.
+
+  effects: allocation while pushing values
+  complexity: amortized O(1) push
+  allocation: contiguous Vec storage for the produced view
+  stability: public since 0.1
+*/
+pub struct SliceBuilder<T> {
+  items: Vec<T>,
+}
+
+impl<T> SliceBuilder<T> {
+  pub fn init() -> SliceBuilder<T> {
+    return SliceBuilder<T> { items: Vec<T>.empty() }
+  }
+
+  pub fn withCapacity(capacity: usize) -> SliceBuilder<T> requires(alloc) {
+    return SliceBuilder<T> { items: Vec<T>.withCapacity(capacity) }
+  }
+
+  pub fn push(self: SliceBuilder<T>, value: T) -> SliceBuilder<T> requires(alloc) {
+    return SliceBuilder<T> {
+      items: self.items.push(value),
+    }
+  }
+
+  pub fn build(self: SliceBuilder<T>) -> Slice<T> {
+    let len = self.items.len
+    return Slice<T>.fromVec(self.items, 0, len)
+  }
+}

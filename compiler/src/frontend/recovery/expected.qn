@@ -1,0 +1,18 @@
+pub struct ExpectedToken {
+  name: string,
+  recoverable: bool,
+}
+
+pub fn expectedToken(name: string, recoverable: bool) -> ExpectedToken {
+  return ExpectedToken { name: name, recoverable: recoverable }
+}
+
+impl ExpectedToken {
+  pub fn tokenName(self: ExpectedToken) -> string {
+    return self.name
+  }
+
+  pub fn canRecover(self: ExpectedToken) -> bool {
+    return self.recoverable
+  }
+}

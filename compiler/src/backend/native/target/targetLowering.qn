@@ -1,0 +1,6 @@
+pub interface TargetLowering {
+  pub fn tripleName(self: &TargetLowering) -> string
+  pub fn supportsAtomicWait(self: &TargetLowering) -> bool
+  pub fn supportsDirectObject(self: &TargetLowering) -> bool
+  pub fn lowerCallingConvention(self: &TargetLowering) -> bool
+}

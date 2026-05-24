@@ -1,0 +1,35 @@
+pub enum SseDiagnosticKind {
+  Closed,
+  EventTooLarge,
+  InvalidRetry,
+}
+
+pub struct SseDiagnostic {
+  kind: SseDiagnosticKind,
+  message: string,
+}
+
+impl SseDiagnostic {
+  pub fn init(kind: SseDiagnosticKind, message: string) -> SseDiagnostic {
+    return SseDiagnostic {
+      kind: kind,
+      message: message,
+    }
+  }
+
+  pub fn closed() -> SseDiagnostic {
+    return SseDiagnostic.init(SseDiagnosticKind.Closed, "SSE stream is closed")
+  }
+
+  pub fn eventTooLarge() -> SseDiagnostic {
+    return SseDiagnostic.init(SseDiagnosticKind.EventTooLarge, "SSE event exceeded policy limit")
+  }
+
+  pub fn invalidRetry() -> SseDiagnostic {
+    return SseDiagnostic.init(SseDiagnosticKind.InvalidRetry, "invalid SSE retry policy")
+  }
+
+  pub fn message(self: SseDiagnostic) -> string {
+    return self.message
+  }
+}

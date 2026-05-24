@@ -1,0 +1,72 @@
+pub enum DecimalLiteralConversionKind {
+  ContextTypedDecimal
+  ShortDecimalSuffix
+  WidthDecimalSuffix
+}
+
+pub struct DecimalLiteralConversionFact {
+  kind: DecimalLiteralConversionKind,
+  targetType: string,
+  sourceLiteralKind: string,
+  example: string,
+  compileTimeParsed: bool,
+  exactDecimal: bool,
+  sourceMappedDiagnostic: bool,
+  noSilentFloatMixing: bool,
+  noCoredump: bool,
+}
+
+impl DecimalLiteralConversionFact {
+  pub fn decimalLiteral() -> DecimalLiteralConversionFact {
+    return DecimalLiteralConversionFact {
+      kind: DecimalLiteralConversionKind.ContextTypedDecimal,
+      targetType: "decimal",
+      sourceLiteralKind: "decimal",
+      example: "let price: decimal = 12.50",
+      compileTimeParsed: true,
+      exactDecimal: true,
+      sourceMappedDiagnostic: true,
+      noSilentFloatMixing: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn shortSuffixLiteral() -> DecimalLiteralConversionFact {
+    return DecimalLiteralConversionFact {
+      kind: DecimalLiteralConversionKind.ShortDecimalSuffix,
+      targetType: "decimal",
+      sourceLiteralKind: "decimal",
+      example: "let area = 12.503453d",
+      compileTimeParsed: true,
+      exactDecimal: true,
+      sourceMappedDiagnostic: true,
+      noSilentFloatMixing: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn widthSuffixLiteral() -> DecimalLiteralConversionFact {
+    return DecimalLiteralConversionFact {
+      kind: DecimalLiteralConversionKind.WidthDecimalSuffix,
+      targetType: "dec64|dec128|dec256",
+      sourceLiteralKind: "decimal",
+      example: "let huge = 12.50dec256",
+      compileTimeParsed: true,
+      exactDecimal: true,
+      sourceMappedDiagnostic: true,
+      noSilentFloatMixing: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: DecimalLiteralConversionFact) -> bool {
+    return self.targetType != "Decimal"
+      && self.sourceLiteralKind != ""
+      && self.example != ""
+      && self.compileTimeParsed
+      && self.exactDecimal
+      && self.sourceMappedDiagnostic
+      && self.noSilentFloatMixing
+      && self.noCoredump
+  }
+}

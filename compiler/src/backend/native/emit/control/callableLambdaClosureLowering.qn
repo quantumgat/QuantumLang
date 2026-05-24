@@ -1,0 +1,49 @@
+pub enum NativeCallableLambdaClosureLoweringKind {
+  DirectInlineLambda
+  StackEnvironmentThunk
+  FlattenedNestedThunk
+  AsyncClosureStateMachine
+  MoveEnvironmentThunk
+  MethodReferenceDirectCall
+  CallableClassDirectCall
+  DynCallableDispatchTable
+  CollectionCallbackInline
+  TypedFailureDiagnostic
+}
+
+pub struct NativeCallableLambdaClosureLowering {
+  kind: NativeCallableLambdaClosureLoweringKind,
+  mirOp: MirCallableLambdaClosureOp,
+  emitsDirectCall: bool,
+  emitsStackEnvironment: bool,
+  erasesEnvironmentWhenProven: bool,
+  emitsAsyncStateMachine: bool,
+  emitsDynDispatchTable: bool,
+  emitsTypedFailurePath: bool,
+  noHeapAllocationWhenHot: bool,
+  noGeneratedFallback: bool,
+  noCoredumpFailure: bool,
+}
+
+impl NativeCallableLambdaClosureLowering {
+  pub fn complete(self: NativeCallableLambdaClosureLowering) -> bool {
+    return self.mirOp.accepted()
+      && self.emitsTypedFailurePath
+      && self.noGeneratedFallback
+      && self.noCoredumpFailure
+  }
+
+  pub fn hotPathReady(self: NativeCallableLambdaClosureLowering) -> bool {
+    return self.complete()
+      && self.mirOp.hotLowerable()
+      && self.emitsDirectCall
+      && self.erasesEnvironmentWhenProven
+      && self.noHeapAllocationWhenHot
+  }
+
+  pub fn explicitDynBoundary(self: NativeCallableLambdaClosureLowering) -> bool {
+    return self.complete()
+      && self.emitsDynDispatchTable
+      && self.kind == NativeCallableLambdaClosureLoweringKind.DynCallableDispatchTable
+  }
+}

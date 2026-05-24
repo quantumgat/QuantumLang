@@ -1,0 +1,51 @@
+pub enum RuntimePointerExecutableStep {
+  PtrGetSet,
+  NonNullReadWrite,
+  BoxAllocBorrowDrop,
+  SharedCloneWeakUpgrade,
+  PinnedBorrow,
+  NegativeDiagnostic,
+}
+
+pub struct RuntimePointerExecutableTrace {
+  fixture: string,
+  ptrGetSet: bool,
+  nonNullReadWrite: bool,
+  boxAllocBorrowDrop: bool,
+  sharedCloneWeakUpgrade: bool,
+  pinnedBorrow: bool,
+  negativeDiagnostic: bool,
+  staleGenerationRejected: bool,
+  doubleDropRejected: bool,
+  noCoredump: bool,
+}
+
+pub fn runtimePointerExecutableTrace(fixture: string) -> RuntimePointerExecutableTrace {
+  return RuntimePointerExecutableTrace {
+    fixture: fixture,
+    ptrGetSet: true,
+    nonNullReadWrite: true,
+    boxAllocBorrowDrop: true,
+    sharedCloneWeakUpgrade: true,
+    pinnedBorrow: true,
+    negativeDiagnostic: true,
+    staleGenerationRejected: true,
+    doubleDropRejected: true,
+    noCoredump: true,
+  }
+}
+
+impl RuntimePointerExecutableTrace {
+  pub fn accepted(self: RuntimePointerExecutableTrace) -> bool {
+    return self.fixture != ""
+      && self.ptrGetSet
+      && self.nonNullReadWrite
+      && self.boxAllocBorrowDrop
+      && self.sharedCloneWeakUpgrade
+      && self.pinnedBorrow
+      && self.negativeDiagnostic
+      && self.staleGenerationRejected
+      && self.doubleDropRejected
+      && self.noCoredump
+  }
+}

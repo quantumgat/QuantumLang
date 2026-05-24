@@ -1,0 +1,48 @@
+pub enum NativeForLoopLoweringKind {
+  CountedLoop
+  DirectIndexLoop
+  PointerLengthLoop
+  ErasedCursorLoop
+  FusedIteratorPipeline
+  SchedulerParallelLoop
+  ThreadLocalReduction
+  ZeroCopyBinaryLoop
+  QirProfileLoop
+  ComptimeExpansion
+}
+
+pub struct NativeForLoopLowering {
+  kind: NativeForLoopLoweringKind,
+  mirLoop: MirForLoopOp,
+  noHeapAllocation: bool,
+  directLoads: bool,
+  directBranches: bool,
+  cursorObjectErased: bool,
+  zipEnumerateLowered: bool,
+  asyncPollLowered: bool,
+  parallelShardLowered: bool,
+  qforQirHandoffReady: bool,
+  executableEvidenceReady: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeForLoopLowering {
+  pub fn complete(self: NativeForLoopLowering) -> bool {
+    return self.mirLoop.hotLowerable()
+      && self.noHeapAllocation
+      && self.directLoads
+      && self.noGeneratedFallback
+  }
+
+  pub fn executableHotPathReady(self: NativeForLoopLowering) -> bool {
+    return self.complete()
+      && self.mirLoop.executableHotPathReady()
+      && self.directBranches
+      && self.cursorObjectErased
+      && self.zipEnumerateLowered
+      && self.asyncPollLowered
+      && self.parallelShardLowered
+      && self.qforQirHandoffReady
+      && self.executableEvidenceReady
+  }
+}

@@ -1,0 +1,8 @@
+pub enum BuildProfile {
+  DebugProfile,
+  ReleaseProfile,
+}
+
+pub fn defaultBuildProfile() -> BuildProfile {
+  return BuildProfile.DebugProfile
+}

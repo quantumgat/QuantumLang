@@ -1,0 +1,4 @@
+pub fn measure(target: qubit) -> qresult
+pub fn measureBit(target: qubit) -> bit
+pub fn reset(target: qubit) -> Unit
+pub fn release(target: qubit) -> Unit

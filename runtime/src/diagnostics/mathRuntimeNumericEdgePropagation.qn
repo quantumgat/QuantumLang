@@ -1,0 +1,54 @@
+import mathRuntimeSafeFailure::{MathRuntimeSafeFailure}
+
+pub enum MathRuntimeNumericEdgePropagationKind {
+  DivideByZero
+  BigUintUnderflow
+  FixedScaleMismatch
+  DecimalRoundingTrap
+}
+
+pub struct MathRuntimeNumericEdgePropagation {
+  kind: MathRuntimeNumericEdgePropagationKind,
+  failure: MathRuntimeSafeFailure,
+  typedErrorCarrier: bool,
+  executableNegativeFixture: bool,
+  sourceMapped: bool,
+  noCoredump: bool,
+}
+
+impl MathRuntimeNumericEdgePropagation {
+  pub fn divideByZero() -> MathRuntimeNumericEdgePropagation {
+    return MathRuntimeNumericEdgePropagation.init(MathRuntimeNumericEdgePropagationKind.DivideByZero, MathRuntimeSafeFailure.divideByZero())
+  }
+
+  pub fn bigUintUnderflow() -> MathRuntimeNumericEdgePropagation {
+    return MathRuntimeNumericEdgePropagation.init(MathRuntimeNumericEdgePropagationKind.BigUintUnderflow, MathRuntimeSafeFailure.bigUintUnderflow())
+  }
+
+  pub fn fixedScaleMismatch() -> MathRuntimeNumericEdgePropagation {
+    return MathRuntimeNumericEdgePropagation.init(MathRuntimeNumericEdgePropagationKind.FixedScaleMismatch, MathRuntimeSafeFailure.fixedScaleMismatch())
+  }
+
+  pub fn decimalRoundingTrap() -> MathRuntimeNumericEdgePropagation {
+    return MathRuntimeNumericEdgePropagation.init(MathRuntimeNumericEdgePropagationKind.DecimalRoundingTrap, MathRuntimeSafeFailure.decimalRoundingTrap())
+  }
+
+  pub fn init(kind: MathRuntimeNumericEdgePropagationKind, failure: MathRuntimeSafeFailure) -> MathRuntimeNumericEdgePropagation {
+    return MathRuntimeNumericEdgePropagation {
+      kind: kind,
+      failure: failure,
+      typedErrorCarrier: true,
+      executableNegativeFixture: true,
+      sourceMapped: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn complete(self: MathRuntimeNumericEdgePropagation) -> bool {
+    return self.failure.safe()
+      && self.typedErrorCarrier
+      && self.executableNegativeFixture
+      && self.sourceMapped
+      && self.noCoredump
+  }
+}

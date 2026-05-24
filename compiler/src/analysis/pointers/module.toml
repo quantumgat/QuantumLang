@@ -1,0 +1,9 @@
+[module]
+name = "pointers"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "pointer-provenance-address-space-analysis"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

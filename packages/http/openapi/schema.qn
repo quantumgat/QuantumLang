@@ -1,0 +1,44 @@
+pub enum OpenApiSchemaKind {
+  Object,
+  Array,
+  String,
+  Integer,
+  Number,
+  Boolean,
+}
+
+pub struct OpenApiSchema {
+  name: string,
+  kind: OpenApiSchemaKind,
+  requiredFieldCount: usize,
+}
+
+impl OpenApiSchema {
+  pub fn init(name: string, kind: OpenApiSchemaKind) -> OpenApiSchema {
+    return OpenApiSchema {
+      name: name,
+      kind: kind,
+      requiredFieldCount: 0,
+    }
+  }
+
+  pub fn object(name: string) -> OpenApiSchema {
+    return OpenApiSchema.init(name, OpenApiSchemaKind.Object)
+  }
+
+  pub fn required(self: OpenApiSchema, field: string) -> OpenApiSchema {
+    return OpenApiSchema {
+      name: self.name,
+      kind: self.kind,
+      requiredFieldCount: self.requiredFieldCount + 1,
+    }
+  }
+
+  pub fn name(self: OpenApiSchema) -> string {
+    return self.name
+  }
+
+  pub fn requiredFieldCount(self: OpenApiSchema) -> usize {
+    return self.requiredFieldCount
+  }
+}

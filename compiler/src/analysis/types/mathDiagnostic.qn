@@ -1,0 +1,110 @@
+pub enum MathDiagnosticKind {
+  DivideByZero
+  InvalidShift
+  Overflow
+  SilentNumericMixing
+  UnsupportedComplexOrdering
+  TargetFeatureRequired
+  DecimalContextFailure
+  ResourceLimit
+  BigUintUnderflow
+  FixedScaleMismatch
+  DecimalRoundingTrap
+}
+
+pub struct MathDiagnostic {
+  node: u64,
+  kind: MathDiagnosticKind,
+  code: MathDiagnosticCode,
+  fixit: MathDiagnosticFixit,
+  sourceMapped: bool,
+  exactPrimarySpan: bool,
+  helpAvailable: bool,
+  noCoredump: bool,
+}
+
+impl MathDiagnostic {
+  pub fn init(
+    node: u64,
+    kind: MathDiagnosticKind,
+    code: MathDiagnosticCode,
+    fixit: MathDiagnosticFixit,
+  ) -> MathDiagnostic {
+    return MathDiagnostic {
+      node: node,
+      kind: kind,
+      code: code,
+      fixit: fixit,
+      sourceMapped: true,
+      exactPrimarySpan: true,
+      helpAvailable: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn divideByZero(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.divideByZero()
+    return MathDiagnostic.init(node, MathDiagnosticKind.DivideByZero, code, MathDiagnosticFixit.nonZeroGuard(code))
+  }
+
+  pub fn invalidShift(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.invalidShift()
+    return MathDiagnostic.init(node, MathDiagnosticKind.InvalidShift, code, MathDiagnosticFixit.clampShift(code))
+  }
+
+  pub fn overflow(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.overflow()
+    return MathDiagnostic.init(node, MathDiagnosticKind.Overflow, code, MathDiagnosticFixit.checkedMode(code))
+  }
+
+  pub fn silentNumericMixing(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.silentNumericMixing()
+    return MathDiagnostic.init(node, MathDiagnosticKind.SilentNumericMixing, code, MathDiagnosticFixit.explicitCast(code))
+  }
+
+  pub fn unsupportedComplexOrdering(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.unsupportedComplexOrdering()
+    return MathDiagnostic.init(node, MathDiagnosticKind.UnsupportedComplexOrdering, code, MathDiagnosticFixit.complexAbs(code))
+  }
+
+  pub fn targetFeatureRequired(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.targetFeatureRequired()
+    return MathDiagnostic.init(node, MathDiagnosticKind.TargetFeatureRequired, code, MathDiagnosticFixit.targetFeature(code))
+  }
+
+  pub fn decimalContextFailure(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.decimalContextFailure()
+    return MathDiagnostic.init(node, MathDiagnosticKind.DecimalContextFailure, code, MathDiagnosticFixit.decimalContext(code))
+  }
+
+  pub fn resourceLimit(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.resourceLimit()
+    return MathDiagnostic.init(node, MathDiagnosticKind.ResourceLimit, code, MathDiagnosticFixit.resourceLimit(code))
+  }
+
+  pub fn bigUintUnderflow(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.bigUintUnderflow()
+    return MathDiagnostic.init(node, MathDiagnosticKind.BigUintUnderflow, code, MathDiagnosticFixit.bigUintUnderflow(code))
+  }
+
+  pub fn fixedScaleMismatch(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.fixedScaleMismatch()
+    return MathDiagnostic.init(node, MathDiagnosticKind.FixedScaleMismatch, code, MathDiagnosticFixit.fixedScaleMismatch(code))
+  }
+
+  pub fn decimalRoundingTrap(node: u64) -> MathDiagnostic {
+    let code = MathDiagnosticCode.decimalRoundingTrap()
+    return MathDiagnostic.init(node, MathDiagnosticKind.DecimalRoundingTrap, code, MathDiagnosticFixit.decimalRoundingTrap(code))
+  }
+
+  pub fn complete(self: MathDiagnostic) -> bool {
+    return self.node > 0
+      && self.code.code() != ""
+      && self.code.safeFailure()
+      && self.fixit.safeFirst()
+      && self.sourceMapped
+      && self.exactPrimarySpan
+      && self.helpAvailable
+      && self.noCoredump
+  }
+}

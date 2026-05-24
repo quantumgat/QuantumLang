@@ -1,0 +1,23 @@
+pub struct TargetPointerLoweringFact {
+  variant: TargetVariantId,
+  pointerBits: usize,
+  addressSpaceBits: usize,
+  endian: TargetEndian,
+  atomicsAvailable: bool,
+  heapAvailable: bool,
+  pointerLoweringSupported: bool,
+}
+
+impl TargetPointerLoweringFact {
+  pub fn accepted(self: TargetPointerLoweringFact) -> bool {
+    return self.variant != TargetVariantId.UnknownVariant
+      && self.pointerBits > 0
+      && self.addressSpaceBits >= self.pointerBits
+      && self.endian != TargetEndian.UnknownEndian
+      && self.pointerLoweringSupported
+  }
+
+  pub fn permitsNativePtr(self: TargetPointerLoweringFact) -> bool {
+    return self.accepted() && self.pointerBits <= 64
+  }
+}

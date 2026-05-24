@@ -1,0 +1,133 @@
+pub struct MathCtfeEvaluator {
+  fuel: usize,
+  policy: MathCtfePolicy,
+}
+
+impl MathCtfeEvaluator {
+  pub fn init(fuel: usize) -> MathCtfeEvaluator {
+    return MathCtfeEvaluator {
+      fuel: fuel,
+      policy: MathCtfePolicy.strict(),
+    }
+  }
+
+  pub fn ensureFuel(self: MathCtfeEvaluator, cost: usize) -> Result<MathCtfeEvaluator, MathCtfeDiagnosticBridge> {
+    if cost > self.fuel {
+      return Err(MathCtfeDiagnosticBridge.resourceLimit())
+    }
+    return Ok(MathCtfeEvaluator {
+      fuel: self.fuel - cost,
+      policy: self.policy,
+    })
+  }
+
+  pub fn addU64(self: MathCtfeEvaluator, left: u64, right: u64) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    let max: u64 = 18446744073709551615
+    if right > max - left {
+      return Err(MathCtfeDiagnosticBridge.overflow())
+    }
+    return Ok(MathCtfeValue.u64(left + right))
+  }
+
+  pub fn subU64(self: MathCtfeEvaluator, left: u64, right: u64) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    if right > left {
+      return Err(MathCtfeDiagnosticBridge.overflow())
+    }
+    return Ok(MathCtfeValue.u64(left - right))
+  }
+
+  pub fn mulU64(self: MathCtfeEvaluator, left: u64, right: u64) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    let max: u64 = 18446744073709551615
+    if left != 0 && right > max / left {
+      return Err(MathCtfeDiagnosticBridge.overflow())
+    }
+    return Ok(MathCtfeValue.u64(left * right))
+  }
+
+  pub fn divU64(self: MathCtfeEvaluator, left: u64, right: u64) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    if right == 0 {
+      return Err(MathCtfeDiagnosticBridge.divideByZero())
+    }
+    return Ok(MathCtfeValue.u64(left / right))
+  }
+
+  pub fn shlU64(self: MathCtfeEvaluator, value: u64, amount: usize) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    if amount >= 64 {
+      return Err(MathCtfeDiagnosticBridge.invalidShift())
+    }
+    return Ok(MathCtfeValue.u64(value << amount))
+  }
+
+  pub fn modularPowU64(self: MathCtfeEvaluator, base: u64, exponent: u64, modulus: u64) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    if modulus == 0 {
+      return Err(MathCtfeDiagnosticBridge.divideByZero())
+    }
+    let mut result: u64 = 1 % modulus
+    let mut factor = base % modulus
+    let mut exp = exponent
+    let mut fuel = checked
+    while exp > 0 {
+      fuel = fuel.ensureFuel(1)?
+      if exp & 1 == 1 {
+        let product = fuel.mulU64(result, factor)?
+        result = product.u64Value
+      }
+      let square = fuel.mulU64(factor, factor)?
+      factor = square.u64Value % modulus
+      exp = exp >> 1
+    }
+    return Ok(MathCtfeValue.u64(result))
+  }
+
+  pub fn rationalNumeratorI64(self: MathCtfeEvaluator, numerator: i64, denominator: i64) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    if denominator == 0 {
+      return Err(MathCtfeDiagnosticBridge.divideByZero())
+    }
+    let mut n = numerator
+    let mut d = denominator
+    if d < 0 {
+      n = 0 - n
+      d = 0 - d
+    }
+    let gcd = checked.gcdU64(if n < 0 { (0 - n) as u64 } else { n as u64 }, d as u64)?
+    return Ok(MathCtfeValue.i64(n / (gcd.u64Value as i64)))
+  }
+
+  pub fn gcdU64(self: MathCtfeEvaluator, left: u64, right: u64) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    let mut a = left
+    let mut b = right
+    let mut fuel = checked
+    while b != 0 {
+      fuel = fuel.ensureFuel(1)?
+      let next = a % b
+      a = b
+      b = next
+    }
+    return Ok(MathCtfeValue.u64(a))
+  }
+
+  pub fn decimalLiteral(self: MathCtfeEvaluator, text: string) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    if text == "" {
+      return Err(MathCtfeDiagnosticBridge.resourceLimit())
+    }
+    return Ok(MathCtfeValue.decimalLiteral(text))
+  }
+
+  pub fn complexRealF64(self: MathCtfeEvaluator, real: f64, imag: f64) -> Result<MathCtfeValue, MathCtfeDiagnosticBridge> {
+    let checked = self.ensureFuel(1)?
+    return Ok(MathCtfeValue.f64(real))
+  }
+
+  pub fn accepted(self: MathCtfeEvaluator) -> bool {
+    return self.policy.accepted() && self.fuel > 0
+  }
+}

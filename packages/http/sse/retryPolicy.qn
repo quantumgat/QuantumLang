@@ -1,0 +1,27 @@
+pub struct RetryPolicy {
+  seconds: usize,
+}
+
+impl RetryPolicy {
+  pub fn init(seconds: usize) -> RetryPolicy {
+    return RetryPolicy {
+      seconds: seconds,
+    }
+  }
+
+  pub fn default() -> RetryPolicy {
+    return RetryPolicy.init(3)
+  }
+
+  pub fn seconds(self: RetryPolicy) -> usize {
+    return self.seconds
+  }
+
+  pub fn millis(self: RetryPolicy) -> usize {
+    return self.seconds * 1000
+  }
+
+  pub fn valid(self: RetryPolicy) -> bool {
+    return self.seconds > 0
+  }
+}

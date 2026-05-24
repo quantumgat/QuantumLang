@@ -1,0 +1,15 @@
+pub struct StreamSink {
+  sinkId: u64,
+  acceptsBackpressure: bool,
+  closed: bool,
+}
+
+pub fn streamSink(sinkId: u64) -> StreamSink {
+  return StreamSink { sinkId: sinkId, acceptsBackpressure: true, closed: false }
+}
+
+impl StreamSink {
+  pub fn canWrite(self: StreamSink) -> bool {
+    return self.closed == false && self.acceptsBackpressure
+  }
+}

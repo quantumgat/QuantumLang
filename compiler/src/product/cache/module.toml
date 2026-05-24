@@ -1,0 +1,9 @@
+[module]
+name = "cache"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_qtlang_compiler_native_build_probe", "qtlc_qtlang_package_cache_foundation"]

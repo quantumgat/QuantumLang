@@ -1,0 +1,6 @@
+pub struct RetryPolicy {
+  attempts: usize,
+}
+
+pub fn retry(attempts: usize) -> RetryPolicy
+pub fn attempts(policy: RetryPolicy) -> usize

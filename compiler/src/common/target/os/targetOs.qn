@@ -1,0 +1,23 @@
+pub enum TargetOsKind {
+  Linux,
+  Windows,
+  Macos,
+  Android,
+  Ios,
+  BareMetal,
+  FreeRtos,
+  Wasi,
+  UnknownOs,
+}
+
+pub struct TargetOsModel {
+  kind: TargetOsKind,
+  mobile: bool,
+  hosted: bool,
+}
+
+impl TargetOsModel {
+  pub fn accepted(self: TargetOsModel) -> bool {
+    return self.kind != TargetOsKind.UnknownOs
+  }
+}

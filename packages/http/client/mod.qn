@@ -1,0 +1,7 @@
+pub mod client
+pub mod pool
+
+pub use client.HttpClient
+pub use client.HttpClientRequest
+pub use client.HttpClientSendTask
+pub use pool.HttpClientPool

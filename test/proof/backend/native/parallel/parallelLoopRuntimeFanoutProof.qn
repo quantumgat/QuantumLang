@@ -1,0 +1,39 @@
+pub struct ParallelLoopRuntimeFanoutProof {
+  runtimeForRangeSymbol: bool,
+  pthreadWorkerFanout: bool,
+  sharedStopStatus: bool,
+  joinBeforeReturn: bool,
+  nativeMarksCallbackGap: bool,
+  executableRuntimeGate: string,
+}
+
+pub fn parallelLoopRuntimeFanoutProof(
+  runtimeForRangeSymbol: bool,
+  pthreadWorkerFanout: bool,
+  sharedStopStatus: bool,
+  joinBeforeReturn: bool,
+  nativeMarksCallbackGap: bool,
+) -> ParallelLoopRuntimeFanoutProof {
+  return ParallelLoopRuntimeFanoutProof {
+    runtimeForRangeSymbol: runtimeForRangeSymbol,
+    pthreadWorkerFanout: pthreadWorkerFanout,
+    sharedStopStatus: sharedStopStatus,
+    joinBeforeReturn: joinBeforeReturn,
+    nativeMarksCallbackGap: nativeMarksCallbackGap,
+    executableRuntimeGate: "qtlang_language_parallel_loop_runtime_fanout_gap_closure",
+  }
+}
+
+impl ParallelLoopRuntimeFanoutProof {
+  pub fn runtimeReady(self: ParallelLoopRuntimeFanoutProof) -> bool {
+    return self.runtimeForRangeSymbol
+      && self.pthreadWorkerFanout
+      && self.sharedStopStatus
+      && self.joinBeforeReturn
+      && self.executableRuntimeGate == "qtlang_language_parallel_loop_runtime_fanout_gap_closure"
+  }
+
+  pub fn complete(self: ParallelLoopRuntimeFanoutProof) -> bool {
+    return self.runtimeReady() && !self.nativeMarksCallbackGap
+  }
+}

@@ -1,0 +1,11 @@
+pub struct StdlibPublicType {
+  name: string,
+  moduleName: string,
+  publicConstructor: bool,
+}
+
+impl StdlibPublicType {
+  pub fn accepted(self: StdlibPublicType) -> bool {
+    return self.name != "" && self.moduleName != ""
+  }
+}

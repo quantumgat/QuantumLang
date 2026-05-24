@@ -1,0 +1,38 @@
+pub struct PluginStdlibRoot {
+  root: string,
+  includeGlob: string,
+  publicRootCount: usize,
+  docsRoot: string,
+  examplesRoot: string,
+  sourceRecursive: bool,
+  publicRootsOwned: bool,
+  rootConflictChecked: bool,
+}
+
+impl PluginStdlibRoot {
+  pub fn mounted(root: string, publicRootCount: usize) -> PluginStdlibRoot {
+    return PluginStdlibRoot {
+      root: root,
+      includeGlob: "**/*.qn",
+      publicRootCount: publicRootCount,
+      docsRoot: "docs",
+      examplesRoot: "examples",
+      sourceRecursive: true,
+      publicRootsOwned: true,
+      rootConflictChecked: true,
+    }
+  }
+
+  pub fn accepted(self: PluginStdlibRoot) -> bool {
+    return self.root != ""
+      && self.includeGlob == "**/*.qn"
+      && self.publicRootCount > 0
+      && self.sourceRecursive
+      && self.publicRootsOwned
+      && self.rootConflictChecked
+  }
+
+  pub fn docsAvailable(self: PluginStdlibRoot) -> bool {
+    return self.docsRoot != "" && self.examplesRoot != ""
+  }
+}

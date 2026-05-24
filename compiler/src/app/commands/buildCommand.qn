@@ -1,0 +1,17 @@
+pub class BuildCommand {
+  commandName: string,
+  delegatesToPipeline: bool,
+  emitsBinary: bool,
+  strictNative: bool,
+
+  pub init() {
+    self.commandName = "build"
+    self.delegatesToPipeline = true
+    self.emitsBinary = true
+    self.strictNative = true
+  }
+
+  pub fn execute(self: &BuildCommand) -> bool {
+    return self.delegatesToPipeline && self.emitsBinary && self.strictNative
+  }
+}

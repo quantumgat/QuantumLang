@@ -1,0 +1,64 @@
+pub struct ArtifactEvidence {
+  sourceMapHash: string,
+  machineIrHash: string,
+  objectWriterRecord: string,
+  objectHash: string,
+  runtimeArchiveHash: string,
+  stdlibArchiveHash: string,
+  packageArchiveHash: string,
+  linkPlanHash: string,
+  outputHash: string,
+  cacheActionIndex: string,
+}
+
+pub fn artifactEvidence(
+  sourceMapHash: string,
+  machineIrHash: string,
+  objectWriterRecord: string,
+  objectHash: string,
+  runtimeArchiveHash: string,
+  stdlibArchiveHash: string,
+  packageArchiveHash: string,
+  linkPlanHash: string,
+  outputHash: string,
+  cacheActionIndex: string,
+) -> ArtifactEvidence {
+  return ArtifactEvidence {
+    sourceMapHash: sourceMapHash,
+    machineIrHash: machineIrHash,
+    objectWriterRecord: objectWriterRecord,
+    objectHash: objectHash,
+    runtimeArchiveHash: runtimeArchiveHash,
+    stdlibArchiveHash: stdlibArchiveHash,
+    packageArchiveHash: packageArchiveHash,
+    linkPlanHash: linkPlanHash,
+    outputHash: outputHash,
+    cacheActionIndex: cacheActionIndex,
+  }
+}
+
+impl ArtifactEvidence {
+  pub fn sourceMap(self: ArtifactEvidence) -> string {
+    return self.sourceMapHash
+  }
+
+  pub fn machineIr(self: ArtifactEvidence) -> string {
+    return self.machineIrHash
+  }
+
+  pub fn objectRecord(self: ArtifactEvidence) -> string {
+    return self.objectWriterRecord
+  }
+
+  pub fn object(self: ArtifactEvidence) -> string {
+    return self.objectHash
+  }
+
+  pub fn output(self: ArtifactEvidence) -> string {
+    return self.outputHash
+  }
+
+  pub fn cacheAction(self: ArtifactEvidence) -> string {
+    return self.cacheActionIndex
+  }
+}

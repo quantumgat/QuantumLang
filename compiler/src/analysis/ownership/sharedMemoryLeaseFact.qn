@@ -1,0 +1,21 @@
+pub struct SharedMemoryLeaseFact {
+  mappingId: u64,
+  active: bool,
+  revoked: bool,
+  generationMatches: bool,
+}
+
+impl SharedMemoryLeaseFact {
+  pub fn init(mappingId: u64, active: bool, revoked: bool, generationMatches: bool) -> SharedMemoryLeaseFact {
+    return SharedMemoryLeaseFact {
+      mappingId: mappingId,
+      active: active,
+      revoked: revoked,
+      generationMatches: generationMatches,
+    }
+  }
+
+  pub fn accepted(self: SharedMemoryLeaseFact) -> bool {
+    return self.mappingId > 0 && self.active && self.revoked == false && self.generationMatches
+  }
+}

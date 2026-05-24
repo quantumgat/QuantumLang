@@ -1,0 +1,106 @@
+pub struct PrintOptions {
+  sep: string,
+  end: string,
+  flush: bool,
+  target: PrintTarget,
+  buffer: PrintBufferPolicy,
+  flushPolicy: PrintFlushPolicy,
+  cleanup: PrintCleanupPolicy,
+}
+
+impl PrintOptions {
+  pub fn printDefault() -> PrintOptions {
+    return PrintOptions {
+      sep: " ",
+      end: "",
+      flush: false,
+      target: PrintTarget.stdout(),
+      buffer: PrintBufferPolicy.direct(),
+      flushPolicy: PrintFlushPolicy.manual(),
+      cleanup: PrintCleanupPolicy.safeDefault(),
+    }
+  }
+
+  pub fn printlnDefault() -> PrintOptions {
+    return PrintOptions {
+      sep: " ",
+      end: "\n",
+      flush: true,
+      target: PrintTarget.stdout(),
+      buffer: PrintBufferPolicy.lineBuffered(4096),
+      flushPolicy: PrintFlushPolicy.onNewline(),
+      cleanup: PrintCleanupPolicy.safeDefault(),
+    }
+  }
+
+  pub fn stdout() -> PrintOptions {
+    return PrintOptions.printDefault()
+  }
+
+  pub fn stderr() -> PrintOptions {
+    return PrintOptions {
+      sep: " ",
+      end: "\n",
+      flush: true,
+      target: PrintTarget.stderr(),
+      buffer: PrintBufferPolicy.direct(),
+      flushPolicy: PrintFlushPolicy.always(),
+      cleanup: PrintCleanupPolicy.safeDefault(),
+    }
+  }
+
+  pub fn direct() -> PrintOptions {
+    return PrintOptions {
+      sep: " ",
+      end: "",
+      flush: true,
+      target: PrintTarget.stdout(),
+      buffer: PrintBufferPolicy.direct(),
+      flushPolicy: PrintFlushPolicy.always(),
+      cleanup: PrintCleanupPolicy.safeDefault(),
+    }
+  }
+
+  pub fn lineBuffered() -> PrintOptions {
+    return PrintOptions {
+      sep: " ",
+      end: "\n",
+      flush: true,
+      target: PrintTarget.stdout(),
+      buffer: PrintBufferPolicy.lineBuffered(4096),
+      flushPolicy: PrintFlushPolicy.onNewline(),
+      cleanup: PrintCleanupPolicy.safeDefault(),
+    }
+  }
+
+  pub fn blockBuffered(maxBytes: usize) -> PrintOptions {
+    return PrintOptions {
+      sep: " ",
+      end: "",
+      flush: false,
+      target: PrintTarget.stdout(),
+      buffer: PrintBufferPolicy.blockBuffered(maxBytes),
+      flushPolicy: PrintFlushPolicy.onFull(),
+      cleanup: PrintCleanupPolicy.safeDefault(),
+    }
+  }
+
+  pub fn flushManual() -> PrintOptions {
+    return PrintOptions {
+      sep: " ",
+      end: "",
+      flush: false,
+      target: PrintTarget.stdout(),
+      buffer: PrintBufferPolicy.blockBuffered(4096),
+      flushPolicy: PrintFlushPolicy.manual(),
+      cleanup: PrintCleanupPolicy.safeDefault(),
+    }
+  }
+
+  pub fn safe(self: PrintOptions) -> bool {
+    return self.target.safe()
+      && self.buffer.safe()
+      && self.flushPolicy.safe()
+      && self.cleanup.safe()
+  }
+}

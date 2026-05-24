@@ -1,0 +1,36 @@
+pub struct AllocatorLowering {
+  runtimeAllocationCall: bool,
+  runtimeFreeCall: bool,
+  domainCheckBeforeFree: bool,
+  pressureCheckBeforeAlloc: bool,
+  oomResultPath: bool,
+  accountingUpdate: bool,
+  noCoredumpDiagnostic: bool,
+  hiddenNativeSubstrate: bool,
+}
+
+impl AllocatorLowering {
+  pub fn init() -> AllocatorLowering {
+    return AllocatorLowering {
+      runtimeAllocationCall: true,
+      runtimeFreeCall: true,
+      domainCheckBeforeFree: true,
+      pressureCheckBeforeAlloc: true,
+      oomResultPath: true,
+      accountingUpdate: true,
+      noCoredumpDiagnostic: true,
+      hiddenNativeSubstrate: true,
+    }
+  }
+
+  pub fn accepted(self: AllocatorLowering) -> bool {
+    return self.runtimeAllocationCall
+      && self.runtimeFreeCall
+      && self.domainCheckBeforeFree
+      && self.pressureCheckBeforeAlloc
+      && self.oomResultPath
+      && self.accountingUpdate
+      && self.noCoredumpDiagnostic
+      && self.hiddenNativeSubstrate
+  }
+}

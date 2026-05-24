@@ -1,0 +1,52 @@
+pub struct RoleDelegationFact {
+  ownerTypeId: u64,
+  roleBound: bool,
+  requirementBound: bool,
+  implementationBound: bool,
+  delegationBound: bool,
+  delegatedMemberBound: bool,
+  forwardingLoweringBound: bool,
+  profileBound: bool,
+  conflictPolicyBound: bool,
+  compositionCostVisible: bool,
+}
+
+pub fn roleDelegationFact(
+  ownerTypeId: u64,
+  roleBound: bool,
+  requirementBound: bool,
+  implementationBound: bool,
+  delegationBound: bool,
+  delegatedMemberBound: bool,
+  forwardingLoweringBound: bool,
+  profileBound: bool,
+  conflictPolicyBound: bool,
+  compositionCostVisible: bool,
+) -> RoleDelegationFact {
+  return RoleDelegationFact {
+    ownerTypeId: ownerTypeId,
+    roleBound: roleBound,
+    requirementBound: requirementBound,
+    implementationBound: implementationBound,
+    delegationBound: delegationBound,
+    delegatedMemberBound: delegatedMemberBound,
+    forwardingLoweringBound: forwardingLoweringBound,
+    profileBound: profileBound,
+    conflictPolicyBound: conflictPolicyBound,
+    compositionCostVisible: compositionCostVisible,
+  }
+}
+
+impl RoleDelegationFact {
+  pub fn complete(self: RoleDelegationFact) -> bool {
+    return self.roleBound
+      && self.requirementBound
+      && self.implementationBound
+      && self.delegationBound
+      && self.delegatedMemberBound
+      && self.forwardingLoweringBound
+      && self.profileBound
+      && self.conflictPolicyBound
+      && self.compositionCostVisible
+  }
+}

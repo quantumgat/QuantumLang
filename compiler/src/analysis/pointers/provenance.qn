@@ -1,0 +1,11 @@
+pub struct ProvenanceFact {
+  symbol: u64,
+  valid: bool,
+  ownerTracked: bool,
+}
+
+impl ProvenanceFact {
+  pub fn proven(self: ProvenanceFact) -> bool {
+    return self.valid && self.ownerTracked
+  }
+}

@@ -1,0 +1,37 @@
+pub enum RuntimeReactorBackendKind {
+  LinuxEpoll
+  LinuxIoUring
+  MacosKqueue
+  WindowsIocp
+  Portable
+}
+
+pub struct RuntimeReactorBackend {
+  kind: RuntimeReactorBackendKind,
+  target: string,
+  supportsTimers: bool,
+  supportsCancellation: bool,
+  deterministicTestable: bool,
+}
+
+impl RuntimeReactorBackend {
+  pub fn init(
+    kind: RuntimeReactorBackendKind,
+    target: string,
+    supportsTimers: bool,
+    supportsCancellation: bool,
+    deterministicTestable: bool,
+  ) -> RuntimeReactorBackend {
+    return RuntimeReactorBackend {
+      kind: kind,
+      target: target,
+      supportsTimers: supportsTimers,
+      supportsCancellation: supportsCancellation,
+      deterministicTestable: deterministicTestable,
+    }
+  }
+
+  pub fn ready(self: RuntimeReactorBackend) -> bool {
+    return self.target != "" && self.supportsTimers && self.supportsCancellation
+  }
+}

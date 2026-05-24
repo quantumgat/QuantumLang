@@ -1,0 +1,17 @@
+pub struct BinaryCursorFact {
+  node: u64,
+  zeroCopy: bool,
+  noAllocation: bool,
+  pointerLoweringAccepted: bool,
+  boundsDiagnosticAccepted: bool,
+}
+
+impl BinaryCursorFact {
+  pub fn accepted(self: BinaryCursorFact) -> bool {
+    return self.node > 0
+      && self.zeroCopy
+      && self.noAllocation
+      && self.pointerLoweringAccepted
+      && self.boundsDiagnosticAccepted
+  }
+}

@@ -1,0 +1,42 @@
+pub struct PoolKernel {
+  freeListBacked: bool,
+  typedHandleBacked: bool,
+  generationTracked: bool,
+  insertReusesFreeSlot: bool,
+  insertAppendsWhenNoFreeSlot: bool,
+  getUsesIndexGenerationCheck: bool,
+  removeLinksFreeList: bool,
+  iteratorOccupiedSlotCursorStable: bool,
+  staleHandleRejected: bool,
+  zeroCopyHandleReturn: bool,
+}
+
+impl PoolKernel {
+  pub fn standard() -> PoolKernel {
+    return PoolKernel {
+      freeListBacked: true,
+      typedHandleBacked: true,
+      generationTracked: true,
+      insertReusesFreeSlot: true,
+      insertAppendsWhenNoFreeSlot: true,
+      getUsesIndexGenerationCheck: true,
+      removeLinksFreeList: true,
+      iteratorOccupiedSlotCursorStable: true,
+      staleHandleRejected: true,
+      zeroCopyHandleReturn: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: PoolKernel) -> bool {
+    return self.freeListBacked
+      && self.typedHandleBacked
+      && self.generationTracked
+      && self.insertReusesFreeSlot
+      && self.insertAppendsWhenNoFreeSlot
+      && self.getUsesIndexGenerationCheck
+      && self.removeLinksFreeList
+      && self.iteratorOccupiedSlotCursorStable
+      && self.staleHandleRejected
+      && self.zeroCopyHandleReturn
+  }
+}

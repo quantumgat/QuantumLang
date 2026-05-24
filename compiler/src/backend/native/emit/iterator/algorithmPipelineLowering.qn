@@ -1,0 +1,38 @@
+pub enum NativeAlgorithmPipelineSource {
+  VecDirectIndex
+  IteratorErasedCursor
+  StreamPollCursor
+  BinaryCursorDirectDecode
+}
+
+pub enum NativeAlgorithmPipelineKind {
+  DirectLoop
+  FusedTransform
+  EarlyExit
+  PreSizedCollect
+  AsyncPollLoop
+  ZeroCopyDecodeLoop
+}
+
+pub struct NativeAlgorithmPipelineLowering {
+  source: NativeAlgorithmPipelineSource,
+  kind: NativeAlgorithmPipelineKind,
+  callbackInlined: bool,
+  allocationFree: bool,
+  boundsHoisted: bool,
+  safeFailureReady: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeAlgorithmPipelineLowering {
+  pub fn complete(self: NativeAlgorithmPipelineLowering) -> bool {
+    return self.callbackInlined
+      && self.boundsHoisted
+      && self.safeFailureReady
+      && self.noGeneratedFallback
+  }
+
+  pub fn zeroAllocation(self: NativeAlgorithmPipelineLowering) -> bool {
+    return self.allocationFree && self.complete()
+  }
+}

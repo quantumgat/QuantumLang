@@ -1,0 +1,25 @@
+pub struct ImplDecl {
+  node: AstNode,
+  interfaceTypeId: u64,
+  targetTypeId: u64,
+  methodCount: usize,
+}
+
+pub fn implDecl(node: AstNode, interfaceTypeId: u64, targetTypeId: u64, methodCount: usize) -> ImplDecl {
+  return ImplDecl {
+    node: node,
+    interfaceTypeId: interfaceTypeId,
+    targetTypeId: targetTypeId,
+    methodCount: methodCount,
+  }
+}
+
+impl ImplDecl {
+  pub fn ast(self: ImplDecl) -> AstNode {
+    return self.node
+  }
+
+  pub fn hasInterfaceTarget(self: ImplDecl) -> bool {
+    return self.interfaceTypeId > 0 && self.targetTypeId > 0
+  }
+}

@@ -1,0 +1,91 @@
+pub struct HttpIntoResponseFinalExpressionProof {
+  jsonFinalExpression: bool,
+  stringFinalExpression: bool,
+  rawJsonFinalExpression: bool,
+  responsePassThrough: bool,
+  typedPolicyConversion: bool,
+  compilerConversionFact: bool,
+  loweringConversion: bool,
+  emissionConversion: bool,
+}
+
+pub struct HttpIntoResponseProduct {
+  id: string,
+}
+
+impl HttpIntoResponseProduct {
+  pub fn init(id: string) -> HttpIntoResponseProduct {
+    return HttpIntoResponseProduct {
+      id: id,
+    }
+  }
+}
+
+impl HttpIntoResponseFinalExpressionProof {
+  pub fn complete(self: HttpIntoResponseFinalExpressionProof) -> bool {
+    return self.jsonFinalExpression
+      && self.stringFinalExpression
+      && self.rawJsonFinalExpression
+      && self.responsePassThrough
+      && self.typedPolicyConversion
+      && self.compilerConversionFact
+      && self.loweringConversion
+      && self.emissionConversion
+  }
+}
+
+pub fn jsonTailResponse(id: ProductId) -> Result<HttpResponse, Error> {
+  let user: json = {
+    id: "2314234",
+    name: "omg",
+  }
+  user
+}
+
+pub fn stringTailResponse(id: ProductId) -> Result<HttpResponse, Error> {
+  f"omg"
+}
+
+pub fn rawJsonTailResponse(id: ProductId) -> Result<HttpResponse, Error> {
+  RawJson("{\"id\":\"2314234\",\"name\":\"omg\"}")
+}
+
+pub fn exactResponseTail(id: ProductId) -> Result<HttpResponse, Error> {
+  HttpResponse.empty(HttpStatus.noContent())
+}
+
+pub fn typedTailResponse(id: ProductId, policy: ResponsePolicy) -> Result<HttpResponse, Error> {
+  HttpIntoResponseProduct.init("2314234")
+}
+
+pub fn httpIntoResponseFinalExpressionProof() -> Result<HttpIntoResponseFinalExpressionProof, JsonError> {
+  let into = IntoHttpResponse.ok()
+  let jsonResponse = into.json({
+    id: "2314234",
+    name: "omg",
+  })?
+  let textResponse = into.text(f"omg")
+  let rawResponse = into.rawJson(RawJson("{\"id\":\"2314234\"}"))
+  let passThrough = into.response(HttpResponse.empty(HttpStatus.noContent()))
+  let typed = into.typed(HttpIntoResponseProduct.init("2314234"), ResponsePolicy.envelope())?
+  let conversion = FinalExpressionReturnConversion.into(
+    "IntoHttpResponse",
+    "HttpResponse",
+    "Error",
+    true
+  )
+  let fact = finalExpressionReturnFact(9101, 44, 17, false, FinalExpressionReturnDiagnostic.None, conversion)
+  let lowering = finalExpressionReturnLowering(9101, 9201, true, true, true, true)
+  let emission = finalExpressionReturnEmission(9101, true, false, false, true, true)
+
+  return Ok(HttpIntoResponseFinalExpressionProof {
+    jsonFinalExpression: jsonResponse.body().contentType() == "application/json",
+    stringFinalExpression: textResponse.body().contentType() == "text/plain; charset=utf-8",
+    rawJsonFinalExpression: rawResponse.body().contentType() == "application/json",
+    responsePassThrough: passThrough.status().code() == 204,
+    typedPolicyConversion: typed.status().code() == 200,
+    compilerConversionFact: fact.isValidReturn() && fact.usesImplicitConversion() && fact.wrapsResultOk(),
+    loweringConversion: lowering.ready() && lowering.convertsTailExpression() && lowering.returnsResultOk(),
+    emissionConversion: emission.isZeroOverhead() && emission.convertsTailExpression() && emission.returnsResultOk(),
+  })
+}

@@ -1,0 +1,22 @@
+pub struct TerminalHandle {
+  handleId: u64,
+  mode: TerminalMode,
+}
+
+pub fn terminalHandle(handleId: u64, mode: TerminalMode) -> TerminalHandle {
+  return TerminalHandle { handleId: handleId, mode: mode }
+}
+
+impl TerminalHandle {
+  pub fn raw(self: TerminalHandle) -> u64 {
+    return self.handleId
+  }
+
+  pub fn valid(self: TerminalHandle) -> bool {
+    return self.handleId > 0
+  }
+
+  pub fn rawMode(self: TerminalHandle) -> bool {
+    return self.mode == TerminalMode.TerminalRaw
+  }
+}

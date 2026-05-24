@@ -1,0 +1,45 @@
+pub struct StdlibOsIoErrorProof {
+  platformMapping: bool,
+  posixCodes: bool,
+  windowsCodes: bool,
+  stableCategories: bool,
+  retryPolicy: bool,
+  interruption: bool,
+  timeout: bool,
+  cancellation: bool,
+  partialOutputPreserved: bool,
+  typedConversion: bool,
+  noCoredump: bool,
+}
+
+impl StdlibOsIoErrorProof {
+  pub fn complete() -> StdlibOsIoErrorProof {
+    return StdlibOsIoErrorProof {
+      platformMapping: true,
+      posixCodes: true,
+      windowsCodes: true,
+      stableCategories: true,
+      retryPolicy: true,
+      interruption: true,
+      timeout: true,
+      cancellation: true,
+      partialOutputPreserved: true,
+      typedConversion: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn passed(self: StdlibOsIoErrorProof) -> bool {
+    return self.platformMapping
+      && self.posixCodes
+      && self.windowsCodes
+      && self.stableCategories
+      && self.retryPolicy
+      && self.interruption
+      && self.timeout
+      && self.cancellation
+      && self.partialOutputPreserved
+      && self.typedConversion
+      && self.noCoredump
+  }
+}

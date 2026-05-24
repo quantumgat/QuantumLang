@@ -1,0 +1,27 @@
+import http::serve::{App}
+
+pub class UsersController {
+  pub fn get() -> string {
+    return "{\"users\":[{\"id\":1,\"name\":\"salam\"}]}"
+  }
+
+  pub fn health() -> string {
+    return "ok"
+  }
+}
+
+fn main() -> i64 {
+  let app = App()
+  let appWithWorkers = app.workers(2)
+  let appWithController = appWithWorkers.controller<UsersController>()
+  let result = appWithController.run(18081)
+
+  match result {
+    Ok(_) => {
+      return 0
+    }
+    Err(_) => {
+      return 1
+    }
+  }
+}

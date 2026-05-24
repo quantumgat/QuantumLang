@@ -1,0 +1,9 @@
+[module]
+name = "oop"
+visibility = "internal"
+root = "mod.qn"
+owner = "runtime"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots", "qtlc_qtlang_oop_style_conformance", "qtlc_qtlang_runtime_stdlib_ffi_oop_qir_foundation", "qtlc_qtlang_oop_runtime_engine_parity_gap_closure", "qtlc_qtlang_oop_class_family_compiler_runtime_gap_closure", "qtlc_qtlang_oop_callable_state_class_family_gap_closure", "qtlc_qtlang_oop_core_class_kind_directory_architecture", "qtlc_qtlang_oop_callable_state_fact_migration", "qtlc_qtlang_oop_core_kind_policy_boundary_closeout", "qtlc_qtlang_oop_async_class_hir_mir_lowering", "qtlc_qtlang_oop_async_resource_service_lifecycle", "qtlc_qtlang_oop_async_actor_mailbox_lifecycle", "qtlc_qtlang_oop_async_interface_trait_dyn_safety", "qtlc_qtlang_oop_lifecycle_async_e2e_perf_proof"]

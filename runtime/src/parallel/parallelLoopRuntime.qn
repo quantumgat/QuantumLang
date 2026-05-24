@@ -1,0 +1,47 @@
+pub enum ParallelLoopStopKind {
+  Running
+  BreakAll
+  StopValue
+}
+
+pub struct ParallelLoopRuntime {
+  workers: usize,
+  batch: usize,
+  stopKind: ParallelLoopStopKind,
+  atomicStopFlag: bool,
+  firstResultWins: bool,
+  cleanupComplete: bool,
+}
+
+pub fn parallelLoopRuntime(
+  workers: usize,
+  batch: usize,
+  stopKind: ParallelLoopStopKind,
+  atomicStopFlag: bool,
+  firstResultWins: bool,
+  cleanupComplete: bool,
+) -> ParallelLoopRuntime {
+  return ParallelLoopRuntime {
+    workers: workers,
+    batch: batch,
+    stopKind: stopKind,
+    atomicStopFlag: atomicStopFlag,
+    firstResultWins: firstResultWins,
+    cleanupComplete: cleanupComplete,
+  }
+}
+
+impl ParallelLoopRuntime {
+  pub fn hotPathReady(self: ParallelLoopRuntime) -> bool {
+    return self.workers > 0
+      && self.batch > 0
+      && self.atomicStopFlag
+      && self.firstResultWins
+      && self.cleanupComplete
+  }
+
+  pub fn stopped(self: ParallelLoopRuntime) -> bool {
+    return self.stopKind == ParallelLoopStopKind.BreakAll
+      || self.stopKind == ParallelLoopStopKind.StopValue
+  }
+}

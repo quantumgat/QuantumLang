@@ -1,0 +1,9 @@
+[module]
+name = "json"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "json"
+
+[dependencies]
+modules = ["std::serde", "std::bytes", "std::collections"]

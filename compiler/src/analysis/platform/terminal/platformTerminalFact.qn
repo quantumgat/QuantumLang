@@ -1,0 +1,16 @@
+pub struct PlatformTerminalFact {
+  target: string,
+  ttyAvailable: bool,
+  rawModeAvailable: bool,
+  colorDetected: bool,
+  diagnosticRequired: bool,
+}
+
+impl PlatformTerminalFact {
+  pub fn accepted(self: PlatformTerminalFact) -> bool {
+    return self.target != ""
+      && (self.ttyAvailable || self.diagnosticRequired)
+      && (self.rawModeAvailable || self.diagnosticRequired)
+      && self.colorDetected
+  }
+}

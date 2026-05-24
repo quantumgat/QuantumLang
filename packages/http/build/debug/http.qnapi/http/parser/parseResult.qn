@@ -1,0 +1,7 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpParseResult {
+  request: HttpRequest
+  consumedBytes: usize
+  keepAlive: bool
+  pipelinedBytes: usize
+}

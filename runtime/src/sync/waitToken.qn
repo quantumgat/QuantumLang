@@ -1,0 +1,15 @@
+pub struct WaitToken {
+  handle: SyncHandle,
+  deadlineMillis: u64,
+  cancellable: bool,
+}
+
+pub fn waitToken(handle: SyncHandle, deadlineMillis: u64, cancellable: bool) -> WaitToken {
+  return WaitToken { handle: handle, deadlineMillis: deadlineMillis, cancellable: cancellable }
+}
+
+impl WaitToken {
+  pub fn canCancel(self: WaitToken) -> bool {
+    return self.cancellable
+  }
+}

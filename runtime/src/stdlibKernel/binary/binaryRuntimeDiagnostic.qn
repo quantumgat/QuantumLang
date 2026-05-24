@@ -1,0 +1,23 @@
+pub enum BinaryRuntimeDiagnosticKind {
+  Eof,
+  WriterOverflow,
+  InvalidAlignment,
+  WideIntMismatch,
+}
+
+pub struct BinaryRuntimeDiagnostic {
+  kind: BinaryRuntimeDiagnosticKind,
+  code: string,
+  offset: usize,
+  requiredBytes: usize,
+  availableBytes: usize,
+  coredump: bool,
+}
+
+impl BinaryRuntimeDiagnostic {
+  pub fn safeReport(self: BinaryRuntimeDiagnostic) -> bool {
+    return self.code != ""
+      && self.requiredBytes > 0
+      && self.coredump == false
+  }
+}

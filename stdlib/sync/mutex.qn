@@ -1,0 +1,31 @@
+pub struct Mutex<T> {
+  state: usize,
+}
+
+pub struct MutexGuard<T> {
+  locked: bool,
+}
+
+impl<T> Mutex<T> {
+  pub fn unlocked() -> Mutex<T> {
+    Mutex<T> {
+      state: 0,
+    }
+  }
+
+  pub fn lock(self: Mutex<T>) -> Result<MutexGuard<T>, SyncError>
+
+  pub fn tryLock(self: Mutex<T>) -> Result<MutexGuard<T>, SyncError>
+
+  pub fn lockUntil(self: Mutex<T>, deadline: Deadline) -> Result<MutexGuard<T>, SyncError>
+
+  pub fn locked(self: Mutex<T>) -> bool {
+    self.state != 0
+  }
+}
+
+impl<T> MutexGuard<T> {
+  pub fn active(self: MutexGuard<T>) -> bool {
+    self.locked
+  }
+}

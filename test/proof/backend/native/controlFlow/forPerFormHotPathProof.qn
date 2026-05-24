@@ -1,0 +1,66 @@
+pub enum ForHotPathOwner {
+  DirectNative
+  RuntimeOwned
+  QirOwned
+  ComptimeExpansion
+  UnsafeNative
+}
+
+pub struct ForPerFormHotPathRow {
+  formId: usize,
+  formName: string,
+  owner: ForHotPathOwner,
+  directLowering: bool,
+  positiveExecutableEvidence: bool,
+  negativeDiagnosticEvidence: bool,
+  hotPathProofReady: bool,
+  noGeneratedFallback: bool,
+  ownershipReason: string,
+}
+
+impl ForPerFormHotPathRow {
+  pub fn complete(self: ForPerFormHotPathRow) -> bool {
+    return self.formId > 0
+      && self.formId <= 100
+      && self.formName != ""
+      && self.positiveExecutableEvidence
+      && self.negativeDiagnosticEvidence
+      && self.noGeneratedFallback
+      && ((self.directLowering && self.hotPathProofReady) || self.ownershipReason != "")
+  }
+}
+
+pub struct ForPerFormHotPathProof {
+  formCount: usize,
+  directNativeRows: usize,
+  runtimeOwnedRows: usize,
+  qirOwnedRows: usize,
+  comptimeRows: usize,
+  unsafeNativeRows: usize,
+  positiveExecutableRows: usize,
+  negativeDiagnosticRows: usize,
+  directLoweringRows: usize,
+  ownedHandoffRows: usize,
+  realImplementationBackedRows: usize,
+  executableFixtureRows: usize,
+  allAstFormsMapped: bool,
+  allFixtureFormsMapped: bool,
+  perFormDocsMapped: bool,
+  noGeneratedFallback: bool,
+}
+
+impl ForPerFormHotPathProof {
+  pub fn complete(self: ForPerFormHotPathProof) -> bool {
+    return self.formCount == 100
+      && (self.directNativeRows + self.runtimeOwnedRows + self.qirOwnedRows + self.comptimeRows + self.unsafeNativeRows) == 100
+      && self.positiveExecutableRows == 100
+      && self.negativeDiagnosticRows == 100
+      && self.directLoweringRows + self.ownedHandoffRows == 100
+      && self.realImplementationBackedRows == 100
+      && self.executableFixtureRows == 100
+      && self.allAstFormsMapped
+      && self.allFixtureFormsMapped
+      && self.perFormDocsMapped
+      && self.noGeneratedFallback
+  }
+}

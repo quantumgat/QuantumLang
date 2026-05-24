@@ -1,0 +1,39 @@
+pub struct QtlcBuildPlan {
+  compilerPackage: string,
+  runtimePackage: string,
+  publicBinary: string,
+  backend: string,
+  onePublicBinary: bool,
+  hiddenRuntimeArchive: bool,
+  nativeObjectArtifacts: bool,
+  nativeCacheArtifacts: bool,
+  nativeLinkArtifacts: bool,
+  generatedSourceFallback: bool,
+}
+
+pub fn qtlcBuildPlan() -> QtlcBuildPlan {
+  return QtlcBuildPlan {
+    compilerPackage: "qtlc",
+    runtimePackage: "runtime",
+    publicBinary: "qtlc",
+    backend: "native",
+    onePublicBinary: true,
+    hiddenRuntimeArchive: true,
+    nativeObjectArtifacts: true,
+    nativeCacheArtifacts: true,
+    nativeLinkArtifacts: true,
+    generatedSourceFallback: false,
+  }
+}
+
+impl QtlcBuildPlan {
+  pub fn isStrictNative(self) -> bool {
+    return self.backend == "native" &&
+      self.onePublicBinary &&
+      self.hiddenRuntimeArchive &&
+      self.nativeObjectArtifacts &&
+      self.nativeCacheArtifacts &&
+      self.nativeLinkArtifacts &&
+      self.generatedSourceFallback == false
+  }
+}

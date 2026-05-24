@@ -1,0 +1,19 @@
+pub struct FfiCallbackLowering {
+  emitsUnregister: bool,
+  preservesSignature: bool,
+  preservesNoUnwind: bool,
+}
+
+impl FfiCallbackLowering {
+  pub fn init(emitsUnregister: bool, preservesSignature: bool, preservesNoUnwind: bool) -> FfiCallbackLowering {
+    return FfiCallbackLowering {
+      emitsUnregister: emitsUnregister,
+      preservesSignature: preservesSignature,
+      preservesNoUnwind: preservesNoUnwind,
+    }
+  }
+
+  pub fn accepted(self: FfiCallbackLowering) -> bool {
+    return self.emitsUnregister && self.preservesSignature && self.preservesNoUnwind
+  }
+}

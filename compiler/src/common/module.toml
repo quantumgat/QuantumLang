@@ -1,0 +1,18 @@
+[module]
+name = "common"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "shared-source-span-diagnostics-target-config"
+
+[submodules]
+source = "source/mod.qn"
+diagnostics = "diagnostics/mod.qn"
+target = "target/mod.qn"
+
+[dependencies]
+allowed = []
+forbidden = ["frontend", "analysis", "backend", "runtime internals"]
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

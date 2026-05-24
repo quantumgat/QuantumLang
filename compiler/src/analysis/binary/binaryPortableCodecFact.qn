@@ -1,0 +1,25 @@
+pub struct BinaryPortableCodecFact {
+  typeName: string,
+  sourceFieldOrder: bool,
+  noPaddingBytes: bool,
+  nestedStructsRecursive: bool,
+  endianExplicitOrDefaulted: bool,
+  lengthPrefixesStable: bool,
+  noRuntimeReflection: bool,
+  unsupportedResourcesRejected: bool,
+  rawNativeRequiresUnsafe: bool,
+}
+
+impl BinaryPortableCodecFact {
+  pub fn accepted(self: BinaryPortableCodecFact) -> bool {
+    return self.typeName != ""
+      && self.sourceFieldOrder
+      && self.noPaddingBytes
+      && self.nestedStructsRecursive
+      && self.endianExplicitOrDefaulted
+      && self.lengthPrefixesStable
+      && self.noRuntimeReflection
+      && self.unsupportedResourcesRejected
+      && self.rawNativeRequiresUnsafe
+  }
+}

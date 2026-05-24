@@ -1,0 +1,21 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ParallelLoopProductionRuntime {
+  threadsClamped: bool
+  batchClamped: bool
+  workBounded: bool
+  stopFirstResult: bool
+  breakStopsWorkers: bool
+  continueWorkerLocal: bool
+  noCoredump: bool
+}
+pub extern "qnpkg" {
+  pub fn parallelLoopProductionRuntime(
+  threadsClamped: bool,
+  batchClamped: bool,
+  workBounded: bool,
+  stopFirstResult: bool,
+  breakStopsWorkers: bool,
+  continueWorkerLocal: bool,
+  noCoredump: bool,
+) -> ParallelLoopProductionRuntime
+}

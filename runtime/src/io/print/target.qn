@@ -1,0 +1,51 @@
+pub enum RuntimePrintTargetKind {
+  Stdout,
+  Stderr,
+  Terminal,
+  File,
+  Test,
+}
+
+pub struct RuntimePrintTarget {
+  kind: RuntimePrintTargetKind,
+  handleId: u64,
+  terminalAware: bool,
+  preservesOrder: bool,
+  returnsResult: bool,
+}
+
+impl RuntimePrintTarget {
+  pub fn stdout() -> RuntimePrintTarget {
+    return RuntimePrintTarget {
+      kind: RuntimePrintTargetKind.Stdout,
+      handleId: 1,
+      terminalAware: true,
+      preservesOrder: true,
+      returnsResult: true,
+    }
+  }
+
+  pub fn stderr() -> RuntimePrintTarget {
+    return RuntimePrintTarget {
+      kind: RuntimePrintTargetKind.Stderr,
+      handleId: 2,
+      terminalAware: true,
+      preservesOrder: true,
+      returnsResult: true,
+    }
+  }
+
+  pub fn file(handleId: u64) -> RuntimePrintTarget {
+    return RuntimePrintTarget {
+      kind: RuntimePrintTargetKind.File,
+      handleId: handleId,
+      terminalAware: false,
+      preservesOrder: true,
+      returnsResult: true,
+    }
+  }
+
+  pub fn safe(self: RuntimePrintTarget) -> bool {
+    return self.preservesOrder && self.returnsResult
+  }
+}

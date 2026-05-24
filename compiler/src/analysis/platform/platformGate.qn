@@ -1,0 +1,11 @@
+pub struct PlatformGate {
+  target: string,
+  enabled: bool,
+  diagnosticCode: u32,
+}
+
+impl PlatformGate {
+  pub fn allowsTarget(self: PlatformGate) -> bool {
+    return self.enabled
+  }
+}

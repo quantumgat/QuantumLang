@@ -1,0 +1,19 @@
+pub struct PrefetchLowering {
+  emitsPrefetch: bool,
+  preservesLocality: bool,
+  hasFallback: bool,
+}
+
+impl PrefetchLowering {
+  pub fn init(emitsPrefetch: bool, preservesLocality: bool, hasFallback: bool) -> PrefetchLowering {
+    return PrefetchLowering {
+      emitsPrefetch: emitsPrefetch,
+      preservesLocality: preservesLocality,
+      hasFallback: hasFallback,
+    }
+  }
+
+  pub fn accepted(self: PrefetchLowering) -> bool {
+    return self.emitsPrefetch && self.preservesLocality || self.hasFallback
+  }
+}

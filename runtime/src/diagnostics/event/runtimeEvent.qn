@@ -1,0 +1,23 @@
+pub enum RuntimeDiagnosticSeverity {
+  RuntimeInfo
+  RuntimeWarning
+  RuntimeError
+  RuntimeFatal
+}
+
+pub struct RuntimeDiagnosticEvent {
+  subsystem: string,
+  code: u32,
+  severity: RuntimeDiagnosticSeverity,
+  redacted: bool,
+}
+
+pub fn runtimeDiagnosticEvent(subsystem: string, code: u32, severity: RuntimeDiagnosticSeverity) -> RuntimeDiagnosticEvent {
+  return RuntimeDiagnosticEvent { subsystem: subsystem, code: code, severity: severity, redacted: true }
+}
+
+impl RuntimeDiagnosticEvent {
+  pub fn isSecretSafe(self: RuntimeDiagnosticEvent) -> bool {
+    return self.redacted
+  }
+}

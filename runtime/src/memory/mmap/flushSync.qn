@@ -1,0 +1,21 @@
+pub struct RuntimeFlushSync {
+  mappingId: u64,
+  flushed: bool,
+  synced: bool,
+  partialErrorPreserved: bool,
+}
+
+impl RuntimeFlushSync {
+  pub fn init(mappingId: u64, flushed: bool, synced: bool, partialErrorPreserved: bool) -> RuntimeFlushSync {
+    return RuntimeFlushSync {
+      mappingId: mappingId,
+      flushed: flushed,
+      synced: synced,
+      partialErrorPreserved: partialErrorPreserved,
+    }
+  }
+
+  pub fn accepted(self: RuntimeFlushSync) -> bool {
+    return self.mappingId > 0 && self.flushed && self.synced && self.partialErrorPreserved
+  }
+}

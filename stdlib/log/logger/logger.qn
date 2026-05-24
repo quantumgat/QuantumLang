@@ -1,0 +1,58 @@
+pub struct Logger {
+  name: string,
+  minLevel: LogLevel,
+  sink: LogSink,
+  staticFiltering: bool,
+  disabledLogsErasable: bool,
+  sinkNeutralRecords: bool,
+}
+
+pub fn log(level: LogLevel, message: string) -> Result<Unit, Error>
+pub fn trace(message: string) -> Result<Unit, Error>
+pub fn debug(message: string) -> Result<Unit, Error>
+pub fn info(message: string) -> Result<Unit, Error>
+pub fn warn(message: string) -> Result<Unit, Error>
+pub fn error(message: string) -> Result<Unit, Error>
+pub fn fatal(message: string) -> Result<Unit, Error>
+
+impl Logger {
+  /**
+    Creates a named logger.
+
+    example:
+      let logger = Logger.named("db")
+
+    effects: pure
+    complexity: O(1)
+    allocation: stores caller-provided name
+    stability: public since 0.1
+  */
+  pub fn named(name: string) -> Logger {
+    return Logger {
+      name: name,
+      minLevel: LogLevel.Info,
+      sink: LogSink.stderr(),
+      staticFiltering: true,
+      disabledLogsErasable: true,
+      sinkNeutralRecords: true,
+    }
+  }
+
+  pub fn enabled(self: Logger, level: LogLevel) -> bool {
+    return level.enabled(self.minLevel)
+  }
+
+  pub fn record(self: Logger, level: LogLevel, message: string) -> Option<LogRecord> {
+    if self.enabled(level) == false {
+      return None
+    }
+    return Some(LogRecord.core(level, self.name, message))
+  }
+
+  pub fn coreSafe(self: Logger) -> bool {
+    return self.name != ""
+      && self.staticFiltering
+      && self.disabledLogsErasable
+      && self.sinkNeutralRecords
+  }
+}

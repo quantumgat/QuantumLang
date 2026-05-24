@@ -1,0 +1,32 @@
+pub enum RuntimeCapabilityKind {
+  FilesystemCapability
+  NetworkCapability
+  ProcessCapability
+  TerminalCapability
+  ThreadCapability
+  MmioCapability
+  SimdCapability
+  AtomicCapability
+  PointerAuthenticationCapability
+  MemoryTaggingCapability
+  DirectIoCapability
+  ForeignMemoryCapability
+  SignalCapability
+  RawHandleCapability
+  SystemInfoCapability
+}
+
+pub struct RuntimeCapability {
+  kind: RuntimeCapabilityKind,
+  allowed: bool,
+}
+
+pub fn runtimeCapability(kind: RuntimeCapabilityKind, allowed: bool) -> RuntimeCapability {
+  return RuntimeCapability { kind: kind, allowed: allowed }
+}
+
+impl RuntimeCapability {
+  pub fn isAllowed(self: RuntimeCapability) -> bool {
+    return self.allowed
+  }
+}

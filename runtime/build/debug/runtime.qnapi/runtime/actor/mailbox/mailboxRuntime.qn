@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeMailboxPolicy {
+  Bounded
+  DropNewest
+  DropOldest
+  Fail
+}
+pub struct RuntimeMailbox {
+  actorId: ActorId
+  capacity: usize
+  depth: usize
+  policy: RuntimeMailboxPolicy
+  backpressureReady: bool
+}

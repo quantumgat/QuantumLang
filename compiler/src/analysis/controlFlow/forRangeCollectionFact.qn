@@ -1,0 +1,35 @@
+pub enum ForRangeCollectionIterableKind {
+  IntegerRange
+  FixedScalarArray
+  ArrayLiteral
+  BytesView
+  VecCursor
+  SliceCursor
+  MapCursor
+  SetCursor
+}
+
+pub struct ForRangeCollectionFact {
+  iterableKind: ForRangeCollectionIterableKind,
+  elementType: string,
+  patternTypeChecked: bool,
+  iterableTypeChecked: bool,
+  borrowSafe: bool,
+  mutationSafe: bool,
+  boundsProvable: bool,
+  invalidationChecked: bool,
+  diagnosticsReady: bool,
+}
+
+impl ForRangeCollectionFact {
+  pub fn complete(self: ForRangeCollectionFact) -> bool {
+    return self.elementType != ""
+      && self.patternTypeChecked
+      && self.iterableTypeChecked
+      && self.borrowSafe
+      && self.mutationSafe
+      && self.boundsProvable
+      && self.invalidationChecked
+      && self.diagnosticsReady
+  }
+}

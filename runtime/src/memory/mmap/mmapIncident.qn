@@ -1,0 +1,20 @@
+pub enum MmapIncidentKind {
+  InvalidMapping,
+  LeaseAfterRevocation,
+  RelativePointerOutOfBounds,
+  FlushSyncFailed,
+}
+
+pub struct MmapIncident {
+  kind: MmapIncidentKind,
+  recoverable: bool,
+}
+
+impl MmapIncident {
+  pub fn init(kind: MmapIncidentKind) -> MmapIncident {
+    return MmapIncident {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+}

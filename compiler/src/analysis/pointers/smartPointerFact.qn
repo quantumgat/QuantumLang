@@ -1,0 +1,32 @@
+pub enum SmartPointerKind {
+  Box,
+  Unique,
+  Shared,
+  Weak,
+  Pinned,
+  Capability,
+}
+
+pub struct SmartPointerFact {
+  kind: SmartPointerKind,
+  allocationTracked: bool,
+  generationChecked: bool,
+  dropTracked: bool,
+  directBorrowLowerable: bool,
+}
+
+impl SmartPointerFact {
+  pub fn init(kind: SmartPointerKind, allocationTracked: bool, generationChecked: bool, dropTracked: bool, directBorrowLowerable: bool) -> SmartPointerFact {
+    return SmartPointerFact {
+      kind: kind,
+      allocationTracked: allocationTracked,
+      generationChecked: generationChecked,
+      dropTracked: dropTracked,
+      directBorrowLowerable: directBorrowLowerable,
+    }
+  }
+
+  pub fn accepted(self: SmartPointerFact) -> bool {
+    return self.allocationTracked && self.generationChecked && self.dropTracked && self.directBorrowLowerable
+  }
+}

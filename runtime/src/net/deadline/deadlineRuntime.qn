@@ -1,0 +1,10 @@
+pub struct RuntimeNetDeadline {
+  unixNanos: u64,
+  cancellationLinked: bool,
+}
+
+impl RuntimeNetDeadline {
+  pub fn active(self: RuntimeNetDeadline) -> bool {
+    return self.unixNanos > 0 && self.cancellationLinked
+  }
+}

@@ -1,0 +1,28 @@
+pub enum ImportKind {
+  DirectImport
+  ReexportImport
+  GlobImport
+  AliasImport
+}
+
+pub struct ImportFact {
+  sourceModule: u64,
+  targetModule: u64,
+  kind: ImportKind,
+  publicVisible: bool,
+}
+
+pub fn importFact(sourceModule: u64, targetModule: u64, kind: ImportKind, publicVisible: bool) -> ImportFact {
+  return ImportFact {
+    sourceModule: sourceModule,
+    targetModule: targetModule,
+    kind: kind,
+    publicVisible: publicVisible,
+  }
+}
+
+impl ImportFact {
+  pub fn isReexport(self: ImportFact) -> bool {
+    return self.publicVisible || self.kind == ImportKind.ReexportImport
+  }
+}

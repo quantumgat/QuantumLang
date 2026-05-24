@@ -1,0 +1,23 @@
+pub struct FalseSharingFact {
+  fieldA: string,
+  fieldB: string,
+  sameCacheLine: bool,
+  concurrentlyWritten: bool,
+  padded: bool,
+}
+
+impl FalseSharingFact {
+  pub fn init(fieldA: string, fieldB: string, sameCacheLine: bool, concurrentlyWritten: bool, padded: bool) -> FalseSharingFact {
+    return FalseSharingFact {
+      fieldA: fieldA,
+      fieldB: fieldB,
+      sameCacheLine: sameCacheLine,
+      concurrentlyWritten: concurrentlyWritten,
+      padded: padded,
+    }
+  }
+
+  pub fn mustReject(self: FalseSharingFact) -> bool {
+    return self.sameCacheLine && self.concurrentlyWritten && self.padded == false
+  }
+}

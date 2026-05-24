@@ -1,0 +1,288 @@
+pub enum ApiMemberKind {
+  Api,
+  Controller,
+}
+
+pub struct ApiMemberFact {
+  ownerApiName: string,
+  memberName: string,
+  kind: ApiMemberKind,
+}
+
+impl ApiMemberFact {
+  pub fn init(ownerApiName: string, memberName: string, kind: ApiMemberKind) -> ApiMemberFact {
+    return ApiMemberFact {
+      ownerApiName: ownerApiName,
+      memberName: memberName,
+      kind: kind,
+    }
+  }
+
+  pub fn api(ownerApiName: string, memberName: string) -> ApiMemberFact {
+    return ApiMemberFact.init(ownerApiName, memberName, ApiMemberKind.Api)
+  }
+
+  pub fn controller(ownerApiName: string, memberName: string) -> ApiMemberFact {
+    return ApiMemberFact.init(ownerApiName, memberName, ApiMemberKind.Controller)
+  }
+
+  pub fn ownerApiName(self: ApiMemberFact) -> string {
+    return self.ownerApiName
+  }
+
+  pub fn memberName(self: ApiMemberFact) -> string {
+    return self.memberName
+  }
+
+  pub fn kind(self: ApiMemberFact) -> ApiMemberKind {
+    return self.kind
+  }
+}
+
+pub struct ApiFact {
+  typeName: string,
+  ownerId: u64,
+  root: bool,
+  contextType: string,
+  capabilityPolicy: ControllerCapabilityPolicy,
+  members: Vec<ApiMemberFact>,
+}
+
+impl ApiFact {
+  pub fn init(typeName: string, ownerId: u64, root: bool) -> ApiFact {
+    return ApiFact {
+      typeName: typeName,
+      ownerId: ownerId,
+      root: root,
+      contextType: "",
+      capabilityPolicy: ControllerCapabilityPolicy.empty(typeName),
+      members: [],
+    }
+  }
+
+  pub fn of<T>() -> ApiFact {
+    return ApiFact.init(typeName<T>(), oopOwnerId<T>(), false)
+  }
+
+  pub fn root<T>() -> ApiFact {
+    return ApiFact.init(typeName<T>(), oopOwnerId<T>(), true)
+  }
+
+  pub fn context<Ctx>(self: ApiFact) -> ApiFact {
+    return self.withContext(typeName<Ctx>())
+  }
+
+  pub fn withContext(self: ApiFact, contextType: string) -> ApiFact {
+    return ApiFact {
+      typeName: self.typeName,
+      ownerId: self.ownerId,
+      root: self.root,
+      contextType: contextType,
+      capabilityPolicy: self.capabilityPolicy,
+      members: self.members,
+    }
+  }
+
+  pub fn with<T>(self: ApiFact) -> ApiFact {
+    return ApiFact {
+      typeName: self.typeName,
+      ownerId: self.ownerId,
+      root: self.root,
+      contextType: self.contextType,
+      capabilityPolicy: self.capabilityPolicy.withCapability(typeName<T>()),
+      members: self.members,
+    }
+  }
+
+  pub fn controller<T>(self: ApiFact) -> ApiFact {
+    return self.controllerNamed(typeName<T>())
+  }
+
+  pub fn controllerNamed(self: ApiFact, controllerName: string) -> ApiFact {
+    return ApiFact {
+      typeName: self.typeName,
+      ownerId: self.ownerId,
+      root: self.root,
+      contextType: self.contextType,
+      capabilityPolicy: self.capabilityPolicy,
+      members: self.members.push(ApiMemberFact.controller(self.typeName, controllerName)),
+    }
+  }
+
+  pub fn api<T>(self: ApiFact) -> ApiFact {
+    return self.apiNamed(typeName<T>())
+  }
+
+  pub fn apiNamed(self: ApiFact, apiName: string) -> ApiFact {
+    return ApiFact {
+      typeName: self.typeName,
+      ownerId: self.ownerId,
+      root: self.root,
+      contextType: self.contextType,
+      capabilityPolicy: self.capabilityPolicy,
+      members: self.members.push(ApiMemberFact.api(self.typeName, apiName)),
+    }
+  }
+
+  pub fn typeName(self: ApiFact) -> string {
+    return self.typeName
+  }
+
+  pub fn ownerId(self: ApiFact) -> u64 {
+    return self.ownerId
+  }
+
+  pub fn isRoot(self: ApiFact) -> bool {
+    return self.root
+  }
+
+  pub fn contextType(self: ApiFact) -> string {
+    return self.contextType
+  }
+
+  pub fn capabilityPolicy(self: ApiFact) -> ControllerCapabilityPolicy {
+    return self.capabilityPolicy
+  }
+
+  pub fn memberCount(self: ApiFact) -> usize {
+    return self.members.len()
+  }
+
+  pub fn controllerCount(self: ApiFact) -> usize {
+    let mut count: usize = 0
+    let mut index: usize = 0
+    while index < self.members.len() {
+      if self.members[index].kind() == ApiMemberKind.Controller {
+        count = count + 1
+      }
+      index = index + 1
+    }
+    return count
+  }
+
+  pub fn nestedApiCount(self: ApiFact) -> usize {
+    let mut count: usize = 0
+    let mut index: usize = 0
+    while index < self.members.len() {
+      if self.members[index].kind() == ApiMemberKind.Api {
+        count = count + 1
+      }
+      index = index + 1
+    }
+    return count
+  }
+
+  pub fn complete(self: ApiFact) -> bool {
+    return self.typeName != "" && self.ownerId > 0
+  }
+}
+
+pub struct ApiGraph {
+  apis: Vec<ApiFact>,
+  rootCount: usize,
+  controllerMemberCount: usize,
+  nestedApiMemberCount: usize,
+}
+
+impl ApiGraph {
+  pub fn empty() -> ApiGraph {
+    return ApiGraph {
+      apis: [],
+      rootCount: 0,
+      controllerMemberCount: 0,
+      nestedApiMemberCount: 0,
+    }
+  }
+
+  pub fn add(self: ApiGraph, api: ApiFact) -> ApiGraph {
+    return ApiGraph {
+      apis: self.apis.push(api),
+      rootCount: self.rootCount + ApiGraph.count(api.isRoot()),
+      controllerMemberCount: self.controllerMemberCount + api.controllerCount(),
+      nestedApiMemberCount: self.nestedApiMemberCount + api.nestedApiCount(),
+    }
+  }
+
+  pub fn addApi<T>(self: ApiGraph) -> ApiGraph {
+    return self.add(ApiFact.of<T>())
+  }
+
+  pub fn count(value: bool) -> usize {
+    if value {
+      return 1
+    }
+    return 0
+  }
+
+  pub fn apiCount(self: ApiGraph) -> usize {
+    return self.apis.len()
+  }
+
+  pub fn rootApiCount(self: ApiGraph) -> usize {
+    return self.rootCount
+  }
+
+  pub fn controllerCount(self: ApiGraph) -> usize {
+    return self.controllerMemberCount
+  }
+
+  pub fn nestedApiCount(self: ApiGraph) -> usize {
+    return self.nestedApiMemberCount
+  }
+
+  pub fn hasApis(self: ApiGraph) -> bool {
+    return self.apiCount() > 0
+  }
+
+  pub fn complete(self: ApiGraph) -> bool {
+    let mut index: usize = 0
+    while index < self.apis.len() {
+      if !self.apis[index].complete() {
+        return false
+      }
+      index = index + 1
+    }
+    return true
+  }
+}
+
+pub struct ApiCapabilityResolution {
+  rootCapabilityCount: usize,
+  groupCapabilityCount: usize,
+  controllerCapabilityCount: usize,
+  routeCapabilityCount: usize,
+  effectiveCount: usize,
+}
+
+impl ApiCapabilityResolution {
+  pub fn from(
+    rootApi: ApiFact,
+    groupApi: ApiFact,
+    controllerPolicy: ControllerCapabilityPolicy,
+    endpointPolicy: EndpointCapabilityPolicy,
+  ) -> ApiCapabilityResolution {
+    let rootCount = rootApi.capabilityPolicy().activeAfter(endpointPolicy)
+    let groupCount = groupApi.capabilityPolicy().activeAfter(endpointPolicy)
+    let controllerCount = controllerPolicy.activeAfter(endpointPolicy)
+    let routeCount = endpointPolicy.routeCapabilityCount()
+    return ApiCapabilityResolution {
+      rootCapabilityCount: rootCount,
+      groupCapabilityCount: groupCount,
+      controllerCapabilityCount: controllerCount,
+      routeCapabilityCount: routeCount,
+      effectiveCount: rootCount + groupCount + controllerCount + routeCount,
+    }
+  }
+
+  pub fn effectiveCount(self: ApiCapabilityResolution) -> usize {
+    return self.effectiveCount
+  }
+
+  pub fn complete(self: ApiCapabilityResolution) -> bool {
+    return self.effectiveCount
+      == self.rootCapabilityCount
+      + self.groupCapabilityCount
+      + self.controllerCapabilityCount
+      + self.routeCapabilityCount
+  }
+}

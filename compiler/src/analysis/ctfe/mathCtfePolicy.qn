@@ -1,0 +1,30 @@
+pub struct MathCtfePolicy {
+  deterministic: bool,
+  sameDiagnosticsAsRuntime: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+  noSilentFloatFallback: bool,
+  resourceLimitChecked: bool,
+}
+
+impl MathCtfePolicy {
+  pub fn strict() -> MathCtfePolicy {
+    return MathCtfePolicy {
+      deterministic: true,
+      sameDiagnosticsAsRuntime: true,
+      typedFailure: true,
+      noCoredump: true,
+      noSilentFloatFallback: true,
+      resourceLimitChecked: true,
+    }
+  }
+
+  pub fn accepted(self: MathCtfePolicy) -> bool {
+    return self.deterministic
+      && self.sameDiagnosticsAsRuntime
+      && self.typedFailure
+      && self.noCoredump
+      && self.noSilentFloatFallback
+      && self.resourceLimitChecked
+  }
+}

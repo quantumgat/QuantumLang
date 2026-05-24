@@ -1,0 +1,12 @@
+pub struct PosixPlatformContract {
+  target: string,
+  fdHandles: bool,
+  pthreadsAvailable: bool,
+  signalsAvailable: bool,
+}
+
+impl PosixPlatformContract {
+  pub fn accepted(self: PosixPlatformContract) -> bool {
+    return self.target != "" && self.fdHandles
+  }
+}

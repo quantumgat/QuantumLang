@@ -1,0 +1,9 @@
+[module]
+name = "layout"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "layout-alignment-carrier-analysis"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

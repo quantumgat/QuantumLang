@@ -1,0 +1,45 @@
+pub struct Allocator {
+  domain: AllocDomain,
+  pressureAware: bool,
+}
+
+impl Allocator {
+  pub fn system() -> Allocator {
+    return Allocator {
+      domain: AllocDomain.system(),
+      pressureAware: true,
+    }
+  }
+
+  pub fn inDomain(domain: AllocDomain) -> Allocator {
+    return Allocator {
+      domain: domain,
+      pressureAware: true,
+    }
+  }
+
+  pub fn domain(self: Allocator) -> AllocDomain {
+    return self.domain
+  }
+
+  pub fn pressureAware(self: Allocator) -> bool {
+    return self.pressureAware
+  }
+
+  pub fn alloc<T>(self: Allocator, layout: Layout) -> Result<Allocation<T>, AllocError> {
+    return runtimeAlloc<T>(AllocRequest.init(layout, self.domain))
+  }
+
+  pub fn allocZeroed<T>(self: Allocator, layout: Layout) -> Result<Allocation<T>, AllocError> {
+    return runtimeAlloc<T>(AllocRequest.zeroed(layout, self.domain))
+  }
+
+  pub fn free<T>(self: Allocator, allocation: Allocation<T>) -> Result<FreeToken, AllocError> {
+    let token = allocation.freeToken().consume(self.domain)?
+    runtimeFree<T>(allocation.ptr(), token)?
+    return Ok(token)
+  }
+}
+
+fn runtimeAlloc<T>(request: AllocRequest) -> Result<Allocation<T>, AllocError>
+fn runtimeFree<T>(ptr: Ptr<T>, token: FreeToken) -> Result<Unit, AllocError>

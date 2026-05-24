@@ -1,0 +1,33 @@
+pub enum ErrorCategory {
+  Unknown,
+  Validation,
+  Permission,
+  NotFound,
+  Conflict,
+  RateLimited,
+  Timeout,
+  Canceled,
+  Unavailable,
+  Internal,
+  Type,
+  Memory,
+  Allocator,
+  Ownership,
+  Pointer,
+  Bounds,
+  Io,
+  Os,
+  Network,
+  Format,
+  Log,
+  Panic,
+  Ffi,
+  Compiler,
+  Quantum,
+}
+
+impl ErrorCategory {
+  pub fn stable(self: ErrorCategory) -> bool {
+    return self != ErrorCategory.Unknown
+  }
+}

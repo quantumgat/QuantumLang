@@ -1,0 +1,11 @@
+pub fn install(signal: Signal, action: SignalAction) -> Result<SignalSubscription, OsError>
+pub fn installOnce(signal: Signal, action: SignalAction) -> Result<SignalSubscription, OsError>
+pub fn ignore(signal: Signal) -> Result<SignalSubscription, OsError>
+pub fn default(signal: Signal) -> Result<SignalSubscription, OsError>
+pub fn reset(signal: Signal) -> Result<Unit, OsError>
+pub fn raise(signal: Signal) -> Result<Unit, OsError>
+pub fn wait(signals: Vec<Signal>) -> Result<Signal, OsError>
+pub fn waitSet(signals: SignalSet) -> Result<Signal, OsError>
+pub fn tryWait(signals: SignalSet) -> Result<Option<Signal>, OsError>
+pub fn waitTimeout(signals: SignalSet, timeoutMillis: u64) -> Result<Option<Signal>, OsError>
+pub fn subscribe(signals: SignalSet, action: SignalAction) -> Result<SignalScope, OsError>

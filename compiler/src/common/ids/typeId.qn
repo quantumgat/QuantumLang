@@ -1,0 +1,21 @@
+pub struct TypeId {
+  value: u64,
+}
+
+pub fn typeId(value: u64) -> TypeId {
+  return TypeId { value: value }
+}
+
+pub fn invalidTypeId() -> TypeId {
+  return TypeId { value: 0 }
+}
+
+impl TypeId {
+  pub fn raw(self: TypeId) -> u64 {
+    return self.value
+  }
+
+  pub fn isValid(self: TypeId) -> bool {
+    return self.value != 0
+  }
+}

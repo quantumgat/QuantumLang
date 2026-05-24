@@ -1,0 +1,13 @@
+pub struct IntegrityHash {
+  algorithm: string,
+  bits: usize,
+  contentAddressed: bool,
+}
+
+pub fn integrityHash() -> IntegrityHash {
+  return IntegrityHash {
+    algorithm: "sha256",
+    bits: 256,
+    contentAddressed: true,
+  }
+}

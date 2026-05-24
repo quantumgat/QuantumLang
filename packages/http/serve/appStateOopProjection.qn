@@ -1,0 +1,83 @@
+pub struct AppStateOopProjection {
+  displayTypeName: string,
+  oopOwnerId: u64,
+  family: AppStateFamily,
+  lifecycle: AppStateLifecycle,
+  dependencyCount: usize,
+  scoped: bool,
+  testOverrideIsolated: bool,
+  sourceFactsReady: bool,
+}
+
+impl AppStateOopProjection {
+  pub fn init(
+    displayTypeName: string,
+    oopOwnerId: u64,
+    family: AppStateFamily,
+    lifecycle: AppStateLifecycle,
+    dependencyCount: usize,
+    scoped: bool,
+    testOverrideIsolated: bool,
+    sourceFactsReady: bool,
+  ) -> AppStateOopProjection {
+    return AppStateOopProjection {
+      displayTypeName: displayTypeName,
+      oopOwnerId: oopOwnerId,
+      family: family,
+      lifecycle: lifecycle,
+      dependencyCount: dependencyCount,
+      scoped: scoped,
+      testOverrideIsolated: testOverrideIsolated,
+      sourceFactsReady: sourceFactsReady,
+    }
+  }
+
+  pub fn of<T>() -> AppStateFact {
+    return AppStateFact.init(
+      typeName<T>(),
+      oopOwnerId<T>(),
+      AppStateFamily.Value,
+      AppStateLifecycle.none(),
+      0,
+      false,
+      false
+    )
+  }
+
+  pub fn fromFact(fact: AppStateFact) -> AppStateOopProjection {
+    return AppStateOopProjection.init(
+      fact.typeName(),
+      fact.ownerId(),
+      fact.family(),
+      fact.lifecycle(),
+      fact.dependencyCount(),
+      fact.scoped(),
+      fact.testOverrideIsolated(),
+      fact.projectionComplete()
+    )
+  }
+
+  pub fn sourceFactsComplete(self: AppStateOopProjection) -> bool {
+    return self.sourceFactsReady
+      && self.displayTypeName != ""
+      && self.oopOwnerId > 0
+  }
+
+  pub fn toFact(self: AppStateOopProjection) -> AppStateFact {
+    return AppStateFact.init(
+      self.displayTypeName,
+      self.oopOwnerId,
+      self.family,
+      self.lifecycle,
+      self.dependencyCount,
+      self.scoped,
+      self.testOverrideIsolated
+    )
+  }
+
+  pub fn complete(self: AppStateOopProjection) -> bool {
+    return self.sourceFactsComplete()
+      && self.toFact().projectionComplete()
+      && self.toFact().complete()
+  }
+}

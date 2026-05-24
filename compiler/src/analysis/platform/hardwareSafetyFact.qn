@@ -1,0 +1,21 @@
+pub struct HardwareSafetyFact {
+  node: u64,
+  kind: HardwareSafetyKind,
+  proven: bool,
+  diagnosticReady: bool,
+}
+
+impl HardwareSafetyFact {
+  pub fn init(node: u64, kind: HardwareSafetyKind, proven: bool, diagnosticReady: bool) -> HardwareSafetyFact {
+    return HardwareSafetyFact {
+      node: node,
+      kind: kind,
+      proven: proven,
+      diagnosticReady: diagnosticReady,
+    }
+  }
+
+  pub fn accepted(self: HardwareSafetyFact) -> bool {
+    return self.proven && self.diagnosticReady
+  }
+}

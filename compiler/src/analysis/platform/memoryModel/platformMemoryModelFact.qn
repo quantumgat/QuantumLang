@@ -1,0 +1,12 @@
+pub struct PlatformMemoryModelFact {
+  target: string,
+  pointerBits: usize,
+  alignmentChecked: bool,
+  endianChecked: bool,
+}
+
+impl PlatformMemoryModelFact {
+  pub fn accepted(self: PlatformMemoryModelFact) -> bool {
+    return self.target != "" && self.pointerBits > 0 && self.alignmentChecked
+  }
+}

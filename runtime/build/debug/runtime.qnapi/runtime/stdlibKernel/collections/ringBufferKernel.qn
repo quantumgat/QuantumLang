@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RingBufferKernel {
+  circularBufferBacked: bool
+  headTailDirect: bool
+  moduloIndexLowered: bool
+  pushBackUsesTailStore: bool
+  pushFrontUsesHeadDecAndStore: bool
+  popFrontUsesHeadLoadAndHeadInc: bool
+  popBackUsesTailDecAndLoad: bool
+  overwriteOldestPolicyStable: bool
+  rejectFullPolicyStable: bool
+  peekUsesDirectLoad: bool
+  iteratorRingCursorStable: bool
+  toVecUsesLinearizedCopy: bool
+  callableLoopsInlineable: bool
+}

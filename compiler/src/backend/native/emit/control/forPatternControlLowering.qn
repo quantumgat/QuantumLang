@@ -1,0 +1,38 @@
+pub enum NativeForPatternControlLoweringKind {
+  DirectBreakJump
+  DirectContinueJump
+  BreakValueCarrier
+  LabelledJump
+  ForElseFallthrough
+  DirectDestructureBind
+  DirectGuardBranch
+}
+
+pub struct NativeForPatternControlLowering {
+  kind: NativeForPatternControlLoweringKind,
+  mir: MirForPatternControlOp,
+  emitsDirectJump: bool,
+  emitsValueCarrierStore: bool,
+  emitsCleanupBeforeJump: bool,
+  emitsDestructureLoads: bool,
+  emitsGuardBranch: bool,
+  emitsElseFallthrough: bool,
+  emitsSourceMap: bool,
+  noHeapAllocation: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeForPatternControlLowering {
+  pub fn complete(self: NativeForPatternControlLowering) -> bool {
+    return self.mir.complete()
+      && self.emitsDirectJump
+      && self.emitsValueCarrierStore
+      && self.emitsCleanupBeforeJump
+      && self.emitsDestructureLoads
+      && self.emitsGuardBranch
+      && self.emitsElseFallthrough
+      && self.emitsSourceMap
+      && self.noHeapAllocation
+      && self.noGeneratedFallback
+  }
+}

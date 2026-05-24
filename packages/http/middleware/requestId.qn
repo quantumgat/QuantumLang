@@ -1,0 +1,36 @@
+pub struct RequestIdPolicy {
+  headerName: string,
+  generateWhenMissing: bool,
+  echoResponse: bool,
+}
+
+pub struct RequestId {
+}
+
+impl RequestId {
+  pub fn header(name: string) -> RequestIdPolicy {
+    return RequestIdPolicy.init(name, true, true)
+  }
+
+  pub fn default() -> RequestIdPolicy {
+    return RequestId.header("x-request-id")
+  }
+}
+
+impl RequestIdPolicy {
+  pub fn init(
+    headerName: string,
+    generateWhenMissing: bool,
+    echoResponse: bool,
+  ) -> RequestIdPolicy {
+    return RequestIdPolicy {
+      headerName: headerName,
+      generateWhenMissing: generateWhenMissing,
+      echoResponse: echoResponse,
+    }
+  }
+
+  pub fn complete(self: RequestIdPolicy) -> bool {
+    return self.headerName != "" && self.generateWhenMissing && self.echoResponse
+  }
+}

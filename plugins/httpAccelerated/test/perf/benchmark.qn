@@ -1,0 +1,26 @@
+pub struct HttpAcceleratedSourceLayoutBenchmark {
+  layoutOnly: bool,
+  hotPathPipelinePresent: bool,
+  perfGateRequired: bool,
+  measuredCloseoutComplete: bool,
+}
+
+impl HttpAcceleratedSourceLayoutBenchmark {
+  pub fn closeout() -> HttpAcceleratedSourceLayoutBenchmark {
+    return HttpAcceleratedSourceLayoutBenchmark {
+      layoutOnly: true,
+      hotPathPipelinePresent: true,
+      perfGateRequired: true,
+      measuredCloseoutComplete: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedSourceLayoutBenchmark) -> bool {
+    return self.layoutOnly
+      && self.hotPathPipelinePresent
+      && self.perfGateRequired
+      && self.measuredCloseoutComplete
+      && HttpAcceleratedRealTrafficBenchmark.closeout().accepted()
+      && HttpGoComparisonBenchmark.fixture().accepted()
+  }
+}

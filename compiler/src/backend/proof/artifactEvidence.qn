@@ -1,0 +1,21 @@
+pub struct ArtifactEvidence {
+  objectHash: u64,
+  linkPlanHash: u64,
+  outputHash: u64,
+  hiddenCacheUsed: bool,
+}
+
+pub fn artifactEvidence(objectHash: u64, linkPlanHash: u64, outputHash: u64, hiddenCacheUsed: bool) -> ArtifactEvidence {
+  return ArtifactEvidence {
+    objectHash: objectHash,
+    linkPlanHash: linkPlanHash,
+    outputHash: outputHash,
+    hiddenCacheUsed: hiddenCacheUsed,
+  }
+}
+
+impl ArtifactEvidence {
+  pub fn complete(self: ArtifactEvidence) -> bool {
+    return self.objectHash != 0 && self.linkPlanHash != 0 && self.outputHash != 0 && self.hiddenCacheUsed
+  }
+}

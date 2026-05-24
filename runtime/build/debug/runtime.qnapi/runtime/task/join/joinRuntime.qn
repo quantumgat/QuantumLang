@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeJoinState {
+  Pending
+  Ready
+  Joined
+  DuplicateJoin
+  StaleHandle
+}
+pub struct RuntimeJoinHandle {
+  task: TaskId
+  state: RuntimeJoinState
+  structured: bool
+  ownerScope: u64
+}

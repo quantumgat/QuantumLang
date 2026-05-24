@@ -1,0 +1,15 @@
+pub struct DnsResult {
+  addressCount: usize,
+  cached: bool,
+  diagnosticCode: u32,
+}
+
+pub fn dnsResult(addressCount: usize, cached: bool, diagnosticCode: u32) -> DnsResult {
+  return DnsResult { addressCount: addressCount, cached: cached, diagnosticCode: diagnosticCode }
+}
+
+impl DnsResult {
+  pub fn isResolved(self: DnsResult) -> bool {
+    return self.addressCount > 0 && self.diagnosticCode == 0
+  }
+}

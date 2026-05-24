@@ -1,0 +1,18 @@
+pub struct ExprParse {
+  parsedExpressions: usize,
+  errors: usize,
+}
+
+pub fn exprParse(parsedExpressions: usize, errors: usize) -> ExprParse {
+  return ExprParse { parsedExpressions: parsedExpressions, errors: errors }
+}
+
+impl ExprParse {
+  pub fn expressionCount(self: ExprParse) -> usize {
+    return self.parsedExpressions
+  }
+
+  pub fn errorCount(self: ExprParse) -> usize {
+    return self.errors
+  }
+}

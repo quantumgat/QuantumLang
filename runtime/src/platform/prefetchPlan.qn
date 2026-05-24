@@ -1,0 +1,19 @@
+pub struct RuntimePrefetchPlan {
+  supported: bool,
+  distanceBytes: usize,
+  localityKnown: bool,
+}
+
+impl RuntimePrefetchPlan {
+  pub fn init(supported: bool, distanceBytes: usize, localityKnown: bool) -> RuntimePrefetchPlan {
+    return RuntimePrefetchPlan {
+      supported: supported,
+      distanceBytes: distanceBytes,
+      localityKnown: localityKnown,
+    }
+  }
+
+  pub fn accepted(self: RuntimePrefetchPlan) -> bool {
+    return self.supported && self.distanceBytes > 0 && self.localityKnown
+  }
+}

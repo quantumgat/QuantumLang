@@ -1,0 +1,24 @@
+pub enum BackendFamily {
+  Native
+  Qir
+}
+
+pub struct BackendId {
+  family: BackendFamily,
+  stableName: string,
+  selfHostingRequired: bool,
+}
+
+pub fn backendId(family: BackendFamily, stableName: string, selfHostingRequired: bool) -> BackendId {
+  return BackendId {
+    family: family,
+    stableName: stableName,
+    selfHostingRequired: selfHostingRequired,
+  }
+}
+
+impl BackendId {
+  pub fn isNativeRequired(self: BackendId) -> bool {
+    return self.family == BackendFamily.Native && self.selfHostingRequired
+  }
+}

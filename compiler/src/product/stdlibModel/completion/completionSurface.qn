@@ -1,0 +1,11 @@
+pub struct StdlibCompletionSurface {
+  symbolName: string,
+  detail: string,
+  insertText: string,
+}
+
+impl StdlibCompletionSurface {
+  pub fn accepted(self: StdlibCompletionSurface) -> bool {
+    return self.symbolName != "" && self.detail != "" && self.insertText != ""
+  }
+}

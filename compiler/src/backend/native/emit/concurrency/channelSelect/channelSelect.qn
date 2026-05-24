@@ -1,0 +1,43 @@
+pub enum NativeChannelSelectLoweringKind {
+  BoundedRingSend
+  BoundedRingReceive
+  UnboundedSend
+  OneshotComplete
+  BroadcastFanout
+  WatchVersionCheck
+  RegisterWaiter
+  CleanupWaiter
+  SelectPoll
+  SelectPark
+  LostWakeGuard
+}
+
+pub struct NativeChannelSelectLowering {
+  instruction: u64,
+  kind: NativeChannelSelectLoweringKind,
+  runtimeAbiReady: bool,
+  schedulerWakeReady: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeChannelSelectLowering {
+  pub fn init(
+    instruction: u64,
+    kind: NativeChannelSelectLoweringKind,
+    runtimeAbiReady: bool,
+    schedulerWakeReady: bool,
+    noGeneratedFallback: bool,
+  ) -> NativeChannelSelectLowering {
+    return NativeChannelSelectLowering {
+      instruction: instruction,
+      kind: kind,
+      runtimeAbiReady: runtimeAbiReady,
+      schedulerWakeReady: schedulerWakeReady,
+      noGeneratedFallback: noGeneratedFallback,
+    }
+  }
+
+  pub fn complete(self: NativeChannelSelectLowering) -> bool {
+    return self.instruction > 0 && self.runtimeAbiReady && self.schedulerWakeReady && self.noGeneratedFallback
+  }
+}

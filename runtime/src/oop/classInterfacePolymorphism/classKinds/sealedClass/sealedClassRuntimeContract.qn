@@ -1,0 +1,17 @@
+pub struct SealedClassRuntimeContract {
+  typeId: u64,
+  permittedSubtypeTableBound: bool,
+  externalSubtypeRejected: bool,
+  closedDispatchSetBound: bool,
+  exhaustiveRuntimeTagBound: bool,
+}
+
+impl SealedClassRuntimeContract {
+  pub fn complete(self: SealedClassRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.permittedSubtypeTableBound
+      && self.externalSubtypeRejected
+      && self.closedDispatchSetBound
+      && self.exhaustiveRuntimeTagBound
+  }
+}

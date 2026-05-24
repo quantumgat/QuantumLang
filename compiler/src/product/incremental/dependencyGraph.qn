@@ -1,0 +1,13 @@
+pub struct DependencyGraph {
+  nodeCount: usize,
+  edgeCount: usize,
+  acyclic: bool,
+}
+
+pub fn dependencyGraph() -> DependencyGraph {
+  return DependencyGraph {
+    nodeCount: 0,
+    edgeCount: 0,
+    acyclic: true,
+  }
+}

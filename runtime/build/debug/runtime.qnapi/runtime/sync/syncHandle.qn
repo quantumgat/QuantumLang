@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct SyncHandle {
+  id: u64
+  generation: u32
+}
+pub extern "qnpkg" {
+  pub fn syncHandle(id: u64, generation: u32) -> SyncHandle
+}

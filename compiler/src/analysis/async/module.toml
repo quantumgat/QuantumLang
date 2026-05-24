@@ -1,0 +1,6 @@
+[module]
+name = "async"
+visibility = "internal"
+root = "mod.qn"
+owner = "compiler"
+role = "async-analysis"

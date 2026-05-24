@@ -1,0 +1,25 @@
+pub struct MatchExecutableHotPathProof {
+  positiveExecutableEvidence: bool,
+  negativeExecutableEvidence: bool,
+  destructureExecutableEvidence: bool,
+  orPatternExecutableEvidence: bool,
+  typeTestExecutableEvidence: bool,
+  guardExecutableEvidence: bool,
+  rangeOverlapDiagnosticEvidence: bool,
+  exhaustivenessDiagnosticEvidence: bool,
+  nativeLowering: NativeMatchLowering,
+}
+
+impl MatchExecutableHotPathProof {
+  pub fn complete(self: MatchExecutableHotPathProof) -> bool {
+    return self.positiveExecutableEvidence
+      && self.negativeExecutableEvidence
+      && self.destructureExecutableEvidence
+      && self.orPatternExecutableEvidence
+      && self.typeTestExecutableEvidence
+      && self.guardExecutableEvidence
+      && self.rangeOverlapDiagnosticEvidence
+      && self.exhaustivenessDiagnosticEvidence
+      && self.nativeLowering.executableHotPathReady()
+  }
+}

@@ -1,0 +1,48 @@
+pub enum ChannelDiagnosticKind {
+  None
+  SendOnClosed
+  ReceiveFromEmpty
+  BackpressureMissing
+  SelectWithoutCleanup
+  SelectFairnessMissing
+  LostWakePossible
+  CancelledWaiterNotCleaned
+}
+
+pub struct ChannelSelectSafety {
+  nodeId: u64,
+  backpressureDefined: bool,
+  cleanupRegistered: bool,
+  fairnessDefined: bool,
+  lostWakePrevented: bool,
+  diagnostic: ChannelDiagnosticKind,
+}
+
+impl ChannelSelectSafety {
+  pub fn init(
+    nodeId: u64,
+    backpressureDefined: bool,
+    cleanupRegistered: bool,
+    fairnessDefined: bool,
+    lostWakePrevented: bool,
+    diagnostic: ChannelDiagnosticKind,
+  ) -> ChannelSelectSafety {
+    return ChannelSelectSafety {
+      nodeId: nodeId,
+      backpressureDefined: backpressureDefined,
+      cleanupRegistered: cleanupRegistered,
+      fairnessDefined: fairnessDefined,
+      lostWakePrevented: lostWakePrevented,
+      diagnostic: diagnostic,
+    }
+  }
+
+  pub fn accepted(self: ChannelSelectSafety) -> bool {
+    return self.nodeId > 0
+      && self.backpressureDefined
+      && self.cleanupRegistered
+      && self.fairnessDefined
+      && self.lostWakePrevented
+      && self.diagnostic == ChannelDiagnosticKind.None
+  }
+}

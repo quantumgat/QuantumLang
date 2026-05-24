@@ -1,0 +1,4 @@
+pub fn readText(path: PathBuf) -> FsResult<string>
+pub fn readText(path: PathBuf, options: ReadOptions) -> FsResult<string>
+pub fn readBytes(path: PathBuf) -> FsResult<Bytes>
+pub fn readBytes(path: PathBuf, options: ReadOptions) -> FsResult<Bytes>

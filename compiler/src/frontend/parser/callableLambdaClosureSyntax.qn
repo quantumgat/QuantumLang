@@ -1,0 +1,52 @@
+pub enum CallableLambdaClosureSyntaxKind {
+  ShortLambda
+  TypedLambda
+  BlockClosure
+  NestedClosure
+  AsyncClosure
+  MoveClosure
+  MethodReference
+  CallableClassCall
+}
+
+pub struct CallableLambdaClosureSyntax {
+  kind: CallableLambdaClosureSyntaxKind,
+  parameterListBound: bool,
+  returnTypeInferenceBound: bool,
+  blockBodyBound: bool,
+  asyncTokenBound: bool,
+  moveTokenBound: bool,
+  nestedCaptureSyntaxBound: bool,
+  methodReferenceBound: bool,
+  callableClassCallBound: bool,
+  sourceRangeReady: bool,
+  recoveryReady: bool,
+}
+
+impl CallableLambdaClosureSyntax {
+  pub fn complete(self: CallableLambdaClosureSyntax) -> bool {
+    return self.parameterListBound
+      && self.returnTypeInferenceBound
+      && self.sourceRangeReady
+      && self.recoveryReady
+  }
+
+  pub fn lambdaReady(self: CallableLambdaClosureSyntax) -> bool {
+    return self.complete()
+      && (
+        self.kind == CallableLambdaClosureSyntaxKind.ShortLambda
+        || self.kind == CallableLambdaClosureSyntaxKind.TypedLambda
+        || self.kind == CallableLambdaClosureSyntaxKind.BlockClosure
+      )
+  }
+
+  pub fn advancedReady(self: CallableLambdaClosureSyntax) -> bool {
+    return self.complete()
+      && self.blockBodyBound
+      && self.asyncTokenBound
+      && self.moveTokenBound
+      && self.nestedCaptureSyntaxBound
+      && self.methodReferenceBound
+      && self.callableClassCallBound
+  }
+}

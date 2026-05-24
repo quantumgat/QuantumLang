@@ -1,0 +1,62 @@
+pub struct BsonCloseoutProof {
+  mongoModeComplete: bool,
+  exactModeComplete: bool,
+  diagnosticsComplete: bool,
+  generatedExecutablesComplete: bool,
+  stdlibOwned: bool,
+  compilerFactsComplete: bool,
+  nativeLoweringComplete: bool,
+  runtimeBsonModuleAbsent: bool,
+  oldMetadataRejected: bool,
+  perfProofPresent: bool,
+  measuredReportsPresent: bool,
+  productPerformanceClaimAllowed: bool,
+  performanceClaimBlockedUntilReports: bool,
+  readyForBinaryAutoTrack: bool,
+}
+
+impl BsonCloseoutProof {
+  pub fn required() -> BsonCloseoutProof {
+    return BsonCloseoutProof {
+      mongoModeComplete: true,
+      exactModeComplete: true,
+      diagnosticsComplete: true,
+      generatedExecutablesComplete: true,
+      stdlibOwned: true,
+      compilerFactsComplete: true,
+      nativeLoweringComplete: true,
+      runtimeBsonModuleAbsent: true,
+      oldMetadataRejected: true,
+      perfProofPresent: true,
+      measuredReportsPresent: false,
+      productPerformanceClaimAllowed: false,
+      performanceClaimBlockedUntilReports: true,
+      readyForBinaryAutoTrack: true,
+    }
+  }
+
+  pub fn implementationComplete(self: BsonCloseoutProof) -> bool {
+    return self.mongoModeComplete
+      && self.exactModeComplete
+      && self.diagnosticsComplete
+      && self.generatedExecutablesComplete
+      && self.stdlibOwned
+      && self.compilerFactsComplete
+      && self.nativeLoweringComplete
+      && self.runtimeBsonModuleAbsent
+      && self.oldMetadataRejected
+  }
+
+  pub fn honestPerfGate(self: BsonCloseoutProof) -> bool {
+    return self.perfProofPresent
+      && self.performanceClaimBlockedUntilReports
+      && !self.measuredReportsPresent
+      && !self.productPerformanceClaimAllowed
+  }
+
+  pub fn accepted(self: BsonCloseoutProof) -> bool {
+    return self.implementationComplete()
+      && self.honestPerfGate()
+      && self.readyForBinaryAutoTrack
+  }
+}

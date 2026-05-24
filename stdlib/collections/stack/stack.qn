@@ -1,0 +1,247 @@
+pub struct Stack<T> {
+  items: Vec<T>,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<T> Stack<T> {
+  pub fn init() -> Stack<T> {
+    return Stack<T> {
+      items: Vec<T>.empty(),
+      len: 0,
+      capacity: 0,
+      generation: 0,
+    }
+  }
+
+  pub fn empty() -> Stack<T> {
+    return Stack<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Stack<T> requires(alloc) {
+    return Stack<T> {
+      items: Vec<T>.withCapacity(capacity),
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn fromVec(items: Vec<T>) -> Stack<T> {
+    return Stack<T> {
+      items: items,
+      len: items.len,
+      capacity: items.capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> StackBuilder<T> {
+    return StackBuilder<T> { capacity: 0 }
+  }
+
+  pub fn len(self: Stack<T>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Stack<T>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Stack<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn push(self: Stack<T>, value: T) -> Stack<T> requires(alloc) {
+    return Stack<T>.fromVec(self.items.push(value)).withGeneration(self.generation + 1)
+  }
+
+  pub fn pushTop(self: Stack<T>, value: T) -> Stack<T> requires(alloc) {
+    return self.push(value)
+  }
+
+  pub fn pop(self: Stack<T>) -> (Stack<T>, Option<T>) requires(alloc) {
+    if self.len == 0 {
+      return (self, None)
+    }
+    let topIndex = self.len - 1
+    let value = self.items[topIndex]
+    let items = self.items.removeAt(topIndex)
+    return (Stack<T>.fromVec(items).withGeneration(self.generation + 1), Some(value))
+  }
+
+  pub fn popTop(self: Stack<T>) -> (Stack<T>, Option<T>) requires(alloc) {
+    return self.pop()
+  }
+
+  pub fn peek(self: Stack<T>) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    return Some(self.items[self.len - 1])
+  }
+
+  pub fn peekTop(self: Stack<T>) -> Option<T> {
+    return self.peek()
+  }
+
+  pub fn clear(self: Stack<T>) -> Stack<T> requires(alloc) {
+    return Stack<T>.withCapacity(self.capacity).withGeneration(self.generation + 1)
+  }
+
+  pub fn iter(self: Stack<T>) -> StackIter<T> {
+    return StackIter<T> {
+      stack: self,
+      index: self.len,
+      generation: self.generation,
+    }
+  }
+
+  pub fn forEach(self: Stack<T>, action: fn(T) -> ()) -> () {
+    let mut index = self.len
+    while index > 0 {
+      index = index - 1
+      action(self.items[index])
+    }
+  }
+
+  pub fn find(self: Stack<T>, predicate: fn(T) -> bool) -> Option<T> {
+    let mut index = self.len
+    while index > 0 {
+      index = index - 1
+      let item = self.items[index]
+      if predicate(item) {
+        return Some(item)
+      }
+    }
+    return None
+  }
+
+  pub fn countWhere(self: Stack<T>, predicate: fn(T) -> bool) -> usize {
+    let mut count: usize = 0
+    let mut index = self.len
+    while index > 0 {
+      index = index - 1
+      if predicate(self.items[index]) {
+        count = count + 1
+      }
+    }
+    return count
+  }
+
+  pub fn any(self: Stack<T>, predicate: fn(T) -> bool) -> bool {
+    let mut index = self.len
+    while index > 0 {
+      index = index - 1
+      if predicate(self.items[index]) {
+        return true
+      }
+    }
+    return false
+  }
+
+  pub fn all(self: Stack<T>, predicate: fn(T) -> bool) -> bool {
+    let mut index = self.len
+    while index > 0 {
+      index = index - 1
+      if predicate(self.items[index]) == false {
+        return false
+      }
+    }
+    return true
+  }
+
+  pub fn fold<U>(self: Stack<T>, initial: U, reducer: fn(U, T) -> U) -> U {
+    let mut total = initial
+    let mut index = self.len
+    while index > 0 {
+      index = index - 1
+      total = reducer(total, self.items[index])
+    }
+    return total
+  }
+
+  pub fn foldWhere<U>(self: Stack<T>, predicate: fn(T) -> bool, initial: U, reducer: fn(U, T) -> U) -> U {
+    let mut total = initial
+    let mut index = self.len
+    while index > 0 {
+      index = index - 1
+      let item = self.items[index]
+      if predicate(item) {
+        total = reducer(total, item)
+      }
+    }
+    return total
+  }
+
+  pub fn sumBy(self: Stack<T>, key: fn(T) -> i64) -> i64 {
+    let mut total: i64 = 0
+    let mut index = self.len
+    while index > 0 {
+      index = index - 1
+      total = total + key(self.items[index])
+    }
+    return total
+  }
+
+  pub fn sumWhere(self: Stack<T>, predicate: fn(T) -> bool, key: fn(T) -> i64) -> i64 {
+    let mut total: i64 = 0
+    let mut index = self.len
+    while index > 0 {
+      index = index - 1
+      let item = self.items[index]
+      if predicate(item) {
+        total = total + key(item)
+      }
+    }
+    return total
+  }
+
+  pub fn minBy(self: Stack<T>, key: fn(T) -> i64) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    let mut index = self.len - 1
+    let mut best = self.items[index]
+    let mut bestKey = key(best)
+    while index > 0 {
+      index = index - 1
+      let item = self.items[index]
+      let itemKey = key(item)
+      if itemKey < bestKey {
+        best = item
+        bestKey = itemKey
+      }
+    }
+    return Some(best)
+  }
+
+  pub fn maxBy(self: Stack<T>, key: fn(T) -> i64) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    let mut index = self.len - 1
+    let mut best = self.items[index]
+    let mut bestKey = key(best)
+    while index > 0 {
+      index = index - 1
+      let item = self.items[index]
+      let itemKey = key(item)
+      if itemKey > bestKey {
+        best = item
+        bestKey = itemKey
+      }
+    }
+    return Some(best)
+  }
+
+  pub fn withGeneration(self: Stack<T>, generation: usize) -> Stack<T> {
+    return Stack<T> {
+      items: self.items,
+      len: self.len,
+      capacity: self.capacity,
+      generation: generation,
+    }
+  }
+}

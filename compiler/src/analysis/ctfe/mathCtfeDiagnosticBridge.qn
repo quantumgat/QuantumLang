@@ -1,0 +1,56 @@
+pub enum MathCtfeFailureKind {
+  DivideByZero
+  InvalidShift
+  Overflow
+  SilentNumericMixing
+  UnsupportedComplexOrdering
+  TargetFeatureRequired
+  DecimalContextFailure
+  ResourceLimit
+}
+
+pub struct MathCtfeDiagnosticBridge {
+  failure: MathCtfeFailureKind,
+  stableCode: string,
+  sourceMapped: bool,
+  fixitReady: bool,
+  runtimeSafeFailureEquivalent: bool,
+  noCoredump: bool,
+}
+
+impl MathCtfeDiagnosticBridge {
+  pub fn init(failure: MathCtfeFailureKind, stableCode: string) -> MathCtfeDiagnosticBridge {
+    return MathCtfeDiagnosticBridge {
+      failure: failure,
+      stableCode: stableCode,
+      sourceMapped: true,
+      fixitReady: true,
+      runtimeSafeFailureEquivalent: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn divideByZero() -> MathCtfeDiagnosticBridge {
+    return MathCtfeDiagnosticBridge.init(MathCtfeFailureKind.DivideByZero, "QLMATH0001")
+  }
+
+  pub fn invalidShift() -> MathCtfeDiagnosticBridge {
+    return MathCtfeDiagnosticBridge.init(MathCtfeFailureKind.InvalidShift, "QLMATH0002")
+  }
+
+  pub fn overflow() -> MathCtfeDiagnosticBridge {
+    return MathCtfeDiagnosticBridge.init(MathCtfeFailureKind.Overflow, "QLMATH0003")
+  }
+
+  pub fn resourceLimit() -> MathCtfeDiagnosticBridge {
+    return MathCtfeDiagnosticBridge.init(MathCtfeFailureKind.ResourceLimit, "QLMATH0008")
+  }
+
+  pub fn accepted(self: MathCtfeDiagnosticBridge) -> bool {
+    return self.stableCode != ""
+      && self.sourceMapped
+      && self.fixitReady
+      && self.runtimeSafeFailureEquivalent
+      && self.noCoredump
+  }
+}

@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum BorrowRuntimeError {
+  DanglingView,
+  MutationConflict,
+  OverlappingMutableBorrow,
+  ReadAfterMutation,
+  InvalidRange,
+}

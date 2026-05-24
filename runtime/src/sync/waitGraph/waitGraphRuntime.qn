@@ -1,0 +1,34 @@
+pub enum RuntimeWaitGraphIncidentKind {
+  DeadlockRisk
+  StaleWaiter
+  MissedWake
+  CancelledWaiter
+  TimeoutExpired
+}
+
+pub struct RuntimeWaitGraph {
+  nodeCount: usize,
+  edgeCount: usize,
+  incident: RuntimeWaitGraphIncidentKind,
+  diagnosticReady: bool,
+}
+
+impl RuntimeWaitGraph {
+  pub fn init(
+    nodeCount: usize,
+    edgeCount: usize,
+    incident: RuntimeWaitGraphIncidentKind,
+    diagnosticReady: bool,
+  ) -> RuntimeWaitGraph {
+    return RuntimeWaitGraph {
+      nodeCount: nodeCount,
+      edgeCount: edgeCount,
+      incident: incident,
+      diagnosticReady: diagnosticReady,
+    }
+  }
+
+  pub fn reportable(self: RuntimeWaitGraph) -> bool {
+    return self.nodeCount > 0 && self.edgeCount > 0 && self.diagnosticReady
+  }
+}

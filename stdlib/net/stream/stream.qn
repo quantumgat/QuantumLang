@@ -1,0 +1,63 @@
+pub trait AsyncRead {
+  pub async fn readable(self: &AsyncRead) -> NetReadiness
+  pub async fn read(self: &AsyncRead, into: IoSliceMut) -> NetResult<usize>
+}
+
+pub trait AsyncWrite {
+  pub async fn writable(self: &AsyncWrite) -> NetReadiness
+  pub async fn write(self: &AsyncWrite, bytes: IoSlice) -> NetResult<usize>
+  pub async fn flush(self: &AsyncWrite) -> NetResult<Unit>
+}
+
+pub trait Codec<T> {
+  pub fn name(self: &Codec<T>) -> string
+}
+
+pub struct NetStream {
+  handle: u64,
+  backpressure: BackpressurePolicy,
+}
+
+pub struct Framed<T> {
+  stream: NetStream,
+  codecName: string,
+}
+
+impl NetStream {
+  pub fn accepted(self: NetStream) -> bool {
+    return self.handle > 0
+  }
+
+  pub async fn read(self: NetStream, into: IoSliceMut) -> NetResult<usize> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.ConnectionReset,
+        message: "net stream handle is closed",
+        retryable: false,
+      })
+    }
+    return Ok(into.len)
+  }
+
+  pub async fn write(self: NetStream, bytes: IoSlice) -> NetResult<usize> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.BrokenPipe,
+        message: "net stream handle is closed",
+        retryable: false,
+      })
+    }
+    return Ok(bytes.len)
+  }
+
+  pub async fn drain(self: NetStream) -> NetResult<Unit> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.ConnectionReset,
+        message: "net stream handle is closed",
+        retryable: false,
+      })
+    }
+    return Ok(())
+  }
+}

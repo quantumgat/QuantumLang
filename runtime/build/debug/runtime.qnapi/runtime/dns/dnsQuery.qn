@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct DnsQuery {
+  host: string
+  recordType: string
+}
+pub extern "qnpkg" {
+  pub fn dnsQuery(host: string, recordType: string) -> DnsQuery
+}

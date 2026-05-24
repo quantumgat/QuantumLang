@@ -1,0 +1,15 @@
+pub struct StreamCursor {
+  streamId: u64,
+  position: usize,
+  done: bool,
+}
+
+pub fn streamCursor(streamId: u64, position: usize) -> StreamCursor {
+  return StreamCursor { streamId: streamId, position: position, done: false }
+}
+
+impl StreamCursor {
+  pub fn canAdvance(self: StreamCursor) -> bool {
+    return self.done == false
+  }
+}

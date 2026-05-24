@@ -1,0 +1,14 @@
+pub struct RuntimeTaskCancellation {
+  tokenId: u64,
+  parentTokenId: u64,
+  cleanupEdgeCount: usize,
+  propagated: bool,
+}
+
+impl RuntimeTaskCancellation {
+  pub fn safe(self: RuntimeTaskCancellation) -> bool {
+    return self.tokenId > 0
+      && self.cleanupEdgeCount > 0
+      && self.propagated
+  }
+}

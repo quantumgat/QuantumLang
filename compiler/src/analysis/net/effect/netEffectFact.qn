@@ -1,0 +1,11 @@
+pub struct NetEffectFact {
+  requiresNet: bool,
+  blocksRejectedInAsyncHotPath: bool,
+  diagnosticsReady: bool,
+}
+
+impl NetEffectFact {
+  pub fn accepted(self: NetEffectFact) -> bool {
+    return self.requiresNet && self.blocksRejectedInAsyncHotPath && self.diagnosticsReady
+  }
+}

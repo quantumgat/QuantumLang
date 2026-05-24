@@ -1,0 +1,52 @@
+pub struct ReactiveFact {
+  classId: u64,
+  reactiveClassBound: bool,
+  observablePropertyBound: bool,
+  eventPayloadBound: bool,
+  eventStreamBound: bool,
+  subscriptionBound: bool,
+  callbackLifetimeBound: bool,
+  cancellationBound: bool,
+  bindingCycleChecked: bool,
+  eventPrivacyOrderingBound: bool,
+}
+
+pub fn reactiveFact(
+  classId: u64,
+  reactiveClassBound: bool,
+  observablePropertyBound: bool,
+  eventPayloadBound: bool,
+  eventStreamBound: bool,
+  subscriptionBound: bool,
+  callbackLifetimeBound: bool,
+  cancellationBound: bool,
+  bindingCycleChecked: bool,
+  eventPrivacyOrderingBound: bool,
+) -> ReactiveFact {
+  return ReactiveFact {
+    classId: classId,
+    reactiveClassBound: reactiveClassBound,
+    observablePropertyBound: observablePropertyBound,
+    eventPayloadBound: eventPayloadBound,
+    eventStreamBound: eventStreamBound,
+    subscriptionBound: subscriptionBound,
+    callbackLifetimeBound: callbackLifetimeBound,
+    cancellationBound: cancellationBound,
+    bindingCycleChecked: bindingCycleChecked,
+    eventPrivacyOrderingBound: eventPrivacyOrderingBound,
+  }
+}
+
+impl ReactiveFact {
+  pub fn complete(self: ReactiveFact) -> bool {
+    return self.reactiveClassBound
+      && self.observablePropertyBound
+      && self.eventPayloadBound
+      && self.eventStreamBound
+      && self.subscriptionBound
+      && self.callbackLifetimeBound
+      && self.cancellationBound
+      && self.bindingCycleChecked
+      && self.eventPrivacyOrderingBound
+  }
+}

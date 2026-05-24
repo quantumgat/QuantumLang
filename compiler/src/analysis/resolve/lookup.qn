@@ -1,0 +1,23 @@
+pub enum LookupStatus {
+  Found
+  Missing
+  Ambiguous
+  Inaccessible
+}
+
+pub struct LookupResult {
+  scopeId: u64,
+  symbolId: u64,
+  status: LookupStatus,
+  candidateCount: usize,
+}
+
+pub fn lookupResult(scopeId: u64, symbolId: u64, status: LookupStatus, candidateCount: usize) -> LookupResult {
+  return LookupResult { scopeId: scopeId, symbolId: symbolId, status: status, candidateCount: candidateCount }
+}
+
+impl LookupResult {
+  pub fn resolved(self: LookupResult) -> bool {
+    return self.status == LookupStatus.Found && self.symbolId != 0
+  }
+}

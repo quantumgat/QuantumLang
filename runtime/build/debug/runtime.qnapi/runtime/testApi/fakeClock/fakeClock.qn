@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct FakeClock {
+  nowMillis: u64
+  deterministic: bool
+  publicRuntimeApi: bool
+}
+pub extern "qnpkg" {
+  pub fn fakeClock(nowMillis: u64) -> FakeClock
+}

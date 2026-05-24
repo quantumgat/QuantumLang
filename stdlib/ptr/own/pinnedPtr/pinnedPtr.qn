@@ -1,0 +1,43 @@
+/**
+  Owning pointer that cannot move after pinning.
+
+  example:
+    let pinned = PinnedPtr<User>.new(user)
+    let ref = pinned.borrow()
+
+  effects: allocates and pins the object
+  complexity: O(1)
+  allocation: one pinned allocation
+  safety: compiler rejects moves while pinned; runtime records pin generation
+  stability: public since 0.1
+*/
+pub struct PinnedPtr<T> {
+  ptr: NonNull<T>,
+  allocationId: u64,
+  generation: u64,
+  pinned: bool,
+}
+
+impl<T> PinnedPtr<T> {
+  pub fn init(value: T) -> PinnedPtr<T> requires(alloc) {
+    return ptrRuntimePin<T>(value)
+  }
+
+  pub fn new(value: T) -> PinnedPtr<T> requires(alloc) {
+    return PinnedPtr<T>(value)
+  }
+
+  pub fn borrow(self: PinnedPtr<T>) -> Ref<T> {
+    return Ref<T>.fromPtr(self.ptr, self.generation)
+  }
+
+  pub fn asPtr(self: PinnedPtr<T>) -> Ptr<T> {
+    return self.ptr.asPtr()
+  }
+
+  pub fn accepted(self: PinnedPtr<T>) -> bool {
+    return self.allocationId > 0 && self.generation > 0 && self.pinned
+  }
+}
+
+fn ptrRuntimePin<T>(value: T) -> PinnedPtr<T> requires(alloc)

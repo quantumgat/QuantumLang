@@ -1,0 +1,19 @@
+pub struct RuntimeTcpContract {
+  acceptBackpressure: bool,
+  halfClose: bool,
+  deadlineAware: bool,
+  noCoredump: bool,
+  zeroCopyWrite: bool,
+  cancellationCleanup: bool,
+}
+
+impl RuntimeTcpContract {
+  pub fn accepted(self: RuntimeTcpContract) -> bool {
+    return self.acceptBackpressure
+      && self.halfClose
+      && self.deadlineAware
+      && self.noCoredump
+      && self.zeroCopyWrite
+      && self.cancellationCleanup
+  }
+}

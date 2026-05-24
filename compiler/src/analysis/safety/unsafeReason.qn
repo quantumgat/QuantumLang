@@ -1,0 +1,19 @@
+pub struct UnsafeReason {
+  text: string,
+  sourceRangeKnown: bool,
+  userFacing: bool,
+}
+
+impl UnsafeReason {
+  pub fn init(text: string, sourceRangeKnown: bool, userFacing: bool) -> UnsafeReason {
+    return UnsafeReason {
+      text: text,
+      sourceRangeKnown: sourceRangeKnown,
+      userFacing: userFacing,
+    }
+  }
+
+  pub fn accepted(self: UnsafeReason) -> bool {
+    return self.text != "" && self.sourceRangeKnown && self.userFacing
+  }
+}

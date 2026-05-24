@@ -1,0 +1,21 @@
+pub struct RuntimeForeignArena {
+  arenaId: u64,
+  allocatorDomain: string,
+  deleterRegistered: bool,
+  lifetimeToken: u64,
+}
+
+impl RuntimeForeignArena {
+  pub fn init(arenaId: u64, allocatorDomain: string, deleterRegistered: bool, lifetimeToken: u64) -> RuntimeForeignArena {
+    return RuntimeForeignArena {
+      arenaId: arenaId,
+      allocatorDomain: allocatorDomain,
+      deleterRegistered: deleterRegistered,
+      lifetimeToken: lifetimeToken,
+    }
+  }
+
+  pub fn accepted(self: RuntimeForeignArena) -> bool {
+    return self.arenaId > 0 && self.allocatorDomain != "" && self.deleterRegistered && self.lifetimeToken > 0
+  }
+}

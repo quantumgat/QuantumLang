@@ -1,0 +1,23 @@
+pub struct ArenaLifetimeFact {
+  arenaId: u64,
+  regionId: u64,
+  generation: u64,
+  resetEpoch: u64,
+  live: bool,
+}
+
+impl ArenaLifetimeFact {
+  pub fn init(arenaId: u64, regionId: u64, generation: u64, resetEpoch: u64, live: bool) -> ArenaLifetimeFact {
+    return ArenaLifetimeFact {
+      arenaId: arenaId,
+      regionId: regionId,
+      generation: generation,
+      resetEpoch: resetEpoch,
+      live: live,
+    }
+  }
+
+  pub fn permitsAccess(self: ArenaLifetimeFact, generation: u64, resetEpoch: u64) -> bool {
+    return self.live && self.generation == generation && self.resetEpoch == resetEpoch
+  }
+}

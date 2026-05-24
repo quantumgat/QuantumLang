@@ -1,0 +1,13 @@
+pub struct NetDiagnosticFact {
+  eofTyped: bool,
+  resetTyped: bool,
+  timeoutTyped: bool,
+  malformedInputTyped: bool,
+  noCoredump: bool,
+}
+
+impl NetDiagnosticFact {
+  pub fn accepted(self: NetDiagnosticFact) -> bool {
+    return self.eofTyped && self.resetTyped && self.timeoutTyped && self.malformedInputTyped && self.noCoredump
+  }
+}

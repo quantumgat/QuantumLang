@@ -1,0 +1,45 @@
+pub struct JsonDynamicLiteralFact {
+  builtinJsonAlias: bool,
+  objectLiteralLowered: bool,
+  arrayLiteralLowered: bool,
+  quotedKeySupported: bool,
+  identifierKeySupported: bool,
+  nestedLiteralSupported: bool,
+  dotAccessChecked: bool,
+  bracketKeyAccessChecked: bool,
+  bracketIndexAccessChecked: bool,
+  assignmentLowered: bool,
+  objectBulkSetChecked: bool,
+  objectMergeChecked: bool,
+  objectMergeModesChecked: bool,
+  arrayMutationChecked: bool,
+  arrayAppendAliasChecked: bool,
+  arrayMergeModesChecked: bool,
+  uniqueByFieldChecked: bool,
+  typedReadChecked: bool,
+  pathAwareErrors: bool,
+}
+
+impl JsonDynamicLiteralFact {
+  pub fn accepted(self: JsonDynamicLiteralFact) -> bool {
+    return self.builtinJsonAlias
+      && self.objectLiteralLowered
+      && self.arrayLiteralLowered
+      && self.quotedKeySupported
+      && self.identifierKeySupported
+      && self.nestedLiteralSupported
+      && self.dotAccessChecked
+      && self.bracketKeyAccessChecked
+      && self.bracketIndexAccessChecked
+      && self.assignmentLowered
+      && self.objectBulkSetChecked
+      && self.objectMergeChecked
+      && self.objectMergeModesChecked
+      && self.arrayMutationChecked
+      && self.arrayAppendAliasChecked
+      && self.arrayMergeModesChecked
+      && self.uniqueByFieldChecked
+      && self.typedReadChecked
+      && self.pathAwareErrors
+  }
+}

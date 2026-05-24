@@ -1,0 +1,57 @@
+pub enum MirOopAsyncMethodOpKind {
+  CreateMethodFrame
+  CaptureSelf
+  CaptureReceiver
+  AwaitSuspend
+  AwaitResume
+  BorrowAcrossAwaitCheck
+  CancelCleanup
+  PartialInitCleanup
+  CompleteMethodFrame
+  DynAdapterBoundary
+}
+
+pub struct MirOopAsyncMethodOp {
+  instruction: u64,
+  ownerTypeName: string,
+  methodName: string,
+  kind: MirOopAsyncMethodOpKind,
+  directStateMachine: bool,
+  selfCaptureChecked: bool,
+  receiverBorrowChecked: bool,
+  mutableBorrowChecked: bool,
+  cancellationCleanupReady: bool,
+  partialInitCleanupReady: bool,
+  allocationFreeWhenProven: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+  sourceMapReady: bool,
+}
+
+impl MirOopAsyncMethodOp {
+  pub fn accepted(self: MirOopAsyncMethodOp) -> bool {
+    return self.instruction > 0
+      && self.ownerTypeName != ""
+      && self.methodName != ""
+      && self.directStateMachine
+      && self.selfCaptureChecked
+      && self.receiverBorrowChecked
+      && self.mutableBorrowChecked
+      && self.cancellationCleanupReady
+      && self.partialInitCleanupReady
+      && self.typedFailure
+      && self.noCoredump
+      && self.sourceMapReady
+  }
+
+  pub fn hotPathReady(self: MirOopAsyncMethodOp) -> bool {
+    return self.accepted()
+      && self.allocationFreeWhenProven
+      && self.kind != MirOopAsyncMethodOpKind.DynAdapterBoundary
+  }
+
+  pub fn isAwaitEdge(self: MirOopAsyncMethodOp) -> bool {
+    return self.kind == MirOopAsyncMethodOpKind.AwaitSuspend
+      || self.kind == MirOopAsyncMethodOpKind.AwaitResume
+  }
+}

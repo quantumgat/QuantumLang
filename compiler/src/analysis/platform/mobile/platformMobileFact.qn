@@ -1,0 +1,12 @@
+pub struct PlatformMobileFact {
+  target: string,
+  appSandbox: bool,
+  backgroundRestricted: bool,
+  entitlementChecked: bool,
+}
+
+impl PlatformMobileFact {
+  pub fn accepted(self: PlatformMobileFact) -> bool {
+    return self.target != "" && self.appSandbox && self.entitlementChecked
+  }
+}

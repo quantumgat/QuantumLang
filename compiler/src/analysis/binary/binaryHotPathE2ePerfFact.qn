@@ -1,0 +1,23 @@
+pub struct BinaryHotPathE2ePerfFact {
+  cursorWriterDirectLowering: bool,
+  portableEncodeDecodeLowering: bool,
+  zeroCopyViewLowering: bool,
+  codecBuilderReuseLowering: bool,
+  noTempWriterLowering: bool,
+  allocationBudgetChecked: bool,
+  diagnosticsNoCoredump: bool,
+  cppBaselineCompared: bool,
+}
+
+impl BinaryHotPathE2ePerfFact {
+  pub fn complete(self: BinaryHotPathE2ePerfFact) -> bool {
+    return self.cursorWriterDirectLowering
+      && self.portableEncodeDecodeLowering
+      && self.zeroCopyViewLowering
+      && self.codecBuilderReuseLowering
+      && self.noTempWriterLowering
+      && self.allocationBudgetChecked
+      && self.diagnosticsNoCoredump
+      && self.cppBaselineCompared
+  }
+}

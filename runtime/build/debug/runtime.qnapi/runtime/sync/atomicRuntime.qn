@@ -1,0 +1,24 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeAtomicOrdering {
+  Relaxed,
+  Acquire,
+  Release,
+  AcqRel,
+  SeqCst,
+}
+pub enum RuntimeAtomicOpKind {
+  Load,
+  Store,
+  CompareExchange,
+  Fence,
+  Wait,
+  WakeOne,
+  WakeAll,
+}
+pub struct RuntimeAtomicOp {
+  kind: RuntimeAtomicOpKind
+  ordering: RuntimeAtomicOrdering
+  lockFree: bool
+  targetSupported: bool
+  noCoredumpDiagnostic: bool
+}

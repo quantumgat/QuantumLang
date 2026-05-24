@@ -1,0 +1,55 @@
+import response::{IntoHttpError}
+
+pub struct HttpClientPool {
+  maxConnections: usize,
+  idleConnections: usize,
+  pendingRequests: usize,
+}
+
+impl HttpClientPool {
+  pub fn init(maxConnections: usize) -> HttpClientPool {
+    return HttpClientPool {
+      maxConnections: maxConnections,
+      idleConnections: 0,
+      pendingRequests: 0,
+    }
+  }
+
+  pub fn maxConnections(self: HttpClientPool) -> usize {
+    return self.maxConnections
+  }
+
+  pub fn idleConnections(self: HttpClientPool) -> usize {
+    return self.idleConnections
+  }
+
+  pub fn pendingRequests(self: HttpClientPool) -> usize {
+    return self.pendingRequests
+  }
+
+  pub fn available(self: HttpClientPool) -> bool {
+    return self.idleConnections > 0 || self.pendingRequests < self.maxConnections
+  }
+
+  pub fn acquire(self: HttpClientPool) -> Result<HttpClientPool, IntoHttpError> {
+    if self.available() {
+      return Ok(HttpClientPool {
+        maxConnections: self.maxConnections,
+        idleConnections: self.idleConnections,
+        pendingRequests: self.pendingRequests + 1,
+      })
+    }
+    return Err(IntoHttpError.badRequest("HTTP client pool is exhausted"))
+  }
+
+  pub fn release(self: HttpClientPool) -> HttpClientPool {
+    if self.pendingRequests == 0 {
+      return self
+    }
+    return HttpClientPool {
+      maxConnections: self.maxConnections,
+      idleConnections: self.idleConnections + 1,
+      pendingRequests: self.pendingRequests - 1,
+    }
+  }
+}

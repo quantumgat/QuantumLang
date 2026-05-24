@@ -1,0 +1,12 @@
+pub struct AbiTargetDiagnostic {
+  target: string,
+  abi: string,
+  code: string,
+  blocksEmission: bool,
+}
+
+impl AbiTargetDiagnostic {
+  pub fn reportable(self: AbiTargetDiagnostic) -> bool {
+    return self.target != "" && self.abi != "" && self.code != "" && self.blocksEmission
+  }
+}

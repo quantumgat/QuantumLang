@@ -1,0 +1,28 @@
+pub struct HttpChunkedBody {
+  chunkCount: usize,
+  complete: bool,
+}
+
+impl HttpChunkedBody {
+  pub fn init(chunkCount: usize) -> HttpChunkedBody {
+    return HttpChunkedBody {
+      chunkCount: chunkCount,
+      complete: false,
+    }
+  }
+
+  pub fn chunkCount(self: HttpChunkedBody) -> usize {
+    return self.chunkCount
+  }
+
+  pub fn done(self: HttpChunkedBody) -> HttpChunkedBody {
+    return HttpChunkedBody {
+      chunkCount: self.chunkCount,
+      complete: true,
+    }
+  }
+
+  pub fn complete(self: HttpChunkedBody) -> bool {
+    return self.complete
+  }
+}

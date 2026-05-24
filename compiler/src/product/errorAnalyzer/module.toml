@@ -1,0 +1,13 @@
+[module]
+name = "errorAnalyzer"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "user-facing-error-analysis-projection"
+
+[dependencies]
+allowed = ["common", "product.dumps", "product.ideDiagnostics"]
+forbidden = ["runtime internals", "test perf", "backend mutation"]
+
+[tests]
+required = ["qtlc_qtlang_compiler_error_analyzer_ux_gap_closure"]

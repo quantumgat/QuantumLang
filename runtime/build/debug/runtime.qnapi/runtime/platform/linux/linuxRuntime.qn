@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct LinuxRuntime {
+  target: string
+  epoll: bool
+  procfs: bool
+  ioUringOptional: bool
+}

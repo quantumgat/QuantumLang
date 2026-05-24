@@ -1,0 +1,27 @@
+pub struct OopCoreKindPolicyRuntimeBoundary {
+  coreKindCount: usize,
+  genericEngineOwnsDispatch: bool,
+  perPolicyRuntimeEnginesRejected: bool,
+  stateRuntimeThroughLifecycle: bool,
+  callableRuntimeThroughDispatch: bool,
+  resourceRuntimeThroughHandleLifecycle: bool,
+  actorServiceRuntimeThroughScheduler: bool,
+  pluginRuntimeThroughKernelBoundary: bool,
+  reflectionColdOnly: bool,
+  packageHttpRuntimeRejected: bool,
+}
+
+impl OopCoreKindPolicyRuntimeBoundary {
+  pub fn complete(self: OopCoreKindPolicyRuntimeBoundary) -> bool {
+    return self.coreKindCount == 14
+      && self.genericEngineOwnsDispatch
+      && self.perPolicyRuntimeEnginesRejected
+      && self.stateRuntimeThroughLifecycle
+      && self.callableRuntimeThroughDispatch
+      && self.resourceRuntimeThroughHandleLifecycle
+      && self.actorServiceRuntimeThroughScheduler
+      && self.pluginRuntimeThroughKernelBoundary
+      && self.reflectionColdOnly
+      && self.packageHttpRuntimeRejected
+  }
+}

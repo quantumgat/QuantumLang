@@ -1,0 +1,39 @@
+pub enum MirForAsyncParallelOpKind {
+  AsyncPollLoop
+  AsyncQuestionLoop
+  TaskFanoutLoop
+  LimitedTaskFanoutLoop
+  ParallelShardLoop
+  ParallelChunkLoop
+  ParallelReduceLoop
+  ParallelMapLoop
+  ParallelFindLoop
+  CancellationPollLoop
+}
+
+pub struct MirForAsyncParallelOp {
+  instruction: u64,
+  kind: MirForAsyncParallelOpKind,
+  asyncFrameReady: bool,
+  runtimeCallReady: bool,
+  shardPlanReady: bool,
+  reducerReady: bool,
+  cancellationEdgeReady: bool,
+  cleanupReady: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirForAsyncParallelOp {
+  pub fn complete(self: MirForAsyncParallelOp) -> bool {
+    return self.instruction > 0
+      && self.asyncFrameReady
+      && self.runtimeCallReady
+      && self.shardPlanReady
+      && self.reducerReady
+      && self.cancellationEdgeReady
+      && self.cleanupReady
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

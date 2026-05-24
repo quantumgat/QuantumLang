@@ -1,0 +1,36 @@
+pub enum ComplexExceptionalPolicy {
+  IeeePropagation
+  PrincipalBranch
+  PreserveSignedZero
+  TypedDomainError
+}
+
+pub struct ComplexExceptionalKernel {
+  policy: ComplexExceptionalPolicy,
+  nanInfHandled: bool,
+  signedZeroHandled: bool,
+  branchCutStable: bool,
+  parseErrorTyped: bool,
+  noCoredump: bool,
+}
+
+impl ComplexExceptionalKernel {
+  pub fn principal() -> ComplexExceptionalKernel {
+    return ComplexExceptionalKernel {
+      policy: ComplexExceptionalPolicy.PrincipalBranch,
+      nanInfHandled: true,
+      signedZeroHandled: true,
+      branchCutStable: true,
+      parseErrorTyped: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: ComplexExceptionalKernel) -> bool {
+    return self.nanInfHandled
+      && self.signedZeroHandled
+      && self.branchCutStable
+      && self.parseErrorTyped
+      && self.noCoredump
+  }
+}

@@ -1,0 +1,7 @@
+pub struct Rng {
+  state: u256,
+}
+
+pub fn seeded(seed: u256) -> Rng
+pub fn nextU64(rng: Rng) -> (Rng, u64)
+pub fn fill(rng: Rng, len: usize) -> Bytes

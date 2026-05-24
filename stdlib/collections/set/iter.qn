@@ -1,0 +1,20 @@
+pub struct SetIter<T> {
+  set: Set<T>,
+  cursor: SetFastCursor<T>,
+}
+
+impl<T> SetIter<T> {
+  pub fn next(self: SetIter<T>) -> (SetIter<T>, Option<T>) {
+    if self.cursor.hasNext() {
+      let value = self.cursor.value()
+      return (
+        SetIter<T> {
+          set: self.set,
+          cursor: self.cursor.next(),
+        },
+        Some(value)
+      )
+    }
+    return (self, None)
+  }
+}

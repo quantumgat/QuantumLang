@@ -1,0 +1,51 @@
+pub enum ErrorAnalyzerCauseKind {
+  Format
+  Log
+  TypedError
+  MemoryIncident
+  RuntimeIncident
+  UnsafeProof
+  HotPath
+}
+
+pub struct ErrorRootCauseExplanation {
+  kind: ErrorAnalyzerCauseKind,
+  diagnostic: Diagnostic,
+  rootCause: string,
+  whyItHappened: string,
+  subsystem: string,
+  sourceRange: SourceRange,
+  confidencePercent: u8,
+  redacted: bool,
+}
+
+pub fn errorRootCauseExplanation(
+  kind: ErrorAnalyzerCauseKind,
+  diagnostic: Diagnostic,
+  rootCause: string,
+  whyItHappened: string,
+  subsystem: string,
+) -> ErrorRootCauseExplanation {
+  return ErrorRootCauseExplanation {
+    kind: kind,
+    diagnostic: diagnostic,
+    rootCause: rootCause,
+    whyItHappened: whyItHappened,
+    subsystem: subsystem,
+    sourceRange: diagnostic.primaryRange,
+    confidencePercent: 90,
+    redacted: diagnostic.redacted,
+  }
+}
+
+impl ErrorRootCauseExplanation {
+  pub fn useful(self: ErrorRootCauseExplanation) -> bool {
+    return self.diagnostic.complete()
+      && self.rootCause != ""
+      && self.whyItHappened != ""
+      && self.subsystem != ""
+      && self.sourceRange.exact()
+      && self.confidencePercent > 0
+      && self.redacted
+  }
+}

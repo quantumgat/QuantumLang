@@ -1,0 +1,28 @@
+pub enum CancellationIncidentKind {
+  StaleToken
+  CleanupMissing
+  DeadlineRace
+  StaleWake
+}
+
+pub struct CancellationIncident {
+  kind: CancellationIncidentKind,
+  tokenId: u64,
+  diagnosticCode: string,
+  noCoredump: bool,
+}
+
+impl CancellationIncident {
+  pub fn init(kind: CancellationIncidentKind, tokenId: u64, diagnosticCode: string, noCoredump: bool) -> CancellationIncident {
+    return CancellationIncident {
+      kind: kind,
+      tokenId: tokenId,
+      diagnosticCode: diagnosticCode,
+      noCoredump: noCoredump,
+    }
+  }
+
+  pub fn reportable(self: CancellationIncident) -> bool {
+    return self.tokenId > 0 && self.diagnosticCode != "" && self.noCoredump
+  }
+}

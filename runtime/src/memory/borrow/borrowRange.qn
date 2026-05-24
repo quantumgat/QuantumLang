@@ -1,0 +1,32 @@
+pub struct BorrowRange {
+  sourceId: u64,
+  start: usize,
+  len: usize,
+  mutable: bool,
+}
+
+impl BorrowRange {
+  pub fn init(sourceId: u64, start: usize, len: usize, mutable: bool) -> BorrowRange {
+    return BorrowRange {
+      sourceId: sourceId,
+      start: start,
+      len: len,
+      mutable: mutable,
+    }
+  }
+
+  pub fn overlaps(self: BorrowRange, other: BorrowRange) -> bool {
+    if self.sourceId != other.sourceId {
+      return false
+    }
+    return self.start < other.end() && other.start < self.end()
+  }
+
+  pub fn conflicts(self: BorrowRange, other: BorrowRange) -> bool {
+    return self.overlaps(other) && (self.mutable || other.mutable)
+  }
+
+  pub fn end(self: BorrowRange) -> usize {
+    return self.start + self.len
+  }
+}

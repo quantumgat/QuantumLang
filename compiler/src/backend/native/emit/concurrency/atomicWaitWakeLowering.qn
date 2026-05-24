@@ -1,0 +1,21 @@
+pub struct AtomicWaitWakeLowering {
+  waitOrdering: AtomicOrdering,
+  emitsPark: bool,
+  emitsWake: bool,
+  cancellationPoint: bool,
+}
+
+impl AtomicWaitWakeLowering {
+  pub fn init(waitOrdering: AtomicOrdering, emitsPark: bool, emitsWake: bool, cancellationPoint: bool) -> AtomicWaitWakeLowering {
+    return AtomicWaitWakeLowering {
+      waitOrdering: waitOrdering,
+      emitsPark: emitsPark,
+      emitsWake: emitsWake,
+      cancellationPoint: cancellationPoint,
+    }
+  }
+
+  pub fn accepted(self: AtomicWaitWakeLowering) -> bool {
+    return self.emitsPark && self.emitsWake && self.cancellationPoint
+  }
+}

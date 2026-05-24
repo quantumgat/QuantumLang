@@ -1,0 +1,50 @@
+pub enum OopAsyncActorMailboxLifecycleLoweringKind {
+  ActorSpawn
+  ActorTell
+  ActorAsk
+  AsyncMethodEnqueue
+  SerializedStateAccess
+  BackpressureCheck
+  StopActor
+  DrainMailbox
+  ShutdownActor
+  SupervisionRestart
+}
+
+pub struct OopAsyncActorMailboxLifecycleLowering {
+  ownerTypeId: u64,
+  actorMethodId: u64,
+  kind: OopAsyncActorMailboxLifecycleLoweringKind,
+  asyncMethodLoweringBound: bool,
+  mailboxHandoffBound: bool,
+  serializedStateAccessBound: bool,
+  stopDrainShutdownBound: bool,
+  backpressureBound: bool,
+  cancellationCleanupBound: bool,
+  supervisionBound: bool,
+  mirReady: bool,
+  sourceMapBound: bool,
+}
+
+impl OopAsyncActorMailboxLifecycleLowering {
+  pub fn complete(self: OopAsyncActorMailboxLifecycleLowering) -> bool {
+    return self.ownerTypeId > 0
+      && self.actorMethodId > 0
+      && self.asyncMethodLoweringBound
+      && self.mailboxHandoffBound
+      && self.serializedStateAccessBound
+      && self.stopDrainShutdownBound
+      && self.backpressureBound
+      && self.cancellationCleanupBound
+      && self.supervisionBound
+      && self.mirReady
+      && self.sourceMapBound
+  }
+
+  pub fn shutdownEdge(self: OopAsyncActorMailboxLifecycleLowering) -> bool {
+    return self.complete()
+      && (self.kind == OopAsyncActorMailboxLifecycleLoweringKind.StopActor
+        || self.kind == OopAsyncActorMailboxLifecycleLoweringKind.DrainMailbox
+        || self.kind == OopAsyncActorMailboxLifecycleLoweringKind.ShutdownActor)
+  }
+}

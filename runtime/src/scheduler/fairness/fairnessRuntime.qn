@@ -1,0 +1,33 @@
+pub struct SchedulerFairness {
+  pollBudget: usize,
+  priority: usize,
+  starvationThresholdMs: usize,
+  yielded: bool,
+  incidentReady: bool,
+}
+
+impl SchedulerFairness {
+  pub fn init(
+    pollBudget: usize,
+    priority: usize,
+    starvationThresholdMs: usize,
+    yielded: bool,
+    incidentReady: bool,
+  ) -> SchedulerFairness {
+    return SchedulerFairness {
+      pollBudget: pollBudget,
+      priority: priority,
+      starvationThresholdMs: starvationThresholdMs,
+      yielded: yielded,
+      incidentReady: incidentReady,
+    }
+  }
+
+  pub fn safe(self: SchedulerFairness) -> bool {
+    return self.pollBudget > 0 && self.starvationThresholdMs > 0 && self.incidentReady
+  }
+
+  pub fn shouldYield(self: SchedulerFairness) -> bool {
+    return self.yielded || self.priority == 0
+  }
+}

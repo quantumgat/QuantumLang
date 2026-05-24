@@ -1,0 +1,36 @@
+pub struct JsonExactNumberFixtureProof {
+  i64NumberRoundTrip: bool,
+  u64NumberRoundTrip: bool,
+  i128StringRoundTrip: bool,
+  u256StringRoundTrip: bool,
+  decimalStringRoundTrip: bool,
+  bigIntegerStringRoundTrip: bool,
+  nonFiniteFloatRejected: bool,
+  precisionLossRejected: bool,
+}
+
+impl JsonExactNumberFixtureProof {
+  pub fn required() -> JsonExactNumberFixtureProof {
+    return JsonExactNumberFixtureProof {
+      i64NumberRoundTrip: true,
+      u64NumberRoundTrip: true,
+      i128StringRoundTrip: true,
+      u256StringRoundTrip: true,
+      decimalStringRoundTrip: true,
+      bigIntegerStringRoundTrip: true,
+      nonFiniteFloatRejected: true,
+      precisionLossRejected: true,
+    }
+  }
+
+  pub fn accepted(self: JsonExactNumberFixtureProof) -> bool {
+    return self.i64NumberRoundTrip
+      && self.u64NumberRoundTrip
+      && self.i128StringRoundTrip
+      && self.u256StringRoundTrip
+      && self.decimalStringRoundTrip
+      && self.bigIntegerStringRoundTrip
+      && self.nonFiniteFloatRejected
+      && self.precisionLossRejected
+  }
+}

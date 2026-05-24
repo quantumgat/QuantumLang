@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeThreadAffineHandle {
+  handleId: u64
+  ownerThread: u64
+  currentThread: u64
+  lifetimeToken: u64
+}

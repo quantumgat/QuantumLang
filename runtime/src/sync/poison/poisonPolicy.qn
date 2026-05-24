@@ -1,0 +1,32 @@
+pub enum RuntimePoisonPolicy {
+  Propagate
+  Recover
+  IgnoreUnsafe
+}
+
+pub struct RuntimePoisonState {
+  handle: SyncHandle,
+  policy: RuntimePoisonPolicy,
+  poisoned: bool,
+  diagnosticReady: bool,
+}
+
+impl RuntimePoisonState {
+  pub fn init(
+    handle: SyncHandle,
+    policy: RuntimePoisonPolicy,
+    poisoned: bool,
+    diagnosticReady: bool,
+  ) -> RuntimePoisonState {
+    return RuntimePoisonState {
+      handle: handle,
+      policy: policy,
+      poisoned: poisoned,
+      diagnosticReady: diagnosticReady,
+    }
+  }
+
+  pub fn reportable(self: RuntimePoisonState) -> bool {
+    return self.handle.raw() > 0 && self.poisoned && self.diagnosticReady
+  }
+}

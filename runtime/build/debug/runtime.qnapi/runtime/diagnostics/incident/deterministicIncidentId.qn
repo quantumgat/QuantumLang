@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct DeterministicIncidentId {
+  incidentId: u64
+  seed: u64
+  sequence: u64
+  subsystemHash: u64
+  stableAcrossReplay: bool
+  privacySafe: bool
+}

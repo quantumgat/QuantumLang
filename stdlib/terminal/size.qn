@@ -1,0 +1,25 @@
+pub struct TerminalSize {
+  rows: usize,
+  cols: usize,
+}
+
+pub fn size() -> TerminalSize
+pub fn size(fd: i64) -> TerminalSize
+pub fn rows(size: TerminalSize) -> usize
+pub fn columns(size: TerminalSize) -> usize
+pub fn width() -> usize
+pub fn height() -> usize
+
+impl TerminalSize {
+  pub fn valid(self: TerminalSize) -> bool {
+    return self.rows > 0 && self.cols > 0
+  }
+
+  pub fn columns(self: TerminalSize) -> usize {
+    return self.cols
+  }
+
+  pub fn rows(self: TerminalSize) -> usize {
+    return self.rows
+  }
+}

@@ -1,0 +1,39 @@
+pub enum ForAsyncParallelKind {
+  AsyncStreamLoop
+  AsyncQuestionLoop
+  ConcurrentLoop
+  LimitedConcurrentLoop
+  ParallelForLoop
+  ParallelChunkLoop
+  ParallelReduceLoop
+  ParallelMapLoop
+  ParallelFindLoop
+  CancellationAwareLoop
+}
+
+pub struct ForAsyncParallelFact {
+  kind: ForAsyncParallelKind,
+  asyncFacts: AsyncFacts,
+  parallelPlan: ParallelPlan,
+  streamCursor: StreamCursor,
+  workShard: WorkShard,
+  cancellationSafe: bool,
+  disjointMutationProved: bool,
+  deterministicReducerProved: bool,
+  runtimeHandoffReady: bool,
+  diagnosticsReady: bool,
+}
+
+impl ForAsyncParallelFact {
+  pub fn complete(self: ForAsyncParallelFact) -> bool {
+    return self.asyncFacts.cancellationSafe
+      && self.parallelPlan.canRun()
+      && self.streamCursor.canAdvance()
+      && self.workShard.hasWork()
+      && self.cancellationSafe
+      && self.disjointMutationProved
+      && self.deterministicReducerProved
+      && self.runtimeHandoffReady
+      && self.diagnosticsReady
+  }
+}

@@ -1,0 +1,33 @@
+pub struct LowerUnit {
+  moduleId: u64,
+  functionId: u64,
+  targetId: u64,
+  diagnosticCount: usize,
+}
+
+pub fn lowerUnit(moduleId: u64, functionId: u64, targetId: u64, diagnosticCount: usize) -> LowerUnit {
+  return LowerUnit {
+    moduleId: moduleId,
+    functionId: functionId,
+    targetId: targetId,
+    diagnosticCount: diagnosticCount,
+  }
+}
+
+impl LowerUnit {
+  pub fn module(self: LowerUnit) -> u64 {
+    return self.moduleId
+  }
+
+  pub fn function(self: LowerUnit) -> u64 {
+    return self.functionId
+  }
+
+  pub fn target(self: LowerUnit) -> u64 {
+    return self.targetId
+  }
+
+  pub fn isClean(self: LowerUnit) -> bool {
+    return self.diagnosticCount == 0
+  }
+}

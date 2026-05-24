@@ -1,0 +1,214 @@
+pub enum MatchErgonomicsFamily {
+  Core
+  Value
+  EnumUnionOptionResult
+  StructTuple
+  Guard
+  Collection
+  TextBinary
+  ControlFlow
+  AsyncMessage
+  Diagnostics
+}
+
+pub struct MatchErgonomicsFact {
+  family: MatchErgonomicsFamily,
+  formCount: usize,
+  exhaustiveChecked: bool,
+  unreachableArmChecked: bool,
+  loweringSelected: bool,
+  diagnosticsReady: bool,
+  executablePositiveEvidence: bool,
+  executableNegativeEvidence: bool,
+  hotPathProofReady: bool,
+}
+
+pub struct MatchAnalysisInput {
+  ast: AstMatchExpr,
+  syntax: MatchSyntaxParse,
+  sealedDomain: bool,
+  missingCaseCount: usize,
+  unreachableArmCount: usize,
+  duplicatePatternCount: usize,
+  rangeOverlapCount: usize,
+  impossibleTypeTestCount: usize,
+  anyPolicyViolation: bool,
+  qanyClassicalMix: bool,
+  asyncRequiresAwait: bool,
+}
+
+pub struct MatchAnalysisResult {
+  fact: MatchErgonomicsFact,
+  exhaustiveness: ExhaustivenessFact,
+  primaryDiagnostic: MatchDiagnostic,
+  diagnosticCount: usize,
+  typeNarrowingReady: bool,
+  rangeOverlapChecked: bool,
+  destructureShapeChecked: bool,
+  safeFailureReady: bool,
+}
+
+pub fn matchErgonomicsFact(
+  family: MatchErgonomicsFamily,
+  formCount: usize,
+  exhaustiveChecked: bool,
+  unreachableArmChecked: bool,
+  loweringSelected: bool,
+  diagnosticsReady: bool,
+  executablePositiveEvidence: bool,
+  executableNegativeEvidence: bool,
+  hotPathProofReady: bool,
+) -> MatchErgonomicsFact {
+  return MatchErgonomicsFact {
+    family: family,
+    formCount: formCount,
+    exhaustiveChecked: exhaustiveChecked,
+    unreachableArmChecked: unreachableArmChecked,
+    loweringSelected: loweringSelected,
+    diagnosticsReady: diagnosticsReady,
+    executablePositiveEvidence: executablePositiveEvidence,
+    executableNegativeEvidence: executableNegativeEvidence,
+    hotPathProofReady: hotPathProofReady,
+  }
+}
+
+pub fn matchAnalysisInput(
+  ast: AstMatchExpr,
+  syntax: MatchSyntaxParse,
+  sealedDomain: bool,
+  missingCaseCount: usize,
+  unreachableArmCount: usize,
+  duplicatePatternCount: usize,
+  rangeOverlapCount: usize,
+  impossibleTypeTestCount: usize,
+  anyPolicyViolation: bool,
+  qanyClassicalMix: bool,
+  asyncRequiresAwait: bool,
+) -> MatchAnalysisInput {
+  return MatchAnalysisInput {
+    ast: ast,
+    syntax: syntax,
+    sealedDomain: sealedDomain,
+    missingCaseCount: missingCaseCount,
+    unreachableArmCount: unreachableArmCount,
+    duplicatePatternCount: duplicatePatternCount,
+    rangeOverlapCount: rangeOverlapCount,
+    impossibleTypeTestCount: impossibleTypeTestCount,
+    anyPolicyViolation: anyPolicyViolation,
+    qanyClassicalMix: qanyClassicalMix,
+    asyncRequiresAwait: asyncRequiresAwait,
+  }
+}
+
+pub fn analyzeMatch(input: MatchAnalysisInput) -> MatchAnalysisResult {
+  let exhaustiveness = analyzeMatchExhaustiveness(input)
+  let primaryDiagnostic = analyzeMatchDiagnostics(input)
+  let diagnosticsReady = primaryDiagnostic.reportable() || primaryDiagnostic.accepted()
+  let typeNarrowingReady = !input.anyPolicyViolation
+    && !input.qanyClassicalMix
+    && input.impossibleTypeTestCount == 0
+  let rangeOverlapChecked = input.rangeOverlapCount == 0
+  let destructureShapeChecked = input.syntax.destructureReady() || input.ast.firstArmComplete()
+  let safeFailureReady = diagnosticsReady
+    && primaryDiagnostic.safeFailureReady()
+    && input.ast.executableSourceMapped()
+
+  let fact = matchErgonomicsFact(
+    MatchErgonomicsFamily.Diagnostics,
+    input.syntax.armTotal(),
+    exhaustiveness.isExhaustive(),
+    input.unreachableArmCount == 0,
+    false,
+    diagnosticsReady,
+    input.ast.complete(),
+    primaryDiagnostic.reportable() || primaryDiagnostic.accepted(),
+    false
+  )
+
+  let mut diagnosticCount = input.missingCaseCount
+    + input.unreachableArmCount
+    + input.duplicatePatternCount
+    + input.rangeOverlapCount
+    + input.impossibleTypeTestCount
+  if input.anyPolicyViolation {
+    diagnosticCount = diagnosticCount + 1
+  }
+  if input.qanyClassicalMix {
+    diagnosticCount = diagnosticCount + 1
+  }
+  if input.asyncRequiresAwait {
+    diagnosticCount = diagnosticCount + 1
+  }
+
+  return MatchAnalysisResult {
+    fact: fact,
+    exhaustiveness: exhaustiveness,
+    primaryDiagnostic: primaryDiagnostic,
+    diagnosticCount: diagnosticCount,
+    typeNarrowingReady: typeNarrowingReady,
+    rangeOverlapChecked: rangeOverlapChecked,
+    destructureShapeChecked: destructureShapeChecked,
+    safeFailureReady: safeFailureReady,
+  }
+}
+
+pub fn analyzeMatchExhaustiveness(input: MatchAnalysisInput) -> ExhaustivenessFact {
+  let mut missing = input.missingCaseCount
+  if input.syntax.defaultArmPresent {
+    missing = 0
+  }
+
+  return exhaustivenessFact(input.ast.nodeId(), missing, input.sealedDomain)
+}
+
+pub fn analyzeMatchDiagnostics(input: MatchAnalysisInput) -> MatchDiagnostic {
+  let sourceNode = input.ast.nodeId()
+  if input.missingCaseCount > 0 && !input.syntax.defaultArm() {
+    return matchDiagnosticForMissingCase(sourceNode, input.missingCaseCount)
+  }
+  if input.unreachableArmCount > 0 {
+    return matchDiagnosticForUnreachableArm(sourceNode, input.unreachableArmCount)
+  }
+  if input.duplicatePatternCount > 0 {
+    return matchDiagnosticForDuplicatePattern(sourceNode, input.duplicatePatternCount)
+  }
+  if input.anyPolicyViolation || input.qanyClassicalMix {
+    return matchDiagnosticForTypePolicy(sourceNode, input.anyPolicyViolation, input.qanyClassicalMix)
+  }
+  if input.asyncRequiresAwait {
+    return matchDiagnosticForAsyncPolicy(sourceNode, true)
+  }
+
+  return matchDiagnosticForMissingCase(sourceNode, 0)
+}
+
+impl MatchErgonomicsFact {
+  pub fn complete(self: MatchErgonomicsFact) -> bool {
+    return self.formCount > 0
+      && self.exhaustiveChecked
+      && self.unreachableArmChecked
+      && self.loweringSelected
+      && self.diagnosticsReady
+  }
+
+  pub fn executableComplete(self: MatchErgonomicsFact) -> bool {
+    return self.complete()
+      && self.executablePositiveEvidence
+      && self.executableNegativeEvidence
+      && self.hotPathProofReady
+  }
+}
+
+impl MatchAnalysisResult {
+  pub fn diagnosticsComplete(self: MatchAnalysisResult) -> bool {
+    return self.primaryDiagnostic.reportable() || self.primaryDiagnostic.accepted()
+  }
+
+  pub fn analysisComplete(self: MatchAnalysisResult) -> bool {
+    return self.diagnosticsComplete()
+      && self.typeNarrowingReady
+      && self.rangeOverlapChecked
+      && self.destructureShapeChecked
+      && self.safeFailureReady
+  }
+}

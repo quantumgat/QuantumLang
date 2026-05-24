@@ -1,0 +1,30 @@
+pub struct PluginKernelLifecycle {
+  loaded: bool,
+  initialized: bool,
+  shutdownRegistered: bool,
+  unloadSafe: bool,
+  generationChecked: bool,
+  staleHandleRejected: bool,
+}
+
+impl PluginKernelLifecycle {
+  pub fn active() -> PluginKernelLifecycle {
+    return PluginKernelLifecycle {
+      loaded: true,
+      initialized: true,
+      shutdownRegistered: true,
+      unloadSafe: true,
+      generationChecked: true,
+      staleHandleRejected: true,
+    }
+  }
+
+  pub fn accepted(self: PluginKernelLifecycle) -> bool {
+    return self.loaded
+      && self.initialized
+      && self.shutdownRegistered
+      && self.unloadSafe
+      && self.generationChecked
+      && self.staleHandleRejected
+  }
+}

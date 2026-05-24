@@ -1,0 +1,25 @@
+pub struct DumpRequest {
+  dumpKindName: string,
+  target: string,
+  formatName: string,
+  sourceMapped: bool,
+  computesFacts: bool,
+}
+
+pub fn dumpRequest(kindName: string, target: string, formatName: string) -> DumpRequest {
+  return DumpRequest { dumpKindName: kindName, target: target, formatName: formatName, sourceMapped: true, computesFacts: false }
+}
+
+impl DumpRequest {
+  pub fn dumpKind(self: DumpRequest) -> string {
+    return self.dumpKindName
+  }
+
+  pub fn targetName(self: DumpRequest) -> string {
+    return self.target
+  }
+
+  pub fn isPresentationOnly(self: DumpRequest) -> bool {
+    return self.sourceMapped && self.computesFacts == false
+  }
+}

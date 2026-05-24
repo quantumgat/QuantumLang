@@ -1,0 +1,23 @@
+pub struct BinaryE2eLoweringFact {
+  astCovered: bool,
+  hirCovered: bool,
+  mirCovered: bool,
+  nativeCovered: bool,
+  runtimeDiagnosticCovered: bool,
+  positiveFixtureCovered: bool,
+  negativeFixtureCount: usize,
+  benchmarkProofCovered: bool,
+}
+
+impl BinaryE2eLoweringFact {
+  pub fn complete(self: BinaryE2eLoweringFact) -> bool {
+    return self.astCovered
+      && self.hirCovered
+      && self.mirCovered
+      && self.nativeCovered
+      && self.runtimeDiagnosticCovered
+      && self.positiveFixtureCovered
+      && self.negativeFixtureCount >= 4
+      && self.benchmarkProofCovered
+  }
+}

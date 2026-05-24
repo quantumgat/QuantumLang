@@ -1,0 +1,95 @@
+pub struct HttpHotPathPlan {
+  appPlanReady: bool,
+  routeLookupDirect: bool,
+  handlerThunkDirect: bool,
+  extractorPlanDirect: bool,
+  capabilityPlanDirect: bool,
+  lifecycleErasedFromRequest: bool,
+  appStateReflectionBlocked: bool,
+  serviceLocatorBlocked: bool,
+  dynamicClassDispatchBlocked: bool,
+  genericPluginHookReady: bool,
+  noCoreHttp: bool,
+}
+
+impl HttpHotPathPlan {
+  pub fn init(
+    appPlanReady: bool,
+    routeLookupDirect: bool,
+    handlerThunkDirect: bool,
+    extractorPlanDirect: bool,
+    capabilityPlanDirect: bool,
+    lifecycleErasedFromRequest: bool,
+    appStateReflectionBlocked: bool,
+    serviceLocatorBlocked: bool,
+    dynamicClassDispatchBlocked: bool,
+    genericPluginHookReady: bool,
+    noCoreHttp: bool,
+  ) -> HttpHotPathPlan {
+    return HttpHotPathPlan {
+      appPlanReady: appPlanReady,
+      routeLookupDirect: routeLookupDirect,
+      handlerThunkDirect: handlerThunkDirect,
+      extractorPlanDirect: extractorPlanDirect,
+      capabilityPlanDirect: capabilityPlanDirect,
+      lifecycleErasedFromRequest: lifecycleErasedFromRequest,
+      appStateReflectionBlocked: appStateReflectionBlocked,
+      serviceLocatorBlocked: serviceLocatorBlocked,
+      dynamicClassDispatchBlocked: dynamicClassDispatchBlocked,
+      genericPluginHookReady: genericPluginHookReady,
+      noCoreHttp: noCoreHttp,
+    }
+  }
+
+  pub fn fromGraphs(
+    app: AppPlan,
+    routes: RouteGraph,
+    extractors: ExtractorGraph,
+    capabilities: CapabilityGraph,
+    thunks: HandlerThunkGraph,
+  ) -> HttpHotPathPlan {
+    return HttpHotPathPlan.init(
+      app.valid(),
+      routes.acceleratorReady(),
+      thunks.hasThunks(),
+      extractors.factCount() > 0,
+      capabilities.factCount() > 0,
+      app.lifecyclePlanComplete(),
+      true,
+      true,
+      true,
+      true,
+      true
+    )
+  }
+
+  pub fn appStateBoundary(app: AppPlan) -> HttpHotPathPlan {
+    return HttpHotPathPlan.init(
+      app.valid(),
+      true,
+      true,
+      true,
+      true,
+      app.lifecyclePlanComplete(),
+      true,
+      true,
+      true,
+      true,
+      true
+    )
+  }
+
+  pub fn complete(self: HttpHotPathPlan) -> bool {
+    return self.appPlanReady
+      && self.routeLookupDirect
+      && self.handlerThunkDirect
+      && self.extractorPlanDirect
+      && self.capabilityPlanDirect
+      && self.lifecycleErasedFromRequest
+      && self.appStateReflectionBlocked
+      && self.serviceLocatorBlocked
+      && self.dynamicClassDispatchBlocked
+      && self.genericPluginHookReady
+      && self.noCoreHttp
+  }
+}

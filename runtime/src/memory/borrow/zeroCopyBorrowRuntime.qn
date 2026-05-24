@@ -1,0 +1,33 @@
+pub struct ZeroCopyBorrowRuntime {
+  leaseTableChecked: bool,
+  staleGenerationRejected: bool,
+  mutationConflictRejected: bool,
+  overlappingMutableRejected: bool,
+  invalidRangeRejected: bool,
+  noAllocationOnHotPath: bool,
+  noCoredumpFailure: bool,
+}
+
+impl ZeroCopyBorrowRuntime {
+  pub fn init() -> ZeroCopyBorrowRuntime {
+    return ZeroCopyBorrowRuntime {
+      leaseTableChecked: true,
+      staleGenerationRejected: true,
+      mutationConflictRejected: true,
+      overlappingMutableRejected: true,
+      invalidRangeRejected: true,
+      noAllocationOnHotPath: true,
+      noCoredumpFailure: true,
+    }
+  }
+
+  pub fn safeHotPath(self: ZeroCopyBorrowRuntime) -> bool {
+    return self.leaseTableChecked
+      && self.staleGenerationRejected
+      && self.mutationConflictRejected
+      && self.overlappingMutableRejected
+      && self.invalidRangeRejected
+      && self.noAllocationOnHotPath
+      && self.noCoredumpFailure
+  }
+}

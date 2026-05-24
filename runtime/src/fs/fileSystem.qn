@@ -1,0 +1,7 @@
+pub interface FileSystem {
+  pub fn providerName(self: &FileSystem) -> string
+  pub fn supportsAtomicRename(self: &FileSystem) -> bool
+  pub fn supportsSymlink(self: &FileSystem) -> bool
+  pub fn supportsStreaming(self: &FileSystem) -> bool
+  pub fn noCoredump(self: &FileSystem) -> bool
+}

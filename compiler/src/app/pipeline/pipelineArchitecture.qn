@@ -1,0 +1,24 @@
+pub struct PipelineArchitecture {
+  pub usesFrontendStructs: bool,
+  pub usesAnalysisFacts: bool,
+  pub usesIrStructs: bool,
+  pub callsBackendInterface: bool,
+  pub ownsBackendImplementation: bool,
+}
+
+pub fn pipelineArchitecture() -> PipelineArchitecture {
+  return PipelineArchitecture {
+    usesFrontendStructs: true,
+    usesAnalysisFacts: true,
+    usesIrStructs: true,
+    callsBackendInterface: true,
+    ownsBackendImplementation: false,
+  }
+}
+
+impl PipelineArchitecture {
+  pub fn keepsBoundaryClean(self) -> bool {
+    return self.callsBackendInterface &&
+      self.ownsBackendImplementation == false
+  }
+}

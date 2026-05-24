@@ -1,0 +1,40 @@
+pub struct MachineDiagnostic {
+  code: DiagnosticCode,
+  category: DiagnosticCategory,
+  severity: DiagnosticSeverity,
+  primaryRange: SourceRange,
+  labelCount: usize,
+  noteCount: usize,
+  fixItCount: usize,
+  jsonCompatible: bool,
+  lspCompatible: bool,
+  deterministic: bool,
+  redacted: bool,
+}
+
+impl MachineDiagnostic {
+  pub fn fromDiagnostic(diagnostic: Diagnostic) -> MachineDiagnostic {
+    return MachineDiagnostic {
+      code: diagnostic.code,
+      category: diagnostic.category,
+      severity: diagnostic.severity,
+      primaryRange: diagnostic.primaryRange,
+      labelCount: diagnostic.labelCount,
+      noteCount: diagnostic.noteCount,
+      fixItCount: diagnostic.fixItCount,
+      jsonCompatible: true,
+      lspCompatible: true,
+      deterministic: true,
+      redacted: diagnostic.redacted,
+    }
+  }
+
+  pub fn safe(self: MachineDiagnostic) -> bool {
+    return self.code.valid()
+      && self.primaryRange.exact()
+      && self.jsonCompatible
+      && self.lspCompatible
+      && self.deterministic
+      && self.redacted
+  }
+}

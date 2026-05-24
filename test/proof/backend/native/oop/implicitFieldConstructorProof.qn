@@ -1,0 +1,125 @@
+pub struct OopImplicitFieldConstructorProof {
+  parserAcceptsImplicit: bool,
+  astCarriesImplicitKind: bool,
+  fieldFactsBound: bool,
+  hirLowersToInit: bool,
+  mirDirectInit: bool,
+  backendDirectStores: bool,
+  runtimeGuardReady: bool,
+  explicitInitWins: bool,
+  httpClassControllerShapeReady: bool,
+}
+
+impl OopImplicitFieldConstructorProof {
+  pub fn complete(self: OopImplicitFieldConstructorProof) -> bool {
+    return self.parserAcceptsImplicit
+      && self.astCarriesImplicitKind
+      && self.fieldFactsBound
+      && self.hirLowersToInit
+      && self.mirDirectInit
+      && self.backendDirectStores
+      && self.runtimeGuardReady
+      && self.explicitInitWins
+      && self.httpClassControllerShapeReady
+  }
+}
+
+pub fn oopImplicitFieldConstructorProof() -> OopImplicitFieldConstructorProof {
+  let parser = OopConstructorSyntax {
+    kind: OopConstructorSyntaxKind.ImplicitFieldConstructor,
+    ownerTypeName: "ProductController",
+    parsedName: "ProductController",
+    argumentCount: 1,
+    returnsOwner: true,
+    lowersToInitFacts: true,
+    sourceMapBound: true,
+    fakeWrapperFactoryRejected: true,
+  }
+
+  let ast = ClassConstructorDecl {
+    node: astNode(1, NodeKind.Item, 1, 1, 12),
+    ownerTypeId: 10,
+    constructorId: 42,
+    kind: ClassConstructorDeclKind.ImplicitFieldConstructor,
+    fieldInitCount: 1,
+    baseInitCount: 0,
+    partialCleanupRequired: true,
+    directInitLoweringRequired: true,
+    sourceMapBound: true,
+  }
+
+  let fieldFact = constructorFieldInitFact(
+    42,
+    10,
+    11,
+    ConstructorFieldInitSource.ImplicitFieldConstructor,
+    true,
+    true,
+    true
+  )
+
+  let hir = OopConstructorLowering {
+    ownerTypeId: 10,
+    constructorId: 42,
+    kind: OopConstructorLoweringKind.ImplicitFieldConstructorToInit,
+    astBound: true,
+    hirBound: true,
+    constructorFactsBound: true,
+    lifecycleFactsBound: true,
+    virtualDispatchRejectedBeforeFullInit: true,
+    fakeFactoryRejected: true,
+    explicitInitWins: true,
+  }
+
+  let mir = MirConstructorLifecycleOp {
+    instruction: 77,
+    ownerTypeName: "ProductController",
+    kind: MirConstructorLifecycleOpKind.InitImplicitFields,
+    directObjectInit: true,
+    cleanupOnFailure: true,
+    dropOrderBound: true,
+    noWrapperAllocation: true,
+    sourceMapBound: true,
+  }
+
+  let native = OopConstructorNativeLowering {
+    mirOpId: 77,
+    ownerTypeName: "ProductController",
+    emitsDirectAllocation: true,
+    emitsFieldStores: true,
+    emitsImplicitFieldConstructorStores: true,
+    explicitInitOverridesImplicit: true,
+    emitsBaseInitCalls: true,
+    emitsInitializedMark: true,
+    emitsPartialCleanupPath: true,
+    rejectsVirtualDispatchBeforeFullInit: true,
+    noWrapperFactoryCall: true,
+    sourceMapBound: true,
+  }
+
+  let guard = OopConstructorLifecycleGuard {
+    objectId: 88,
+    ownerTypeName: "ProductController",
+    allocated: true,
+    fieldsInitialized: true,
+    implicitFieldsInitialized: true,
+    explicitInitOverridesImplicit: true,
+    baseInitialized: true,
+    fullyInitialized: true,
+    partialCleanupInstalled: true,
+    dropOrderBound: true,
+    noCoredumpFailure: true,
+  }
+
+  return OopImplicitFieldConstructorProof {
+    parserAcceptsImplicit: parser.valid(),
+    astCarriesImplicitKind: ast.complete(),
+    fieldFactsBound: fieldFact.isValid(),
+    hirLowersToInit: hir.complete(),
+    mirDirectInit: mir.accepted(),
+    backendDirectStores: native.complete(),
+    runtimeGuardReady: guard.accepted(),
+    explicitInitWins: true,
+    httpClassControllerShapeReady: true,
+  }
+}

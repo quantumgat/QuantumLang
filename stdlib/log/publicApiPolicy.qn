@@ -1,0 +1,96 @@
+pub struct LogPublicApiPolicy {
+  globalLogFacade: bool,
+  globalFieldsBuilder: bool,
+  advancedUnderStdLog: bool,
+  typedLevels: bool,
+  typedFields: bool,
+  spansAndContext: bool,
+  messageTemplates: bool,
+  sinkNeutralRecords: bool,
+  staticLevelFiltering: bool,
+  stableFieldKeys: bool,
+  compactFieldEncoding: bool,
+  noAllocationFieldCommonCase: bool,
+  traceContext: bool,
+  taskActorContext: bool,
+  requestCorrelationContext: bool,
+  asyncContextPropagation: bool,
+  cancellationMarkers: bool,
+  causalChains: bool,
+  consoleSinks: bool,
+  fileSink: bool,
+  ringBufferSink: bool,
+  memorySink: bool,
+  jsonSink: bool,
+  testSink: bool,
+  runtimeIncidentSink: bool,
+  redactionRequired: bool,
+  disabledLogsErasable: bool,
+  sinkBackpressureRequired: bool,
+}
+
+pub fn logPublicApiPolicy() -> LogPublicApiPolicy {
+  return LogPublicApiPolicy {
+    globalLogFacade: true,
+    globalFieldsBuilder: true,
+    advancedUnderStdLog: true,
+    typedLevels: true,
+    typedFields: true,
+    spansAndContext: true,
+    messageTemplates: true,
+    sinkNeutralRecords: true,
+    staticLevelFiltering: true,
+    stableFieldKeys: true,
+    compactFieldEncoding: true,
+    noAllocationFieldCommonCase: true,
+    traceContext: true,
+    taskActorContext: true,
+    requestCorrelationContext: true,
+    asyncContextPropagation: true,
+    cancellationMarkers: true,
+    causalChains: true,
+    consoleSinks: true,
+    fileSink: true,
+    ringBufferSink: true,
+    memorySink: true,
+    jsonSink: true,
+    testSink: true,
+    runtimeIncidentSink: true,
+    redactionRequired: true,
+    disabledLogsErasable: true,
+    sinkBackpressureRequired: true,
+  }
+}
+
+impl LogPublicApiPolicy {
+  pub fn accepted(self: LogPublicApiPolicy) -> bool {
+    return self.globalLogFacade
+      && self.globalFieldsBuilder
+      && self.advancedUnderStdLog
+      && self.typedLevels
+      && self.typedFields
+      && self.spansAndContext
+      && self.messageTemplates
+      && self.sinkNeutralRecords
+      && self.staticLevelFiltering
+      && self.stableFieldKeys
+      && self.compactFieldEncoding
+      && self.noAllocationFieldCommonCase
+      && self.traceContext
+      && self.taskActorContext
+      && self.requestCorrelationContext
+      && self.asyncContextPropagation
+      && self.cancellationMarkers
+      && self.causalChains
+      && self.consoleSinks
+      && self.fileSink
+      && self.ringBufferSink
+      && self.memorySink
+      && self.jsonSink
+      && self.testSink
+      && self.runtimeIncidentSink
+      && self.redactionRequired
+      && self.disabledLogsErasable
+      && self.sinkBackpressureRequired
+  }
+}

@@ -1,0 +1,43 @@
+pub enum HirCallableLambdaClosureKind {
+  DirectLambdaCall
+  StackEnvironmentCall
+  FlattenedNestedEnvironment
+  AsyncClosureStateMachine
+  MoveClosureEnvironment
+  MethodReferenceCall
+  CallableClassCall
+  DynCallableDispatch
+  CollectionAlgorithmInline
+}
+
+pub struct HirCallableLambdaClosureHandoff {
+  sourceNode: u64,
+  kind: HirCallableLambdaClosureKind,
+  signatureId: u64,
+  captureSetId: u64,
+  environmentLayoutId: u64,
+  diagnosticsAttached: bool,
+  captureFlattened: bool,
+  asyncStateMachineReady: bool,
+  hotPathCandidate: bool,
+  mirReady: bool,
+}
+
+impl HirCallableLambdaClosureHandoff {
+  pub fn complete(self: HirCallableLambdaClosureHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.signatureId > 0
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+
+  pub fn hotLowerable(self: HirCallableLambdaClosureHandoff) -> bool {
+    return self.complete()
+      && self.hotPathCandidate
+      && (
+        self.captureSetId == 0
+        || self.environmentLayoutId > 0
+        || self.captureFlattened
+      )
+  }
+}

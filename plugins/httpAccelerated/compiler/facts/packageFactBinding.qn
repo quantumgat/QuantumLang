@@ -1,0 +1,33 @@
+pub struct HttpPackageFactBinding {
+  endpointGraph: string,
+  routeGraph: string,
+  extractorGraph: string,
+  capabilityGraph: string,
+  handlerThunkGraph: string,
+  sourceMap: string,
+  asyncTransportPlan: string,
+}
+
+impl HttpPackageFactBinding {
+  pub fn required() -> HttpPackageFactBinding {
+    return HttpPackageFactBinding {
+      endpointGraph: "http.endpointGraph",
+      routeGraph: "http.routeGraph",
+      extractorGraph: "http.extractorGraph",
+      capabilityGraph: "http.capabilityGraph",
+      handlerThunkGraph: "http.handlerThunkGraph",
+      sourceMap: "http.sourceMap",
+      asyncTransportPlan: "http.asyncTransportPlan",
+    }
+  }
+
+  pub fn complete(self: HttpPackageFactBinding) -> bool {
+    return self.endpointGraph != ""
+      && self.routeGraph != ""
+      && self.extractorGraph != ""
+      && self.capabilityGraph != ""
+      && self.handlerThunkGraph != ""
+      && self.sourceMap != ""
+      && self.asyncTransportPlan != ""
+  }
+}

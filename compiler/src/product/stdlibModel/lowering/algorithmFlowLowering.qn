@@ -1,0 +1,38 @@
+pub enum AlgorithmFlowSource {
+  Vec
+  Iterator
+  Stream
+  BinaryCursor
+}
+
+pub enum AlgorithmFlowTerminal {
+  Map
+  Filter
+  Reduce
+  Find
+  Any
+  All
+  CountWhere
+  ForEach
+  Collect
+}
+
+pub struct AlgorithmFlowLowering {
+  source: AlgorithmFlowSource,
+  terminal: AlgorithmFlowTerminal,
+  callbackInlineRequired: bool,
+  materializes: bool,
+  questionFlow: bool,
+  awaitQuestionFlow: bool,
+}
+
+impl AlgorithmFlowLowering {
+  pub fn hotPathCandidate(self: AlgorithmFlowLowering) -> bool {
+    return self.callbackInlineRequired
+      && (!self.materializes || self.terminal == AlgorithmFlowTerminal.Collect)
+  }
+
+  pub fn safeFlow(self: AlgorithmFlowLowering) -> bool {
+    return self.questionFlow || self.awaitQuestionFlow || self.source != AlgorithmFlowSource.Stream
+  }
+}

@@ -1,0 +1,26 @@
+pub struct OsInfo {
+  name: string,
+  arch: string,
+  family: string,
+  version: string,
+}
+
+pub fn info() -> OsInfo
+pub fn name() -> string
+pub fn arch() -> string
+pub fn family() -> string
+pub fn version() -> string
+pub fn isLinux() -> bool
+pub fn isMacos() -> bool
+pub fn isWindows() -> bool
+pub fn isUnix() -> bool
+
+impl OsInfo {
+  pub fn supported(self: OsInfo) -> bool {
+    return self.name != "" && self.arch != ""
+  }
+
+  pub fn unix(self: OsInfo) -> bool {
+    return self.family == "unix"
+  }
+}

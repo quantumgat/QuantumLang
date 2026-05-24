@@ -1,0 +1,105 @@
+import response::{Cookie, HttpCookie, SameSite}
+
+pub enum SessionRotationPolicy {
+  Never
+  Login
+  EveryRequest
+  Interval
+}
+
+pub struct SessionCookiePolicy {
+  name: string,
+  secure: bool,
+  httpOnly: bool,
+  sameSite: SameSite,
+  ttlSeconds: usize,
+  signedValue: bool,
+  encryptedValue: bool,
+}
+
+pub struct SessionPolicy {
+  cookie: SessionCookiePolicy,
+  rotation: SessionRotationPolicy,
+  csrfRequired: bool,
+  rolling: bool,
+}
+
+impl SessionCookiePolicy {
+  pub fn secure(name: string) -> SessionCookiePolicy {
+    return SessionCookiePolicy {
+      name: name,
+      secure: true,
+      httpOnly: true,
+      sameSite: SameSite.Lax,
+      ttlSeconds: 1209600,
+      signedValue: true,
+      encryptedValue: true,
+    }
+  }
+
+  pub fn ttl(self: SessionCookiePolicy, seconds: usize) -> SessionCookiePolicy {
+    return SessionCookiePolicy {
+      name: self.name,
+      secure: self.secure,
+      httpOnly: self.httpOnly,
+      sameSite: self.sameSite,
+      ttlSeconds: seconds,
+      signedValue: self.signedValue,
+      encryptedValue: self.encryptedValue,
+    }
+  }
+
+  pub fn cookie(self: SessionCookiePolicy, value: string) -> HttpCookie {
+    return HttpCookie.session(self.name, value)
+      .maxAge(self.ttlSeconds)
+      .sameSite(self.sameSite)
+      .signed()
+      .encrypted()
+  }
+
+  pub fn complete(self: SessionCookiePolicy) -> bool {
+    return self.name != "" && self.secure && self.httpOnly && self.signedValue && self.encryptedValue
+  }
+}
+
+impl SessionPolicy {
+  pub fn secure() -> SessionPolicy {
+    return SessionPolicy {
+      cookie: SessionCookiePolicy.secure("sid"),
+      rotation: SessionRotationPolicy.Login,
+      csrfRequired: true,
+      rolling: false,
+    }
+  }
+
+  pub fn rolling(self: SessionPolicy) -> SessionPolicy {
+    return SessionPolicy {
+      cookie: self.cookie,
+      rotation: self.rotation,
+      csrfRequired: self.csrfRequired,
+      rolling: true,
+    }
+  }
+
+  pub fn rotateEveryRequest(self: SessionPolicy) -> SessionPolicy {
+    return SessionPolicy {
+      cookie: self.cookie,
+      rotation: SessionRotationPolicy.EveryRequest,
+      csrfRequired: self.csrfRequired,
+      rolling: self.rolling,
+    }
+  }
+
+  pub fn withoutCsrf(self: SessionPolicy) -> SessionPolicy {
+    return SessionPolicy {
+      cookie: self.cookie,
+      rotation: self.rotation,
+      csrfRequired: false,
+      rolling: self.rolling,
+    }
+  }
+
+  pub fn complete(self: SessionPolicy) -> bool {
+    return self.cookie.complete()
+  }
+}

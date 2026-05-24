@@ -1,0 +1,36 @@
+pub struct StackKernel {
+  vecBacked: bool,
+  topIndexDirect: bool,
+  pushUsesVecStorage: bool,
+  popUsesTopLoadAndLenDec: bool,
+  peekUsesDirectLoad: bool,
+  reverseIteratorStable: bool,
+  zeroCopyFromVec: bool,
+  callableLoopsInlineable: bool,
+}
+
+impl StackKernel {
+  pub fn standard() -> StackKernel {
+    return StackKernel {
+      vecBacked: true,
+      topIndexDirect: true,
+      pushUsesVecStorage: true,
+      popUsesTopLoadAndLenDec: true,
+      peekUsesDirectLoad: true,
+      reverseIteratorStable: true,
+      zeroCopyFromVec: true,
+      callableLoopsInlineable: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: StackKernel) -> bool {
+    return self.vecBacked
+      && self.topIndexDirect
+      && self.pushUsesVecStorage
+      && self.popUsesTopLoadAndLenDec
+      && self.peekUsesDirectLoad
+      && self.reverseIteratorStable
+      && self.zeroCopyFromVec
+      && self.callableLoopsInlineable
+  }
+}

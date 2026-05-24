@@ -1,0 +1,18 @@
+pub struct RuntimeTaskGroup {
+  groupId: u64,
+  scopeId: u64,
+  childCount: usize,
+  joinedCount: usize,
+  failFast: bool,
+}
+
+impl RuntimeTaskGroup {
+  pub fn complete(self: RuntimeTaskGroup) -> bool {
+    return self.groupId > 0
+      && self.joinedCount == self.childCount
+  }
+
+  pub fn cancelsSiblingsOnFailure(self: RuntimeTaskGroup) -> bool {
+    return self.failFast
+  }
+}

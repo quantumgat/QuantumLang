@@ -1,0 +1,19 @@
+pub struct UseAfterFreeFact {
+  allocationId: u64,
+  accessNode: u64,
+  freeBeforeAccess: bool,
+}
+
+impl UseAfterFreeFact {
+  pub fn init(allocationId: u64, accessNode: u64, freeBeforeAccess: bool) -> UseAfterFreeFact {
+    return UseAfterFreeFact {
+      allocationId: allocationId,
+      accessNode: accessNode,
+      freeBeforeAccess: freeBeforeAccess,
+    }
+  }
+
+  pub fn mustReject(self: UseAfterFreeFact) -> bool {
+    return self.freeBeforeAccess
+  }
+}

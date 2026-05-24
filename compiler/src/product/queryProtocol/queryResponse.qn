@@ -1,0 +1,15 @@
+pub struct QueryResponse {
+  id: u64,
+  success: bool,
+  diagnosticCount: usize,
+  sourceMapped: bool,
+}
+
+pub fn queryResponse(id: u64, success: bool) -> QueryResponse {
+  return QueryResponse {
+    id: id,
+    success: success,
+    diagnosticCount: 0,
+    sourceMapped: true,
+  }
+}

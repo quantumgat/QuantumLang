@@ -1,0 +1,11 @@
+pub struct StdlibPublicConst {
+  name: string,
+  typeName: string,
+  stable: bool,
+}
+
+impl StdlibPublicConst {
+  pub fn accepted(self: StdlibPublicConst) -> bool {
+    return self.name != "" && self.typeName != "" && self.stable
+  }
+}

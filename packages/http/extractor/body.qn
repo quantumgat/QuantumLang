@@ -1,0 +1,28 @@
+pub struct Body<T> {
+  value: T,
+  contentType: string,
+}
+
+impl<T> Body<T> {
+  pub fn init(value: T, contentType: string) -> Body<T> {
+    return Body<T> {
+      value: value,
+      contentType: contentType,
+    }
+  }
+
+  pub fn json(value: T) -> Body<T> {
+    return Body<T> {
+      value: value,
+      contentType: "application/json",
+    }
+  }
+
+  pub fn value(self: Body<T>) -> T {
+    return self.value
+  }
+
+  pub fn contentType(self: Body<T>) -> string {
+    return self.contentType
+  }
+}

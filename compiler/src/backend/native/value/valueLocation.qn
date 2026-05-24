@@ -1,0 +1,33 @@
+pub struct ValueLocation {
+  valueId: u64,
+  registerIndex: i64,
+  stackOffset: i64,
+  inMemory: bool,
+}
+
+pub fn valueLocation(valueId: u64, registerIndex: i64, stackOffset: i64, inMemory: bool) -> ValueLocation {
+  return ValueLocation {
+    valueId: valueId,
+    registerIndex: registerIndex,
+    stackOffset: stackOffset,
+    inMemory: inMemory,
+  }
+}
+
+impl ValueLocation {
+  pub fn value(self: ValueLocation) -> u64 {
+    return self.valueId
+  }
+
+  pub fn register(self: ValueLocation) -> i64 {
+    return self.registerIndex
+  }
+
+  pub fn stackSlot(self: ValueLocation) -> i64 {
+    return self.stackOffset
+  }
+
+  pub fn isMemory(self: ValueLocation) -> bool {
+    return self.inMemory
+  }
+}

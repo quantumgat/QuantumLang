@@ -1,0 +1,31 @@
+pub struct QueueIter<T> {
+  queue: Queue<T>,
+  index: usize,
+  len: usize,
+  generation: usize,
+}
+
+impl<T> QueueIter<T> {
+  pub fn isEmpty(self: QueueIter<T>) -> bool {
+    return self.index >= self.len
+  }
+
+  pub fn next(self: QueueIter<T>) -> Option<T> {
+    if self.isEmpty() {
+      return None
+    }
+    return Some(self.queue.items[self.queue.physicalIndex(self.index)])
+  }
+
+  pub fn advance(self: QueueIter<T>) -> QueueIter<T> {
+    if self.isEmpty() {
+      return self
+    }
+    return QueueIter<T> {
+      queue: self.queue,
+      index: self.index + 1,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}

@@ -1,0 +1,36 @@
+pub struct MapIter<K, V> {
+  map: Map<K, V>,
+  index: usize,
+}
+
+impl<K, V> MapIter<K, V> {
+  pub fn next(self: MapIter<K, V>) -> Option<(K, V)> {
+    return self.map.entryAt(self.index)
+  }
+
+  pub fn advance(self: MapIter<K, V>) -> MapIter<K, V> {
+    return MapIter<K, V> {
+      map: self.map,
+      index: self.index + 1,
+    }
+  }
+}
+
+impl<K, V> Map<K, V> {
+  pub fn mapValues<U>(self: Map<K, V>, mapper: fn(V) -> U) -> Map<K, U> requires(alloc) {
+    let mut result = Map<K, U>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.len {
+      let entry = self.entryAt(index)
+      match entry {
+        Some(pair) => {
+          result = result.put(pair.0, mapper(pair.1))
+        }
+        None => {
+        }
+      }
+      index = index + 1
+    }
+    return result
+  }
+}

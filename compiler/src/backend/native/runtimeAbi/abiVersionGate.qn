@@ -1,0 +1,27 @@
+pub struct AbiVersionGate {
+  requiredVersion: string,
+  actualVersion: string,
+  compatible: bool,
+}
+
+pub fn abiVersionGate(requiredVersion: string, actualVersion: string, compatible: bool) -> AbiVersionGate {
+  return AbiVersionGate {
+    requiredVersion: requiredVersion,
+    actualVersion: actualVersion,
+    compatible: compatible,
+  }
+}
+
+impl AbiVersionGate {
+  pub fn required(self: AbiVersionGate) -> string {
+    return self.requiredVersion
+  }
+
+  pub fn actual(self: AbiVersionGate) -> string {
+    return self.actualVersion
+  }
+
+  pub fn isCompatible(self: AbiVersionGate) -> bool {
+    return self.compatible
+  }
+}

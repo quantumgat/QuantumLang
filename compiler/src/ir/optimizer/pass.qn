@@ -1,0 +1,19 @@
+pub struct OptimizationPass {
+  name: string,
+  preservesSourceMap: bool,
+  changesControlFlow: bool,
+}
+
+pub fn optimizationPass(name: string, preservesSourceMap: bool, changesControlFlow: bool) -> OptimizationPass {
+  return OptimizationPass {
+    name: name,
+    preservesSourceMap: preservesSourceMap,
+    changesControlFlow: changesControlFlow,
+  }
+}
+
+impl OptimizationPass {
+  pub fn traceable(self: OptimizationPass) -> bool {
+    return self.preservesSourceMap
+  }
+}

@@ -1,0 +1,13 @@
+pub struct DiagnosticRenderer {
+  policy: DiagnosticRenderPolicy,
+  mutatesCompilerFacts: bool,
+}
+
+impl DiagnosticRenderer {
+  pub fn pure(policy: DiagnosticRenderPolicy) -> DiagnosticRenderer {
+    return DiagnosticRenderer {
+      policy: policy,
+      mutatesCompilerFacts: false,
+    }
+  }
+}

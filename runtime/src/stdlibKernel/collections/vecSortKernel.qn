@@ -1,0 +1,46 @@
+pub enum VecSortKernelAlgorithm {
+  PdqIntrosort
+  TimSort
+  Radix
+  InsertionSmallRange
+}
+
+pub struct VecSortKernel {
+  generalAlgorithm: VecSortKernelAlgorithm,
+  stableAlgorithm: VecSortKernelAlgorithm,
+  numericAlgorithm: VecSortKernelAlgorithm,
+  smallRangeAlgorithm: VecSortKernelAlgorithm,
+  worstCaseGuarded: bool,
+  runAwareStable: bool,
+  fixedWidthNumericRadix: bool,
+}
+
+impl VecSortKernel {
+  pub fn standard() -> VecSortKernel {
+    return VecSortKernel {
+      generalAlgorithm: VecSortKernelAlgorithm.PdqIntrosort,
+      stableAlgorithm: VecSortKernelAlgorithm.TimSort,
+      numericAlgorithm: VecSortKernelAlgorithm.Radix,
+      smallRangeAlgorithm: VecSortKernelAlgorithm.InsertionSmallRange,
+      worstCaseGuarded: true,
+      runAwareStable: true,
+      fixedWidthNumericRadix: true,
+    }
+  }
+
+  pub fn canRunGeneralFastPath(self: VecSortKernel) -> bool {
+    return self.generalAlgorithm == VecSortKernelAlgorithm.PdqIntrosort
+      && self.smallRangeAlgorithm == VecSortKernelAlgorithm.InsertionSmallRange
+      && self.worstCaseGuarded
+  }
+
+  pub fn canRunStableFastPath(self: VecSortKernel) -> bool {
+    return self.stableAlgorithm == VecSortKernelAlgorithm.TimSort
+      && self.runAwareStable
+  }
+
+  pub fn canRunNumericFastPath(self: VecSortKernel) -> bool {
+    return self.numericAlgorithm == VecSortKernelAlgorithm.Radix
+      && self.fixedWidthNumericRadix
+  }
+}

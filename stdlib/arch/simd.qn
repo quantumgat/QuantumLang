@@ -1,0 +1,170 @@
+pub struct Simd<T, N> {
+  laneCount: usize,
+  aligned: bool,
+  featureSupported: bool,
+  fallbackAvailable: bool,
+}
+
+pub struct SimdMask<N> {
+  laneCount: usize,
+  activeLanes: usize,
+}
+
+pub struct SimdShuffle<N> {
+  laneCount: usize,
+  valid: bool,
+}
+
+pub enum SimdReduction {
+  Sum,
+  Product,
+  Min,
+  Max,
+  Any,
+  All,
+}
+
+pub struct SimdLoadStore {
+  alignment: usize,
+  laneCount: usize,
+  aligned: bool,
+  fallbackAvailable: bool,
+}
+
+impl<T, N> Simd<T, N> {
+  pub fn lanes(laneCount: usize) -> Simd<T, N> {
+    return Simd<T, N> {
+      laneCount: laneCount,
+      aligned: true,
+      featureSupported: true,
+      fallbackAvailable: true,
+    }
+  }
+
+  pub fn withTarget(laneCount: usize, aligned: bool, featureSupported: bool, fallbackAvailable: bool) -> Simd<T, N> {
+    return Simd<T, N> {
+      laneCount: laneCount,
+      aligned: aligned,
+      featureSupported: featureSupported,
+      fallbackAvailable: fallbackAvailable,
+    }
+  }
+
+  pub fn usable(self: Simd<T, N>) -> bool {
+    return self.featureSupported || self.fallbackAvailable
+  }
+
+  pub fn len(self: Simd<T, N>) -> usize {
+    return self.laneCount
+  }
+
+  pub fn isAligned(self: Simd<T, N>) -> bool {
+    return self.aligned
+  }
+
+  pub fn nativeReady(self: Simd<T, N>) -> bool {
+    return self.featureSupported && self.aligned
+  }
+
+  pub fn add(self: Simd<T, N>, other: Simd<T, N>) -> Simd<T, N> {
+    if self.laneCount != other.laneCount {
+      return self
+    }
+    return self
+  }
+
+  pub fn mul(self: Simd<T, N>, other: Simd<T, N>) -> Simd<T, N> {
+    if self.laneCount != other.laneCount {
+      return self
+    }
+    return self
+  }
+
+  pub fn blend(self: Simd<T, N>, other: Simd<T, N>, mask: SimdMask<N>) -> Simd<T, N> {
+    if self.laneCount != other.laneCount || self.laneCount != mask.laneCount {
+      return self
+    }
+    return self
+  }
+
+  pub fn select(self: Simd<T, N>, other: Simd<T, N>, mask: SimdMask<N>) -> Simd<T, N> {
+    return self.blend(other, mask)
+  }
+
+  pub fn shuffle(self: Simd<T, N>, shuffle: SimdShuffle<N>) -> Simd<T, N> {
+    if shuffle.valid == false || self.laneCount != shuffle.laneCount {
+      return self
+    }
+    return self
+  }
+
+  pub fn reduce(self: Simd<T, N>, reduction: SimdReduction) -> Simd<T, N> {
+    return self
+  }
+}
+
+impl<N> SimdMask<N> {
+  pub fn all(laneCount: usize) -> SimdMask<N> {
+    return SimdMask<N> {
+      laneCount: laneCount,
+      activeLanes: laneCount,
+    }
+  }
+
+  pub fn none(laneCount: usize) -> SimdMask<N> {
+    return SimdMask<N> {
+      laneCount: laneCount,
+      activeLanes: 0,
+    }
+  }
+
+  pub fn any(self: SimdMask<N>) -> bool {
+    return self.activeLanes > 0
+  }
+
+  pub fn noneActive(self: SimdMask<N>) -> bool {
+    return self.activeLanes == 0
+  }
+
+  pub fn allActive(self: SimdMask<N>) -> bool {
+    return self.activeLanes == self.laneCount
+  }
+
+  pub fn invert(self: SimdMask<N>) -> SimdMask<N> {
+    return SimdMask<N> {
+      laneCount: self.laneCount,
+      activeLanes: self.laneCount - self.activeLanes,
+    }
+  }
+}
+
+impl<N> SimdShuffle<N> {
+  pub fn identity(laneCount: usize) -> SimdShuffle<N> {
+    return SimdShuffle<N> {
+      laneCount: laneCount,
+      valid: true,
+    }
+  }
+
+  pub fn invalid(laneCount: usize) -> SimdShuffle<N> {
+    return SimdShuffle<N> {
+      laneCount: laneCount,
+      valid: false,
+    }
+  }
+}
+
+impl SimdLoadStore {
+  pub fn init(alignment: usize, laneCount: usize, aligned: bool, fallbackAvailable: bool) -> SimdLoadStore {
+    return SimdLoadStore {
+      alignment: alignment,
+      laneCount: laneCount,
+      aligned: aligned,
+      fallbackAvailable: fallbackAvailable,
+    }
+  }
+
+  pub fn accepted(self: SimdLoadStore) -> bool {
+    return self.alignment > 0 && (self.aligned || self.fallbackAvailable)
+  }
+}

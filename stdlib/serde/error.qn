@@ -1,0 +1,64 @@
+pub enum SerdeErrorKind {
+  UnsupportedFormat
+  UnsupportedType
+  MissingField
+  MissingRequiredField
+  UnknownField
+  DuplicateField
+  InvalidAlias
+  InvalidPolicy
+  FlattenConflict
+  NonFiniteNumber
+  PrecisionLossRejected
+  UnsupportedResourceType
+  UnsupportedQuantumType
+  DeriveUnavailable
+}
+
+pub struct SerdeError {
+  kind: SerdeErrorKind,
+  message: string,
+  path: string,
+  fieldName: string,
+  likelyFix: string,
+  noCoredump: bool,
+}
+
+impl SerdeError {
+  pub fn new(kind: SerdeErrorKind, message: string, path: string) -> SerdeError {
+    return SerdeError {
+      kind: kind,
+      message: message,
+      path: path,
+      fieldName: "",
+      likelyFix: "",
+      noCoredump: true,
+    }
+  }
+
+  pub fn withField(self: SerdeError, fieldName: string) -> SerdeError {
+    return SerdeError {
+      kind: self.kind,
+      message: self.message,
+      path: self.path,
+      fieldName: fieldName,
+      likelyFix: self.likelyFix,
+      noCoredump: self.noCoredump,
+    }
+  }
+
+  pub fn withFix(self: SerdeError, likelyFix: string) -> SerdeError {
+    return SerdeError {
+      kind: self.kind,
+      message: self.message,
+      path: self.path,
+      fieldName: self.fieldName,
+      likelyFix: likelyFix,
+      noCoredump: self.noCoredump,
+    }
+  }
+
+  pub fn safe(self: SerdeError) -> bool {
+    return self.noCoredump && self.message != ""
+  }
+}

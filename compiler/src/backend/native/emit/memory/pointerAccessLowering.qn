@@ -1,0 +1,21 @@
+pub struct PointerAccessLowering {
+  erasesWrapper: bool,
+  emitsDirectLoadStore: bool,
+  keepsProvenanceCheck: bool,
+  emitsDiagnosticOnFailure: bool,
+}
+
+impl PointerAccessLowering {
+  pub fn init(erasesWrapper: bool, emitsDirectLoadStore: bool, keepsProvenanceCheck: bool, emitsDiagnosticOnFailure: bool) -> PointerAccessLowering {
+    return PointerAccessLowering {
+      erasesWrapper: erasesWrapper,
+      emitsDirectLoadStore: emitsDirectLoadStore,
+      keepsProvenanceCheck: keepsProvenanceCheck,
+      emitsDiagnosticOnFailure: emitsDiagnosticOnFailure,
+    }
+  }
+
+  pub fn accepted(self: PointerAccessLowering) -> bool {
+    return self.erasesWrapper && self.emitsDirectLoadStore && self.keepsProvenanceCheck && self.emitsDiagnosticOnFailure
+  }
+}

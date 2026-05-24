@@ -1,0 +1,154 @@
+pub struct Error {
+  kind: ErrorKind,
+  code: ErrorCode,
+  publicCode: string,
+  message: string,
+  source: ErrorSource,
+  fields: ErrorFields,
+  causes: ErrorCauseChain,
+  renderPolicy: ErrorRenderPolicy,
+}
+
+pub fn error(code: ErrorCode, message: string, source: ErrorSource, fields: ErrorFields) -> Error {
+  return Error {
+    kind: ErrorKind.fromCode(code),
+    code: code,
+    publicCode: code.family(),
+    message: message,
+    source: source,
+    fields: fields,
+    causes: ErrorCauseChain.empty(),
+    renderPolicy: ErrorRenderPolicy.display(),
+  }
+}
+
+pub fn Error(kind: ErrorKind, code: string, message: string) -> Error {
+  return Error.from(kind, code, message)
+}
+
+impl Error {
+  /**
+    Creates a typed error with no cause chain.
+
+    example:
+      let err = Error.new(code, "user not found")
+
+    effects: pure
+    complexity: O(1)
+    allocation: stores caller-provided message
+    stability: public since 0.1
+  */
+  pub fn new(code: ErrorCode, message: string) -> Error {
+    return Error {
+      kind: ErrorKind.fromCode(code),
+      code: code,
+      publicCode: code.family(),
+      message: message,
+      source: ErrorSource.unknown(),
+      fields: ErrorFields.empty(),
+      causes: ErrorCauseChain.empty(),
+      renderPolicy: ErrorRenderPolicy.display(),
+    }
+  }
+
+  pub fn from(kind: ErrorKind, code: string, message: string) -> Error {
+    return Error {
+      kind: kind,
+      code: ErrorCode.new(kind.category(), code, kind.codeNumber()),
+      publicCode: code,
+      message: message,
+      source: ErrorSource.unknown(),
+      fields: ErrorFields.empty(),
+      causes: ErrorCauseChain.empty(),
+      renderPolicy: ErrorRenderPolicy.display(),
+    }
+  }
+
+  pub fn withSource(self: Error, source: ErrorSource) -> Error {
+    return Error {
+      kind: self.kind,
+      code: self.code,
+      publicCode: self.publicCode,
+      message: self.message,
+      source: source,
+      fields: self.fields,
+      causes: self.causes,
+      renderPolicy: self.renderPolicy,
+    }
+  }
+
+  pub fn withFields(self: Error, fields: ErrorFields) -> Error {
+    return Error {
+      kind: self.kind,
+      code: self.code,
+      publicCode: self.publicCode,
+      message: self.message,
+      source: self.source,
+      fields: fields,
+      causes: self.causes,
+      renderPolicy: self.renderPolicy,
+    }
+  }
+
+  pub fn withCause(self: Error, cause: ErrorCause) -> Error {
+    return Error {
+      kind: self.kind,
+      code: self.code,
+      publicCode: self.publicCode,
+      message: self.message,
+      source: self.source,
+      fields: self.fields,
+      causes: ErrorCauseChain.single(cause),
+      renderPolicy: self.renderPolicy,
+    }
+  }
+
+  pub fn withRenderPolicy(self: Error, policy: ErrorRenderPolicy) -> Error {
+    return Error {
+      kind: self.kind,
+      code: self.code,
+      publicCode: self.publicCode,
+      message: self.message,
+      source: self.source,
+      fields: self.fields,
+      causes: self.causes,
+      renderPolicy: policy,
+    }
+  }
+
+  pub fn message(self: Error) -> string {
+    return self.message
+  }
+
+  pub fn kind(self: Error) -> ErrorKind {
+    return self.kind
+  }
+
+  pub fn code(self: Error) -> ErrorCode {
+    return self.code
+  }
+
+  pub fn publicCode(self: Error) -> string {
+    return self.publicCode
+  }
+
+  pub fn safeMessage(self: Error) -> string {
+    return self.message
+  }
+
+  pub fn category(self: Error) -> ErrorCategory {
+    return self.code.category()
+  }
+
+  pub fn hasCause(self: Error) -> bool {
+    return self.causes.len > 0
+  }
+
+  pub fn analyzable(self: Error) -> bool {
+    return self.code.stable()
+      && self.message != ""
+      && self.fields.safe()
+      && self.causes.safe()
+      && self.renderPolicy.safe()
+  }
+}

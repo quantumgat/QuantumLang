@@ -1,0 +1,11 @@
+pub struct SafetyDiagnostic {
+  code: string,
+  hasRange: bool,
+  hasFixIt: bool,
+}
+
+impl SafetyDiagnostic {
+  pub fn reportable(self: SafetyDiagnostic) -> bool {
+    return self.hasRange
+  }
+}

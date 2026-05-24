@@ -1,0 +1,20 @@
+pub struct AliasConflictFact {
+  left: BorrowRangeFact,
+  right: BorrowRangeFact,
+}
+
+impl AliasConflictFact {
+  pub fn init(left: BorrowRangeFact, right: BorrowRangeFact) -> AliasConflictFact {
+    return AliasConflictFact {
+      left: left,
+      right: right,
+    }
+  }
+
+  pub fn mustReject(self: AliasConflictFact) -> bool {
+    return self.left.active &&
+      self.right.active &&
+      self.left.overlaps(self.right) &&
+      (self.left.mutable || self.right.mutable)
+  }
+}

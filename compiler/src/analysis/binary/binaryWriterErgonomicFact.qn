@@ -1,0 +1,19 @@
+pub struct BinaryWriterErgonomicFact {
+  node: u64,
+  chainedStyleAccepted: bool,
+  explicitStepStyleAccepted: bool,
+  shortAliasesAccepted: bool,
+  resultFlowAccepted: bool,
+  noAllocation: bool,
+}
+
+impl BinaryWriterErgonomicFact {
+  pub fn accepted(self: BinaryWriterErgonomicFact) -> bool {
+    return self.node > 0
+      && self.chainedStyleAccepted
+      && self.explicitStepStyleAccepted
+      && self.shortAliasesAccepted
+      && self.resultFlowAccepted
+      && self.noAllocation
+  }
+}

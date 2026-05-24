@@ -1,0 +1,12 @@
+pub struct WasmPlatformContract {
+  target: string,
+  linearMemory: bool,
+  hostImportsRequired: bool,
+  threadsOptional: bool,
+}
+
+impl WasmPlatformContract {
+  pub fn accepted(self: WasmPlatformContract) -> bool {
+    return self.target != "" && self.linearMemory
+  }
+}

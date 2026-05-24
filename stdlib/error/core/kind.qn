@@ -1,0 +1,87 @@
+pub enum ErrorKind {
+  Unknown,
+  InvalidInput,
+  BadRequest,
+  Unauthorized,
+  Forbidden,
+  NotFound,
+  Conflict,
+  RateLimited,
+  Timeout,
+  Canceled,
+  Unavailable,
+  Internal,
+}
+
+impl ErrorKind {
+  pub fn category(self: ErrorKind) -> ErrorCategory {
+    match self {
+      ErrorKind.InvalidInput => return ErrorCategory.Validation
+      ErrorKind.BadRequest => return ErrorCategory.Validation
+      ErrorKind.Unauthorized => return ErrorCategory.Permission
+      ErrorKind.Forbidden => return ErrorCategory.Permission
+      ErrorKind.NotFound => return ErrorCategory.NotFound
+      ErrorKind.Conflict => return ErrorCategory.Conflict
+      ErrorKind.RateLimited => return ErrorCategory.RateLimited
+      ErrorKind.Timeout => return ErrorCategory.Timeout
+      ErrorKind.Canceled => return ErrorCategory.Canceled
+      ErrorKind.Unavailable => return ErrorCategory.Unavailable
+      ErrorKind.Internal => return ErrorCategory.Internal
+      ErrorKind.Unknown => return ErrorCategory.Unknown
+    }
+  }
+
+  pub fn codeNumber(self: ErrorKind) -> u32 {
+    match self {
+      ErrorKind.InvalidInput => return 1001
+      ErrorKind.BadRequest => return 1002
+      ErrorKind.Unauthorized => return 1003
+      ErrorKind.Forbidden => return 1004
+      ErrorKind.NotFound => return 1005
+      ErrorKind.Conflict => return 1006
+      ErrorKind.RateLimited => return 1007
+      ErrorKind.Timeout => return 1008
+      ErrorKind.Canceled => return 1009
+      ErrorKind.Unavailable => return 1010
+      ErrorKind.Internal => return 1011
+      ErrorKind.Unknown => return 0
+    }
+  }
+
+  pub fn stable(self: ErrorKind) -> bool {
+    return self != ErrorKind.Unknown
+  }
+
+  pub fn fromCode(code: ErrorCode) -> ErrorKind {
+    return ErrorKind.fromCategory(code.category())
+  }
+
+  pub fn fromCategory(category: ErrorCategory) -> ErrorKind {
+    match category {
+      ErrorCategory.Validation => return ErrorKind.InvalidInput
+      ErrorCategory.Type => return ErrorKind.InvalidInput
+      ErrorCategory.Bounds => return ErrorKind.InvalidInput
+      ErrorCategory.Format => return ErrorKind.InvalidInput
+      ErrorCategory.Permission => return ErrorKind.Forbidden
+      ErrorCategory.NotFound => return ErrorKind.NotFound
+      ErrorCategory.Conflict => return ErrorKind.Conflict
+      ErrorCategory.RateLimited => return ErrorKind.RateLimited
+      ErrorCategory.Timeout => return ErrorKind.Timeout
+      ErrorCategory.Canceled => return ErrorKind.Canceled
+      ErrorCategory.Unavailable => return ErrorKind.Unavailable
+      ErrorCategory.Io => return ErrorKind.Unavailable
+      ErrorCategory.Os => return ErrorKind.Unavailable
+      ErrorCategory.Network => return ErrorKind.Unavailable
+      ErrorCategory.Internal => return ErrorKind.Internal
+      ErrorCategory.Memory => return ErrorKind.Internal
+      ErrorCategory.Allocator => return ErrorKind.Internal
+      ErrorCategory.Ownership => return ErrorKind.Internal
+      ErrorCategory.Pointer => return ErrorKind.Internal
+      ErrorCategory.Panic => return ErrorKind.Internal
+      ErrorCategory.Ffi => return ErrorKind.Internal
+      ErrorCategory.Compiler => return ErrorKind.Internal
+      ErrorCategory.Quantum => return ErrorKind.Internal
+      _ => return ErrorKind.Unknown
+    }
+  }
+}

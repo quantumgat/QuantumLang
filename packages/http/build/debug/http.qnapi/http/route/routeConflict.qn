@@ -1,0 +1,7 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpRouteConflict {
+  method: HttpMethod
+  path: string
+  existingHandler: string
+  newHandler: string
+}

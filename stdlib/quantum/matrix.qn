@@ -1,0 +1,7 @@
+pub struct UnitaryMatrix {
+  rows: usize,
+  cols: usize,
+}
+
+pub fn identity(size: usize) -> UnitaryMatrix
+pub fn multiply(left: UnitaryMatrix, right: UnitaryMatrix) -> UnitaryMatrix

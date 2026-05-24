@@ -1,0 +1,21 @@
+pub struct RuntimeStreamRetry {
+  streamId: u64,
+  attempts: usize,
+  maxAttempts: usize,
+  partialErrorsPreserved: bool,
+}
+
+impl RuntimeStreamRetry {
+  pub fn init(streamId: u64, attempts: usize, maxAttempts: usize, partialErrorsPreserved: bool) -> RuntimeStreamRetry {
+    return RuntimeStreamRetry {
+      streamId: streamId,
+      attempts: attempts,
+      maxAttempts: maxAttempts,
+      partialErrorsPreserved: partialErrorsPreserved,
+    }
+  }
+
+  pub fn canRetry(self: RuntimeStreamRetry) -> bool {
+    return self.streamId > 0 && self.attempts < self.maxAttempts && self.partialErrorsPreserved
+  }
+}

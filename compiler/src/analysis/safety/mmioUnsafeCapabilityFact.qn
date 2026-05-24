@@ -1,0 +1,21 @@
+pub struct MmioUnsafeCapabilityFact {
+  node: u64,
+  unsafeCapability: UnsafeCapabilityKind,
+  targetCapable: bool,
+  diagnosticCode: string,
+}
+
+impl MmioUnsafeCapabilityFact {
+  pub fn init(node: u64, unsafeCapability: UnsafeCapabilityKind, targetCapable: bool, diagnosticCode: string) -> MmioUnsafeCapabilityFact {
+    return MmioUnsafeCapabilityFact {
+      node: node,
+      unsafeCapability: unsafeCapability,
+      targetCapable: targetCapable,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn accepted(self: MmioUnsafeCapabilityFact) -> bool {
+    return self.unsafeCapability == UnsafeCapabilityKind.VolatileMmio && self.targetCapable && self.diagnosticCode != ""
+  }
+}

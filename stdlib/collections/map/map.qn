@@ -1,0 +1,131 @@
+pub struct Map<K, V> {
+  table: HashMap<K, V>,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<K, V> Map<K, V> {
+  pub fn init() -> Map<K, V> requires(alloc) {
+    return Map<K, V>.withCapacity(16)
+  }
+
+  pub fn empty() -> Map<K, V> requires(alloc) {
+    return Map<K, V>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Map<K, V> requires(alloc) {
+    let table = HashMap<K, V>.withCapacity(capacity)
+    return Map<K, V> {
+      table: table,
+      len: table.len(),
+      capacity: table.capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn withHasher(hasher: Hasher) -> Map<K, V> requires(alloc) {
+    let table = HashMap<K, V>.withHasher(hasher)
+    return Map<K, V> {
+      table: table,
+      len: table.len(),
+      capacity: table.capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> MapBuilder<K, V> requires(alloc) {
+    return MapBuilder<K, V>.init()
+  }
+
+  pub fn len(self: Map<K, V>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Map<K, V>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Map<K, V>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn get(self: Map<K, V>, key: K) -> Option<V> {
+    return self.table.get(key)
+  }
+
+  pub fn getOr(self: Map<K, V>, key: K, fallback: V) -> V {
+    let found = self.get(key)
+    match found {
+      Some(value) => {
+        return value
+      }
+      None => {
+        return fallback
+      }
+    }
+  }
+
+  pub fn containsKey(self: Map<K, V>, key: K) -> bool {
+    return self.table.containsKey(key)
+  }
+
+  pub fn has(self: Map<K, V>, key: K) -> bool {
+    return self.containsKey(key)
+  }
+
+  pub fn put(self: Map<K, V>, key: K, value: V) -> Map<K, V> requires(alloc) {
+    let table = self.table.put(key, value)
+    return Map<K, V> {
+      table: table,
+      len: table.len(),
+      capacity: table.capacity,
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn insert(self: Map<K, V>, key: K, value: V) -> Map<K, V> requires(alloc) {
+    return self.put(key, value)
+  }
+
+  pub fn set(self: Map<K, V>, key: K, value: V) -> Map<K, V> requires(alloc) {
+    return self.put(key, value)
+  }
+
+  pub fn remove(self: Map<K, V>, key: K) -> (Map<K, V>, Option<V>) requires(alloc) {
+    let removed = self.table.remove(key)
+    let nextTable = removed.0
+    return (
+      Map<K, V> {
+        table: nextTable,
+        len: nextTable.len(),
+        capacity: nextTable.capacity,
+        generation: self.generation + 1,
+      },
+      removed.1
+    )
+  }
+
+  pub fn entryAt(self: Map<K, V>, index: usize) -> Option<(K, V)> {
+    return self.table.entryAt(index)
+  }
+
+  pub fn keys(self: Map<K, V>) -> Keys<K> {
+    return Keys<K> {
+      mapLength: self.len,
+    }
+  }
+
+  pub fn values(self: Map<K, V>) -> Values<V> {
+    return Values<V> {
+      mapLength: self.len,
+    }
+  }
+
+  pub fn iter(self: Map<K, V>) -> MapIter<K, V> {
+    return MapIter<K, V> {
+      map: self,
+      index: 0,
+    }
+  }
+}

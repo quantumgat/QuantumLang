@@ -1,0 +1,19 @@
+pub enum RuntimeNetPlatformKind {
+  Epoll
+  IoUring
+  Kqueue
+  Iocp
+  Portable
+}
+
+pub struct RuntimeNetPlatformBackend {
+  kind: RuntimeNetPlatformKind,
+  bestAvailable: bool,
+  deterministicTestBackend: bool,
+}
+
+impl RuntimeNetPlatformBackend {
+  pub fn accepted(self: RuntimeNetPlatformBackend) -> bool {
+    return self.bestAvailable || self.deterministicTestBackend
+  }
+}

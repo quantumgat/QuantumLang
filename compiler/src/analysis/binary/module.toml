@@ -1,0 +1,7 @@
+[module]
+name = "binary"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "binary-analysis-facts"
+

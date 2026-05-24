@@ -1,0 +1,26 @@
+pub struct PluginKernelTargetGate {
+  osAccepted: bool,
+  archAccepted: bool,
+  featureAccepted: bool,
+  fallbackAvailable: bool,
+  deterministicDispatch: bool,
+}
+
+impl PluginKernelTargetGate {
+  pub fn checked(featureAccepted: bool, fallbackAvailable: bool) -> PluginKernelTargetGate {
+    return PluginKernelTargetGate {
+      osAccepted: true,
+      archAccepted: true,
+      featureAccepted: featureAccepted,
+      fallbackAvailable: fallbackAvailable,
+      deterministicDispatch: true,
+    }
+  }
+
+  pub fn accepted(self: PluginKernelTargetGate) -> bool {
+    return self.osAccepted
+      && self.archAccepted
+      && (self.featureAccepted || self.fallbackAvailable)
+      && self.deterministicDispatch
+  }
+}

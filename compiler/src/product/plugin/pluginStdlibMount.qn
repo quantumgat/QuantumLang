@@ -1,0 +1,33 @@
+pub struct PluginStdlibMount {
+  sourceRoot: string,
+  includeGlob: string,
+  publicRootCount: usize,
+  recursiveSource: bool,
+  modQnOwnsExports: bool,
+  manifestOwnsNamespace: bool,
+  oldMetadataRejected: bool,
+}
+
+impl PluginStdlibMount {
+  pub fn fromRoot(root: PluginStdlibRoot) -> PluginStdlibMount {
+    return PluginStdlibMount {
+      sourceRoot: root.root,
+      includeGlob: root.includeGlob,
+      publicRootCount: root.publicRootCount,
+      recursiveSource: root.sourceRecursive,
+      modQnOwnsExports: true,
+      manifestOwnsNamespace: true,
+      oldMetadataRejected: true,
+    }
+  }
+
+  pub fn accepted(self: PluginStdlibMount) -> bool {
+    return self.sourceRoot != ""
+      && self.includeGlob == "**/*.qn"
+      && self.publicRootCount > 0
+      && self.recursiveSource
+      && self.modQnOwnsExports
+      && self.manifestOwnsNamespace
+      && self.oldMetadataRejected
+  }
+}

@@ -1,0 +1,39 @@
+pub struct ParallelLoopCompilerCallbackProof {
+  eligiblePattern: string,
+  helperFunctionEmitted: bool,
+  runtimeCallEmitted: bool,
+  sharedStopRuntime: bool,
+  fallbackForIneligibleBodies: bool,
+  executableFixture: string,
+  exitCode: i64,
+}
+
+pub fn parallelLoopCompilerCallbackProof(
+  helperFunctionEmitted: bool,
+  runtimeCallEmitted: bool,
+  sharedStopRuntime: bool,
+  fallbackForIneligibleBodies: bool,
+  exitCode: i64,
+) -> ParallelLoopCompilerCallbackProof {
+  return ParallelLoopCompilerCallbackProof {
+    eligiblePattern: "if worker == literal { stop worker }",
+    helperFunctionEmitted: helperFunctionEmitted,
+    runtimeCallEmitted: runtimeCallEmitted,
+    sharedStopRuntime: sharedStopRuntime,
+    fallbackForIneligibleBodies: fallbackForIneligibleBodies,
+    executableFixture: "parallel_loop_compiler_callback_ok.qn",
+    exitCode: exitCode,
+  }
+}
+
+impl ParallelLoopCompilerCallbackProof {
+  pub fn accepted(self: ParallelLoopCompilerCallbackProof) -> bool {
+    return self.eligiblePattern == "if worker == literal { stop worker }"
+      && self.helperFunctionEmitted
+      && self.runtimeCallEmitted
+      && self.sharedStopRuntime
+      && self.fallbackForIneligibleBodies
+      && self.executableFixture == "parallel_loop_compiler_callback_ok.qn"
+      && self.exitCode == 4
+  }
+}

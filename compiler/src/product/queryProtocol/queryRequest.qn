@@ -1,0 +1,15 @@
+pub struct QueryRequest {
+  id: u64,
+  method: string,
+  documentUri: string,
+  deterministic: bool,
+}
+
+pub fn queryRequest(id: u64, method: string, documentUri: string) -> QueryRequest {
+  return QueryRequest {
+    id: id,
+    method: method,
+    documentUri: documentUri,
+    deterministic: true,
+  }
+}

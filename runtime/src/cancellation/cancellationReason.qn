@@ -1,0 +1,6 @@
+pub enum CancellationReason {
+  UserCancel
+  DeadlineCancel
+  ParentCancel
+  FailureCancel
+}

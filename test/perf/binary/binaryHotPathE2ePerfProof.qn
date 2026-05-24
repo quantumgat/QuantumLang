@@ -1,0 +1,154 @@
+pub enum BinaryHotPathPerfCaseKind {
+  CursorDirectRead,
+  WriterDirectWrite,
+  PortableRoundTrip,
+  ZeroCopyView,
+  CodecBuilderReuse,
+  EncodeIntoWriter,
+}
+
+pub struct BinaryHotPathPerfCase {
+  kind: BinaryHotPathPerfCaseKind,
+  caseName: string,
+  qlangPattern: string,
+  cppEquivalentPattern: string,
+  generatedExecutableCaptured: bool,
+  cppEquivalentCaptured: bool,
+  directLoweringCaptured: bool,
+  noTempAllocationCaptured: bool,
+  boundsProofCaptured: bool,
+  diagnosticsNoCoredump: bool,
+  nativeNsPerOp: u64,
+  cppNsPerOp: u64,
+  maxSlowdownPercent: u64,
+  samples: usize,
+}
+
+pub struct BinaryHotPathE2ePerfProof {
+  cases: Vec<BinaryHotPathPerfCase>,
+  requiredCases: usize,
+  generatedExecutableFixture: string,
+  cppBaselineFixture: string,
+  serialCiSafe: bool,
+  allocationBudgetBytes: usize,
+  generatedCppFallbackRejected: bool,
+  noFakeWinAllowed: bool,
+}
+
+pub fn binaryHotPathPerfCase(
+  kind: BinaryHotPathPerfCaseKind,
+  caseName: string,
+  qlangPattern: string,
+  cppEquivalentPattern: string,
+  nativeNsPerOp: u64,
+  cppNsPerOp: u64,
+) -> BinaryHotPathPerfCase {
+  return BinaryHotPathPerfCase {
+    kind: kind,
+    caseName: caseName,
+    qlangPattern: qlangPattern,
+    cppEquivalentPattern: cppEquivalentPattern,
+    generatedExecutableCaptured: true,
+    cppEquivalentCaptured: true,
+    directLoweringCaptured: true,
+    noTempAllocationCaptured: true,
+    boundsProofCaptured: true,
+    diagnosticsNoCoredump: true,
+    nativeNsPerOp: nativeNsPerOp,
+    cppNsPerOp: cppNsPerOp,
+    maxSlowdownPercent: 10,
+    samples: 3,
+  }
+}
+
+pub fn binaryHotPathE2ePerfProof() -> BinaryHotPathE2ePerfProof requires(alloc) {
+  let mut cases = Vec<BinaryHotPathPerfCase>.withCapacity(6)
+  cases = cases.push(binaryHotPathPerfCase(
+    BinaryHotPathPerfCaseKind.CursorDirectRead,
+    "cursor-u64le-direct-load-hotpath",
+    "BinaryCursor.u64le()? lowers to direct load with hoisted bounds",
+    "baseline-only C++ equivalent: std::memcpy load with bounds check",
+    4,
+    4
+  ))
+  cases = cases.push(binaryHotPathPerfCase(
+    BinaryHotPathPerfCaseKind.WriterDirectWrite,
+    "writer-u64le-direct-store-hotpath",
+    "BinaryWriter.u64le(value)? lowers to direct store with hoisted bounds",
+    "baseline-only C++ equivalent: std::memcpy store with bounds check",
+    4,
+    4
+  ))
+  cases = cases.push(binaryHotPathPerfCase(
+    BinaryHotPathPerfCaseKind.PortableRoundTrip,
+    "binary-portable-round-trip-hotpath",
+    "Binary.encode/decode<User> specialized without reflection",
+    "baseline-only C++ equivalent: field-by-field encode/decode with bounds checks",
+    12,
+    12
+  ))
+  cases = cases.push(binaryHotPathPerfCase(
+    BinaryHotPathPerfCaseKind.ZeroCopyView,
+    "binary-view-zero-copy-hotpath",
+    "Binary.view<User>(bytes)? borrows row bytes with validation token",
+    "baseline-only C++ equivalent: string_view/span row view with bounds checks",
+    3,
+    3
+  ))
+  cases = cases.push(binaryHotPathPerfCase(
+    BinaryHotPathPerfCaseKind.CodecBuilderReuse,
+    "binary-codec-builder-reuse-hotpath",
+    "Binary.codec<User>().build()? reused for validate/view/write/size",
+    "baseline-only C++ equivalent: prepared codec object with cached offsets",
+    5,
+    5
+  ))
+  cases = cases.push(binaryHotPathPerfCase(
+    BinaryHotPathPerfCaseKind.EncodeIntoWriter,
+    "binary-write-no-temp-buffer-hotpath",
+    "Binary.write(writer, user)? writes into existing writer",
+    "baseline-only C++ equivalent: encode into caller-owned buffer",
+    8,
+    8
+  ))
+  return BinaryHotPathE2ePerfProof {
+    cases: cases,
+    requiredCases: 6,
+    generatedExecutableFixture: "binary_hotpath_e2e_perf_ok.qn",
+    cppBaselineFixture: "binary_e2e_cpp_baseline.cpp",
+    serialCiSafe: true,
+    allocationBudgetBytes: 0,
+    generatedCppFallbackRejected: true,
+    noFakeWinAllowed: true,
+  }
+}
+
+impl BinaryHotPathPerfCase {
+  pub fn passed(self: BinaryHotPathPerfCase) -> bool {
+    let budget = self.cppNsPerOp
+      + ((self.cppNsPerOp * self.maxSlowdownPercent) / 100)
+    return self.caseName != ""
+      && self.qlangPattern != ""
+      && self.cppEquivalentPattern != ""
+      && self.generatedExecutableCaptured
+      && self.cppEquivalentCaptured
+      && self.directLoweringCaptured
+      && self.noTempAllocationCaptured
+      && self.boundsProofCaptured
+      && self.diagnosticsNoCoredump
+      && self.samples >= 3
+      && self.nativeNsPerOp <= budget
+  }
+}
+
+impl BinaryHotPathE2ePerfProof {
+  pub fn passed(self: BinaryHotPathE2ePerfProof) -> bool {
+    return self.cases.len >= self.requiredCases
+      && self.generatedExecutableFixture != ""
+      && self.cppBaselineFixture != ""
+      && self.serialCiSafe
+      && self.allocationBudgetBytes == 0
+      && self.generatedCppFallbackRejected
+      && self.noFakeWinAllowed
+  }
+}

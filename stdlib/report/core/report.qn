@@ -1,0 +1,21 @@
+pub enum ReportFormat {
+  CompactText,
+  RichText,
+  Json,
+  QtReportJson,
+  ReplayArtifact,
+}
+
+pub struct Report {
+  title: string,
+  format: ReportFormat,
+  redacted: bool,
+}
+
+pub fn report(title: string) -> Report {
+  return Report {
+    title: title,
+    format: ReportFormat.CompactText,
+    redacted: true,
+  }
+}

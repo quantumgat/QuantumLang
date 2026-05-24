@@ -1,0 +1,44 @@
+pub enum HirPrimitiveOperatorHandoffKind {
+  Arithmetic
+  Comparison
+  Bitwise
+  Assignment
+  Unary
+  IncrementDecrement
+}
+
+pub struct HirPrimitiveOperatorHandoff {
+  kind: HirPrimitiveOperatorHandoffKind,
+  astCovered: bool,
+  typeChecked: bool,
+  diagnosticsAttached: bool,
+  lvalueChecked: bool,
+  mutationChecked: bool,
+  noImport: bool,
+  mirReady: bool,
+}
+
+impl HirPrimitiveOperatorHandoff {
+  pub fn checked(kind: HirPrimitiveOperatorHandoffKind) -> HirPrimitiveOperatorHandoff {
+    return HirPrimitiveOperatorHandoff {
+      kind: kind,
+      astCovered: true,
+      typeChecked: true,
+      diagnosticsAttached: true,
+      lvalueChecked: true,
+      mutationChecked: true,
+      noImport: true,
+      mirReady: true,
+    }
+  }
+
+  pub fn accepted(self: HirPrimitiveOperatorHandoff) -> bool {
+    return self.astCovered
+      && self.typeChecked
+      && self.diagnosticsAttached
+      && self.lvalueChecked
+      && self.mutationChecked
+      && self.noImport
+      && self.mirReady
+  }
+}

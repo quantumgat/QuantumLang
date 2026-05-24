@@ -1,0 +1,10 @@
+pub fn print(values...) -> Result<Unit, PrintError>
+pub fn println(values...) -> Result<Unit, PrintError>
+pub fn eprint(values...) -> Result<Unit, PrintError>
+pub fn eprintln(values...) -> Result<Unit, PrintError>
+pub fn printWith(options: PrintOptions, values...) -> Result<Unit, PrintError>
+pub fn printlnWith(options: PrintOptions, values...) -> Result<Unit, PrintError>
+pub fn eprintWith(options: PrintOptions, values...) -> Result<Unit, PrintError>
+pub fn eprintlnWith(options: PrintOptions, values...) -> Result<Unit, PrintError>
+pub fn flush() -> Result<Unit, PrintError>
+pub fn flushTarget(target: PrintTarget) -> Result<Unit, PrintError>

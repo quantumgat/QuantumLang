@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimePointerCheckAccess {
+  address: usize
+  bytes: usize
+  nonNull: bool
+  boundsChecked: bool
+  provenanceChecked: bool
+  writableAccepted: bool
+  diagnosticCode: string
+}

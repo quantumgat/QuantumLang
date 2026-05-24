@@ -1,0 +1,88 @@
+pub enum OopCoreExecutionSurface {
+  Constructor
+  ClassInterface
+  MethodLookup
+  ClassMember
+  Lifecycle
+  Dispatch
+  Layout
+  Production
+}
+
+pub struct OopCoreFixtureExecutionFact {
+  surface: OopCoreExecutionSurface,
+  positiveFixtureCount: usize,
+  negativeDiagnosticCount: usize,
+  dumpSurfaceCount: usize,
+  explainSurfaceCount: usize,
+  frontendAstBound: bool,
+  analysisFactBound: bool,
+  hirMirHandoffBound: bool,
+  backendProofRequired: bool,
+  backendProofBound: bool,
+  runtimeBoundaryRequired: bool,
+  runtimeBoundaryBound: bool,
+  diagnosticBound: bool,
+  lspParityRequired: bool,
+  lspParityBound: bool,
+}
+
+pub fn oopCoreFixtureExecutionFact(
+  surface: OopCoreExecutionSurface,
+  positiveFixtureCount: usize,
+  negativeDiagnosticCount: usize,
+  dumpSurfaceCount: usize,
+  explainSurfaceCount: usize,
+  frontendAstBound: bool,
+  analysisFactBound: bool,
+  hirMirHandoffBound: bool,
+  backendProofRequired: bool,
+  backendProofBound: bool,
+  runtimeBoundaryRequired: bool,
+  runtimeBoundaryBound: bool,
+  diagnosticBound: bool,
+  lspParityRequired: bool,
+  lspParityBound: bool,
+) -> OopCoreFixtureExecutionFact {
+  return OopCoreFixtureExecutionFact {
+    surface: surface,
+    positiveFixtureCount: positiveFixtureCount,
+    negativeDiagnosticCount: negativeDiagnosticCount,
+    dumpSurfaceCount: dumpSurfaceCount,
+    explainSurfaceCount: explainSurfaceCount,
+    frontendAstBound: frontendAstBound,
+    analysisFactBound: analysisFactBound,
+    hirMirHandoffBound: hirMirHandoffBound,
+    backendProofRequired: backendProofRequired,
+    backendProofBound: backendProofBound,
+    runtimeBoundaryRequired: runtimeBoundaryRequired,
+    runtimeBoundaryBound: runtimeBoundaryBound,
+    diagnosticBound: diagnosticBound,
+    lspParityRequired: lspParityRequired,
+    lspParityBound: lspParityBound,
+  }
+}
+
+impl OopCoreFixtureExecutionFact {
+  pub fn fixtureInventoryClosed(self: OopCoreFixtureExecutionFact) -> bool {
+    return self.positiveFixtureCount > 0
+      && self.negativeDiagnosticCount > 0
+      && self.dumpSurfaceCount > 0
+      && self.explainSurfaceCount > 0
+  }
+
+  pub fn executionClosureClosed(self: OopCoreFixtureExecutionFact) -> bool {
+    return self.fixtureInventoryClosed()
+      && self.frontendAstBound
+      && self.analysisFactBound
+      && self.hirMirHandoffBound
+      && self.diagnosticBound
+      && (self.backendProofRequired == false || self.backendProofBound)
+      && (self.runtimeBoundaryRequired == false || self.runtimeBoundaryBound)
+      && (self.lspParityRequired == false || self.lspParityBound)
+  }
+
+  pub fn blocksCoreCompletion(self: OopCoreFixtureExecutionFact) -> bool {
+    return self.executionClosureClosed() == false
+  }
+}

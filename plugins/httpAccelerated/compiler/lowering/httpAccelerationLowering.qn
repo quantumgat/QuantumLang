@@ -1,0 +1,64 @@
+pub struct HttpAcceleratedLoweringPlan {
+  packageFactsReady: bool,
+  hookCount: usize,
+  loweringStageCount: usize,
+  sourceMapsRequired: bool,
+  fallbackRequired: bool,
+  typedFailureRequired: bool,
+  deterministic: bool,
+  noCoreHttp: bool,
+}
+
+impl HttpAcceleratedLoweringPlan {
+  pub fn fromPackageFacts(facts: HttpPackageFactSet) -> HttpAcceleratedLoweringPlan {
+    return HttpAcceleratedLoweringPlan {
+      packageFactsReady: facts.ready(),
+      hookCount: 4,
+      loweringStageCount: 3,
+      sourceMapsRequired: true,
+      fallbackRequired: true,
+      typedFailureRequired: true,
+      deterministic: true,
+      noCoreHttp: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedLoweringPlan) -> bool {
+    return self.packageFactsReady
+      && self.hookCount >= 4
+      && self.loweringStageCount == 3
+      && self.sourceMapsRequired
+      && self.fallbackRequired
+      && self.typedFailureRequired
+      && self.deterministic
+      && self.noCoreHttp
+  }
+}
+
+pub struct HttpAcceleratedHookUse {
+  packageFactLowering: bool,
+  intrinsicLowering: bool,
+  targetSpecialize: bool,
+  nativeEmitSpecialize: bool,
+  runtimeKernelBinding: bool,
+}
+
+impl HttpAcceleratedHookUse {
+  pub fn required() -> HttpAcceleratedHookUse {
+    return HttpAcceleratedHookUse {
+      packageFactLowering: true,
+      intrinsicLowering: true,
+      targetSpecialize: true,
+      nativeEmitSpecialize: true,
+      runtimeKernelBinding: true,
+    }
+  }
+
+  pub fn genericOnly(self: HttpAcceleratedHookUse) -> bool {
+    return self.packageFactLowering
+      && self.intrinsicLowering
+      && self.targetSpecialize
+      && self.nativeEmitSpecialize
+      && self.runtimeKernelBinding
+  }
+}

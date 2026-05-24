@@ -1,0 +1,35 @@
+pub enum PackageTargetKind {
+  AppTarget,
+  LibraryTarget,
+}
+
+pub struct PackageTarget {
+  packageName: string,
+  outputName: string,
+  kind: PackageTargetKind,
+  backend: string,
+  entry: string,
+  hidden: bool,
+}
+
+pub fn compilerAppTarget() -> PackageTarget {
+  return PackageTarget {
+    packageName: "qtlc",
+    outputName: "qtlc",
+    kind: PackageTargetKind.AppTarget,
+    backend: "native",
+    entry: "src/main.qn",
+    hidden: false,
+  }
+}
+
+pub fn runtimeLibraryTarget() -> PackageTarget {
+  return PackageTarget {
+    packageName: "runtime",
+    outputName: "libqtlcRuntime.a",
+    kind: PackageTargetKind.LibraryTarget,
+    backend: "native",
+    entry: "src/mod.qn",
+    hidden: true,
+  }
+}

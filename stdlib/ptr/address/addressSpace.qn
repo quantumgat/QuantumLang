@@ -1,0 +1,26 @@
+/**
+  Memory address-space classification for pointers.
+
+  example:
+    if ptr.addressSpace() == AddressSpace.Gpu {
+      return
+    }
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: used by compiler/runtime checks to prevent invalid cross-space access
+  stability: public since 0.1
+*/
+pub enum AddressSpace {
+  Host,
+  Heap,
+  Stack,
+  Mmap,
+  SharedMemory,
+  Device,
+  Mmio,
+  Gpu,
+  Kernel,
+  Foreign,
+}

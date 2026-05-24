@@ -1,0 +1,32 @@
+[plugin]
+name = "plugin-template-runtime-kernel"
+version = "0.1.0"
+schema = 1
+edition = "2026"
+kind = "runtime-kernel"
+
+[stdlib]
+root = "stdlib"
+include = ["**/*.qn"]
+public_roots = ["std.pluginTemplate"]
+
+[runtime]
+abi = "qtlc-plugin-runtime-v1"
+kernels = ["pluginTemplate.kernel"]
+typed_failure = "required"
+no_coredump = "required"
+target_gate = "required"
+lifecycle = "required"
+
+[exports]
+modules = ["std.pluginTemplate"]
+intrinsics = ["pluginTemplate.kernel"]
+
+[proof]
+positive_tests = "required"
+negative_tests = "required"
+fallback_tests = "required"
+perf_tests = "required"
+typed_failure = "required"
+no_coredump = "required"
+

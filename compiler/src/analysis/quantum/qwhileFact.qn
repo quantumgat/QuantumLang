@@ -1,0 +1,25 @@
+pub struct QwhileFact {
+  sourceNode: u64,
+  quantumRegion: u64,
+  profileName: string,
+  staticBoundKnown: bool,
+  boundGreaterThanZero: bool,
+  qubitOwnershipPreserved: bool,
+  measurementControlledExit: bool,
+  qirProfileSupported: bool,
+  diagnosticsReady: bool,
+}
+
+impl QwhileFact {
+  pub fn accepted(self: QwhileFact) -> bool {
+    return self.sourceNode > 0
+      && self.quantumRegion > 0
+      && self.profileName != ""
+      && self.staticBoundKnown
+      && self.boundGreaterThanZero
+      && self.qubitOwnershipPreserved
+      && self.measurementControlledExit
+      && self.qirProfileSupported
+      && self.diagnosticsReady
+  }
+}

@@ -1,0 +1,21 @@
+pub struct BenchmarkProofFact {
+  scenario: string,
+  serialSafe: bool,
+  baselineRecorded: bool,
+  regressionBudgetPercent: usize,
+}
+
+impl BenchmarkProofFact {
+  pub fn init(scenario: string, serialSafe: bool, baselineRecorded: bool, regressionBudgetPercent: usize) -> BenchmarkProofFact {
+    return BenchmarkProofFact {
+      scenario: scenario,
+      serialSafe: serialSafe,
+      baselineRecorded: baselineRecorded,
+      regressionBudgetPercent: regressionBudgetPercent,
+    }
+  }
+
+  pub fn accepted(self: BenchmarkProofFact) -> bool {
+    return self.scenario != "" && self.serialSafe && self.baselineRecorded && self.regressionBudgetPercent > 0
+  }
+}

@@ -1,0 +1,19 @@
+pub struct JsonLogSink {
+  pretty: bool,
+  stableFieldOrder: bool,
+  redactsBeforeWrite: bool,
+}
+
+impl JsonLogSink {
+  pub fn compact() -> JsonLogSink {
+    return JsonLogSink {
+      pretty: false,
+      stableFieldOrder: true,
+      redactsBeforeWrite: true,
+    }
+  }
+
+  pub fn safe(self: JsonLogSink) -> bool {
+    return self.stableFieldOrder && self.redactsBeforeWrite
+  }
+}

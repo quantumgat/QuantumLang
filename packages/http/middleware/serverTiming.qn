@@ -1,0 +1,30 @@
+pub struct ServerTimingPolicy {
+  enabled: bool,
+  timingAllowOrigin: string,
+}
+
+pub struct ServerTiming {
+}
+
+impl ServerTimingPolicy {
+  pub fn init(enabled: bool, timingAllowOrigin: string) -> ServerTimingPolicy {
+    return ServerTimingPolicy {
+      enabled: enabled,
+      timingAllowOrigin: timingAllowOrigin,
+    }
+  }
+}
+
+impl ServerTiming {
+  pub fn enabled() -> ServerTimingPolicy {
+    return ServerTimingPolicy.init(true, "")
+  }
+
+  pub fn allowOrigin(origin: string) -> ServerTimingPolicy {
+    return ServerTimingPolicy.init(true, origin)
+  }
+
+  pub fn disabled() -> ServerTimingPolicy {
+    return ServerTimingPolicy.init(false, "")
+  }
+}

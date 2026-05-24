@@ -1,0 +1,25 @@
+pub enum MirDropKind {
+  Value,
+  Box,
+  Shared,
+  Foreign,
+  Arena,
+  PoolSlot,
+}
+
+pub struct MirDropGlue {
+  instruction: u64,
+  kind: MirDropKind,
+  typeName: string,
+  doubleDropRejected: bool,
+  generationChecked: bool,
+}
+
+impl MirDropGlue {
+  pub fn accepted(self: MirDropGlue) -> bool {
+    return self.instruction > 0
+      && self.typeName != ""
+      && self.doubleDropRejected
+      && self.generationChecked
+  }
+}

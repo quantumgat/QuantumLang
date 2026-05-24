@@ -1,0 +1,19 @@
+pub struct LifetimeFact {
+  lifetimeId: u64,
+  ownerSymbol: u64,
+  outlivesLifetime: u64,
+}
+
+pub fn lifetimeFact(lifetimeId: u64, ownerSymbol: u64, outlivesLifetime: u64) -> LifetimeFact {
+  return LifetimeFact {
+    lifetimeId: lifetimeId,
+    ownerSymbol: ownerSymbol,
+    outlivesLifetime: outlivesLifetime,
+  }
+}
+
+impl LifetimeFact {
+  pub fn hasOutlivesBound(self: LifetimeFact) -> bool {
+    return self.outlivesLifetime != 0
+  }
+}

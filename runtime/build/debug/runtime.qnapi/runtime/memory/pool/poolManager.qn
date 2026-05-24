@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub abstract class PoolManager {
+  poolCount: usize
+  active: bool
+  pub init() {}
+  pub fn start(self: &mut PoolManager) -> bool
+  pub fn shutdown(self: &mut PoolManager) -> bool
+  pub fn drop(self: &mut PoolManager) -> bool
+  pub fn ownsPools(self: &PoolManager) -> bool
+}

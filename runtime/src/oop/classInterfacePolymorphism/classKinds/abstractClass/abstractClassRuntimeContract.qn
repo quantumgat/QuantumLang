@@ -1,0 +1,17 @@
+pub struct AbstractClassRuntimeContract {
+  typeId: u64,
+  metadataBound: bool,
+  abstractMethodTableBound: bool,
+  directInstantiationRejected: bool,
+  subtypeDispatchBound: bool,
+}
+
+impl AbstractClassRuntimeContract {
+  pub fn complete(self: AbstractClassRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.metadataBound
+      && self.abstractMethodTableBound
+      && self.directInstantiationRejected
+      && self.subtypeDispatchBound
+  }
+}

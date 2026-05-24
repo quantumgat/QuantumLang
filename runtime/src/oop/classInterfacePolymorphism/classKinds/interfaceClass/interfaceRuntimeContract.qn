@@ -1,0 +1,17 @@
+pub struct InterfaceRuntimeContract {
+  interfaceTypeId: u64,
+  objectSafetyBound: bool,
+  tableBound: bool,
+  dispatchEntryBound: bool,
+  generationChecked: bool,
+}
+
+impl InterfaceRuntimeContract {
+  pub fn complete(self: InterfaceRuntimeContract) -> bool {
+    return self.interfaceTypeId > 0
+      && self.objectSafetyBound
+      && self.tableBound
+      && self.dispatchEntryBound
+      && self.generationChecked
+  }
+}

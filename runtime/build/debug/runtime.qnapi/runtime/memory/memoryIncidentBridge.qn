@@ -1,0 +1,34 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub extern "qnpkg" {
+  pub fn memoryIncidentKindFromError(error: RuntimeMemoryError) -> MemoryIncidentKind
+}
+pub extern "qnpkg" {
+  pub fn memoryIncidentFromError(
+  error: RuntimeMemoryError,
+  incidentId: u64,
+  allocationId: u64,
+  handleId: u64,
+) -> MemoryIncident
+}
+pub extern "qnpkg" {
+  pub fn arenaIncidentKindFromError(error: ArenaRuntimeError) -> MemoryIncidentKind
+}
+pub extern "qnpkg" {
+  pub fn arenaIncidentFromError(
+  error: ArenaRuntimeError,
+  incidentId: u64,
+  allocationId: u64,
+  handleId: u64,
+) -> MemoryIncident
+}
+pub extern "qnpkg" {
+  pub fn borrowIncidentKindFromError(error: BorrowRuntimeError) -> MemoryIncidentKind
+}
+pub extern "qnpkg" {
+  pub fn borrowIncidentFromError(
+  error: BorrowRuntimeError,
+  incidentId: u64,
+  allocationId: u64,
+  handleId: u64,
+) -> MemoryIncident
+}

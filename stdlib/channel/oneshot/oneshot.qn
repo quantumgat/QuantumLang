@@ -1,0 +1,17 @@
+pub struct OneshotSender<T> {
+  id: u64,
+  sent: bool,
+}
+
+pub struct OneshotReceiver<T> {
+  id: u64,
+  received: bool,
+}
+
+impl OneshotSender<T> {
+  pub fn send(self: OneshotSender<T>, value: T) -> Result<Unit, ChannelError>
+}
+
+impl OneshotReceiver<T> {
+  pub fn recv(self: OneshotReceiver<T>) -> Result<T, ChannelError>
+}

@@ -1,0 +1,83 @@
+pub struct HttpBindAddress {
+  host: string,
+  port: usize,
+  source: string,
+}
+
+impl HttpBindAddress {
+  pub fn init(host: string, port: usize, source: string) -> HttpBindAddress {
+    return HttpBindAddress {
+      host: host,
+      port: port,
+      source: source,
+    }
+  }
+
+  pub fn defaultLocal() -> HttpBindAddress {
+    return HttpBindAddress.init("127.0.0.1", 0, "default")
+  }
+
+  pub fn local(port: usize) -> HttpBindAddress {
+    return HttpBindAddress.init("127.0.0.1", port, "local")
+  }
+
+  pub fn localhost(port: usize) -> HttpBindAddress {
+    return HttpBindAddress.init("localhost", port, "localhost")
+  }
+
+  pub fn allIpv4(port: usize) -> HttpBindAddress {
+    return HttpBindAddress.init("0.0.0.0", port, "public-ipv4")
+  }
+
+  pub fn allIpv6(port: usize) -> HttpBindAddress {
+    return HttpBindAddress.init("[::]", port, "public-ipv6")
+  }
+
+  pub fn parse(address: string) -> Result<HttpBindAddress, AppBuilderDiagnostic> {
+    return httpBindAddressParseSurface(address)
+  }
+
+  pub fn withPort(self: HttpBindAddress, port: usize) -> HttpBindAddress {
+    return HttpBindAddress.init(self.host, port, self.source)
+  }
+
+  pub fn host(self: HttpBindAddress) -> string {
+    return self.host
+  }
+
+  pub fn port(self: HttpBindAddress) -> usize {
+    return self.port
+  }
+
+  pub fn valid(self: HttpBindAddress) -> bool {
+    return self.host != "" && self.port > 0 && self.port <= 65535
+  }
+
+  pub fn text(self: HttpBindAddress) -> string {
+    return self.host + ":" + self.port.toString()
+  }
+
+  pub fn loopback(self: HttpBindAddress) -> bool {
+    return self.host == "127.0.0.1"
+      || self.host == "localhost"
+      || self.host == "::1"
+      || self.host == "[::1]"
+  }
+
+  pub fn publicBind(self: HttpBindAddress) -> bool {
+    return self.host == "0.0.0.0" || self.host == "::" || self.host == "[::]"
+  }
+
+  pub fn ipv6(self: HttpBindAddress) -> bool {
+    return self.host == "::"
+      || self.host == "[::]"
+      || self.host == "::1"
+      || self.host == "[::1]"
+  }
+
+  pub fn sourceName(self: HttpBindAddress) -> string {
+    return self.source
+  }
+}
+
+fn httpBindAddressParseSurface(address: string) -> Result<HttpBindAddress, AppBuilderDiagnostic>

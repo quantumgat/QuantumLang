@@ -1,0 +1,112 @@
+pub enum HttpAcceleratedFeature {
+  SimdParser,
+  StaticRouteTrie,
+  FlattenedExtractorChain,
+  DirectHandlerThunk,
+  ScatterGatherWriter,
+  SendfilePath,
+}
+
+pub struct HttpPackageFactSet {
+  endpointGraph: bool,
+  routeGraph: bool,
+  extractorGraph: bool,
+  capabilityGraph: bool,
+  handlerThunkGraph: bool,
+  sourceMaps: bool,
+  asyncTransportPlan: bool,
+}
+
+impl HttpPackageFactSet {
+  pub fn complete(
+    endpointGraph: bool,
+    routeGraph: bool,
+    extractorGraph: bool,
+    capabilityGraph: bool,
+    handlerThunkGraph: bool,
+    sourceMaps: bool,
+    asyncTransportPlan: bool,
+  ) -> HttpPackageFactSet {
+    return HttpPackageFactSet {
+      endpointGraph: endpointGraph,
+      routeGraph: routeGraph,
+      extractorGraph: extractorGraph,
+      capabilityGraph: capabilityGraph,
+      handlerThunkGraph: handlerThunkGraph,
+      sourceMaps: sourceMaps,
+      asyncTransportPlan: asyncTransportPlan,
+    }
+  }
+
+  pub fn ready(self: HttpPackageFactSet) -> bool {
+    return self.endpointGraph
+      && self.routeGraph
+      && self.extractorGraph
+      && self.capabilityGraph
+      && self.handlerThunkGraph
+      && self.sourceMaps
+      && self.asyncTransportPlan
+  }
+}
+
+pub struct HttpAccelerationPlan {
+  packageFacts: HttpPackageFactSet,
+  featureCount: usize,
+  genericHooksOnly: bool,
+  fallbackRequired: bool,
+  sourceMapsRequired: bool,
+  typedFailureRequired: bool,
+  noCoreHttp: bool,
+}
+
+impl HttpAccelerationPlan {
+  pub fn fromFacts(facts: HttpPackageFactSet) -> HttpAccelerationPlan {
+    return HttpAccelerationPlan {
+      packageFacts: facts,
+      featureCount: 6,
+      genericHooksOnly: true,
+      fallbackRequired: true,
+      sourceMapsRequired: true,
+      typedFailureRequired: true,
+      noCoreHttp: true,
+    }
+  }
+
+  pub fn ready(self: HttpAccelerationPlan) -> bool {
+    return self.packageFacts.ready()
+      && self.featureCount >= 6
+      && self.genericHooksOnly
+      && self.fallbackRequired
+      && self.sourceMapsRequired
+      && self.typedFailureRequired
+      && self.noCoreHttp
+  }
+}
+
+pub struct HttpAcceleratedRuntimeBinding {
+  parserKernel: string,
+  routeKernel: string,
+  writerKernel: string,
+  sendfileKernel: string,
+  backpressureKernel: string,
+}
+
+impl HttpAcceleratedRuntimeBinding {
+  pub fn required() -> HttpAcceleratedRuntimeBinding {
+    return HttpAcceleratedRuntimeBinding {
+      parserKernel: "http.parser.simd",
+      routeKernel: "http.route.trie",
+      writerKernel: "http.writer.scatterGather",
+      sendfileKernel: "http.sendfile.splice",
+      backpressureKernel: "http.backpressure.queue",
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedRuntimeBinding) -> bool {
+    return self.parserKernel != ""
+      && self.routeKernel != ""
+      && self.writerKernel != ""
+      && self.sendfileKernel != ""
+      && self.backpressureKernel != ""
+  }
+}

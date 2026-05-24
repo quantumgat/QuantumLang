@@ -1,0 +1,30 @@
+pub struct CallableSignature {
+  callableId: u64,
+  parameterCount: usize,
+  returnTypeId: u64,
+  effectSetId: u64,
+}
+
+pub fn callableSignature(
+  callableId: u64,
+  parameterCount: usize,
+  returnTypeId: u64,
+  effectSetId: u64,
+) -> CallableSignature {
+  return CallableSignature {
+    callableId: callableId,
+    parameterCount: parameterCount,
+    returnTypeId: returnTypeId,
+    effectSetId: effectSetId,
+  }
+}
+
+impl CallableSignature {
+  pub fn params(self: CallableSignature) -> usize {
+    return self.parameterCount
+  }
+
+  pub fn hasEffects(self: CallableSignature) -> bool {
+    return self.effectSetId != 0
+  }
+}

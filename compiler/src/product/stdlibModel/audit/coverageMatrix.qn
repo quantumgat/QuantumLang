@@ -1,0 +1,15 @@
+pub struct StdlibCoverageMatrix {
+  domainName: string,
+  publicApiCovered: bool,
+  compilerModelCovered: bool,
+  diagnosticsCovered: bool,
+}
+
+impl StdlibCoverageMatrix {
+  pub fn accepted(self: StdlibCoverageMatrix) -> bool {
+    return self.domainName != ""
+      && self.publicApiCovered
+      && self.compilerModelCovered
+      && self.diagnosticsCovered
+  }
+}

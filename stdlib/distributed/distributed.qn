@@ -1,0 +1,10 @@
+pub struct NodeId {
+  value: u128,
+}
+
+pub struct Cluster {
+  size: usize,
+}
+
+pub fn nodeId(value: u128) -> NodeId
+pub fn cluster(size: usize) -> Cluster

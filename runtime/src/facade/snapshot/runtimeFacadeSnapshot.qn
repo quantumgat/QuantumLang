@@ -1,0 +1,19 @@
+pub struct RuntimeFacadeSnapshot {
+  assembledFromSubsystems: bool,
+  deterministic: bool,
+  sourceMapped: bool,
+}
+
+pub fn runtimeFacadeSnapshot() -> RuntimeFacadeSnapshot {
+  return RuntimeFacadeSnapshot {
+    assembledFromSubsystems: true,
+    deterministic: true,
+    sourceMapped: true,
+  }
+}
+
+impl RuntimeFacadeSnapshot {
+  pub fn canTestDeterministically(self: RuntimeFacadeSnapshot) -> bool {
+    return self.assembledFromSubsystems && self.deterministic
+  }
+}

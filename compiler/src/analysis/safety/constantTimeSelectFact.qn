@@ -1,0 +1,21 @@
+pub struct ConstantTimeSelectFact {
+  node: u64,
+  branchless: bool,
+  bothValuesEvaluated: bool,
+  secretCondition: bool,
+}
+
+impl ConstantTimeSelectFact {
+  pub fn init(node: u64, branchless: bool, bothValuesEvaluated: bool, secretCondition: bool) -> ConstantTimeSelectFact {
+    return ConstantTimeSelectFact {
+      node: node,
+      branchless: branchless,
+      bothValuesEvaluated: bothValuesEvaluated,
+      secretCondition: secretCondition,
+    }
+  }
+
+  pub fn accepted(self: ConstantTimeSelectFact) -> bool {
+    return self.branchless && self.bothValuesEvaluated && self.secretCondition
+  }
+}

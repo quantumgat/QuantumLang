@@ -1,0 +1,30 @@
+extend HttpHeaderMap {
+  pub fn valueOr(self: HttpHeaderMap, name: string, fallback: string) -> string {
+    match self.get(name) {
+      Some(value) => {
+        return value
+      }
+      None => {
+        return fallback
+      }
+    }
+  }
+
+  pub fn bearerToken(self: HttpHeaderMap) -> string {
+    return httpHeaderBearerTokenSurface(self)
+  }
+
+  pub fn cookie(self: HttpHeaderMap, name: string) -> Option<string> {
+    return httpHeaderCookieSurface(self, name)
+  }
+
+  pub fn hasProxyHeaders(self: HttpHeaderMap) -> bool {
+    return self.get("forwarded") != None
+      || self.get("x-forwarded-for") != None
+      || self.get("x-real-ip") != None
+      || self.get("cf-connecting-ip") != None
+  }
+}
+
+fn httpHeaderBearerTokenSurface(headers: HttpHeaderMap) -> string
+fn httpHeaderCookieSurface(headers: HttpHeaderMap, name: string) -> Option<string>

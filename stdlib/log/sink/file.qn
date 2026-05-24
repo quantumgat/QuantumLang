@@ -1,0 +1,23 @@
+pub struct FileLogSink {
+  path: string,
+  append: bool,
+  flushOnError: bool,
+  backpressurePolicy: LogBackpressurePolicy,
+  redactsBeforeWrite: bool,
+}
+
+impl FileLogSink {
+  pub fn append(path: string) -> FileLogSink {
+    return FileLogSink {
+      path: path,
+      append: true,
+      flushOnError: true,
+      backpressurePolicy: LogBackpressurePolicy.ReturnError,
+      redactsBeforeWrite: true,
+    }
+  }
+
+  pub fn safe(self: FileLogSink) -> bool {
+    return self.path != "" && self.redactsBeforeWrite
+  }
+}

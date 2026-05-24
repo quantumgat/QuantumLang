@@ -1,0 +1,12 @@
+pub struct RuntimeTimeSource {
+  target: string,
+  monotonicClock: bool,
+  wallClock: bool,
+  tickOnly: bool,
+}
+
+impl RuntimeTimeSource {
+  pub fn accepted(self: RuntimeTimeSource) -> bool {
+    return self.target != "" && (self.monotonicClock || self.tickOnly)
+  }
+}

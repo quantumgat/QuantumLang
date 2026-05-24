@@ -1,0 +1,20 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum CapabilityKind {
+  Authenticated,
+  Admin,
+  RateLimit,
+  Tenant,
+  Csrf,
+  Idempotency,
+  Custom,
+}
+pub struct CapabilityFact {
+  endpointName: string
+  typeName: string
+  kind: CapabilityKind
+  required: bool
+}
+pub struct CapabilityGraph {
+  facts: Vec<CapabilityFact>
+  requiredCount: usize
+}

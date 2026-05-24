@@ -1,0 +1,10 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpErrorMapper {
+  mapperType: string
+  custom: bool
+  catchesCoreError: bool
+  catchesHttpError: bool
+  catchesTypedError: bool
+  catchesUnexpected: bool
+  safeJson: bool
+}

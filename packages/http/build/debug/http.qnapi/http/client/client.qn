@@ -1,0 +1,18 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpClient {
+  baseUrl: string
+  poolSize: usize
+  defaultHeaders: HttpHeaderMap
+  timeoutMillis: usize
+}
+pub struct HttpClientRequest {
+  client: HttpClient
+  request: HttpRequest
+}
+pub struct HttpClientSendTask {
+  request: HttpClientRequest
+  genericRuntimeTransport: bool
+  deadlineLinked: bool
+  cancellationSafe: bool
+  responseBackpressure: bool
+}

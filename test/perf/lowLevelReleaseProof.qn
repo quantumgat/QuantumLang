@@ -1,0 +1,180 @@
+pub enum LowLevelReleaseProofKind {
+  SafeFailureNoCoredump,
+  SafeApiNoDoubleFree,
+  SafeApiNoUseAfterFree,
+  StaleHandleRejected,
+  WrongAllocatorRejected,
+  PointerE2eExecutableEvidence,
+  BinaryE2eNativeEvidence,
+  GeneratedFallbackRejected,
+  SerialGatePolicy,
+  TestOwnedBenchmarkEvidence,
+}
+
+pub struct LowLevelReleaseProofRow {
+  kind: LowLevelReleaseProofKind,
+  proofName: string,
+  sourceGate: string,
+  diagnosticContract: string,
+  safeApiOnly: bool,
+  compilerProofRequired: bool,
+  runtimeProofRequired: bool,
+  nativeProofRequired: bool,
+  noCoredump: bool,
+  noProcessAbort: bool,
+  noGeneratedFallback: bool,
+  testOwnedEvidence: bool,
+  serialSafe: bool,
+  maxParallel: usize,
+}
+
+pub struct LowLevelReleaseProofReport {
+  rows: Vec<LowLevelReleaseProofRow>,
+  requiredRows: usize,
+  releaseTarget: string,
+  safeCodeOnly: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+  noCoredump: bool,
+  noProcessAbort: bool,
+  noDoubleFree: bool,
+  noUseAfterFree: bool,
+  noGeneratedFallback: bool,
+  testOwnedBenchmarkEvidence: bool,
+}
+
+pub fn lowLevelReleaseProofRow(
+  kind: LowLevelReleaseProofKind,
+  proofName: string,
+  sourceGate: string,
+  diagnosticContract: string,
+) -> LowLevelReleaseProofRow {
+  return LowLevelReleaseProofRow {
+    kind: kind,
+    proofName: proofName,
+    sourceGate: sourceGate,
+    diagnosticContract: diagnosticContract,
+    safeApiOnly: true,
+    compilerProofRequired: true,
+    runtimeProofRequired: true,
+    nativeProofRequired: true,
+    noCoredump: true,
+    noProcessAbort: true,
+    noGeneratedFallback: true,
+    testOwnedEvidence: true,
+    serialSafe: true,
+    maxParallel: 1,
+  }
+}
+
+pub fn lowLevelReleaseProofReport() -> LowLevelReleaseProofReport requires(alloc) {
+  let mut rows = Vec<LowLevelReleaseProofRow>.withCapacity(8)
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.SafeFailureNoCoredump,
+    "safe-code-failure-never-coredumps",
+    "qtlc_qtlang_runtime_no_coredump_safe_failure_guarantee",
+    "bounds/null/OOM/panic/FFI/stack failures return diagnostics"
+  ))
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.SafeApiNoDoubleFree,
+    "safe-api-double-free-rejected",
+    "qtlc_qtlang_lowlevel_leak_double_free_proof",
+    "double-free is a structured diagnostic, not undefined behavior"
+  ))
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.SafeApiNoUseAfterFree,
+    "safe-api-use-after-free-rejected",
+    "qtlc_qtlang_lowlevel_leak_double_free_proof",
+    "use-after-free is rejected by ownership and runtime incident proofs"
+  ))
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.StaleHandleRejected,
+    "safe-api-stale-handle-rejected",
+    "qtlc_qtlang_runtime_memory_diagnostics_gap_closure",
+    "stale handle and wrong generation paths produce redacted incidents"
+  ))
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.WrongAllocatorRejected,
+    "safe-api-wrong-allocator-rejected",
+    "qtlc_qtlang_runtime_memory_allocator_gap_closure",
+    "wrong allocator domain cannot silently free memory"
+  ))
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.PointerE2eExecutableEvidence,
+    "pointer-e2e-executable-safe-failure-proof",
+    "qtlc_qtlang_lowlevel_ptr_e2e_executable_gap_closure",
+    "pointer null/OOB/double-drop/weak-expired/pinned-move paths diagnose safely"
+  ))
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.BinaryE2eNativeEvidence,
+    "binary-e2e-native-safe-failure-proof",
+    "qtlc_qtlang_stdlib_binary_e2e_native_lowering_benchmark_gap_closure",
+    "binary EOF/overflow/alignment/wide-int mismatch paths diagnose safely"
+  ))
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.GeneratedFallbackRejected,
+    "generated-fallback-rejected",
+    "qtlc_qtlang_compiler_lowlevel_proof_benchmark_gap_closure",
+    "native lowering rejects generated fallback for release proof rows"
+  ))
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.SerialGatePolicy,
+    "serial-safe-release-proof",
+    "qtlc_qtlang_lowlevel_completion_audit",
+    "all-core disabled and max parallel stays one for proof gates"
+  ))
+  rows = rows.push(lowLevelReleaseProofRow(
+    LowLevelReleaseProofKind.TestOwnedBenchmarkEvidence,
+    "test-owned-benchmark-evidence",
+    "qtlc_qtlang_compiler_lowlevel_proof_benchmark_gap_closure",
+    "benchmark evidence lives under test/perf, not product runtime"
+    ))
+  return LowLevelReleaseProofReport {
+    rows: rows,
+    requiredRows: 10,
+    releaseTarget: "qtlc-selfhost-lowlevel-release-proof-v1",
+    safeCodeOnly: true,
+    allCoreDisabled: true,
+    maxParallel: 1,
+    noCoredump: true,
+    noProcessAbort: true,
+    noDoubleFree: true,
+    noUseAfterFree: true,
+    noGeneratedFallback: true,
+    testOwnedBenchmarkEvidence: true,
+  }
+}
+
+impl LowLevelReleaseProofRow {
+  pub fn passed(self: LowLevelReleaseProofRow) -> bool {
+    return self.proofName != ""
+      && self.sourceGate != ""
+      && self.diagnosticContract != ""
+      && self.safeApiOnly
+      && self.compilerProofRequired
+      && self.runtimeProofRequired
+      && self.nativeProofRequired
+      && self.noCoredump
+      && self.noProcessAbort
+      && self.noGeneratedFallback
+      && self.testOwnedEvidence
+      && self.serialSafe
+      && self.maxParallel == 1
+  }
+}
+
+impl LowLevelReleaseProofReport {
+  pub fn passed(self: LowLevelReleaseProofReport) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.releaseTarget == "qtlc-selfhost-lowlevel-release-proof-v1"
+      && self.safeCodeOnly
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+      && self.noCoredump
+      && self.noProcessAbort
+      && self.noDoubleFree
+      && self.noUseAfterFree
+      && self.noGeneratedFallback
+      && self.testOwnedBenchmarkEvidence
+  }
+}

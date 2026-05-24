@@ -1,0 +1,20 @@
+pub struct TemplateKernelRequest {
+  id: u64,
+  payloadBytes: usize,
+}
+
+pub struct TemplateKernelResult {
+  id: u64,
+  processedBytes: usize,
+}
+
+pub fn templateKernel(request: TemplateKernelRequest) -> Result<TemplateKernelResult, PluginKernelFailure> {
+  if request.payloadBytes == 0 {
+    return Err(PluginKernelFailure.BadInput)
+  }
+  return Ok(TemplateKernelResult {
+    id: request.id,
+    processedBytes: request.payloadBytes,
+  })
+}
+

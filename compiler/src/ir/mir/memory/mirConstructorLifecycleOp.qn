@@ -1,0 +1,31 @@
+pub enum MirConstructorLifecycleOpKind {
+  AllocateObject
+  InitFields
+  InitImplicitFields
+  InitBase
+  MarkFullyInitialized
+  CleanupPartialInit
+}
+
+pub struct MirConstructorLifecycleOp {
+  instruction: u64,
+  ownerTypeName: string,
+  kind: MirConstructorLifecycleOpKind,
+  directObjectInit: bool,
+  cleanupOnFailure: bool,
+  dropOrderBound: bool,
+  noWrapperAllocation: bool,
+  sourceMapBound: bool,
+}
+
+impl MirConstructorLifecycleOp {
+  pub fn accepted(self: MirConstructorLifecycleOp) -> bool {
+    return self.instruction > 0
+      && self.ownerTypeName != ""
+      && self.directObjectInit
+      && self.dropOrderBound
+      && self.noWrapperAllocation
+      && self.sourceMapBound
+      && (self.kind != MirConstructorLifecycleOpKind.CleanupPartialInit || self.cleanupOnFailure)
+  }
+}

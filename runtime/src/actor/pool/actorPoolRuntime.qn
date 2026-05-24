@@ -1,0 +1,21 @@
+pub struct RuntimeActorPool {
+  poolId: u64,
+  workerCount: usize,
+  mailboxCapacity: usize,
+  schedulerLinked: bool,
+}
+
+impl RuntimeActorPool {
+  pub fn init(poolId: u64, workerCount: usize, mailboxCapacity: usize, schedulerLinked: bool) -> RuntimeActorPool {
+    return RuntimeActorPool {
+      poolId: poolId,
+      workerCount: workerCount,
+      mailboxCapacity: mailboxCapacity,
+      schedulerLinked: schedulerLinked,
+    }
+  }
+
+  pub fn ready(self: RuntimeActorPool) -> bool {
+    return self.poolId > 0 && self.workerCount > 0 && self.schedulerLinked
+  }
+}

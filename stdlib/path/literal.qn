@@ -1,0 +1,17 @@
+pub struct PathLiteral {
+  text: string,
+  style: PathStyle,
+  valid: bool,
+}
+
+pub fn literal(text: string) -> PathLiteral
+pub fn literal(text: string, style: PathStyle) -> PathLiteral
+
+impl PathLiteral {
+  pub fn toPath(self: PathLiteral) -> Option<PathBuf> {
+    if self.valid {
+      return Some(path(self.text, self.style))
+    }
+    return None
+  }
+}

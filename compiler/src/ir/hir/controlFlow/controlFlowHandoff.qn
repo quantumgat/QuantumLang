@@ -1,0 +1,33 @@
+pub enum HirControlFlowHandoffKind {
+  IfBranch
+  WhileLoop
+  ForInLoop
+  InfiniteLoop
+  LabeledBreak
+  LabeledContinue
+  MatchDispatch
+  IfLetPattern
+  WhileLetPattern
+  ParallelFor
+  ParallelReduce
+  DomainLoop
+  QuantumIf
+  QuantumFor
+}
+
+pub struct HirControlFlowHandoff {
+  sourceNode: u64,
+  kind: HirControlFlowHandoffKind,
+  cfgBlocksPlanned: usize,
+  diagnosticsAttached: bool,
+  mirHandoffReady: bool,
+}
+
+impl HirControlFlowHandoff {
+  pub fn complete(self: HirControlFlowHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.cfgBlocksPlanned > 0
+      && self.diagnosticsAttached
+      && self.mirHandoffReady
+  }
+}

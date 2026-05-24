@@ -1,0 +1,21 @@
+pub struct HttpStreamBody {
+  chunkCount: usize,
+  backpressureAware: bool,
+}
+
+impl HttpStreamBody {
+  pub fn init(chunkCount: usize) -> HttpStreamBody {
+    return HttpStreamBody {
+      chunkCount: chunkCount,
+      backpressureAware: true,
+    }
+  }
+
+  pub fn chunkCount(self: HttpStreamBody) -> usize {
+    return self.chunkCount
+  }
+
+  pub fn backpressureAware(self: HttpStreamBody) -> bool {
+    return self.backpressureAware
+  }
+}

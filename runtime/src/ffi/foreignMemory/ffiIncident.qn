@@ -1,0 +1,22 @@
+pub enum FfiIncidentKind {
+  ForeignPointerMissingDeleter,
+  ForeignLifetimeTokenRejected,
+  CallbackUnregisterMissing,
+  PanicAcrossFfi,
+  ThreadAffineViolation,
+  AliasPolicyRejected,
+}
+
+pub struct FfiIncident {
+  kind: FfiIncidentKind,
+  recoverable: bool,
+}
+
+impl FfiIncident {
+  pub fn init(kind: FfiIncidentKind) -> FfiIncident {
+    return FfiIncident {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+}

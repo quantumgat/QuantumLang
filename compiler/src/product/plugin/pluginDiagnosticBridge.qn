@@ -1,0 +1,30 @@
+pub struct PluginDiagnosticBridge {
+  channelCount: usize,
+  sourceMapped: bool,
+  fixitsAllowed: bool,
+  unsafeFixitsRejected: bool,
+  hostPathLeakRejected: bool,
+  typedFailuresRequired: bool,
+}
+
+impl PluginDiagnosticBridge {
+  pub fn fromManifest(manifest: PluginManifest) -> PluginDiagnosticBridge {
+    return PluginDiagnosticBridge {
+      channelCount: manifest.exports.diagnosticChannelCount,
+      sourceMapped: manifest.compiler.sourceMaps == PluginPolicyRequirement.Required,
+      fixitsAllowed: true,
+      unsafeFixitsRejected: true,
+      hostPathLeakRejected: true,
+      typedFailuresRequired: manifest.runtime.typedFailure == PluginPolicyRequirement.Required
+        || !manifest.runtime.executableExtension(),
+    }
+  }
+
+  pub fn accepted(self: PluginDiagnosticBridge) -> bool {
+    return self.sourceMapped
+      && self.fixitsAllowed
+      && self.unsafeFixitsRejected
+      && self.hostPathLeakRejected
+      && self.typedFailuresRequired
+  }
+}

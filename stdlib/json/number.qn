@@ -1,0 +1,37 @@
+pub struct JsonNumberPlan {
+  inlineIntegerParser: bool,
+  fastFloatParser: bool,
+  wideNumberAsString: bool,
+  decimalAsString: bool,
+  bigIntegerAsString: bool,
+  finiteFloatRequired: bool,
+  exactRoundTripRequired: bool,
+  overflowChecked: bool,
+  silentPrecisionLossRejected: bool,
+}
+
+pub fn numberPlan() -> JsonNumberPlan {
+  return JsonNumberPlan {
+    inlineIntegerParser: true,
+    fastFloatParser: true,
+    wideNumberAsString: true,
+    decimalAsString: true,
+    bigIntegerAsString: true,
+    finiteFloatRequired: true,
+    exactRoundTripRequired: true,
+    overflowChecked: true,
+    silentPrecisionLossRejected: true,
+  }
+}
+
+impl JsonNumberPlan {
+  pub fn safe(self: JsonNumberPlan) -> bool {
+    return self.overflowChecked
+      && self.wideNumberAsString
+      && self.decimalAsString
+      && self.bigIntegerAsString
+      && self.finiteFloatRequired
+      && self.exactRoundTripRequired
+      && self.silentPrecisionLossRejected
+  }
+}

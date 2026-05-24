@@ -1,0 +1,30 @@
+pub enum SpecializedLoopFamily {
+  AsyncForAwait
+  SelectJoinTimeoutCancel
+  ParallelReduceDeterministic
+  DomainData
+  LowLevelMemory
+  QuantumProfile
+  ComptimeStatic
+}
+
+pub struct SpecializedLoopFact {
+  family: SpecializedLoopFamily,
+  formCount: usize,
+  hotPathSelected: bool,
+  safetyChecked: bool,
+  deterministicWhenRequired: bool,
+  diagnosticsReady: bool,
+  noCoredump: bool,
+}
+
+impl SpecializedLoopFact {
+  pub fn complete(self: SpecializedLoopFact) -> bool {
+    return self.formCount >= 22
+      && self.hotPathSelected
+      && self.safetyChecked
+      && self.deterministicWhenRequired
+      && self.diagnosticsReady
+      && self.noCoredump
+  }
+}

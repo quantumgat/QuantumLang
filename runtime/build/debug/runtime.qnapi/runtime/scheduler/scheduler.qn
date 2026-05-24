@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub abstract class Scheduler {
+  workerCount: usize
+  ownsWorkerPool: bool
+  hotQueueLoop: bool
+  pool: WorkerPool
+  running: bool
+  pub init(workerCount: usize) {}
+  pub fn start(self: &mut Scheduler) -> bool
+  pub fn shutdown(self: &mut Scheduler) -> bool
+  pub fn drop(self: &mut Scheduler) -> bool
+  pub fn ownsWorkers(self: &Scheduler) -> bool
+}

@@ -1,0 +1,15 @@
+pub struct FfiProvider {
+  providerName: string,
+  ownsDynamicLibrary: bool,
+  capabilityChecked: bool,
+}
+
+pub fn ffiProvider(providerName: string) -> FfiProvider {
+  return FfiProvider { providerName: providerName, ownsDynamicLibrary: false, capabilityChecked: true }
+}
+
+impl FfiProvider {
+  pub fn isExternalBoundary(self: FfiProvider) -> bool {
+    return self.capabilityChecked && self.ownsDynamicLibrary == false
+  }
+}

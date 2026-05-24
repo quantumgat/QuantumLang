@@ -1,0 +1,12 @@
+pub struct Span {
+  name: string,
+  correlationId: string,
+}
+
+pub struct Event {
+  name: string,
+  redacted: bool,
+}
+
+pub fn span(name: string) -> Span
+pub fn event(name: string) -> Event

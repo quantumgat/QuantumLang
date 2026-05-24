@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct StaleWakeSuppression {
+  tokenId: u64
+  timerGeneration: u64
+  wakeGeneration: u64
+  suppressed: bool
+}

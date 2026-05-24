@@ -1,0 +1,42 @@
+pub struct RuntimeEmergencyOutput {
+  target: RuntimePrintTarget,
+  boundedBytes: usize,
+  allocationFree: bool,
+  writesPlainText: bool,
+  redactsSecrets: bool,
+  preservesIncidentOrdering: bool,
+  ignoresTerminalStyling: bool,
+  returnsBestEffortResult: bool,
+  noPanic: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeEmergencyOutput {
+  pub fn stderr(boundedBytes: usize) -> RuntimeEmergencyOutput {
+    return RuntimeEmergencyOutput {
+      target: RuntimePrintTarget.stderr(),
+      boundedBytes: boundedBytes,
+      allocationFree: true,
+      writesPlainText: true,
+      redactsSecrets: true,
+      preservesIncidentOrdering: true,
+      ignoresTerminalStyling: true,
+      returnsBestEffortResult: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeEmergencyOutput) -> bool {
+    return self.target.safe()
+      && self.boundedBytes > 0
+      && self.allocationFree
+      && self.writesPlainText
+      && self.redactsSecrets
+      && self.preservesIncidentOrdering
+      && self.ignoresTerminalStyling
+      && self.returnsBestEffortResult
+      && self.noPanic
+      && self.noCoredump
+  }
+}

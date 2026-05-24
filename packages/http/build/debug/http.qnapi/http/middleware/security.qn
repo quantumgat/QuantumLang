@@ -1,0 +1,16 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct SecurityHeaders {
+  strictTransportSecurity: bool
+  contentSecurityPolicy: string
+  contentTypeOptions: bool
+  frameOptions: string
+  referrerPolicy: string
+  permissionsPolicy: string
+  crossOriginOpenerPolicy: string
+  crossOriginEmbedderPolicy: string
+  crossOriginResourcePolicy: string
+  clearSiteData: bool
+  serverLeakBlocked: bool
+}
+pub struct Security {
+}

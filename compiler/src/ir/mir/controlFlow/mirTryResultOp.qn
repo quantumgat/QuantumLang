@@ -1,0 +1,27 @@
+pub enum MirTryResultOpKind {
+  BranchOnErr
+  BranchOnNone
+  ConvertError
+  AwaitThenBranch
+  TryBlockMerge
+  ReturnEarly
+}
+
+pub struct MirTryResultOp {
+  instruction: u64,
+  kind: MirTryResultOpKind,
+  allocationFree: bool,
+  directBranch: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirTryResultOp {
+  pub fn hotLowerable(self: MirTryResultOp) -> bool {
+    return self.instruction > 0
+      && self.allocationFree
+      && self.directBranch
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

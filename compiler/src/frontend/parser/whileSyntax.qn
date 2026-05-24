@@ -1,0 +1,268 @@
+pub enum WhileSyntaxFamily {
+  Core
+  Pattern
+  LoopValue
+  LabeledControl
+  QuestionFlow
+  AwaitQuestionFlow
+  ElseNoBreak
+  Until
+  Timeout
+  Poll
+  Quantum
+}
+
+pub struct WhileSyntaxParse {
+  family: WhileSyntaxFamily,
+  formCount: usize,
+  sourceRangeReady: bool,
+  patternAllowed: bool,
+  optionSomePayloadBinding: bool,
+  localOptionScrutinee: bool,
+  awaitQuestionAllowed: bool,
+  timeoutDurationChecked: bool,
+  pollSourceChecked: bool,
+  cancellationBoundaryParsed: bool,
+  qwhileProfileParsed: bool,
+  qwhileBoundChecked: bool,
+  qwhileQuantumConditionParsed: bool,
+  breakValueAllowed: bool,
+  recoveryReady: bool,
+}
+
+pub struct WhileParseInput {
+  state: ParseState,
+  family: WhileSyntaxFamily,
+  sourceStart: usize,
+  sourceEnd: usize,
+  formCount: usize,
+  conditionSeen: bool,
+  patternAllowed: bool,
+  optionSomePayloadBinding: bool,
+  localOptionScrutinee: bool,
+  awaitQuestionAllowed: bool,
+  timeoutDurationChecked: bool,
+  pollSourceChecked: bool,
+  cancellationBoundaryParsed: bool,
+  qwhileProfileParsed: bool,
+  qwhileBoundChecked: bool,
+  qwhileQuantumConditionParsed: bool,
+  breakValueAllowed: bool,
+}
+
+pub struct WhileParseResult {
+  state: ParseState,
+  syntax: WhileSyntaxParse,
+  ast: AstWhileLoopForm,
+  consumedTokens: usize,
+  recovered: bool,
+}
+
+pub fn whileSyntaxParse(
+  family: WhileSyntaxFamily,
+  formCount: usize,
+  sourceRangeReady: bool,
+  patternAllowed: bool,
+  optionSomePayloadBinding: bool,
+  localOptionScrutinee: bool,
+  awaitQuestionAllowed: bool,
+  timeoutDurationChecked: bool,
+  pollSourceChecked: bool,
+  cancellationBoundaryParsed: bool,
+  qwhileProfileParsed: bool,
+  qwhileBoundChecked: bool,
+  qwhileQuantumConditionParsed: bool,
+  breakValueAllowed: bool,
+  recoveryReady: bool,
+) -> WhileSyntaxParse {
+  return WhileSyntaxParse {
+    family: family,
+    formCount: formCount,
+    sourceRangeReady: sourceRangeReady,
+    patternAllowed: patternAllowed,
+    optionSomePayloadBinding: optionSomePayloadBinding,
+    localOptionScrutinee: localOptionScrutinee,
+    awaitQuestionAllowed: awaitQuestionAllowed,
+    timeoutDurationChecked: timeoutDurationChecked,
+    pollSourceChecked: pollSourceChecked,
+    cancellationBoundaryParsed: cancellationBoundaryParsed,
+    qwhileProfileParsed: qwhileProfileParsed,
+    qwhileBoundChecked: qwhileBoundChecked,
+    qwhileQuantumConditionParsed: qwhileQuantumConditionParsed,
+    breakValueAllowed: breakValueAllowed,
+    recoveryReady: recoveryReady,
+  }
+}
+
+pub fn whileParseInput(
+  state: ParseState,
+  family: WhileSyntaxFamily,
+  sourceStart: usize,
+  sourceEnd: usize,
+  formCount: usize,
+  conditionSeen: bool,
+  patternAllowed: bool,
+  optionSomePayloadBinding: bool,
+  localOptionScrutinee: bool,
+  awaitQuestionAllowed: bool,
+  timeoutDurationChecked: bool,
+  pollSourceChecked: bool,
+  cancellationBoundaryParsed: bool,
+  qwhileProfileParsed: bool,
+  qwhileBoundChecked: bool,
+  qwhileQuantumConditionParsed: bool,
+  breakValueAllowed: bool,
+) -> WhileParseInput {
+  return WhileParseInput {
+    state: state,
+    family: family,
+    sourceStart: sourceStart,
+    sourceEnd: sourceEnd,
+    formCount: formCount,
+    conditionSeen: conditionSeen,
+    patternAllowed: patternAllowed,
+    optionSomePayloadBinding: optionSomePayloadBinding,
+    localOptionScrutinee: localOptionScrutinee,
+    awaitQuestionAllowed: awaitQuestionAllowed,
+    timeoutDurationChecked: timeoutDurationChecked,
+    pollSourceChecked: pollSourceChecked,
+    cancellationBoundaryParsed: cancellationBoundaryParsed,
+    qwhileProfileParsed: qwhileProfileParsed,
+    qwhileBoundChecked: qwhileBoundChecked,
+    qwhileQuantumConditionParsed: qwhileQuantumConditionParsed,
+    breakValueAllowed: breakValueAllowed,
+  }
+}
+
+pub fn parseWhile(input: WhileParseInput) -> WhileParseResult {
+  let sourceRangeReady = input.sourceEnd > input.sourceStart
+  let recoveryReady = input.conditionSeen || input.family == WhileSyntaxFamily.LoopValue
+  let syntax = whileSyntaxParse(
+    input.family,
+    input.formCount,
+    sourceRangeReady,
+    input.patternAllowed,
+    input.optionSomePayloadBinding,
+    input.localOptionScrutinee,
+    input.awaitQuestionAllowed,
+    input.timeoutDurationChecked,
+    input.pollSourceChecked,
+    input.cancellationBoundaryParsed,
+    input.qwhileProfileParsed,
+    input.qwhileBoundChecked,
+    input.qwhileQuantumConditionParsed,
+    input.breakValueAllowed,
+    recoveryReady
+  )
+
+  let mut state = input.state
+  if !syntax.complete() {
+    state = state.markRecovered()
+  }
+
+  let ast = buildAstWhileFromSyntax(input, syntax)
+  let mut consumed: usize = 0
+  while consumed < input.formCount + 3 {
+    state = state.advance()
+    consumed = consumed + 1
+  }
+
+  return WhileParseResult {
+    state: state,
+    syntax: syntax,
+    ast: ast,
+    consumedTokens: consumed,
+    recovered: state.hasRecovered(),
+  }
+}
+
+pub fn buildAstWhileFromSyntax(input: WhileParseInput, syntax: WhileSyntaxParse) -> AstWhileLoopForm {
+  let nodeId: u64 = input.sourceStart + input.sourceEnd + 1
+  let bodyId: u64 = input.sourceEnd + 1
+  let mut kind = AstWhileLoopFormKind.Condition
+  if input.family == WhileSyntaxFamily.Pattern {
+    kind = AstWhileLoopFormKind.WhileLet
+  }
+  if input.family == WhileSyntaxFamily.LoopValue {
+    kind = AstWhileLoopFormKind.BreakValue
+  }
+  if input.family == WhileSyntaxFamily.AwaitQuestionFlow {
+    kind = AstWhileLoopFormKind.AwaitQuestion
+  }
+  if input.family == WhileSyntaxFamily.Timeout {
+    kind = AstWhileLoopFormKind.Timeout
+  }
+  if input.family == WhileSyntaxFamily.Poll {
+    kind = AstWhileLoopFormKind.Poll
+  }
+  if input.family == WhileSyntaxFamily.Quantum {
+    kind = AstWhileLoopFormKind.Qwhile
+  }
+
+  return astWhileLoopForm(
+    astNode(nodeId, NodeKind.Stmt, input.state.fileId(), input.sourceStart, input.sourceEnd),
+    kind,
+    input.sourceStart + 1,
+    input.sourceStart + 2,
+    input.sourceStart + 3,
+    input.sourceStart + 4,
+    input.sourceStart + 5,
+    input.sourceStart + 6,
+    input.sourceStart + 7,
+    input.sourceStart + 8,
+    input.sourceStart + 9,
+    input.sourceStart + 10,
+    input.sourceStart + 11,
+    bodyId,
+    input.sourceEnd + 2,
+    input.sourceStart + 12,
+    syntax.complete()
+  )
+}
+
+impl WhileSyntaxParse {
+  pub fn formTotal(self: WhileSyntaxParse) -> usize {
+    return self.formCount
+  }
+
+  pub fn complete(self: WhileSyntaxParse) -> bool {
+    return self.formCount >= 15
+      && self.sourceRangeReady
+      && self.breakValueAllowed
+      && self.recoveryReady
+  }
+
+  pub fn whileLetOptionReady(self: WhileSyntaxParse) -> bool {
+    return self.family == WhileSyntaxFamily.Pattern
+      && self.patternAllowed
+      && self.optionSomePayloadBinding
+      && self.localOptionScrutinee
+      && self.sourceRangeReady
+  }
+
+  pub fn asyncPollTimeoutReady(self: WhileSyntaxParse) -> bool {
+    return self.sourceRangeReady
+      && self.awaitQuestionAllowed
+      && self.timeoutDurationChecked
+      && self.pollSourceChecked
+      && self.cancellationBoundaryParsed
+      && self.recoveryReady
+  }
+
+  pub fn qwhileReady(self: WhileSyntaxParse) -> bool {
+    return self.family == WhileSyntaxFamily.Quantum
+      && self.sourceRangeReady
+      && self.qwhileProfileParsed
+      && self.qwhileBoundChecked
+      && self.qwhileQuantumConditionParsed
+      && self.recoveryReady
+  }
+}
+
+impl WhileParseResult {
+  pub fn complete(self: WhileParseResult) -> bool {
+    return self.syntax.complete()
+      && self.ast.complete()
+      && !self.recovered
+  }
+}

@@ -1,0 +1,44 @@
+pub enum SchedulerWorkerState {
+  Ready
+  Running
+  Parked
+  Retired
+  Starved
+}
+
+pub struct SchedulerWorkerRuntime {
+  workerId: u64,
+  localQueueDepth: usize,
+  state: SchedulerWorkerState,
+  completedTasks: usize,
+  stealSuccesses: usize,
+  stealFailures: usize,
+}
+
+impl SchedulerWorkerRuntime {
+  pub fn init(
+    workerId: u64,
+    localQueueDepth: usize,
+    state: SchedulerWorkerState,
+    completedTasks: usize,
+    stealSuccesses: usize,
+    stealFailures: usize,
+  ) -> SchedulerWorkerRuntime {
+    return SchedulerWorkerRuntime {
+      workerId: workerId,
+      localQueueDepth: localQueueDepth,
+      state: state,
+      completedTasks: completedTasks,
+      stealSuccesses: stealSuccesses,
+      stealFailures: stealFailures,
+    }
+  }
+
+  pub fn active(self: SchedulerWorkerRuntime) -> bool {
+    return self.state == SchedulerWorkerState.Running || self.state == SchedulerWorkerState.Ready
+  }
+
+  pub fn pressureVisible(self: SchedulerWorkerRuntime) -> bool {
+    return self.localQueueDepth > 0 || self.state == SchedulerWorkerState.Starved
+  }
+}

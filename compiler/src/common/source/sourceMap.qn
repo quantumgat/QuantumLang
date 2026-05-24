@@ -1,0 +1,33 @@
+pub struct SourceMap {
+  fileCount: usize,
+  nextFileId: u32,
+}
+
+pub fn emptySourceMap() -> SourceMap {
+  return SourceMap { fileCount: 0, nextFileId: 1 }
+}
+
+pub fn sourceMap(fileCount: usize, nextFileId: u32) -> SourceMap {
+  return SourceMap { fileCount: fileCount, nextFileId: nextFileId }
+}
+
+impl SourceMap {
+  pub fn len(self: SourceMap) -> usize {
+    return self.fileCount
+  }
+
+  pub fn isEmpty(self: SourceMap) -> bool {
+    return self.fileCount == 0
+  }
+
+  pub fn nextId(self: SourceMap) -> u32 {
+    return self.nextFileId
+  }
+
+  pub fn withRegisteredFile(self: SourceMap) -> SourceMap {
+    return SourceMap {
+      fileCount: self.fileCount + 1,
+      nextFileId: self.nextFileId + 1,
+    }
+  }
+}

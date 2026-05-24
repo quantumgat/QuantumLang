@@ -1,0 +1,33 @@
+pub struct HandleLease {
+  slot: usize,
+  generation: usize,
+  ownerSubsystem: string,
+  active: bool,
+  epoch: u64,
+}
+
+impl HandleLease {
+  pub fn init(slot: usize, generation: usize, ownerSubsystem: string, epoch: u64) -> HandleLease {
+    return HandleLease {
+      slot: slot,
+      generation: generation,
+      ownerSubsystem: ownerSubsystem,
+      active: true,
+      epoch: epoch,
+    }
+  }
+
+  pub fn active(self: HandleLease) -> bool {
+    return self.active
+  }
+
+  pub fn revoke(self: HandleLease) -> HandleLease {
+    return HandleLease {
+      slot: self.slot,
+      generation: self.generation,
+      ownerSubsystem: self.ownerSubsystem,
+      active: false,
+      epoch: self.epoch,
+    }
+  }
+}

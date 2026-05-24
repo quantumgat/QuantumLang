@@ -1,0 +1,21 @@
+pub struct HirBinaryMirHandoff {
+  hirNode: u64,
+  requiresBoundsCheck: bool,
+  requiresEndianLowering: bool,
+  requiresDirectLoadStore: bool,
+  requiresNoCoredumpDiagnostic: bool,
+  requiresResultFlow: bool,
+  runtimeFallbackRejected: bool,
+}
+
+impl HirBinaryMirHandoff {
+  pub fn accepted(self: HirBinaryMirHandoff) -> bool {
+    return self.hirNode > 0
+      && self.requiresBoundsCheck
+      && self.requiresEndianLowering
+      && self.requiresDirectLoadStore
+      && self.requiresNoCoredumpDiagnostic
+      && self.requiresResultFlow
+      && self.runtimeFallbackRejected
+  }
+}

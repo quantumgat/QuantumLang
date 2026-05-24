@@ -1,0 +1,37 @@
+pub struct DecimalKernel {
+  scaleChecked: bool,
+  roundingDeterministic: bool,
+  publicApiOwnedByStdlib: bool,
+}
+
+impl DecimalKernel {
+  pub fn standard() -> DecimalKernel {
+    return DecimalKernel {
+      scaleChecked: true,
+      roundingDeterministic: true,
+      publicApiOwnedByStdlib: true,
+    }
+  }
+
+  pub fn canRun(self: DecimalKernel) -> bool {
+    return self.scaleChecked && self.roundingDeterministic && self.publicApiOwnedByStdlib
+  }
+
+  pub fn checkedScale(self: DecimalKernel, scale: i32) -> Result<i32, MathRuntimeError> {
+    if scale < -6144 || scale > 6144 {
+      return Err(MathRuntimeError.InvalidScale)
+    }
+    return Ok(scale)
+  }
+
+  pub fn checkedPrecision(self: DecimalKernel, precision: usize) -> Result<usize, MathRuntimeError> {
+    if precision == 0 || precision > 256 {
+      return Err(MathRuntimeError.ResourceLimit)
+    }
+    return Ok(precision)
+  }
+
+  pub fn checkedDivideScale(self: DecimalKernel, leftScale: i32, rightScale: i32, extra: i32) -> Result<i32, MathRuntimeError> {
+    return self.checkedScale(leftScale - rightScale + extra)
+  }
+}

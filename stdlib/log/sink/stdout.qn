@@ -1,0 +1,3 @@
+pub fn stdoutSink() -> LogSink {
+  return LogSink.stdout()
+}

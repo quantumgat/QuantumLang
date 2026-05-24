@@ -1,0 +1,25 @@
+pub struct MemoryPoolStats {
+  blockCount: usize,
+  freeBlocks: usize,
+  usedBytes: usize,
+  capacityBytes: usize,
+}
+
+impl MemoryPoolStats {
+  pub fn init(blockCount: usize, freeBlocks: usize, usedBytes: usize, capacityBytes: usize) -> MemoryPoolStats {
+    return MemoryPoolStats {
+      blockCount: blockCount,
+      freeBlocks: freeBlocks,
+      usedBytes: usedBytes,
+      capacityBytes: capacityBytes,
+    }
+  }
+
+  pub fn availableBytes(self: MemoryPoolStats) -> usize {
+    return self.capacityBytes - self.usedBytes
+  }
+
+  pub fn hasFreeBlock(self: MemoryPoolStats) -> bool {
+    return self.freeBlocks > 0
+  }
+}

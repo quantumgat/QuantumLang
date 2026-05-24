@@ -1,0 +1,32 @@
+pub enum RuntimeServiceRestartPolicy {
+  Never
+  OnFailure
+  Always
+}
+
+pub struct RuntimeServiceRestart {
+  serviceId: u64,
+  policy: RuntimeServiceRestartPolicy,
+  attempts: usize,
+  maxAttempts: usize,
+}
+
+impl RuntimeServiceRestart {
+  pub fn init(
+    serviceId: u64,
+    policy: RuntimeServiceRestartPolicy,
+    attempts: usize,
+    maxAttempts: usize,
+  ) -> RuntimeServiceRestart {
+    return RuntimeServiceRestart {
+      serviceId: serviceId,
+      policy: policy,
+      attempts: attempts,
+      maxAttempts: maxAttempts,
+    }
+  }
+
+  pub fn allowed(self: RuntimeServiceRestart) -> bool {
+    return self.serviceId > 0 && self.attempts < self.maxAttempts
+  }
+}

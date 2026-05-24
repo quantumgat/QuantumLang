@@ -1,0 +1,46 @@
+pub enum DynamicTypeSyntaxKind {
+  Union
+  Any
+  QAny
+}
+
+pub struct DynamicTypeSyntaxParse {
+  kind: DynamicTypeSyntaxKind,
+  source: string,
+  alternativeCount: usize,
+  explicit: bool,
+  quantumOnly: bool,
+  diagnosticsReady: bool,
+}
+
+pub fn dynamicTypeSyntaxParse(
+  kind: DynamicTypeSyntaxKind,
+  source: string,
+  alternativeCount: usize,
+) -> DynamicTypeSyntaxParse {
+  return DynamicTypeSyntaxParse {
+    kind: kind,
+    source: source,
+    alternativeCount: alternativeCount,
+    explicit: true,
+    quantumOnly: kind == DynamicTypeSyntaxKind.QAny,
+    diagnosticsReady: true,
+  }
+}
+
+impl DynamicTypeSyntaxParse {
+  pub fn valid(self: DynamicTypeSyntaxParse) -> bool {
+    return self.source != ""
+      && self.explicit
+      && self.diagnosticsReady
+      && (self.kind != DynamicTypeSyntaxKind.Union || self.alternativeCount >= 2)
+  }
+
+  pub fn rejectsImplicitAny(self: DynamicTypeSyntaxParse) -> bool {
+    return self.kind != DynamicTypeSyntaxKind.Any || self.explicit
+  }
+
+  pub fn separatesQuantum(self: DynamicTypeSyntaxParse) -> bool {
+    return self.kind != DynamicTypeSyntaxKind.QAny || self.quantumOnly
+  }
+}

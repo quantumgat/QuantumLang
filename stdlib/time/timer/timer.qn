@@ -1,0 +1,32 @@
+pub struct Deadline {
+  instant: Instant,
+}
+
+pub struct Sleep {
+  duration: Duration,
+}
+
+pub struct Interval {
+  period: Duration,
+}
+
+pub struct Timeout<T> {
+  duration: Duration,
+  valueType: string,
+}
+
+impl Deadline {
+  pub fn fromNow(duration: Duration) -> Deadline
+}
+
+impl Sleep {
+  pub fn await(self: Sleep) -> Result<Unit, TimeError>
+}
+
+impl Interval {
+  pub fn next(self: Interval) -> Result<Instant, TimeError>
+}
+
+impl Timeout<T> {
+  pub fn run(self: Timeout<T>, work: fn() -> T) -> Result<T, TimeError>
+}

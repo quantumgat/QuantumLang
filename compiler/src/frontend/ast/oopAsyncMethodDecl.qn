@@ -1,0 +1,45 @@
+pub enum AstOopAsyncMethodOwnerKind {
+  ClassOwner
+  InterfaceOwner
+  TraitOwner
+  ImplOwner
+  ServiceOwner
+  ActorOwner
+}
+
+pub struct OopAsyncMethodDecl {
+  node: AstNode,
+  ownerTypeId: u64,
+  methodId: u64,
+  ownerKind: AstOopAsyncMethodOwnerKind,
+  asyncMethod: bool,
+  receiverBound: bool,
+  awaitPointCount: usize,
+  shutdownOrClose: bool,
+  illegalAsyncDropRejected: bool,
+  interfaceContractBound: bool,
+  traitContractBound: bool,
+  dynAdapterRequired: bool,
+  sourceMapBound: bool,
+}
+
+impl OopAsyncMethodDecl {
+  pub fn complete(self: OopAsyncMethodDecl) -> bool {
+    return self.node.nodeId() > 0
+      && self.ownerTypeId > 0
+      && self.methodId > 0
+      && self.asyncMethod
+      && self.receiverBound
+      && self.illegalAsyncDropRejected
+      && self.sourceMapBound
+  }
+
+  pub fn declaresAsyncContract(self: OopAsyncMethodDecl) -> bool {
+    return self.complete()
+      && (self.interfaceContractBound || self.traitContractBound || self.shutdownOrClose)
+  }
+
+  pub fn dynSafe(self: OopAsyncMethodDecl) -> bool {
+    return self.complete() && !self.dynAdapterRequired
+  }
+}

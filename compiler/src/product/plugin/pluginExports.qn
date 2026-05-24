@@ -1,0 +1,42 @@
+pub struct PluginExports {
+  intrinsicCount: usize,
+  diagnosticChannelCount: usize,
+  capabilityNameCount: usize,
+  stdlibExportsRejected: bool,
+  intrinsicSignaturesRequired: bool,
+  diagnosticChannelsOwned: bool,
+}
+
+impl PluginExports {
+  pub fn capabilityPack(intrinsicCount: usize, diagnosticChannelCount: usize) -> PluginExports {
+    return PluginExports {
+      intrinsicCount: intrinsicCount,
+      diagnosticChannelCount: diagnosticChannelCount,
+      capabilityNameCount: 0,
+      stdlibExportsRejected: true,
+      intrinsicSignaturesRequired: intrinsicCount > 0,
+      diagnosticChannelsOwned: diagnosticChannelCount > 0,
+    }
+  }
+
+  pub fn stdlibOnly() -> PluginExports {
+    return PluginExports {
+      intrinsicCount: 0,
+      diagnosticChannelCount: 0,
+      capabilityNameCount: 0,
+      stdlibExportsRejected: true,
+      intrinsicSignaturesRequired: true,
+      diagnosticChannelsOwned: true,
+    }
+  }
+
+  pub fn accepted(self: PluginExports) -> bool {
+    return self.stdlibExportsRejected
+      && self.intrinsicSignaturesRequired
+      && self.diagnosticChannelsOwned
+  }
+
+  pub fn compilerVisible(self: PluginExports) -> bool {
+    return self.intrinsicCount > 0 || self.diagnosticChannelCount > 0 || self.capabilityNameCount > 0
+  }
+}

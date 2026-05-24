@@ -1,0 +1,30 @@
+pub struct RetiredRecord {
+  address: usize,
+  generation: u64,
+  retireEpoch: u64,
+  reclaimed: bool,
+}
+
+impl RetiredRecord {
+  pub fn init(address: usize, generation: u64, retireEpoch: u64) -> RetiredRecord {
+    return RetiredRecord {
+      address: address,
+      generation: generation,
+      retireEpoch: retireEpoch,
+      reclaimed: false,
+    }
+  }
+
+  pub fn canReclaim(self: RetiredRecord, currentEpoch: u64, hazardProtected: bool) -> bool {
+    return self.reclaimed == false && hazardProtected == false && currentEpoch > self.retireEpoch
+  }
+
+  pub fn markReclaimed(self: RetiredRecord) -> RetiredRecord {
+    return RetiredRecord {
+      address: self.address,
+      generation: self.generation,
+      retireEpoch: self.retireEpoch,
+      reclaimed: true,
+    }
+  }
+}

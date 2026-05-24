@@ -1,0 +1,7 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub mod client
+pub mod pool
+pub use client.HttpClient
+pub use client.HttpClientRequest
+pub use client.HttpClientSendTask
+pub use pool.HttpClientPool

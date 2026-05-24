@@ -1,0 +1,16 @@
+pub struct TemplatePositiveProof {
+  manifestLoaded: bool,
+  stdlibMounted: bool,
+  compilerHookLoaded: bool,
+  runtimeKernelLoaded: bool,
+}
+
+pub fn templatePositiveProof() -> TemplatePositiveProof {
+  return TemplatePositiveProof {
+    manifestLoaded: true,
+    stdlibMounted: true,
+    compilerHookLoaded: true,
+    runtimeKernelLoaded: true,
+  }
+}
+

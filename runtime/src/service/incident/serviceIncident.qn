@@ -1,0 +1,34 @@
+pub enum RuntimeServiceIncidentKind {
+  StartFailure
+  ReadinessTimeout
+  RestartLimit
+  DependencyFailure
+  Overload
+}
+
+pub struct RuntimeServiceIncident {
+  serviceId: u64,
+  kind: RuntimeServiceIncidentKind,
+  diagnosticCode: string,
+  noAllocationRequired: bool,
+}
+
+impl RuntimeServiceIncident {
+  pub fn init(
+    serviceId: u64,
+    kind: RuntimeServiceIncidentKind,
+    diagnosticCode: string,
+    noAllocationRequired: bool,
+  ) -> RuntimeServiceIncident {
+    return RuntimeServiceIncident {
+      serviceId: serviceId,
+      kind: kind,
+      diagnosticCode: diagnosticCode,
+      noAllocationRequired: noAllocationRequired,
+    }
+  }
+
+  pub fn reportable(self: RuntimeServiceIncident) -> bool {
+    return self.serviceId > 0 && self.diagnosticCode != "" && self.noAllocationRequired
+  }
+}

@@ -1,0 +1,37 @@
+pub enum AstPointerSyntaxKind {
+  NullptrLiteral,
+  AddressOf,
+  Deref,
+  PtrConstructor,
+  NonNullConstructor,
+  PointerMethodCall,
+  SmartPointerConstructor,
+  UnsafePointerBlock,
+}
+
+pub struct AstPointerSyntax {
+  node: AstNode,
+  kind: AstPointerSyntaxKind,
+  surfaceName: string,
+  typeName: string,
+  questionMarkAllowed: bool,
+  unsafeContext: bool,
+}
+
+impl AstPointerSyntax {
+  pub fn accepted(self: AstPointerSyntax) -> bool {
+    return self.surfaceName != "" && self.typeName != ""
+  }
+
+  pub fn safeUserSurface(self: AstPointerSyntax) -> bool {
+    return self.kind == AstPointerSyntaxKind.PointerMethodCall
+      && self.questionMarkAllowed
+      && self.unsafeContext == false
+  }
+
+  pub fn rawUnsafeSurface(self: AstPointerSyntax) -> bool {
+    return self.kind == AstPointerSyntaxKind.UnsafePointerBlock
+      || self.kind == AstPointerSyntaxKind.Deref
+      || self.kind == AstPointerSyntaxKind.AddressOf
+  }
+}

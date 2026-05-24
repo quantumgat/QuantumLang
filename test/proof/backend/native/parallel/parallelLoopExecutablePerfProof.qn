@@ -1,0 +1,51 @@
+pub struct ParallelLoopExecutablePerfProof {
+  analysis: ParallelLoopExecutablePerfFact,
+  hir: HirParallelLoopExecutablePerfHandoff,
+  mir: MirParallelLoopExecutablePerfOp,
+  runtime: ParallelLoopRuntime,
+  generatedExecutableFixture: string,
+  baselineFixture: string,
+  nativeRuntimePrimitive: string,
+  serialSafe: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+  noGeneratedFallback: bool,
+}
+
+pub fn parallelLoopExecutablePerfProof(
+  analysis: ParallelLoopExecutablePerfFact,
+  hir: HirParallelLoopExecutablePerfHandoff,
+  mir: MirParallelLoopExecutablePerfOp,
+  runtime: ParallelLoopRuntime,
+) -> ParallelLoopExecutablePerfProof {
+  return ParallelLoopExecutablePerfProof {
+    analysis: analysis,
+    hir: hir,
+    mir: mir,
+    runtime: runtime,
+    generatedExecutableFixture: "parallel_loop_executable_perf_ok.qn",
+    baselineFixture: "parallel_loop_cpp_baseline.cpp",
+    nativeRuntimePrimitive: "QnParallelForRange",
+    serialSafe: true,
+    allCoreDisabled: true,
+    maxParallel: 1,
+    noGeneratedFallback: true,
+  }
+}
+
+impl ParallelLoopExecutablePerfProof {
+  pub fn accepted(self: ParallelLoopExecutablePerfProof) -> bool {
+    return self.analysis.accepted()
+      && self.hir.complete()
+      && self.mir.lowerable()
+      && self.runtime.hotPathReady()
+      && self.generatedExecutableFixture == "parallel_loop_executable_perf_ok.qn"
+      && self.baselineFixture == "parallel_loop_cpp_baseline.cpp"
+      && self.nativeRuntimePrimitive == "QnParallelForRange"
+      && self.serialSafe
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+      && self.noGeneratedFallback
+  }
+}
+

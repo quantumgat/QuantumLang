@@ -1,0 +1,20 @@
+pub enum MmioIncidentKind {
+  MissingTargetCapability,
+  MissingUnsafeCapability,
+  InvalidDeviceMemory,
+  UnorderedVolatileAccess,
+}
+
+pub struct MmioIncident {
+  kind: MmioIncidentKind,
+  recoverable: bool,
+}
+
+impl MmioIncident {
+  pub fn init(kind: MmioIncidentKind) -> MmioIncident {
+    return MmioIncident {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+}

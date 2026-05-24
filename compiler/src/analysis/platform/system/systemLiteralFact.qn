@@ -1,0 +1,26 @@
+pub enum SystemLiteralKind {
+  Path
+  EnvName
+  CommandProgram
+  CommandArg
+  SignalNumber
+}
+
+pub struct SystemLiteralFact {
+  kind: SystemLiteralKind,
+  literalText: string,
+  normalizedAtCompileTime: bool,
+  rejectedIfInvalid: bool,
+  allocationFreeLowering: bool,
+  sourceMappedDiagnostic: bool,
+}
+
+impl SystemLiteralFact {
+  pub fn accepted(self: SystemLiteralFact) -> bool {
+    return self.literalText != ""
+      && self.normalizedAtCompileTime
+      && self.rejectedIfInvalid
+      && self.allocationFreeLowering
+      && self.sourceMappedDiagnostic
+  }
+}

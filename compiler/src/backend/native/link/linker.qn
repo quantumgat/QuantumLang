@@ -1,0 +1,4 @@
+pub trait Linker {
+  fn linkerName(self) -> string
+  fn supportsHiddenRuntime(self) -> bool
+}

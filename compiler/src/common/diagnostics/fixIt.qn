@@ -1,0 +1,33 @@
+pub enum FixItSafety {
+  Safe
+  UnsafeRequiresReview
+  NotAvailable
+}
+
+pub struct FixIt {
+  range: SourceRange,
+  replacement: string,
+  safety: FixItSafety,
+  explanation: string,
+  machineApplicable: bool,
+}
+
+impl FixIt {
+  pub fn init(range: SourceRange, replacement: string, safety: FixItSafety) -> FixIt {
+    return FixIt {
+      range: range,
+      replacement: replacement,
+      safety: safety,
+      explanation: "replace source range",
+      machineApplicable: safety == FixItSafety.Safe,
+    }
+  }
+
+  pub fn applicable(self: FixIt) -> bool {
+    return self.range.exact()
+      && self.replacement != ""
+      && self.safety == FixItSafety.Safe
+      && self.explanation != ""
+      && self.machineApplicable
+  }
+}

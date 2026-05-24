@@ -1,0 +1,37 @@
+pub enum NetErrorKind {
+  Timeout
+  Cancelled
+  ConnectionRefused
+  ConnectionReset
+  BrokenPipe
+  Eof
+  WouldBlock
+  TooManyConnections
+  BackpressureRejected
+  ProtocolDeferred
+  DnsFailure
+  TlsFailure
+  PlatformFailure
+}
+
+pub struct NetError {
+  kind: NetErrorKind,
+  message: string,
+  retryable: bool,
+}
+
+pub type NetResult<T> = Result<T, NetError>
+
+impl NetError {
+  pub fn recoverable(self: NetError) -> bool {
+    return self.retryable
+  }
+
+  pub fn noCoredump(self: NetError) -> bool {
+    return self.message != ""
+  }
+
+  pub fn retryableFailure(self: NetError) -> bool {
+    return self.retryable && self.kind != NetErrorKind.TlsFailure
+  }
+}

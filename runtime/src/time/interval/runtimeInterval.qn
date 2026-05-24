@@ -1,0 +1,21 @@
+pub struct RuntimeInterval {
+  intervalId: u64,
+  periodNanos: u128,
+  nextTickMillis: u64,
+  driftCorrected: bool,
+}
+
+impl RuntimeInterval {
+  pub fn init(intervalId: u64, periodNanos: u128, nextTickMillis: u64, driftCorrected: bool) -> RuntimeInterval {
+    return RuntimeInterval {
+      intervalId: intervalId,
+      periodNanos: periodNanos,
+      nextTickMillis: nextTickMillis,
+      driftCorrected: driftCorrected,
+    }
+  }
+
+  pub fn stable(self: RuntimeInterval) -> bool {
+    return self.intervalId > 0 && self.periodNanos > 0 && self.driftCorrected
+  }
+}

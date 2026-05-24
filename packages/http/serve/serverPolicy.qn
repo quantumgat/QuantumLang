@@ -1,0 +1,194 @@
+pub struct ServerPolicy {
+  workers: usize,
+  workersExplicit: bool,
+  timeoutSeconds: usize,
+  accessLog: bool,
+  metrics: bool,
+  maxBodyBytes: usize,
+  mode: HttpTransportMode,
+  modeExplicit: bool,
+  blockingPoolWorkers: usize,
+  blockingPoolConfigured: bool,
+}
+
+impl ServerPolicy {
+  pub fn init() -> ServerPolicy {
+    return ServerPolicy {
+      workers: 0,
+      workersExplicit: false,
+      timeoutSeconds: 30,
+      accessLog: true,
+      metrics: true,
+      maxBodyBytes: 10485760,
+      mode: HttpTransportMode.Async,
+      modeExplicit: false,
+      blockingPoolWorkers: 0,
+      blockingPoolConfigured: false,
+    }
+  }
+
+  pub fn workers(self: ServerPolicy, workers: usize) -> ServerPolicy {
+    return ServerPolicy {
+      workers: workers,
+      workersExplicit: true,
+      timeoutSeconds: self.timeoutSeconds,
+      accessLog: self.accessLog,
+      metrics: self.metrics,
+      maxBodyBytes: self.maxBodyBytes,
+      mode: self.mode,
+      modeExplicit: self.modeExplicit,
+      blockingPoolWorkers: self.blockingPoolWorkers,
+      blockingPoolConfigured: self.blockingPoolConfigured,
+    }
+  }
+
+  pub fn workersCount(self: ServerPolicy) -> usize {
+    if !self.workersExplicit {
+      return self.autoWorkers()
+    }
+    if self.workers == 0 {
+      return self.autoWorkers()
+    }
+    return self.workers
+  }
+
+  pub fn autoWorkers(self: ServerPolicy) -> usize {
+    return 1
+  }
+
+  pub fn workersAuto(self: ServerPolicy) -> bool {
+    return !self.workersExplicit
+  }
+
+  pub fn workerSelectionValid(self: ServerPolicy) -> bool {
+    return !self.workersExplicit || self.workers > 0
+  }
+
+  pub fn timeoutSeconds(self: ServerPolicy) -> usize {
+    return self.timeoutSeconds
+  }
+
+  pub fn withTimeout(self: ServerPolicy, timeoutSeconds: usize) -> ServerPolicy {
+    return ServerPolicy {
+      workers: self.workers,
+      workersExplicit: self.workersExplicit,
+      timeoutSeconds: timeoutSeconds,
+      accessLog: self.accessLog,
+      metrics: self.metrics,
+      maxBodyBytes: self.maxBodyBytes,
+      mode: self.mode,
+      modeExplicit: self.modeExplicit,
+      blockingPoolWorkers: self.blockingPoolWorkers,
+      blockingPoolConfigured: self.blockingPoolConfigured,
+    }
+  }
+
+  pub fn withMaxBodyBytes(self: ServerPolicy, maxBodyBytes: usize) -> ServerPolicy {
+    return ServerPolicy {
+      workers: self.workers,
+      workersExplicit: self.workersExplicit,
+      timeoutSeconds: self.timeoutSeconds,
+      accessLog: self.accessLog,
+      metrics: self.metrics,
+      maxBodyBytes: maxBodyBytes,
+      mode: self.mode,
+      modeExplicit: self.modeExplicit,
+      blockingPoolWorkers: self.blockingPoolWorkers,
+      blockingPoolConfigured: self.blockingPoolConfigured,
+    }
+  }
+
+  pub fn maxBodyBytes(self: ServerPolicy) -> usize {
+    return self.maxBodyBytes
+  }
+
+  pub fn withMode(self: ServerPolicy, mode: HttpTransportMode) -> ServerPolicy {
+    return ServerPolicy {
+      workers: self.workers,
+      workersExplicit: self.workersExplicit,
+      timeoutSeconds: self.timeoutSeconds,
+      accessLog: self.accessLog,
+      metrics: self.metrics,
+      maxBodyBytes: self.maxBodyBytes,
+      mode: mode,
+      modeExplicit: true,
+      blockingPoolWorkers: self.blockingPoolWorkers,
+      blockingPoolConfigured: self.blockingPoolConfigured,
+    }
+  }
+
+  pub fn withBlockingPool(self: ServerPolicy, workers: usize) -> ServerPolicy {
+    let selectedMode = self.modeAfterBlockingPool()
+    return ServerPolicy {
+      workers: self.workers,
+      workersExplicit: self.workersExplicit,
+      timeoutSeconds: self.timeoutSeconds,
+      accessLog: self.accessLog,
+      metrics: self.metrics,
+      maxBodyBytes: self.maxBodyBytes,
+      mode: selectedMode,
+      modeExplicit: self.modeExplicit,
+      blockingPoolWorkers: workers,
+      blockingPoolConfigured: true,
+    }
+  }
+
+  pub fn modeAfterBlockingPool(self: ServerPolicy) -> HttpTransportMode {
+    if self.modeExplicit {
+      return self.mode
+    }
+    return HttpTransportMode.Hybrid
+  }
+
+  pub fn transportMode(self: ServerPolicy) -> HttpTransportMode {
+    return self.mode
+  }
+
+  pub fn explicitMode(self: ServerPolicy) -> bool {
+    return self.modeExplicit
+  }
+
+  pub fn blockingPoolSet(self: ServerPolicy) -> bool {
+    return self.blockingPoolConfigured
+  }
+
+  pub fn blockingPoolWorkers(self: ServerPolicy) -> usize {
+    if self.mode == HttpTransportMode.Hybrid && self.blockingPoolWorkers == 0 {
+      return self.workersCount()
+    }
+    return self.blockingPoolWorkers
+  }
+
+  pub fn blockingPoolValid(self: ServerPolicy) -> bool {
+    return !self.blockingPoolConfigured || self.blockingPoolWorkers > 0
+  }
+
+  pub fn blockingPoolRequiresHybrid(self: ServerPolicy) -> bool {
+    return self.blockingPoolConfigured
+      && self.modeExplicit
+      && self.mode != HttpTransportMode.Hybrid
+  }
+
+  pub fn transportModeValid(self: ServerPolicy) -> bool {
+    return self.workerSelectionValid()
+      && self.blockingPoolValid()
+      && !self.blockingPoolRequiresHybrid()
+  }
+
+  pub fn transportModeDiagnostic(self: ServerPolicy) -> HttpTransportModeDiagnostic {
+    if self.blockingPoolRequiresHybrid() {
+      return HttpTransportModeDiagnostic.blockingPoolRequiresHybrid()
+    }
+    if !self.blockingPoolValid() {
+      return HttpTransportModeDiagnostic.blockingPoolWorkersRequired()
+    }
+    if !self.workerSelectionValid() {
+      return HttpTransportModeDiagnostic.workersRequired()
+    }
+    return HttpTransportModeDiagnostic.ok()
+  }
+
+  pub fn transportModePlan(self: ServerPolicy) -> HttpTransportModePlan {
+    return HttpTransportModePlan.fromPolicy(self)
+  }
+}

@@ -1,0 +1,23 @@
+pub struct QforQifQirLoweringProof {
+  staticQregRequired: bool,
+  qforLoweringReady: bool,
+  indexedQforReady: bool,
+  controlledQforReady: bool,
+  nestedQifQforReady: bool,
+  measurementLoopReady: bool,
+  sourceMapReady: bool,
+  noNativeFallback: bool,
+}
+
+impl QforQifQirLoweringProof {
+  pub fn complete(self: QforQifQirLoweringProof) -> bool {
+    return self.staticQregRequired
+      && self.qforLoweringReady
+      && self.indexedQforReady
+      && self.controlledQforReady
+      && self.nestedQifQforReady
+      && self.measurementLoopReady
+      && self.sourceMapReady
+      && self.noNativeFallback
+  }
+}

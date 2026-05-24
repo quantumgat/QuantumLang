@@ -1,0 +1,39 @@
+pub trait SerdeEncoder {
+  pub fn beginObject(self: SerdeEncoder, fieldCount: usize) -> Result<Unit, SerdeError>
+  pub fn field(self: SerdeEncoder, meta: FieldMeta) -> Result<Unit, SerdeError>
+  pub fn endObject(self: SerdeEncoder) -> Result<Unit, SerdeError>
+  pub fn beginArray(self: SerdeEncoder, len: usize) -> Result<Unit, SerdeError>
+  pub fn endArray(self: SerdeEncoder) -> Result<Unit, SerdeError>
+  pub fn null(self: SerdeEncoder) -> Result<Unit, SerdeError>
+  pub fn bool(self: SerdeEncoder, value: bool) -> Result<Unit, SerdeError>
+  pub fn string(self: SerdeEncoder, value: string) -> Result<Unit, SerdeError>
+  pub fn i64(self: SerdeEncoder, value: i64) -> Result<Unit, SerdeError>
+  pub fn u64(self: SerdeEncoder, value: u64) -> Result<Unit, SerdeError>
+  pub fn exactNumberString(self: SerdeEncoder, value: string) -> Result<Unit, SerdeError>
+}
+
+pub trait SerdeDecoder {
+  pub fn beginObject(self: SerdeDecoder) -> Result<Unit, SerdeError>
+  pub fn nextField(self: SerdeDecoder) -> Result<Option<string>, SerdeError>
+  pub fn skipValue(self: SerdeDecoder) -> Result<Unit, SerdeError>
+  pub fn endObject(self: SerdeDecoder) -> Result<Unit, SerdeError>
+  pub fn null(self: SerdeDecoder) -> Result<Unit, SerdeError>
+  pub fn bool(self: SerdeDecoder) -> Result<bool, SerdeError>
+  pub fn string(self: SerdeDecoder) -> Result<string, SerdeError>
+  pub fn i64(self: SerdeDecoder) -> Result<i64, SerdeError>
+  pub fn u64(self: SerdeDecoder) -> Result<u64, SerdeError>
+  pub fn exactNumberString(self: SerdeDecoder) -> Result<string, SerdeError>
+  pub fn path(self: SerdeDecoder) -> string
+}
+
+pub trait Serialize<T> {
+  pub fn serialize(self: T, encoder: SerdeEncoder) -> Result<Unit, SerdeError>
+}
+
+pub trait Deserialize<T> {
+  pub fn deserialize(decoder: SerdeDecoder) -> Result<T, SerdeError>
+}
+
+pub trait JsonCodec<T>: Serialize<T> + Deserialize<T> {
+  pub fn metadata() -> JsonCodecDerive
+}

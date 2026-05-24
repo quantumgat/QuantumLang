@@ -1,0 +1,19 @@
+pub struct BenchmarkProofHook {
+  scenario: string,
+  emitsEvidenceRow: bool,
+  serialCiSafe: bool,
+}
+
+impl BenchmarkProofHook {
+  pub fn init(scenario: string, emitsEvidenceRow: bool, serialCiSafe: bool) -> BenchmarkProofHook {
+    return BenchmarkProofHook {
+      scenario: scenario,
+      emitsEvidenceRow: emitsEvidenceRow,
+      serialCiSafe: serialCiSafe,
+    }
+  }
+
+  pub fn accepted(self: BenchmarkProofHook) -> bool {
+    return self.scenario != "" && self.emitsEvidenceRow && self.serialCiSafe
+  }
+}

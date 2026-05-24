@@ -1,0 +1,5 @@
+pub enum LockState {
+  Unlocked
+  Locked
+  Contended
+}

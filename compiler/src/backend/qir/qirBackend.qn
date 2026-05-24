@@ -1,0 +1,22 @@
+import backend.registry::{Backend}
+
+pub class QirBackend {
+  profileName: string,
+  emitsQirDirectly: bool,
+  generatedSourceFallback: bool,
+
+  pub init(profileName: string) {
+    self.profileName = profileName
+    self.emitsQirDirectly = true
+    self.generatedSourceFallback = false
+  }
+}
+impl Backend for QirBackend {
+  pub fn name(self: &QirBackend) -> string {
+    return "qir"
+  }
+
+  pub fn supportsNative(self: &QirBackend) -> bool {
+    return false
+  }
+}

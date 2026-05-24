@@ -1,0 +1,24 @@
+pub struct MirPointerCheckSequence {
+  instruction: u64,
+  nonNullCheck: bool,
+  boundsCheck: bool,
+  alignmentCheck: bool,
+  provenanceCheck: bool,
+  generationCheck: bool,
+  diagnosticCode: string,
+}
+
+impl MirPointerCheckSequence {
+  pub fn accepted(self: MirPointerCheckSequence) -> bool {
+    return self.instruction > 0
+      && self.nonNullCheck
+      && self.boundsCheck
+      && self.alignmentCheck
+      && self.provenanceCheck
+      && self.diagnosticCode != ""
+  }
+
+  pub fn dynamicGenerationRequired(self: MirPointerCheckSequence) -> bool {
+    return self.generationCheck
+  }
+}

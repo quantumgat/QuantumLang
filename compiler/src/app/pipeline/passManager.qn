@@ -1,0 +1,32 @@
+pub class PassManager {
+  passCount: usize,
+  dependencyGraphReady: bool,
+  diagnosticsReady: bool,
+  running: bool,
+
+  pub init() {
+    self.passCount = 0
+    self.dependencyGraphReady = true
+    self.diagnosticsReady = true
+    self.running = false
+  }
+
+  pub fn start(self: &mut PassManager) -> bool {
+    self.running = self.dependencyGraphReady && self.diagnosticsReady
+    return self.running
+  }
+
+  pub fn registerRequiredPass(self: &mut PassManager) -> usize {
+    self.passCount = self.passCount + 1
+    return self.passCount
+  }
+
+  pub fn runAll(self: &PassManager) -> bool {
+    return self.running && self.passCount > 0
+  }
+
+  pub fn shutdown(self: &mut PassManager) -> bool {
+    self.running = false
+    return self.running == false
+  }
+}

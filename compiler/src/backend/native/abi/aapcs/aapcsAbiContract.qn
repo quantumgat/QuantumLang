@@ -1,0 +1,12 @@
+pub struct AapcsAbiContract {
+  target: string,
+  hardFloat: bool,
+  stackAligned: bool,
+  mobileProfileAllowed: bool,
+}
+
+impl AapcsAbiContract {
+  pub fn accepted(self: AapcsAbiContract) -> bool {
+    return self.target != "" && self.stackAligned
+  }
+}

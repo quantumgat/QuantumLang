@@ -1,0 +1,25 @@
+pub enum OopPerformanceDiagnosticKind {
+  Oop001DynamicHotCall
+  HiddenAllocationInHotFunction
+  BoxedItemInHotLoop
+}
+
+pub struct OopPerformanceDiagnostic {
+  kind: OopPerformanceDiagnosticKind,
+  code: string,
+  help: string,
+}
+
+pub fn oopPerformanceDiagnostic(kind: OopPerformanceDiagnosticKind, code: string, help: string) -> OopPerformanceDiagnostic {
+  return OopPerformanceDiagnostic { kind: kind, code: code, help: help }
+}
+
+impl OopPerformanceDiagnostic {
+  pub fn diagnosticCode(self: OopPerformanceDiagnostic) -> string {
+    return self.code
+  }
+
+  pub fn helpText(self: OopPerformanceDiagnostic) -> string {
+    return self.help
+  }
+}

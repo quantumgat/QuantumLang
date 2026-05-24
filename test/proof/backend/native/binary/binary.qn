@@ -1,0 +1,3 @@
+pub fn binaryNativeProofOwner() -> string {
+  return "qtlc/qtlang/test/proof/backend/native/binary"
+}

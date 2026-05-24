@@ -1,0 +1,33 @@
+[module]
+name = "analysis"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "semantic-type-effect-ownership-analysis"
+
+[submodules]
+binary = "binary/mod.qn"
+resolve = "resolve/mod.qn"
+semantic = "semantic/mod.qn"
+types = "types/mod.qn"
+effects = "effects/mod.qn"
+ownership = "ownership/mod.qn"
+controlFlow = "controlFlow/mod.qn"
+ctfe = "ctfe/mod.qn"
+oop = "oop/mod.qn"
+quantum = "quantum/mod.qn"
+concurrency = "concurrency/mod.qn"
+pointers = "pointers/mod.qn"
+layout = "layout/mod.qn"
+json = "json/mod.qn"
+net = "net/mod.qn"
+platform = "platform/mod.qn"
+safety = "safety/mod.qn"
+serde = "serde/mod.qn"
+
+[dependencies]
+allowed = ["common", "frontend"]
+forbidden = ["backend", "runtime internals"]
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

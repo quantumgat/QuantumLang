@@ -1,0 +1,44 @@
+pub struct BigNumberFormat {
+  radix: usize,
+  uppercase: bool,
+}
+
+impl BigNumberFormat {
+  pub fn decimal() -> BigNumberFormat {
+    return BigNumberFormat {
+      radix: 10,
+      uppercase: false,
+    }
+  }
+
+  pub fn hex() -> BigNumberFormat {
+    return BigNumberFormat {
+      radix: 16,
+      uppercase: false,
+    }
+  }
+
+  pub fn upperHex() -> BigNumberFormat {
+    return BigNumberFormat {
+      radix: 16,
+      uppercase: true,
+    }
+  }
+
+  pub fn binary() -> BigNumberFormat {
+    return BigNumberFormat {
+      radix: 2,
+      uppercase: false,
+    }
+  }
+
+  pub fn radix(radix: usize) -> Result<BigNumberFormat, BigNumberError> {
+    if radix < 2 || radix > 36 {
+      return Err(BigNumberError.InvalidRadix)
+    }
+    return Ok(BigNumberFormat {
+      radix: radix,
+      uppercase: false,
+    })
+  }
+}

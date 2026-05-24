@@ -1,0 +1,32 @@
+pub struct ArenaDanglingFact {
+  regionId: u64,
+  valueNode: u64,
+  capturedGeneration: u64,
+  currentGeneration: u64,
+  capturedResetEpoch: u64,
+  currentResetEpoch: u64,
+}
+
+impl ArenaDanglingFact {
+  pub fn init(
+    regionId: u64,
+    valueNode: u64,
+    capturedGeneration: u64,
+    currentGeneration: u64,
+    capturedResetEpoch: u64,
+    currentResetEpoch: u64,
+  ) -> ArenaDanglingFact {
+    return ArenaDanglingFact {
+      regionId: regionId,
+      valueNode: valueNode,
+      capturedGeneration: capturedGeneration,
+      currentGeneration: currentGeneration,
+      capturedResetEpoch: capturedResetEpoch,
+      currentResetEpoch: currentResetEpoch,
+    }
+  }
+
+  pub fn mustReject(self: ArenaDanglingFact) -> bool {
+    return self.capturedGeneration != self.currentGeneration || self.capturedResetEpoch != self.currentResetEpoch
+  }
+}

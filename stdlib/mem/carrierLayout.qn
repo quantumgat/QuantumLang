@@ -1,0 +1,46 @@
+pub enum CarrierLayoutKind {
+  OptionNiche,
+  OptionTag,
+  ResultTag,
+}
+
+pub struct CarrierLayout {
+  kind: CarrierLayoutKind,
+  payload: Layout,
+  tagBytes: usize,
+  nicheOptimized: bool,
+}
+
+impl CarrierLayout {
+  pub fn init(kind: CarrierLayoutKind, payload: Layout, tagBytes: usize, nicheOptimized: bool) -> CarrierLayout {
+    return CarrierLayout {
+      kind: kind,
+      payload: payload,
+      tagBytes: tagBytes,
+      nicheOptimized: nicheOptimized,
+    }
+  }
+
+  pub fn kind(self: CarrierLayout) -> CarrierLayoutKind {
+    return self.kind
+  }
+
+  pub fn payload(self: CarrierLayout) -> Layout {
+    return self.payload
+  }
+
+  pub fn tagBytes(self: CarrierLayout) -> usize {
+    return self.tagBytes
+  }
+
+  pub fn isNicheOptimized(self: CarrierLayout) -> bool {
+    return self.nicheOptimized
+  }
+
+  pub fn totalSize(self: CarrierLayout) -> usize {
+    if self.nicheOptimized {
+      return self.payload.size()
+    }
+    return Layout.init(self.payload.size() + self.tagBytes, self.payload.alignment()).stride()
+  }
+}

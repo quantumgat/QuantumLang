@@ -1,0 +1,39 @@
+pub enum ForIteratorAlgorithmSyntaxKind {
+  MapStyle
+  FilterStyle
+  FilterMap
+  Collect
+  Count
+  Sum
+  Any
+  All
+  Find
+  Zip
+  Enumerate
+  Chain
+  TakeSkip
+  Unique
+}
+
+pub struct ForIteratorAlgorithmSyntax {
+  kind: ForIteratorAlgorithmSyntaxKind,
+  sourceParsed: bool,
+  transformParsed: bool,
+  terminalParsed: bool,
+  callbackParsed: bool,
+  materializationPolicyParsed: bool,
+  sourceRangeReady: bool,
+  recoveryReady: bool,
+}
+
+impl ForIteratorAlgorithmSyntax {
+  pub fn parsed(self: ForIteratorAlgorithmSyntax) -> bool {
+    return self.sourceParsed
+      && self.transformParsed
+      && self.terminalParsed
+      && self.callbackParsed
+      && self.materializationPolicyParsed
+      && self.sourceRangeReady
+      && self.recoveryReady
+  }
+}

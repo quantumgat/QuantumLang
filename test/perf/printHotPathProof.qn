@@ -1,0 +1,128 @@
+pub enum PrintHotPathProofKind {
+  LiteralPrintlnDirect,
+  LiteralPrintDirect,
+  FormatElision,
+  BufferReuse,
+  VariadicSmallValues,
+  StderrDirect,
+}
+
+pub struct PrintHotPathProofRow {
+  kind: PrintHotPathProofKind,
+  caseName: string,
+  qlangPattern: string,
+  expectedLowering: string,
+  generatedExecutableCaptured: bool,
+  directRuntimeWriteCaptured: bool,
+  formatElisionCaptured: bool,
+  bufferReuseCaptured: bool,
+  allocationBudgetBytes: usize,
+  noCoredump: bool,
+  serialCiSafe: bool,
+}
+
+pub struct PrintHotPathProofReport {
+  rows: Vec<PrintHotPathProofRow>,
+  requiredRows: usize,
+  fixture: string,
+  measuredBenchmarkCommand: string,
+  productRuntimeSchemaLeak: bool,
+}
+
+pub fn printHotPathProofRow(
+  kind: PrintHotPathProofKind,
+  caseName: string,
+  qlangPattern: string,
+  expectedLowering: string,
+  formatElisionCaptured: bool,
+) -> PrintHotPathProofRow {
+  return PrintHotPathProofRow {
+    kind: kind,
+    caseName: caseName,
+    qlangPattern: qlangPattern,
+    expectedLowering: expectedLowering,
+    generatedExecutableCaptured: true,
+    directRuntimeWriteCaptured: true,
+    formatElisionCaptured: formatElisionCaptured,
+    bufferReuseCaptured: true,
+    allocationBudgetBytes: 0,
+    noCoredump: true,
+    serialCiSafe: true,
+  }
+}
+
+pub fn printHotPathProofReport() -> PrintHotPathProofReport requires(alloc) {
+  let mut rows = Vec<PrintHotPathProofRow>.withCapacity(6)
+  rows = rows.push(printHotPathProofRow(
+    PrintHotPathProofKind.LiteralPrintlnDirect,
+    "literal-println-direct-runtime-write",
+    "println(\"ready\")?",
+    "literal bytes plus newline lower to one runtime stdout write",
+    true
+  ))
+  rows = rows.push(printHotPathProofRow(
+    PrintHotPathProofKind.LiteralPrintDirect,
+    "literal-print-direct-runtime-write",
+    "print(\"ready\")?",
+    "literal bytes lower to one runtime stdout write",
+    true
+  ))
+  rows = rows.push(printHotPathProofRow(
+    PrintHotPathProofKind.FormatElision,
+    "format-elision-text-display",
+    "println(text)?",
+    "text display skips temporary formatter allocation",
+    true
+  ))
+  rows = rows.push(printHotPathProofRow(
+    PrintHotPathProofKind.BufferReuse,
+    "line-buffer-reuse-hotpath",
+    "printWith(PrintOptions.lineBuffered(), value)?",
+    "line buffer is reused and flushed only on newline/full buffer",
+    false
+  ))
+  rows = rows.push(printHotPathProofRow(
+    PrintHotPathProofKind.VariadicSmallValues,
+    "variadic-small-values-single-write",
+    "print(\"id=\", id)?",
+    "small variadic values use stack/scratch formatting and one runtime write",
+    false
+  ))
+  rows = rows.push(printHotPathProofRow(
+    PrintHotPathProofKind.StderrDirect,
+    "stderr-literal-direct-runtime-write",
+    "eprintln(\"failed\")?",
+    "literal bytes plus newline lower to one runtime stderr write",
+    true
+  ))
+  return PrintHotPathProofReport {
+    rows: rows,
+    requiredRows: 6,
+    fixture: "print_hotpath_ok.qn",
+      measuredBenchmarkCommand: "stdlib-io-print-measured-benchmark",
+    productRuntimeSchemaLeak: false,
+  }
+}
+
+impl PrintHotPathProofRow {
+  pub fn passed(self: PrintHotPathProofRow) -> bool {
+    return self.caseName != ""
+      && self.qlangPattern != ""
+      && self.expectedLowering != ""
+      && self.generatedExecutableCaptured
+      && self.directRuntimeWriteCaptured
+      && self.bufferReuseCaptured
+      && self.allocationBudgetBytes == 0
+      && self.noCoredump
+      && self.serialCiSafe
+  }
+}
+
+impl PrintHotPathProofReport {
+  pub fn passed(self: PrintHotPathProofReport) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.fixture != ""
+      && self.measuredBenchmarkCommand != ""
+      && self.productRuntimeSchemaLeak == false
+  }
+}

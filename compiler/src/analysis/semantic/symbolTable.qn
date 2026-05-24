@@ -1,0 +1,23 @@
+pub struct SymbolTableFacts {
+  symbolCount: usize,
+  namespaceCount: usize,
+  overloadSetCount: usize,
+}
+
+pub fn symbolTableFacts(symbolCount: usize, namespaceCount: usize, overloadSetCount: usize) -> SymbolTableFacts {
+  return SymbolTableFacts {
+    symbolCount: symbolCount,
+    namespaceCount: namespaceCount,
+    overloadSetCount: overloadSetCount,
+  }
+}
+
+impl SymbolTableFacts {
+  pub fn symbols(self: SymbolTableFacts) -> usize {
+    return self.symbolCount
+  }
+
+  pub fn hasOverloads(self: SymbolTableFacts) -> bool {
+    return self.overloadSetCount > 0
+  }
+}

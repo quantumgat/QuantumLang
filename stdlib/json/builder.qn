@@ -1,0 +1,77 @@
+pub struct JsonBuilder {
+  stackDepth: usize,
+  valueCount: usize,
+  valid: bool,
+}
+
+impl JsonBuilder {
+  pub fn init() -> JsonBuilder {
+    return JsonBuilder {
+      stackDepth: 0,
+      valueCount: 0,
+      valid: true,
+    }
+  }
+
+  pub fn object() -> JsonBuilder {
+    return JsonBuilder.init().beginObject()
+  }
+
+  pub fn array() -> JsonBuilder {
+    return JsonBuilder.init().beginArray()
+  }
+
+  pub fn beginObject(self: JsonBuilder) -> JsonBuilder {
+    return JsonBuilder {
+      stackDepth: self.stackDepth + 1,
+      valueCount: self.valueCount,
+      valid: self.valid,
+    }
+  }
+
+  pub fn beginArray(self: JsonBuilder) -> JsonBuilder {
+    return JsonBuilder {
+      stackDepth: self.stackDepth + 1,
+      valueCount: self.valueCount,
+      valid: self.valid,
+    }
+  }
+
+  pub fn field(self: JsonBuilder, name: string, value: JsonValue) -> JsonBuilder {
+    return jsonBuilderFieldKernel(self, name, value)
+  }
+
+  pub fn item(self: JsonBuilder, value: JsonValue) -> JsonBuilder {
+    return jsonBuilderItemKernel(self, value)
+  }
+
+  pub fn end(self: JsonBuilder) -> JsonBuilder {
+    if self.stackDepth == 0 {
+      return JsonBuilder {
+        stackDepth: 0,
+        valueCount: self.valueCount,
+        valid: false,
+      }
+    }
+    return JsonBuilder {
+      stackDepth: self.stackDepth - 1,
+      valueCount: self.valueCount,
+      valid: self.valid,
+    }
+  }
+
+  pub fn finish(self: JsonBuilder) -> Result<JsonValue, JsonError> {
+    if self.stackDepth != 0 {
+      return Err(JsonError.new(JsonErrorKind.UnexpectedEnd, "$", self.stackDepth))
+    }
+    return jsonBuilderFinishKernel(self)
+  }
+
+  pub fn active(self: JsonBuilder) -> bool {
+    return self.valid
+  }
+}
+
+fn jsonBuilderFieldKernel(builder: JsonBuilder, name: string, value: JsonValue) -> JsonBuilder
+fn jsonBuilderItemKernel(builder: JsonBuilder, value: JsonValue) -> JsonBuilder
+fn jsonBuilderFinishKernel(builder: JsonBuilder) -> Result<JsonValue, JsonError>

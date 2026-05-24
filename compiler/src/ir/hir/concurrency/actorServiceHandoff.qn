@@ -1,0 +1,31 @@
+pub enum HirActorServiceKind {
+  ActorSpawn
+  ActorTell
+  ActorAsk
+  ActorStop
+  ActorPoolSpawn
+  ServiceStart
+  ServiceStop
+}
+
+pub struct HirActorServiceHandoff {
+  nodeId: u64,
+  kind: HirActorServiceKind,
+  typedMessage: bool,
+  cleanupRequired: bool,
+}
+
+impl HirActorServiceHandoff {
+  pub fn init(nodeId: u64, kind: HirActorServiceKind, typedMessage: bool, cleanupRequired: bool) -> HirActorServiceHandoff {
+    return HirActorServiceHandoff {
+      nodeId: nodeId,
+      kind: kind,
+      typedMessage: typedMessage,
+      cleanupRequired: cleanupRequired,
+    }
+  }
+
+  pub fn accepted(self: HirActorServiceHandoff) -> bool {
+    return self.nodeId > 0 && self.typedMessage && self.cleanupRequired
+  }
+}

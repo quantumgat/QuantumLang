@@ -1,0 +1,44 @@
+pub enum MeasurementBasis {
+  Z
+  X
+  Y
+  Custom
+}
+
+pub struct MeasurementFact {
+  node: u64,
+  qubitId: u64,
+  resultTypeId: u64,
+  basis: MeasurementBasis,
+  consumesState: bool,
+}
+
+pub fn measurementFact(
+  node: u64,
+  qubitId: u64,
+  resultTypeId: u64,
+  basis: MeasurementBasis,
+  consumesState: bool
+) -> MeasurementFact {
+  return MeasurementFact {
+    node: node,
+    qubitId: qubitId,
+    resultTypeId: resultTypeId,
+    basis: basis,
+    consumesState: consumesState,
+  }
+}
+
+impl MeasurementFact {
+  pub fn nodeId(self: MeasurementFact) -> u64 {
+    return self.node
+  }
+
+  pub fn measurementBasis(self: MeasurementFact) -> MeasurementBasis {
+    return self.basis
+  }
+
+  pub fn consumesQubitState(self: MeasurementFact) -> bool {
+    return self.consumesState
+  }
+}

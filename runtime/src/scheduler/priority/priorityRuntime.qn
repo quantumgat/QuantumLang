@@ -1,0 +1,30 @@
+pub enum SchedulerPriorityClass {
+  Normal
+  LowLatency
+  HighPriority
+  Blocking
+}
+
+pub struct SchedulerPriorityRuntime {
+  priority: SchedulerPriorityClass,
+  queueSelected: bool,
+  fairnessPreserved: bool,
+}
+
+impl SchedulerPriorityRuntime {
+  pub fn init(
+    priority: SchedulerPriorityClass,
+    queueSelected: bool,
+    fairnessPreserved: bool,
+  ) -> SchedulerPriorityRuntime {
+    return SchedulerPriorityRuntime {
+      priority: priority,
+      queueSelected: queueSelected,
+      fairnessPreserved: fairnessPreserved,
+    }
+  }
+
+  pub fn valid(self: SchedulerPriorityRuntime) -> bool {
+    return self.queueSelected && self.fairnessPreserved
+  }
+}

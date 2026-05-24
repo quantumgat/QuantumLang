@@ -1,0 +1,17 @@
+pub enum PatternKind {
+  Wildcard
+  Binding
+  Constructor
+  Range
+  QuantumResult
+}
+
+pub struct PatternFact {
+  node: u64,
+  kind: PatternKind,
+  refutable: bool,
+}
+
+pub fn patternFact(node: u64, kind: PatternKind, refutable: bool) -> PatternFact {
+  return PatternFact { node: node, kind: kind, refutable: refutable }
+}

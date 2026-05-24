@@ -1,0 +1,22 @@
+pub fn App() -> AppBuilder {
+  return AppBuilder.init()
+}
+
+pub fn serve<T>(port: usize, controller: T) -> Result<Unit, AppBuilderDiagnostic> {
+  return App()
+    .controllerNamed(typeName<T>(), oopOwnerId<T>())
+    .run(port)
+}
+
+pub fn serve<T>(host: string, port: usize, controller: T) -> Result<Unit, AppBuilderDiagnostic> {
+  return App()
+    .bind(host, port)
+    .controllerNamed(typeName<T>(), oopOwnerId<T>())
+    .run()
+}
+
+pub fn serve<T>(address: string, controller: T) -> Result<Unit, AppBuilderDiagnostic> {
+  return App()
+    .controllerNamed(typeName<T>(), oopOwnerId<T>())
+    .run(address)
+}

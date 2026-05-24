@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub mod signalRuntime
+pub use signalRuntime.RuntimeSignal
+pub use signalRuntime.RuntimeSignalAction
+pub use signalRuntime.RuntimeSignalRegistry
+pub use signalRuntime.RuntimeSignalSet
+pub use signalRuntime.RuntimeSignalSubscription
+pub use signalRuntime.RuntimeShutdownSignal

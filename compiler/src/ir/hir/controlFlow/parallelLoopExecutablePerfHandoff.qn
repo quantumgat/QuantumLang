@@ -1,0 +1,38 @@
+pub struct HirParallelLoopExecutablePerfHandoff {
+  syntax: ParallelLoopSyntax,
+  analysis: ParallelLoopExecutablePerfFact,
+  workerBodyNode: u64,
+  stopResultNode: u64,
+  cleanupNode: u64,
+  nativeReady: bool,
+}
+
+pub fn hirParallelLoopExecutablePerfHandoff(
+  syntax: ParallelLoopSyntax,
+  analysis: ParallelLoopExecutablePerfFact,
+  workerBodyNode: u64,
+  stopResultNode: u64,
+  cleanupNode: u64,
+  nativeReady: bool,
+) -> HirParallelLoopExecutablePerfHandoff {
+  return HirParallelLoopExecutablePerfHandoff {
+    syntax: syntax,
+    analysis: analysis,
+    workerBodyNode: workerBodyNode,
+    stopResultNode: stopResultNode,
+    cleanupNode: cleanupNode,
+    nativeReady: nativeReady,
+  }
+}
+
+impl HirParallelLoopExecutablePerfHandoff {
+  pub fn complete(self: HirParallelLoopExecutablePerfHandoff) -> bool {
+    return self.syntax.complete()
+      && self.analysis.accepted()
+      && self.workerBodyNode > 0
+      && self.stopResultNode > 0
+      && self.cleanupNode > 0
+      && self.nativeReady
+  }
+}
+

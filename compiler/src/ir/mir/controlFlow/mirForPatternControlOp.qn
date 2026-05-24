@@ -1,0 +1,34 @@
+pub enum MirForPatternControlOpKind {
+  BreakJump
+  BreakValueStore
+  ContinueJump
+  LabelledBranch
+  ForElseBranch
+  DestructureTest
+  GuardBranch
+}
+
+pub struct MirForPatternControlOp {
+  instruction: u64,
+  kind: MirForPatternControlOpKind,
+  targetBlockReady: bool,
+  valueCarrierReady: bool,
+  destructureDirect: bool,
+  guardDirect: bool,
+  cleanupBeforeJump: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirForPatternControlOp {
+  pub fn complete(self: MirForPatternControlOp) -> bool {
+    return self.instruction > 0
+      && self.targetBlockReady
+      && self.valueCarrierReady
+      && self.destructureDirect
+      && self.guardDirect
+      && self.cleanupBeforeJump
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

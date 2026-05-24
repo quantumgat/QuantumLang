@@ -1,0 +1,67 @@
+pub struct HttpManualRouteSyntaxProof {
+  postRouteExact: bool,
+  getRouteExact: bool,
+  queryTyped: bool,
+  bodyTyped: bool,
+  queryInPathRejected: bool,
+  syntaxFactComplete: bool,
+  routeGraphReady: bool,
+}
+
+impl HttpManualRouteSyntaxProof {
+  pub fn init(
+    webhook: EndpointFact,
+    gateway: EndpointFact,
+    invalid: EndpointGraph,
+    routes: RouteGraph,
+  ) -> HttpManualRouteSyntaxProof {
+    return HttpManualRouteSyntaxProof {
+      postRouteExact: webhook.manualRoute()
+        && webhook.route().method() == HttpMethod.Post
+        && webhook.routePath() == "/webhook/stripe",
+      getRouteExact: gateway.manualRoute()
+        && gateway.route().method() == HttpMethod.Get
+        && gateway.routePath() == "/.well-known/secret",
+      queryTyped: gateway.paramCount() == 1,
+      bodyTyped: webhook.paramCount() == 1,
+      queryInPathRejected: invalid.diagnosticCount() == 1,
+      syntaxFactComplete: EndpointManualRouteSyntax
+        .method("secret", EndpointRouteSpec.get("/.well-known/secret"), true)
+        .complete(),
+      routeGraphReady: routes.acceleratorReady(),
+    }
+  }
+
+  pub fn complete(self: HttpManualRouteSyntaxProof) -> bool {
+    return self.postRouteExact
+      && self.getRouteExact
+      && self.queryTyped
+      && self.bodyTyped
+      && self.queryInPathRejected
+      && self.syntaxFactComplete
+      && self.routeGraphReady
+  }
+}
+
+pub fn httpManualRouteSyntaxProof() -> HttpManualRouteSyntaxProof {
+  let webhook = EndpointFact
+    .manual("WebhookApi", EndpointMethod.post("stripe"), EndpointRouteSpec.post("/webhook/stripe"), EndpointReturn.json("Unit"))
+    .withParam(EndpointParam.body("body", "StripeEvent"))
+
+  let gateway = EndpointFact
+    .manual("GatewayApi", EndpointMethod.get("secret"), EndpointRouteSpec.get("/.well-known/secret"), EndpointReturn.json("Json"))
+    .withParam(EndpointParam.query("from", "string"))
+
+  let invalid = EndpointGraph
+    .empty()
+    .add(EndpointFact.manual(
+      "GatewayApi",
+      EndpointMethod.get("secret"),
+      EndpointRouteSpec.get("/.well-known/secret?from=apigateway"),
+      EndpointReturn.json("Json")
+    ))
+
+  let endpoints = EndpointGraph.empty().add(webhook).add(gateway)
+  let routes = RouteGraph.fromEndpoints(endpoints)?
+  return HttpManualRouteSyntaxProof.init(webhook, gateway, invalid, routes)
+}

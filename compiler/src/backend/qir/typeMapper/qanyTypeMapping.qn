@@ -1,0 +1,44 @@
+pub enum QAnyPayloadKind {
+  Qubit
+  Result
+  QFunc
+  ProviderValue
+}
+
+pub struct QAnyTypeMapping {
+  payloadKind: QAnyPayloadKind,
+  qirClass: QirTypeClass,
+  profileChecked: bool,
+  ownershipTracked: bool,
+  resetReleaseRequired: bool,
+}
+
+pub fn qanyTypeMapping(payloadKind: QAnyPayloadKind) -> QAnyTypeMapping {
+  return QAnyTypeMapping {
+    payloadKind: payloadKind,
+    qirClass: payloadKind.qirClass(),
+    profileChecked: true,
+    ownershipTracked: true,
+    resetReleaseRequired: true,
+  }
+}
+
+impl QAnyPayloadKind {
+  pub fn qirClass(self: QAnyPayloadKind) -> QirTypeClass {
+    match self {
+      QAnyPayloadKind.Qubit => { return QirTypeClass.QubitHandle }
+      QAnyPayloadKind.Result => { return QirTypeClass.ResultHandle }
+      QAnyPayloadKind.QFunc => { return QirTypeClass.Callable }
+      QAnyPayloadKind.ProviderValue => { return QirTypeClass.OpaquePointer }
+    }
+  }
+}
+
+impl QAnyTypeMapping {
+  pub fn canEmit(self: QAnyTypeMapping) -> bool {
+    return self.profileChecked
+      && self.ownershipTracked
+      && self.resetReleaseRequired
+      && self.qirClass != QirTypeClass.Unsupported
+  }
+}

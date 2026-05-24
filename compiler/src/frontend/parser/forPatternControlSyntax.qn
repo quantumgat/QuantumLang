@@ -1,0 +1,35 @@
+pub enum ForPatternControlSyntaxKind {
+  Break
+  BreakValue
+  Continue
+  LabelledLoop
+  ElseNoBreak
+  TupleDestructure
+  StructDestructure
+  EnumPattern
+  ResultPattern
+  GuardedPattern
+}
+
+pub struct ForPatternControlSyntax {
+  kind: ForPatternControlSyntaxKind,
+  loopHeaderParsed: bool,
+  patternParsed: bool,
+  guardParsed: bool,
+  labelParsed: bool,
+  controlKeywordParsed: bool,
+  elseParsed: bool,
+  bodyParsed: bool,
+  sourceRangeReady: bool,
+  recoveryReady: bool,
+}
+
+impl ForPatternControlSyntax {
+  pub fn parsed(self: ForPatternControlSyntax) -> bool {
+    return self.loopHeaderParsed
+      && self.patternParsed
+      && self.bodyParsed
+      && self.sourceRangeReady
+      && self.recoveryReady
+  }
+}

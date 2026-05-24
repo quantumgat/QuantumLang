@@ -1,0 +1,21 @@
+pub struct PointerDerefFact {
+  node: u64,
+  accessAccepted: bool,
+  unsafeProofAccepted: bool,
+  diagnosticCode: string,
+}
+
+impl PointerDerefFact {
+  pub fn init(node: u64, accessAccepted: bool, unsafeProofAccepted: bool, diagnosticCode: string) -> PointerDerefFact {
+    return PointerDerefFact {
+      node: node,
+      accessAccepted: accessAccepted,
+      unsafeProofAccepted: unsafeProofAccepted,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn accepted(self: PointerDerefFact) -> bool {
+    return self.node > 0 && self.accessAccepted && self.unsafeProofAccepted && self.diagnosticCode != ""
+  }
+}

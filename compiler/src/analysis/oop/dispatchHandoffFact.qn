@@ -1,0 +1,37 @@
+pub enum DispatchHandoffKind {
+  DirectHandoff
+  VirtualHandoff
+  InterfaceHandoff
+}
+
+pub struct DispatchHandoffFact {
+  callId: u64,
+  receiverTypeId: u64,
+  methodId: u64,
+  kind: DispatchHandoffKind,
+  hotPath: bool,
+}
+
+pub fn dispatchHandoffFact(callId: u64, receiverTypeId: u64, methodId: u64, kind: DispatchHandoffKind, hotPath: bool) -> DispatchHandoffFact {
+  return DispatchHandoffFact {
+    callId: callId,
+    receiverTypeId: receiverTypeId,
+    methodId: methodId,
+    kind: kind,
+    hotPath: hotPath,
+  }
+}
+
+impl DispatchHandoffFact {
+  pub fn call(self: DispatchHandoffFact) -> u64 {
+    return self.callId
+  }
+
+  pub fn isDispatchSensitive(self: DispatchHandoffFact) -> bool {
+    return !(self.kind == DispatchHandoffKind.DirectHandoff)
+  }
+
+  pub fn isHotDispatch(self: DispatchHandoffFact) -> bool {
+    return self.hotPath && self.isDispatchSensitive()
+  }
+}

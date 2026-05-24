@@ -1,0 +1,39 @@
+pub struct RuntimePrintHotPath {
+  directLiteralWrite: bool,
+  directStderrWrite: bool,
+  reusableBuffer: bool,
+  singleWriteWhenContiguous: bool,
+  allocationFreeLiteral: bool,
+  preservesPartialWrite: bool,
+  flushOrderStable: bool,
+  noPanic: bool,
+  noCoredump: bool,
+}
+
+impl RuntimePrintHotPath {
+  pub fn standard() -> RuntimePrintHotPath {
+    return RuntimePrintHotPath {
+      directLiteralWrite: true,
+      directStderrWrite: true,
+      reusableBuffer: true,
+      singleWriteWhenContiguous: true,
+      allocationFreeLiteral: true,
+      preservesPartialWrite: true,
+      flushOrderStable: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn passed(self: RuntimePrintHotPath) -> bool {
+    return self.directLiteralWrite
+      && self.directStderrWrite
+      && self.reusableBuffer
+      && self.singleWriteWhenContiguous
+      && self.allocationFreeLiteral
+      && self.preservesPartialWrite
+      && self.flushOrderStable
+      && self.noPanic
+      && self.noCoredump
+  }
+}

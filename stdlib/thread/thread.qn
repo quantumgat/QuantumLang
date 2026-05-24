@@ -1,0 +1,6 @@
+pub struct ThreadId {
+  value: u64,
+}
+
+pub fn current() -> ThreadId
+pub fn id(thread: ThreadId) -> u64

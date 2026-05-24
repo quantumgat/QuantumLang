@@ -1,0 +1,17 @@
+pub struct ActorClassRuntimeContract {
+  typeId: u64,
+  mailboxBound: bool,
+  schedulerBound: bool,
+  messageIsolationBound: bool,
+  shutdownBound: bool,
+}
+
+impl ActorClassRuntimeContract {
+  pub fn complete(self: ActorClassRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.mailboxBound
+      && self.schedulerBound
+      && self.messageIsolationBound
+      && self.shutdownBound
+  }
+}

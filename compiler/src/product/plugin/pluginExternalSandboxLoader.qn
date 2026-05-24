@@ -1,0 +1,31 @@
+pub struct PluginExternalSandboxLoader {
+  request: PluginExternalLoadRequest,
+  result: PluginExternalLoadResult,
+  helperProcessRequired: bool,
+  boundedIpcRequired: bool,
+  deterministicReplayRequired: bool,
+  incidentReportRequired: bool,
+}
+
+impl PluginExternalSandboxLoader {
+  pub fn load(parseResult: PluginManifestParseResult, executablePath: string, publicRoot: string) -> PluginExternalSandboxLoader {
+    let request = PluginExternalLoadRequest.fromParseResult(parseResult, executablePath)
+    return PluginExternalSandboxLoader {
+      request: request,
+      result: PluginExternalLoadResult.fromRequest(request, publicRoot),
+      helperProcessRequired: true,
+      boundedIpcRequired: true,
+      deterministicReplayRequired: true,
+      incidentReportRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginExternalSandboxLoader) -> bool {
+    return self.request.accepted()
+      && self.result.accepted()
+      && self.helperProcessRequired
+      && self.boundedIpcRequired
+      && self.deterministicReplayRequired
+      && self.incidentReportRequired
+  }
+}

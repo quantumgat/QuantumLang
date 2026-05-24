@@ -1,0 +1,27 @@
+pub enum DispatchTier {
+  Tier0Direct
+  Tier1StaticGeneric
+  Tier2Sealed
+  Tier3Cached
+  Tier4Dynamic
+}
+
+pub struct DispatchTierFact {
+  callId: u64,
+  tier: DispatchTier,
+  hotPath: bool,
+}
+
+pub fn dispatchTierFact(callId: u64, tier: DispatchTier, hotPath: bool) -> DispatchTierFact {
+  return DispatchTierFact { callId: callId, tier: tier, hotPath: hotPath }
+}
+
+impl DispatchTierFact {
+  pub fn dispatchTier(self: DispatchTierFact) -> DispatchTier {
+    return self.tier
+  }
+
+  pub fn isHotPathSafe(self: DispatchTierFact) -> bool {
+    return !self.hotPath || !(self.tier == DispatchTier.Tier4Dynamic)
+  }
+}

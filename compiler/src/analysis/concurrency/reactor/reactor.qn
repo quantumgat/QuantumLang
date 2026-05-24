@@ -1,0 +1,51 @@
+pub enum ReactorDiagnosticKind {
+  None
+  UnsupportedBackend
+  MissingTimerSupport
+  MissingCancellationSupport
+  MissingWakeupSupport
+  NonDeterministicTestBackend
+  TargetBackendMismatch
+}
+
+pub struct ReactorBackendSafety {
+  nodeId: u64,
+  target: string,
+  backendSelected: bool,
+  timerReady: bool,
+  cancellationReady: bool,
+  deterministicTestReady: bool,
+  diagnostic: ReactorDiagnosticKind,
+}
+
+impl ReactorBackendSafety {
+  pub fn init(
+    nodeId: u64,
+    target: string,
+    backendSelected: bool,
+    timerReady: bool,
+    cancellationReady: bool,
+    deterministicTestReady: bool,
+    diagnostic: ReactorDiagnosticKind,
+  ) -> ReactorBackendSafety {
+    return ReactorBackendSafety {
+      nodeId: nodeId,
+      target: target,
+      backendSelected: backendSelected,
+      timerReady: timerReady,
+      cancellationReady: cancellationReady,
+      deterministicTestReady: deterministicTestReady,
+      diagnostic: diagnostic,
+    }
+  }
+
+  pub fn accepted(self: ReactorBackendSafety) -> bool {
+    return self.nodeId > 0
+      && self.target != ""
+      && self.backendSelected
+      && self.timerReady
+      && self.cancellationReady
+      && self.deterministicTestReady
+      && self.diagnostic == ReactorDiagnosticKind.None
+  }
+}

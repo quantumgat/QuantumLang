@@ -1,0 +1,102 @@
+pub enum MirPrimitiveOperatorOpKind {
+  DirectScalar
+  DirectMutatingScalar
+  LimbWideInteger
+  RuntimeKernel
+  CheckedFailure
+  ConstantTime
+}
+
+pub enum MirPrimitiveOperatorPolicy {
+  DirectNative
+  Checked
+  Wrapping
+  Saturating
+  Overflowing
+  MutatingLvalue
+  Rejected
+}
+
+pub struct MirPrimitiveOperatorOp {
+  kind: MirPrimitiveOperatorOpKind,
+  policy: MirPrimitiveOperatorPolicy,
+  typeName: string,
+  overflowChecked: bool,
+  invalidShiftChecked: bool,
+  divideByZeroChecked: bool,
+  sourceMappedDiagnostic: bool,
+  directNative: bool,
+  runtimeCallRequired: bool,
+  lvalueChecked: bool,
+  mutationChecked: bool,
+  returnsOldValue: bool,
+  noCoredump: bool,
+}
+
+impl MirPrimitiveOperatorOp {
+  pub fn direct(typeName: string) -> MirPrimitiveOperatorOp {
+    return MirPrimitiveOperatorOp {
+      kind: MirPrimitiveOperatorOpKind.DirectScalar,
+      policy: MirPrimitiveOperatorPolicy.DirectNative,
+      typeName: typeName,
+      overflowChecked: true,
+      invalidShiftChecked: true,
+      divideByZeroChecked: true,
+      sourceMappedDiagnostic: true,
+      directNative: true,
+      runtimeCallRequired: false,
+      lvalueChecked: true,
+      mutationChecked: true,
+      returnsOldValue: false,
+      noCoredump: true,
+    }
+  }
+
+  pub fn increment(typeName: string, returnsOldValue: bool) -> MirPrimitiveOperatorOp {
+    return MirPrimitiveOperatorOp {
+      kind: MirPrimitiveOperatorOpKind.DirectMutatingScalar,
+      policy: MirPrimitiveOperatorPolicy.MutatingLvalue,
+      typeName: typeName,
+      overflowChecked: true,
+      invalidShiftChecked: true,
+      divideByZeroChecked: true,
+      sourceMappedDiagnostic: true,
+      directNative: true,
+      runtimeCallRequired: false,
+      lvalueChecked: true,
+      mutationChecked: true,
+      returnsOldValue: returnsOldValue,
+      noCoredump: true,
+    }
+  }
+
+  pub fn runtime(typeName: string) -> MirPrimitiveOperatorOp {
+    return MirPrimitiveOperatorOp {
+      kind: MirPrimitiveOperatorOpKind.RuntimeKernel,
+      policy: MirPrimitiveOperatorPolicy.Checked,
+      typeName: typeName,
+      overflowChecked: true,
+      invalidShiftChecked: true,
+      divideByZeroChecked: true,
+      sourceMappedDiagnostic: true,
+      directNative: false,
+      runtimeCallRequired: true,
+      lvalueChecked: true,
+      mutationChecked: true,
+      returnsOldValue: false,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: MirPrimitiveOperatorOp) -> bool {
+    return self.typeName != ""
+      && self.overflowChecked
+      && self.invalidShiftChecked
+      && self.divideByZeroChecked
+      && self.sourceMappedDiagnostic
+      && self.lvalueChecked
+      && self.mutationChecked
+      && self.noCoredump
+      && (self.directNative || self.runtimeCallRequired)
+  }
+}

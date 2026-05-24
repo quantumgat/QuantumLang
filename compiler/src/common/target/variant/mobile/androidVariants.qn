@@ -1,0 +1,20 @@
+pub struct AndroidTargetVariants {
+  arm64V8a: TargetVariantId,
+  armeabiV7a: TargetVariantId,
+  x8664: TargetVariantId,
+  x86: TargetVariantId,
+  apiLevelRequired: bool,
+}
+
+impl AndroidTargetVariants {
+  pub fn coversDevice(self: AndroidTargetVariants) -> bool {
+    return self.apiLevelRequired
+      && self.arm64V8a == TargetVariantId.AndroidArm64V8a
+      && self.armeabiV7a == TargetVariantId.AndroidArmeabiV7a
+  }
+
+  pub fn coversEmulator(self: AndroidTargetVariants) -> bool {
+    return self.x8664 == TargetVariantId.AndroidX8664
+      && self.x86 == TargetVariantId.AndroidX86
+  }
+}

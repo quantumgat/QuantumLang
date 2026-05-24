@@ -1,0 +1,36 @@
+pub struct PluginRuntimeLoadResult {
+  abi: PluginRuntimeAbi,
+  signature: PluginKernelSignature,
+  targetGate: PluginKernelTargetGate,
+  lifecycle: PluginKernelLifecycle,
+  boundary: PluginKernelBoundary,
+  registry: PluginKernelRegistry,
+  failure: PluginKernelFailure,
+  dynamicLoadRequired: bool,
+}
+
+impl PluginRuntimeLoadResult {
+  pub fn acceptedKernel(symbol: string) -> PluginRuntimeLoadResult {
+    return PluginRuntimeLoadResult {
+      abi: PluginRuntimeAbi.v1(),
+      signature: PluginKernelSignature.declared(symbol, "input", "output", 0),
+      targetGate: PluginKernelTargetGate.checked(true, true),
+      lifecycle: PluginKernelLifecycle.active(),
+      boundary: PluginKernelBoundary.isolated(),
+      registry: PluginKernelRegistry.fromKernelCount(1),
+      failure: PluginKernelFailure.trapped(PluginKernelFailureKind.KernelPanicTrapped),
+      dynamicLoadRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginRuntimeLoadResult) -> bool {
+    return self.abi.accepted()
+      && self.signature.accepted()
+      && self.targetGate.accepted()
+      && self.lifecycle.accepted()
+      && self.boundary.accepted()
+      && self.registry.accepted()
+      && self.failure.accepted()
+      && self.dynamicLoadRequired
+  }
+}

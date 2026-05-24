@@ -1,0 +1,46 @@
+pub enum AsyncCleanupStepKind {
+  DropFrame
+  CancelPendingAwait
+  CancelSelectLoser
+  ReleaseChannelWaiter
+  PropagateCancellation
+  RunUserDrop
+}
+
+pub struct AsyncCleanupStep {
+  stepId: u64,
+  kind: AsyncCleanupStepKind,
+  sourceMapId: u64,
+  runtimeCallReady: bool,
+  noAllocationRequired: bool,
+}
+
+impl AsyncCleanupStep {
+  pub fn safe(self: AsyncCleanupStep) -> bool {
+    return self.stepId > 0
+      && self.sourceMapId > 0
+      && self.runtimeCallReady
+      && self.noAllocationRequired
+  }
+}
+
+pub struct AsyncCleanupPlan {
+  frameId: u64,
+  stepCount: usize,
+  cancellationStepCount: usize,
+  loserCleanupCount: usize,
+  noAllocationRequired: bool,
+}
+
+impl AsyncCleanupPlan {
+  pub fn complete(self: AsyncCleanupPlan) -> bool {
+    return self.frameId > 0
+      && self.stepCount > 0
+      && self.noAllocationRequired
+  }
+
+  pub fn cancellationSafe(self: AsyncCleanupPlan) -> bool {
+    return self.complete()
+      && self.cancellationStepCount + self.loserCleanupCount <= self.stepCount
+  }
+}

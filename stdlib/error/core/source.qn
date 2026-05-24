@@ -1,0 +1,48 @@
+pub struct ErrorSource {
+  file: string,
+  line: u32,
+  column: u32,
+  function: string,
+  available: bool,
+}
+
+impl ErrorSource {
+  /**
+    Creates a source location for an error.
+
+    example:
+      let source = ErrorSource.at("main.qn", 12, 3, "loadUser")
+
+    effects: pure
+    complexity: O(1)
+    allocation: stores caller-provided strings
+    stability: public since 0.1
+  */
+  pub fn at(file: string, line: u32, column: u32, function: string) -> ErrorSource {
+    return ErrorSource {
+      file: file,
+      line: line,
+      column: column,
+      function: function,
+      available: true,
+    }
+  }
+
+  pub fn unknown() -> ErrorSource {
+    return ErrorSource {
+      file: "",
+      line: 0,
+      column: 0,
+      function: "",
+      available: false,
+    }
+  }
+
+  pub fn known(self: ErrorSource) -> bool {
+    return self.available && self.file != ""
+  }
+
+  pub fn hasFunction(self: ErrorSource) -> bool {
+    return self.function != ""
+  }
+}

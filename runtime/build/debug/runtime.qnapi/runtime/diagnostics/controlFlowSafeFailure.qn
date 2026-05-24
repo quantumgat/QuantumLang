@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum ControlFlowSafeFailureKind {
+  InvalidLabel
+  BreakValueMismatch
+  NonExhaustiveMatch
+  ParallelReductionViolation
+  QuantumProfileViolation
+}
+pub struct ControlFlowSafeFailure {
+  kind: ControlFlowSafeFailureKind
+  sourceRangeReady: bool
+  noCoredump: bool
+  recoverable: bool
+  emergencyReportReady: bool
+}

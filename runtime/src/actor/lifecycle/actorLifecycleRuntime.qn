@@ -1,0 +1,34 @@
+pub enum RuntimeActorLifecycleState {
+  Starting
+  Running
+  Stopping
+  Stopped
+  Failed
+}
+
+pub struct RuntimeActorLifecycle {
+  actorId: ActorId,
+  state: RuntimeActorLifecycleState,
+  cleanupRegistered: bool,
+  diagnosticsReady: bool,
+}
+
+impl RuntimeActorLifecycle {
+  pub fn init(
+    actorId: ActorId,
+    state: RuntimeActorLifecycleState,
+    cleanupRegistered: bool,
+    diagnosticsReady: bool,
+  ) -> RuntimeActorLifecycle {
+    return RuntimeActorLifecycle {
+      actorId: actorId,
+      state: state,
+      cleanupRegistered: cleanupRegistered,
+      diagnosticsReady: diagnosticsReady,
+    }
+  }
+
+  pub fn safe(self: RuntimeActorLifecycle) -> bool {
+    return self.actorId.raw() > 0 && self.cleanupRegistered && self.diagnosticsReady
+  }
+}

@@ -1,0 +1,33 @@
+pub struct AsyncDynTraitSafetyFact {
+  dynTypeId: u64,
+  dynBoundaryExplicit: bool,
+  objectSafetyChecked: bool,
+  asyncMethodRequiresAdapter: bool,
+  adapterFutureAbiBound: bool,
+  vtablePollEntryBound: bool,
+  erasedFuturePinned: bool,
+  staleHandleRejected: bool,
+  typedFailureNoCoredumpBound: bool,
+  sourceMapBound: bool,
+}
+
+impl AsyncDynTraitSafetyFact {
+  pub fn complete(self: AsyncDynTraitSafetyFact) -> bool {
+    return self.dynTypeId > 0
+      && self.dynBoundaryExplicit
+      && self.objectSafetyChecked
+      && self.asyncMethodRequiresAdapter
+      && self.adapterFutureAbiBound
+      && self.vtablePollEntryBound
+      && self.erasedFuturePinned
+      && self.staleHandleRejected
+      && self.typedFailureNoCoredumpBound
+      && self.sourceMapBound
+  }
+
+  pub fn dynCallSafe(self: AsyncDynTraitSafetyFact) -> bool {
+    return self.complete()
+      && self.adapterFutureAbiBound
+      && self.vtablePollEntryBound
+  }
+}

@@ -1,0 +1,16 @@
+pub struct RuntimePlatformMemoryContract {
+  target: string,
+  pageAllocatorRequired: bool,
+  virtualMemoryAvailable: bool,
+  allocatorDomainsRequired: bool,
+}
+
+impl RuntimePlatformMemoryContract {
+  pub fn accepted(self: RuntimePlatformMemoryContract) -> bool {
+    return self.target != "" && self.allocatorDomainsRequired
+  }
+
+  pub fn hosted(self: RuntimePlatformMemoryContract) -> bool {
+    return self.virtualMemoryAvailable && self.pageAllocatorRequired
+  }
+}

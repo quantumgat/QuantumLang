@@ -1,0 +1,15 @@
+pub struct BodyPlan {
+  bodyId: u64,
+  localCount: usize,
+  statementCount: usize,
+}
+
+pub fn bodyPlan(bodyId: u64, localCount: usize, statementCount: usize) -> BodyPlan {
+  return BodyPlan { bodyId: bodyId, localCount: localCount, statementCount: statementCount }
+}
+
+impl BodyPlan {
+  pub fn hasExecutableWork(self: BodyPlan) -> bool {
+    return self.statementCount > 0
+  }
+}

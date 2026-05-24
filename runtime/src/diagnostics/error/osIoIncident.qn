@@ -1,0 +1,44 @@
+pub enum OsIoIncidentKind {
+  PlatformMapped,
+  Interrupted,
+  TimedOut,
+  Cancelled,
+  PartialWritePreserved,
+  RetryScheduled,
+}
+
+pub struct OsIoIncident {
+  kind: OsIoIncidentKind,
+  platform: string,
+  platformCode: i32,
+  stableCode: string,
+  bytesCompleted: usize,
+  resumeOffset: usize,
+  retryable: bool,
+  redacted: bool,
+  noCoredump: bool,
+}
+
+impl OsIoIncident {
+  pub fn mapped(kind: OsIoIncidentKind, platform: string, platformCode: i32, stableCode: string) -> OsIoIncident {
+    return OsIoIncident {
+      kind: kind,
+      platform: platform,
+      platformCode: platformCode,
+      stableCode: stableCode,
+      bytesCompleted: 0,
+      resumeOffset: 0,
+      retryable: true,
+      redacted: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: OsIoIncident) -> bool {
+    return self.platform != ""
+      && self.stableCode != ""
+      && self.resumeOffset <= self.bytesCompleted
+      && self.redacted
+      && self.noCoredump
+  }
+}

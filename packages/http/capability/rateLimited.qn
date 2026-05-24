@@ -1,0 +1,31 @@
+pub struct RateLimited {
+  key: string,
+  remaining: usize,
+  resetAtMillis: u64,
+}
+
+impl RateLimited {
+  pub fn init(key: string, remaining: usize, resetAtMillis: u64) -> RateLimited {
+    return RateLimited {
+      key: key,
+      remaining: remaining,
+      resetAtMillis: resetAtMillis,
+    }
+  }
+
+  pub fn key(self: RateLimited) -> string {
+    return self.key
+  }
+
+  pub fn remaining(self: RateLimited) -> usize {
+    return self.remaining
+  }
+
+  pub fn resetAtMillis(self: RateLimited) -> u64 {
+    return self.resetAtMillis
+  }
+
+  pub fn allowed(self: RateLimited) -> bool {
+    return self.remaining > 0
+  }
+}

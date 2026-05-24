@@ -1,0 +1,16 @@
+[module]
+name = "negativeGates"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "product-negative-diagnostic-gates"
+
+[dependencies]
+allowed = ["common", "analysis", "product.dumps", "product.ideDiagnostics", "product.errorAnalyzer"]
+forbidden = ["runtime internals", "test perf", "generated fallback"]
+
+[tests]
+required = [
+  "qtlc_qtlang_print_error_log_negative_gates",
+  "qtlc_qtlang_memory_error_report_gates"
+]

@@ -1,0 +1,35 @@
+pub enum AstAsyncFormKind {
+  AsyncFunction
+  AsyncBlock
+  Await
+  AwaitQuestion
+  AsyncClosure
+}
+
+pub struct AstAsyncForm {
+  nodeId: u64,
+  kind: AstAsyncFormKind,
+  bodyId: u64,
+  resultTypeId: u64,
+  asyncContext: bool,
+  cancellationPoint: bool,
+  sourceRangeReady: bool,
+}
+
+impl AstAsyncForm {
+  pub fn complete(self: AstAsyncForm) -> bool {
+    return self.nodeId > 0
+      && self.bodyId > 0
+      && self.sourceRangeReady
+  }
+
+  pub fn isSuspension(self: AstAsyncForm) -> bool {
+    return self.kind == AstAsyncFormKind.Await
+      || self.kind == AstAsyncFormKind.AwaitQuestion
+  }
+
+  pub fn lowersToAsyncIr(self: AstAsyncForm) -> bool {
+    return self.complete()
+      && (self.asyncContext || !self.isSuspension())
+  }
+}

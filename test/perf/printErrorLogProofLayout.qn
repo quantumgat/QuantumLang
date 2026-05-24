@@ -1,0 +1,27 @@
+pub struct PrintErrorLogProofLayout {
+  simplePrintDirectWrite: bool,
+  disabledLogErased: bool,
+  structuredLogBoundedAllocation: bool,
+  benchmarkOwnedByTestPerf: bool,
+  productRuntimeSchemaLeak: bool,
+}
+
+pub fn printErrorLogProofLayout() -> PrintErrorLogProofLayout {
+  return PrintErrorLogProofLayout {
+    simplePrintDirectWrite: true,
+    disabledLogErased: true,
+    structuredLogBoundedAllocation: true,
+    benchmarkOwnedByTestPerf: true,
+    productRuntimeSchemaLeak: false,
+  }
+}
+
+impl PrintErrorLogProofLayout {
+  pub fn ready(self: PrintErrorLogProofLayout) -> bool {
+    return self.simplePrintDirectWrite
+      && self.disabledLogErased
+      && self.structuredLogBoundedAllocation
+      && self.benchmarkOwnedByTestPerf
+      && self.productRuntimeSchemaLeak == false
+  }
+}

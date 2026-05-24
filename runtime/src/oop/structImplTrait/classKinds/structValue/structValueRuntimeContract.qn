@@ -1,0 +1,17 @@
+pub struct StructValueRuntimeContract {
+  typeId: u64,
+  layoutBound: bool,
+  dropGlueBound: bool,
+  hiddenAllocationRejected: bool,
+  runtimeEngineBypassed: bool,
+}
+
+impl StructValueRuntimeContract {
+  pub fn complete(self: StructValueRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.layoutBound
+      && self.dropGlueBound
+      && self.hiddenAllocationRejected
+      && self.runtimeEngineBypassed
+  }
+}

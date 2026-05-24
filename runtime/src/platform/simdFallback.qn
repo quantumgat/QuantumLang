@@ -1,0 +1,22 @@
+pub struct RuntimeSimdFallback {
+  simdRequired: bool,
+  scalarFallbackAvailable: bool,
+  generatedFallback: bool,
+}
+
+impl RuntimeSimdFallback {
+  pub fn init(simdRequired: bool, scalarFallbackAvailable: bool, generatedFallback: bool) -> RuntimeSimdFallback {
+    return RuntimeSimdFallback {
+      simdRequired: simdRequired,
+      scalarFallbackAvailable: scalarFallbackAvailable,
+      generatedFallback: generatedFallback,
+    }
+  }
+
+  pub fn accepted(self: RuntimeSimdFallback) -> bool {
+    if self.generatedFallback {
+      return false
+    }
+    return self.simdRequired == false || self.scalarFallbackAvailable
+  }
+}

@@ -1,0 +1,42 @@
+pub struct PoolOccupiedCursorLowering {
+  cursorErased: bool,
+  hasNextLoweredToIndexCompare: bool,
+  nextLoweredToOccupiedScan: bool,
+  valueUncheckedLoweredToDirectSlotLoad: bool,
+  handleUncheckedLoweredToIndexGenerationPair: bool,
+  queryLoopsUseCursor: bool,
+  toVecUsesCursor: bool,
+  iteratorUsesCursor: bool,
+  forEachUsesCursor: bool,
+  optionMatchRemovedFromHotLoops: bool,
+}
+
+pub fn poolOccupiedCursorLowering() -> PoolOccupiedCursorLowering {
+  return PoolOccupiedCursorLowering {
+    cursorErased: true,
+    hasNextLoweredToIndexCompare: true,
+    nextLoweredToOccupiedScan: true,
+    valueUncheckedLoweredToDirectSlotLoad: true,
+    handleUncheckedLoweredToIndexGenerationPair: true,
+    queryLoopsUseCursor: true,
+    toVecUsesCursor: true,
+    iteratorUsesCursor: true,
+    forEachUsesCursor: true,
+    optionMatchRemovedFromHotLoops: true,
+  }
+}
+
+impl PoolOccupiedCursorLowering {
+  pub fn hotPathReady(self: PoolOccupiedCursorLowering) -> bool {
+    return self.cursorErased
+      && self.hasNextLoweredToIndexCompare
+      && self.nextLoweredToOccupiedScan
+      && self.valueUncheckedLoweredToDirectSlotLoad
+      && self.handleUncheckedLoweredToIndexGenerationPair
+      && self.queryLoopsUseCursor
+      && self.toVecUsesCursor
+      && self.iteratorUsesCursor
+      && self.forEachUsesCursor
+      && self.optionMatchRemovedFromHotLoops
+  }
+}

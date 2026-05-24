@@ -1,0 +1,27 @@
+pub struct PriorityQueueIter<T, P> {
+  heapIter: HeapIter<T, P>,
+}
+
+impl<T, P> PriorityQueueIter<T, P> {
+  pub fn isEmpty(self: PriorityQueueIter<T, P>) -> bool {
+    return self.heapIter.isEmpty()
+  }
+
+  pub fn next(self: PriorityQueueIter<T, P>) -> Option<T> {
+    let entry = self.heapIter.next()
+    match entry {
+      Some(value) => {
+        return Some(value.value)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn advance(self: PriorityQueueIter<T, P>) -> PriorityQueueIter<T, P> {
+    return PriorityQueueIter<T, P> {
+      heapIter: self.heapIter.advance(),
+    }
+  }
+}

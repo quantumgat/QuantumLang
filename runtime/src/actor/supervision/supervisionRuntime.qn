@@ -1,0 +1,32 @@
+pub enum RuntimeRestartPolicy {
+  Never
+  OnFailure
+  Always
+}
+
+pub struct RuntimeSupervisorTree {
+  rootActor: ActorId,
+  childCount: usize,
+  restartPolicy: RuntimeRestartPolicy,
+  maxRestarts: usize,
+}
+
+impl RuntimeSupervisorTree {
+  pub fn init(
+    rootActor: ActorId,
+    childCount: usize,
+    restartPolicy: RuntimeRestartPolicy,
+    maxRestarts: usize,
+  ) -> RuntimeSupervisorTree {
+    return RuntimeSupervisorTree {
+      rootActor: rootActor,
+      childCount: childCount,
+      restartPolicy: restartPolicy,
+      maxRestarts: maxRestarts,
+    }
+  }
+
+  pub fn supervised(self: RuntimeSupervisorTree) -> bool {
+    return self.rootActor.raw() > 0 && self.maxRestarts > 0
+  }
+}

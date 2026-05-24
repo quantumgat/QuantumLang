@@ -1,0 +1,19 @@
+pub struct BinaryAstEnvelope {
+  formatVersion: u32,
+  nodeCount: usize,
+  spanTablePresent: bool,
+}
+
+pub fn binaryAstEnvelope(formatVersion: u32, nodeCount: usize, spanTablePresent: bool) -> BinaryAstEnvelope {
+  return BinaryAstEnvelope {
+    formatVersion: formatVersion,
+    nodeCount: nodeCount,
+    spanTablePresent: spanTablePresent,
+  }
+}
+
+impl BinaryAstEnvelope {
+  pub fn canEnterAnalysis(self: BinaryAstEnvelope) -> bool {
+    return self.formatVersion > 0 && self.spanTablePresent
+  }
+}

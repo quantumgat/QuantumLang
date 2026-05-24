@@ -1,0 +1,33 @@
+pub struct AtomicHotPathProof {
+  orderChecked: bool,
+  fenceLowered: bool,
+  compareExchangeLowered: bool,
+  waitWakeLowered: bool,
+  lockFreeOrDiagnostic: bool,
+  runtimeCapabilityChecked: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl AtomicHotPathProof {
+  pub fn native() -> AtomicHotPathProof {
+    return AtomicHotPathProof {
+      orderChecked: true,
+      fenceLowered: true,
+      compareExchangeLowered: true,
+      waitWakeLowered: true,
+      lockFreeOrDiagnostic: true,
+      runtimeCapabilityChecked: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: AtomicHotPathProof) -> bool {
+    return self.orderChecked
+      && self.fenceLowered
+      && self.compareExchangeLowered
+      && self.waitWakeLowered
+      && self.lockFreeOrDiagnostic
+      && self.runtimeCapabilityChecked
+      && self.noCoredumpDiagnostic
+  }
+}

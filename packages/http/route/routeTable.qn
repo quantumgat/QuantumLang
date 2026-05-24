@@ -1,0 +1,68 @@
+pub struct HttpRoute {
+  method: HttpMethod,
+  path: string,
+  handlerName: string,
+}
+
+impl HttpRoute {
+  pub fn init(method: HttpMethod, path: string, handlerName: string) -> HttpRoute {
+    return HttpRoute {
+      method: method,
+      path: path,
+      handlerName: handlerName,
+    }
+  }
+
+  pub fn method(self: HttpRoute) -> HttpMethod {
+    return self.method
+  }
+
+  pub fn path(self: HttpRoute) -> string {
+    return self.path
+  }
+
+  pub fn handlerName(self: HttpRoute) -> string {
+    return self.handlerName
+  }
+
+  pub fn matches(self: HttpRoute, method: HttpMethod, path: string) -> bool {
+    return self.method == method && self.path == path
+  }
+}
+
+pub struct HttpRouteTable {
+  routes: Vec<HttpRoute>,
+}
+
+impl HttpRouteTable {
+  pub fn empty() -> HttpRouteTable {
+    return HttpRouteTable {
+      routes: [],
+    }
+  }
+
+  pub fn len(self: HttpRouteTable) -> usize {
+    return self.routes.len()
+  }
+
+  pub fn add(self: HttpRouteTable, method: HttpMethod, path: string, handlerName: string) -> Result<HttpRouteTable, HttpRouteConflict> {
+    match self.find(method, path) {
+      Some(route) => return Err(HttpRouteConflict.init(method, path, route.handlerName(), handlerName))
+      None => return Ok(HttpRouteTable {
+        routes: self.routes.push(HttpRoute.init(method, path, handlerName)),
+      })
+    }
+  }
+
+  pub fn find(self: HttpRouteTable, method: HttpMethod, path: string) -> Option<HttpRoute> {
+    let mut index: usize = 0
+    while index < self.routes.len() {
+      let route = self.routes[index]
+      if route.matches(method, path) {
+        return Some(route)
+      }
+      index = index + 1
+    }
+    return None
+  }
+}

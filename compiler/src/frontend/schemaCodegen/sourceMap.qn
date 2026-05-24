@@ -1,0 +1,13 @@
+pub struct GeneratedSourceMap {
+  sourceFileId: u32,
+  generatedFileId: u32,
+  mappingCount: usize,
+}
+
+pub fn generatedSourceMap(sourceFileId: u32, generatedFileId: u32, mappingCount: usize) -> GeneratedSourceMap {
+  return GeneratedSourceMap {
+    sourceFileId: sourceFileId,
+    generatedFileId: generatedFileId,
+    mappingCount: mappingCount,
+  }
+}

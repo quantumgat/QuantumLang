@@ -1,0 +1,21 @@
+pub struct NodeId {
+  value: u64,
+}
+
+pub fn nodeId(value: u64) -> NodeId {
+  return NodeId { value: value }
+}
+
+pub fn invalidNodeId() -> NodeId {
+  return NodeId { value: 0 }
+}
+
+impl NodeId {
+  pub fn raw(self: NodeId) -> u64 {
+    return self.value
+  }
+
+  pub fn isValid(self: NodeId) -> bool {
+    return self.value != 0
+  }
+}

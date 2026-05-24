@@ -1,0 +1,44 @@
+pub enum ConstructorInitPhase {
+  Allocated
+  FieldsInitialized
+  BaseInitialized
+  FullyInitialized
+  Failed
+}
+
+pub struct ConstructorInitFact {
+  classTypeId: u64,
+  constructorId: u64,
+  phase: ConstructorInitPhase,
+  baseInitRequired: bool,
+  partialCleanupRequired: bool,
+  virtualDispatchAllowed: bool,
+}
+
+pub fn constructorInitFact(
+  classTypeId: u64,
+  constructorId: u64,
+  phase: ConstructorInitPhase,
+  baseInitRequired: bool,
+  partialCleanupRequired: bool,
+  virtualDispatchAllowed: bool,
+) -> ConstructorInitFact {
+  return ConstructorInitFact {
+    classTypeId: classTypeId,
+    constructorId: constructorId,
+    phase: phase,
+    baseInitRequired: baseInitRequired,
+    partialCleanupRequired: partialCleanupRequired,
+    virtualDispatchAllowed: virtualDispatchAllowed,
+  }
+}
+
+impl ConstructorInitFact {
+  pub fn isSafeForVirtualDispatch(self: ConstructorInitFact) -> bool {
+    return self.virtualDispatchAllowed && self.phase == ConstructorInitPhase.FullyInitialized
+  }
+
+  pub fn needsFailureCleanup(self: ConstructorInitFact) -> bool {
+    return self.partialCleanupRequired || self.phase == ConstructorInitPhase.Failed
+  }
+}

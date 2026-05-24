@@ -1,0 +1,11 @@
+pub struct ExitStatus {
+  code: i64,
+  success: bool,
+}
+
+pub fn exitSuccess() -> ExitStatus {
+  return ExitStatus {
+    code: 0,
+    success: true,
+  }
+}

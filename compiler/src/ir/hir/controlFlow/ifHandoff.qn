@@ -1,0 +1,108 @@
+pub enum HirIfHandoffKind {
+  Branch
+  ElseChain
+  ExpressionValue
+  PatternNarrow
+  GuardedPattern
+  RangeTest
+  TypeNarrow
+  QuestionBranch
+  AwaitQuestionBranch
+  StaticFold
+  TargetFeatureFold
+  QuantumBranch
+}
+
+pub struct HirIfHandoff {
+  sourceNode: u64,
+  kind: HirIfHandoffKind,
+  formCount: usize,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+}
+
+pub struct HirIfInput {
+  sourceNode: u64,
+  kind: HirIfHandoffKind,
+  thenBlock: u64,
+  elseBlock: u64,
+  mergeBlock: u64,
+  resultSlot: u64,
+  diagnosticAttached: bool,
+}
+
+pub struct HirIfBuild {
+  input: HirIfInput,
+  handoff: HirIfHandoff,
+  directBranchPlanned: bool,
+  qirBranchPlanned: bool,
+}
+
+pub fn hirIfHandoff(
+  sourceNode: u64,
+  kind: HirIfHandoffKind,
+  formCount: usize,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+) -> HirIfHandoff {
+  return HirIfHandoff {
+    sourceNode: sourceNode,
+    kind: kind,
+    formCount: formCount,
+    diagnosticsAttached: diagnosticsAttached,
+    mirReady: mirReady,
+  }
+}
+
+pub fn hirIfInput(
+  sourceNode: u64,
+  kind: HirIfHandoffKind,
+  thenBlock: u64,
+  elseBlock: u64,
+  mergeBlock: u64,
+  resultSlot: u64,
+  diagnosticAttached: bool,
+) -> HirIfInput {
+  return HirIfInput {
+    sourceNode: sourceNode,
+    kind: kind,
+    thenBlock: thenBlock,
+    elseBlock: elseBlock,
+    mergeBlock: mergeBlock,
+    resultSlot: resultSlot,
+    diagnosticAttached: diagnosticAttached,
+  }
+}
+
+pub fn buildHirIf(input: HirIfInput) -> HirIfBuild {
+  let hasBlocks = input.thenBlock > 0 && input.mergeBlock > 0
+  let isQir = input.kind == HirIfHandoffKind.QuantumBranch
+  let handoff = hirIfHandoff(input.sourceNode, input.kind, 13, input.diagnosticAttached, hasBlocks)
+  return HirIfBuild {
+    input: input,
+    handoff: handoff,
+    directBranchPlanned: hasBlocks && !isQir,
+    qirBranchPlanned: hasBlocks && isQir,
+  }
+}
+
+impl HirIfHandoff {
+  pub fn complete(self: HirIfHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.formCount >= 13
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+}
+
+impl HirIfBuild {
+  pub fn complete(self: HirIfBuild) -> bool {
+    return self.handoff.complete()
+      && (self.directBranchPlanned || self.qirBranchPlanned)
+  }
+
+  pub fn expressionValue(self: HirIfBuild) -> bool {
+    return self.input.resultSlot > 0
+      && self.input.mergeBlock > 0
+  }
+}

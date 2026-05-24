@@ -1,0 +1,61 @@
+pub struct HttpTransportPlan {
+  bindAddress: string,
+  workers: usize,
+  mode: HttpTransportMode,
+  blockingPoolWorkers: usize,
+  packageOwnedProtocol: bool,
+}
+
+impl HttpTransportPlan {
+  pub fn init(
+    bindAddress: string,
+    workers: usize,
+    mode: HttpTransportMode,
+    blockingPoolWorkers: usize,
+    packageOwnedProtocol: bool,
+  ) -> HttpTransportPlan {
+    return HttpTransportPlan {
+      bindAddress: bindAddress,
+      workers: workers,
+      mode: mode,
+      blockingPoolWorkers: blockingPoolWorkers,
+      packageOwnedProtocol: packageOwnedProtocol,
+    }
+  }
+
+  pub fn bindAddress(self: HttpTransportPlan) -> string {
+    return self.bindAddress
+  }
+
+  pub fn workers(self: HttpTransportPlan) -> usize {
+    return self.workers
+  }
+
+  pub fn mode(self: HttpTransportPlan) -> HttpTransportMode {
+    return self.mode
+  }
+
+  pub fn modePlan(self: HttpTransportPlan) -> HttpTransportModePlan {
+    return HttpTransportModePlan.init(
+      self.mode,
+      self.workers,
+      false,
+      self.workers,
+      self.mode != HttpTransportMode.Blocking,
+      self.blockingPoolWorkers,
+      self.blockingPoolWorkers > 0,
+      self.mode == HttpTransportMode.Blocking,
+      self.packageOwnedProtocol,
+      true,
+      true
+    )
+  }
+
+  pub fn usesGenericRuntimeTransport(self: HttpTransportPlan) -> bool {
+    return self.packageOwnedProtocol
+  }
+
+  pub fn asyncPlan(self: HttpTransportPlan) -> HttpAsyncTransportPlan {
+    return self.modePlan().asyncTransportPlan()
+  }
+}

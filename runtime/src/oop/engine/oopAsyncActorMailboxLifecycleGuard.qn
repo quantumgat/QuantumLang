@@ -1,0 +1,35 @@
+pub struct OopAsyncActorMailboxLifecycleGuard {
+  objectId: u64,
+  actorTypeName: string,
+  generation: u64,
+  mailboxOpen: bool,
+  processingMessage: bool,
+  stateBorrowActive: bool,
+  stopRequested: bool,
+  drained: bool,
+  shutdownCompleted: bool,
+  backpressureDiagnosticBound: bool,
+  typedFailureBound: bool,
+  noCoredumpFailure: bool,
+}
+
+impl OopAsyncActorMailboxLifecycleGuard {
+  pub fn accepted(self: OopAsyncActorMailboxLifecycleGuard) -> bool {
+    return self.objectId > 0
+      && self.actorTypeName != ""
+      && self.generation > 0
+      && self.backpressureDiagnosticBound
+      && self.typedFailureBound
+      && self.noCoredumpFailure
+      && (!self.shutdownCompleted || self.drained)
+      && (!self.stopRequested || !self.mailboxOpen)
+      && (!self.processingMessage || self.stateBorrowActive)
+  }
+
+  pub fn canProcess(self: OopAsyncActorMailboxLifecycleGuard) -> bool {
+    return self.accepted()
+      && self.mailboxOpen
+      && !self.stopRequested
+      && !self.shutdownCompleted
+  }
+}

@@ -1,0 +1,51 @@
+pub enum OopAsyncResourceServiceLifecycleLoweringKind {
+  ResourceAsyncInit
+  ResourceStart
+  ResourceShutdown
+  ResourceClose
+  ServiceAsyncInit
+  ServiceStart
+  ServiceReady
+  ServiceHealth
+  ServiceReconnectRetry
+  StateTransition
+  ShutdownBeforeDrop
+}
+
+pub struct OopAsyncResourceServiceLifecycleLowering {
+  ownerTypeId: u64,
+  lifecycleMethodId: u64,
+  kind: OopAsyncResourceServiceLifecycleLoweringKind,
+  asyncMethodLoweringBound: bool,
+  dependencyOrderBound: bool,
+  readinessHealthBound: bool,
+  reconnectRetryBound: bool,
+  cancellationCleanupBound: bool,
+  shutdownBeforeDropBound: bool,
+  staleGenerationDiagnosticBound: bool,
+  mirReady: bool,
+  sourceMapBound: bool,
+}
+
+impl OopAsyncResourceServiceLifecycleLowering {
+  pub fn complete(self: OopAsyncResourceServiceLifecycleLowering) -> bool {
+    return self.ownerTypeId > 0
+      && self.lifecycleMethodId > 0
+      && self.asyncMethodLoweringBound
+      && self.dependencyOrderBound
+      && self.readinessHealthBound
+      && self.reconnectRetryBound
+      && self.cancellationCleanupBound
+      && self.shutdownBeforeDropBound
+      && self.staleGenerationDiagnosticBound
+      && self.mirReady
+      && self.sourceMapBound
+  }
+
+  pub fn serviceReady(self: OopAsyncResourceServiceLifecycleLowering) -> bool {
+    return self.complete()
+      && (self.kind == OopAsyncResourceServiceLifecycleLoweringKind.ServiceReady
+        || self.kind == OopAsyncResourceServiceLifecycleLoweringKind.ServiceHealth
+        || self.kind == OopAsyncResourceServiceLifecycleLoweringKind.ServiceStart)
+  }
+}

@@ -1,0 +1,61 @@
+pub enum DispatchProofBridgeKind {
+  Direct
+  Devirtualized
+  VirtualRuntime
+  InterfaceRuntime
+  Unsupported
+}
+
+pub struct DispatchProofBridge {
+  callId: u64,
+  functionId: u64,
+  methodId: u64,
+  tableSymbolId: u64,
+  bridgeKind: DispatchProofBridgeKind,
+  analysisFactBound: bool,
+  nativeLoweringBound: bool,
+  proofRowBound: bool,
+}
+
+pub fn dispatchProofBridge(
+  callId: u64,
+  functionId: u64,
+  methodId: u64,
+  tableSymbolId: u64,
+  bridgeKind: DispatchProofBridgeKind,
+  analysisFactBound: bool,
+  nativeLoweringBound: bool,
+  proofRowBound: bool
+) -> DispatchProofBridge {
+  return DispatchProofBridge {
+    callId: callId,
+    functionId: functionId,
+    methodId: methodId,
+    tableSymbolId: tableSymbolId,
+    bridgeKind: bridgeKind,
+    analysisFactBound: analysisFactBound,
+    nativeLoweringBound: nativeLoweringBound,
+    proofRowBound: proofRowBound,
+  }
+}
+
+impl DispatchProofBridge {
+  pub fn call(self: DispatchProofBridge) -> u64 {
+    return self.callId
+  }
+
+  pub fn isRuntimeOwned(self: DispatchProofBridge) -> bool {
+    return self.bridgeKind == DispatchProofBridgeKind.VirtualRuntime ||
+      self.bridgeKind == DispatchProofBridgeKind.InterfaceRuntime
+  }
+
+  pub fn passed(self: DispatchProofBridge) -> bool {
+    return self.callId > 0 &&
+      self.functionId > 0 &&
+      self.methodId > 0 &&
+      self.analysisFactBound &&
+      self.nativeLoweringBound &&
+      self.proofRowBound &&
+      self.bridgeKind != DispatchProofBridgeKind.Unsupported
+  }
+}

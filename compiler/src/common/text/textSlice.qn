@@ -1,0 +1,23 @@
+pub struct TextSlice {
+  sourceFileId: u32,
+  startByte: usize,
+  endByte: usize,
+}
+
+pub fn textSlice(sourceFileId: u32, startByte: usize, endByte: usize) -> TextSlice {
+  return TextSlice { sourceFileId: sourceFileId, startByte: startByte, endByte: endByte }
+}
+
+impl TextSlice {
+  pub fn fileId(self: TextSlice) -> u32 {
+    return self.sourceFileId
+  }
+
+  pub fn lenBytes(self: TextSlice) -> usize {
+    return self.endByte - self.startByte
+  }
+
+  pub fn isEmpty(self: TextSlice) -> bool {
+    return self.startByte == self.endByte
+  }
+}

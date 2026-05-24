@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PluginRuntimeLoadResult {
+  abi: PluginRuntimeAbi
+  signature: PluginKernelSignature
+  targetGate: PluginKernelTargetGate
+  lifecycle: PluginKernelLifecycle
+  boundary: PluginKernelBoundary
+  registry: PluginKernelRegistry
+  failure: PluginKernelFailure
+  dynamicLoadRequired: bool
+}

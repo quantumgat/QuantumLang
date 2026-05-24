@@ -1,0 +1,40 @@
+pub struct IdeProblemListRow {
+  diagnostic: Diagnostic,
+  file: u32,
+  line: u32,
+  column: u32,
+  codeFamily: string,
+  codeNumber: u32,
+  category: DiagnosticCategory,
+  severity: DiagnosticSeverity,
+  message: string,
+  redacted: bool,
+  deterministic: bool,
+}
+
+pub fn ideProblemListRow(diagnostic: Diagnostic) -> IdeProblemListRow {
+  return IdeProblemListRow {
+    diagnostic: diagnostic,
+    file: diagnostic.primaryRange.file,
+    line: diagnostic.primaryRange.line,
+    column: diagnostic.primaryRange.column,
+    codeFamily: diagnostic.family(),
+    codeNumber: diagnostic.number(),
+    category: diagnostic.category,
+    severity: diagnostic.severity,
+    message: diagnostic.text(),
+    redacted: diagnostic.redacted,
+    deterministic: true,
+  }
+}
+
+impl IdeProblemListRow {
+  pub fn ready(self: IdeProblemListRow) -> bool {
+    return self.diagnostic.complete()
+      && self.codeFamily != ""
+      && self.codeNumber > 0
+      && self.message != ""
+      && self.redacted
+      && self.deterministic
+  }
+}

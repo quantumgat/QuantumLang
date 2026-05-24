@@ -1,0 +1,13 @@
+pub struct QueryValue {
+  stableHash: string,
+  sourceMapped: bool,
+  deterministic: bool,
+}
+
+pub fn queryValue(stableHash: string) -> QueryValue {
+  return QueryValue {
+    stableHash: stableHash,
+    sourceMapped: true,
+    deterministic: true,
+  }
+}

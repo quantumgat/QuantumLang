@@ -1,0 +1,70 @@
+pub enum AstIfExprFormKind {
+  Condition
+  Else
+  ElseIf
+  Expression
+  IfLet
+  IfLetGuard
+  RangeMembership
+  TypeTest
+  Question
+  AwaitQuestion
+  StaticIf
+  TargetFeature
+  Qif
+}
+
+pub struct AstIfExprForm {
+  node: AstNode,
+  kind: AstIfExprFormKind,
+  conditionId: u64,
+  patternId: u64,
+  thenBodyId: u64,
+  elseBodyId: u64,
+  guardId: u64,
+  resultTypeId: u64,
+}
+
+pub fn astIfExprForm(
+  node: AstNode,
+  kind: AstIfExprFormKind,
+  conditionId: u64,
+  patternId: u64,
+  thenBodyId: u64,
+  elseBodyId: u64,
+  guardId: u64,
+  resultTypeId: u64,
+) -> AstIfExprForm {
+  return AstIfExprForm {
+    node: node,
+    kind: kind,
+    conditionId: conditionId,
+    patternId: patternId,
+    thenBodyId: thenBodyId,
+    elseBodyId: elseBodyId,
+    guardId: guardId,
+    resultTypeId: resultTypeId,
+  }
+}
+
+impl AstIfExprForm {
+  pub fn complete(self: AstIfExprForm) -> bool {
+    return self.node.nodeId() > 0
+      && self.conditionId > 0
+      && self.thenBodyId > 0
+  }
+
+  pub fn expressionForm(self: AstIfExprForm) -> bool {
+    return self.resultTypeId > 0
+  }
+
+  pub fn guardedPattern(self: AstIfExprForm) -> bool {
+    return self.kind == AstIfExprFormKind.IfLetGuard
+      && self.patternId > 0
+      && self.guardId > 0
+  }
+
+  pub fn hasElse(self: AstIfExprForm) -> bool {
+    return self.elseBodyId > 0
+  }
+}

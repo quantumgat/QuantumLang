@@ -1,0 +1,16 @@
+pub struct PlatformSignalFact {
+  target: string,
+  portableSignals: bool,
+  handlerInstallSafe: bool,
+  wakeIntegration: bool,
+  diagnosticRequired: bool,
+}
+
+impl PlatformSignalFact {
+  pub fn accepted(self: PlatformSignalFact) -> bool {
+    return self.target != ""
+      && (self.portableSignals || self.diagnosticRequired)
+      && self.handlerInstallSafe
+      && self.wakeIntegration
+  }
+}

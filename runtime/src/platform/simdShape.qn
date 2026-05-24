@@ -1,0 +1,21 @@
+pub struct RuntimeSimdShape {
+  laneCount: usize,
+  laneBytes: usize,
+  alignment: usize,
+  featureSupported: bool,
+}
+
+impl RuntimeSimdShape {
+  pub fn init(laneCount: usize, laneBytes: usize, alignment: usize, featureSupported: bool) -> RuntimeSimdShape {
+    return RuntimeSimdShape {
+      laneCount: laneCount,
+      laneBytes: laneBytes,
+      alignment: alignment,
+      featureSupported: featureSupported,
+    }
+  }
+
+  pub fn valid(self: RuntimeSimdShape) -> bool {
+    return self.laneCount > 0 && self.laneBytes > 0 && self.alignment > 0 && self.featureSupported
+  }
+}

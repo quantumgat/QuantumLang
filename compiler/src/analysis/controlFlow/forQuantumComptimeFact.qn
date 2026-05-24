@@ -1,0 +1,43 @@
+pub enum ForQuantumComptimeKind {
+  QforStaticRegisterLoop
+  QforIndexedStaticRegisterLoop
+  QforControlledLoop
+  MeasurementLoop
+  QifNestedQforLoop
+  RestrictedQwhileLoop
+  ComptimeFiniteLoop
+  StaticFieldLoop
+  ReflectionMetadataLoop
+  BuilderExpansionLoop
+}
+
+pub struct ForQuantumComptimeFact {
+  kind: ForQuantumComptimeKind,
+  profileName: string,
+  registerType: string,
+  quantumProfileChecked: bool,
+  qregStaticShapeChecked: bool,
+  qubitOwnershipPreserved: bool,
+  measurementExitChecked: bool,
+  qirHandoffReady: bool,
+  finiteExpansionProved: bool,
+  reflectionColdPathOnly: bool,
+  builderErasureReady: bool,
+  diagnosticsReady: bool,
+}
+
+impl ForQuantumComptimeFact {
+  pub fn complete(self: ForQuantumComptimeFact) -> bool {
+    return self.profileName != ""
+      && self.registerType != ""
+      && self.quantumProfileChecked
+      && self.qregStaticShapeChecked
+      && self.qubitOwnershipPreserved
+      && self.measurementExitChecked
+      && self.qirHandoffReady
+      && self.finiteExpansionProved
+      && self.reflectionColdPathOnly
+      && self.builderErasureReady
+      && self.diagnosticsReady
+  }
+}

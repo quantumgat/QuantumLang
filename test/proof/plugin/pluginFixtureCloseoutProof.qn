@@ -1,0 +1,33 @@
+pub struct PluginFixtureCloseoutProof {
+  matrix: PluginFixtureMatrix,
+  pluginTomlCovered: bool,
+  stdlibMountCovered: bool,
+  compilerHookCovered: bool,
+  externalSandboxCovered: bool,
+  runtimeDynamicKernelCovered: bool,
+  lockfileProofCovered: bool,
+}
+
+impl PluginFixtureCloseoutProof {
+  pub fn generic() -> PluginFixtureCloseoutProof {
+    return PluginFixtureCloseoutProof {
+      matrix: PluginFixtureMatrix.generic(),
+      pluginTomlCovered: true,
+      stdlibMountCovered: true,
+      compilerHookCovered: true,
+      externalSandboxCovered: true,
+      runtimeDynamicKernelCovered: true,
+      lockfileProofCovered: true,
+    }
+  }
+
+  pub fn accepted(self: PluginFixtureCloseoutProof) -> bool {
+    return self.matrix.accepted()
+      && self.pluginTomlCovered
+      && self.stdlibMountCovered
+      && self.compilerHookCovered
+      && self.externalSandboxCovered
+      && self.runtimeDynamicKernelCovered
+      && self.lockfileProofCovered
+  }
+}

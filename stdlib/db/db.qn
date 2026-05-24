@@ -1,0 +1,10 @@
+pub struct DbConnection {
+  id: u64,
+}
+
+pub struct DbError {
+  message: string,
+}
+
+pub fn connect(url: string) -> Result<DbConnection, DbError>
+pub fn close(connection: DbConnection) -> Unit

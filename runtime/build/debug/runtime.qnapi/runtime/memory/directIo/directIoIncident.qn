@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum DirectIoIncidentKind {
+  BadAlignment,
+  BufferNotPinned,
+  PageLockMissing,
+  PartialErrorLost,
+  CancellationCleanupMissing,
+}
+pub struct DirectIoIncident {
+  kind: DirectIoIncidentKind
+  recoverable: bool
+}

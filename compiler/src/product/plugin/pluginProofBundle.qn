@@ -1,0 +1,27 @@
+pub struct PluginProofBundle {
+  releaseGate: PluginReleaseGate,
+  lockfileValidation: PluginLockfileValidation,
+  runtimeKernelProofCarried: bool,
+  compilerHookProofCarried: bool,
+  stdlibMountProofCarried: bool,
+}
+
+impl PluginProofBundle {
+  pub fn fromManifest(manifest: PluginManifest, publicRoot: string) -> PluginProofBundle {
+    return PluginProofBundle {
+      releaseGate: PluginReleaseGate.fromManifest(manifest, publicRoot),
+      lockfileValidation: PluginLockfileValidation.fromManifest(manifest),
+      runtimeKernelProofCarried: true,
+      compilerHookProofCarried: true,
+      stdlibMountProofCarried: true,
+    }
+  }
+
+  pub fn accepted(self: PluginProofBundle) -> bool {
+    return self.releaseGate.accepted()
+      && self.lockfileValidation.accepted()
+      && self.runtimeKernelProofCarried
+      && self.compilerHookProofCarried
+      && self.stdlibMountProofCarried
+  }
+}

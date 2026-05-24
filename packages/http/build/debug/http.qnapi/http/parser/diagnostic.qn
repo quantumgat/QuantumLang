@@ -1,0 +1,18 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum HttpParseErrorKind {
+  InvalidRequestLine,
+  InvalidMethod,
+  InvalidUri,
+  InvalidVersion,
+  InvalidHeader,
+  HeaderTooLarge,
+  BodyTooLarge,
+  Incomplete,
+  UnsupportedTransferEncoding,
+  InvalidContentLength,
+}
+pub struct HttpParseDiagnostic {
+  kind: HttpParseErrorKind
+  message: string
+  offset: usize
+}

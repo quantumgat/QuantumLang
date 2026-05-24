@@ -1,0 +1,60 @@
+pub struct BsonDiagnosticCorpusProof {
+  badLengthFixture: string,
+  badBoolFixture: string,
+  malformedNestedArrayFixture: string,
+  missingRequiredFixture: string,
+  corruptLength: bool,
+  badCString: bool,
+  unsupportedTag: bool,
+  overflow: bool,
+  precisionLoss: bool,
+  wrongTargetType: bool,
+  missingField: bool,
+  malformedExactCarrier: bool,
+  liveResource: bool,
+  pathExpectedFoundOffset: bool,
+  generatedExecutables: bool,
+  noCoredump: bool,
+}
+
+impl BsonDiagnosticCorpusProof {
+  pub fn required() -> BsonDiagnosticCorpusProof {
+    return BsonDiagnosticCorpusProof {
+      badLengthFixture: "qtlc/tests/fixtures/bson_arbitrary_document_parser_bad_len_ok.qn",
+      badBoolFixture: "qtlc/tests/fixtures/bson_full_type_coverage_bad_bool_ok.qn",
+      malformedNestedArrayFixture: "qtlc/tests/fixtures/bson_nested_array_materialization_bad.qn",
+      missingRequiredFixture: "qtlc/tests/fixtures/bson_optional_default_required_missing_bad.qn",
+      corruptLength: true,
+      badCString: true,
+      unsupportedTag: true,
+      overflow: true,
+      precisionLoss: true,
+      wrongTargetType: true,
+      missingField: true,
+      malformedExactCarrier: true,
+      liveResource: true,
+      pathExpectedFoundOffset: true,
+      generatedExecutables: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: BsonDiagnosticCorpusProof) -> bool {
+    return self.badLengthFixture == "qtlc/tests/fixtures/bson_arbitrary_document_parser_bad_len_ok.qn"
+      && self.badBoolFixture == "qtlc/tests/fixtures/bson_full_type_coverage_bad_bool_ok.qn"
+      && self.malformedNestedArrayFixture == "qtlc/tests/fixtures/bson_nested_array_materialization_bad.qn"
+      && self.missingRequiredFixture == "qtlc/tests/fixtures/bson_optional_default_required_missing_bad.qn"
+      && self.corruptLength
+      && self.badCString
+      && self.unsupportedTag
+      && self.overflow
+      && self.precisionLoss
+      && self.wrongTargetType
+      && self.missingField
+      && self.malformedExactCarrier
+      && self.liveResource
+      && self.pathExpectedFoundOffset
+      && self.generatedExecutables
+      && self.noCoredump
+  }
+}

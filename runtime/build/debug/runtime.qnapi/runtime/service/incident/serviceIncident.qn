@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeServiceIncidentKind {
+  StartFailure
+  ReadinessTimeout
+  RestartLimit
+  DependencyFailure
+  Overload
+}
+pub struct RuntimeServiceIncident {
+  serviceId: u64
+  kind: RuntimeServiceIncidentKind
+  diagnosticCode: string
+  noAllocationRequired: bool
+}

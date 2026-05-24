@@ -1,0 +1,12 @@
+pub struct Esp32Runtime {
+  target: string,
+  espIdf: bool,
+  xtensa: bool,
+  deviceMemory: bool,
+}
+
+impl Esp32Runtime {
+  pub fn accepted(self: Esp32Runtime) -> bool {
+    return self.target != "" && self.espIdf && self.xtensa
+  }
+}

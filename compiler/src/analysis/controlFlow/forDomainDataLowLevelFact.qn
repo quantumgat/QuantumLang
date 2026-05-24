@@ -1,0 +1,48 @@
+pub enum ForDomainDataLowLevelKind {
+  TableScanLoop
+  BinaryViewLoop
+  ColumnBlockLoop
+  DeltaLoop
+  SimdLaneLoop
+  PageDecodeLoop
+  BitProbeLoop
+  MergePipelineLoop
+  PointerRangeLoop
+  CheckedSliceLoop
+  MemoryRegionLoop
+  AtomicRetryLoop
+  MmioRangeLoop
+  FileTextLoop
+  RetryBatchLoop
+  TimeWindowLoop
+  ResourceTransactionLoop
+}
+
+pub struct ForDomainDataLowLevelFact {
+  kind: ForDomainDataLowLevelKind,
+  elementType: string,
+  domainChecked: bool,
+  capabilityChecked: bool,
+  ownershipChecked: bool,
+  boundsProvable: bool,
+  aliasSafe: bool,
+  zeroCopyEligible: bool,
+  deterministicWhenRequired: bool,
+  diagnosticsReady: bool,
+  runtimeHandoffReady: bool,
+}
+
+impl ForDomainDataLowLevelFact {
+  pub fn complete(self: ForDomainDataLowLevelFact) -> bool {
+    return self.elementType != ""
+      && self.domainChecked
+      && self.capabilityChecked
+      && self.ownershipChecked
+      && self.boundsProvable
+      && self.aliasSafe
+      && self.zeroCopyEligible
+      && self.deterministicWhenRequired
+      && self.diagnosticsReady
+      && self.runtimeHandoffReady
+  }
+}

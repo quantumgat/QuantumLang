@@ -1,0 +1,13 @@
+pub struct QueryRoute {
+  method: string,
+  routedToQueryDb: bool,
+  mutatesCompilerFacts: bool,
+}
+
+pub fn queryRoute(method: string) -> QueryRoute {
+  return QueryRoute {
+    method: method,
+    routedToQueryDb: true,
+    mutatesCompilerFacts: false,
+  }
+}

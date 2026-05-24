@@ -1,0 +1,46 @@
+pub enum MirOopActorMailboxLifecycleOpKind {
+  SpawnActor
+  EnqueueTell
+  RegisterAsk
+  PollMailbox
+  RunSerializedMethod
+  ApplyBackpressure
+  StopActor
+  DrainMailbox
+  ShutdownActor
+  RejectConcurrentStateAccess
+  SupervisionRestart
+}
+
+pub struct MirOopActorMailboxLifecycleOp {
+  instruction: u64,
+  ownerTypeName: string,
+  kind: MirOopActorMailboxLifecycleOpKind,
+  mailboxBound: bool,
+  schedulerLinked: bool,
+  serializedStateAccess: bool,
+  stopDrainShutdownReady: bool,
+  backpressureReady: bool,
+  cancellationCleanupReady: bool,
+  supervisionReady: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+  sourceMapReady: bool,
+}
+
+impl MirOopActorMailboxLifecycleOp {
+  pub fn accepted(self: MirOopActorMailboxLifecycleOp) -> bool {
+    return self.instruction > 0
+      && self.ownerTypeName != ""
+      && self.mailboxBound
+      && self.schedulerLinked
+      && self.serializedStateAccess
+      && self.stopDrainShutdownReady
+      && self.backpressureReady
+      && self.cancellationCleanupReady
+      && self.supervisionReady
+      && self.typedFailure
+      && self.noCoredump
+      && self.sourceMapReady
+  }
+}

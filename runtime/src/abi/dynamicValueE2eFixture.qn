@@ -1,0 +1,39 @@
+pub enum DynamicValueE2eFixtureKind {
+  UnionConstructRead
+  AnyBoxUnbox
+  QAnyWrapUnwrap
+  SafeFailure
+}
+
+pub struct DynamicValueE2eFixture {
+  kind: DynamicValueE2eFixtureKind,
+  abi: DynamicValueAbi,
+  constructReady: bool,
+  readbackReady: bool,
+  narrowingReady: bool,
+  safeFailureReady: bool,
+}
+
+pub fn dynamicValueE2eFixture(
+  kind: DynamicValueE2eFixtureKind,
+  abi: DynamicValueAbi,
+) -> DynamicValueE2eFixture {
+  return DynamicValueE2eFixture {
+    kind: kind,
+    abi: abi,
+    constructReady: true,
+    readbackReady: true,
+    narrowingReady: true,
+    safeFailureReady: true,
+  }
+}
+
+impl DynamicValueE2eFixture {
+  pub fn executable(self: DynamicValueE2eFixture) -> bool {
+    return self.abi.safe()
+      && self.constructReady
+      && self.readbackReady
+      && self.narrowingReady
+      && self.safeFailureReady
+  }
+}

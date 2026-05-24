@@ -1,0 +1,21 @@
+pub struct MemoryLogSink {
+  capacity: usize,
+  droppedRecords: usize,
+  backpressurePolicy: LogBackpressurePolicy,
+  redactsBeforeWrite: bool,
+}
+
+impl MemoryLogSink {
+  pub fn ring(capacity: usize) -> MemoryLogSink {
+    return MemoryLogSink {
+      capacity: capacity,
+      droppedRecords: 0,
+      backpressurePolicy: LogBackpressurePolicy.DropOldest,
+      redactsBeforeWrite: true,
+    }
+  }
+
+  pub fn safe(self: MemoryLogSink) -> bool {
+    return self.capacity > 0 && self.redactsBeforeWrite
+  }
+}

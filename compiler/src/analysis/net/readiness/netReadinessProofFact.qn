@@ -1,0 +1,15 @@
+pub struct NetReadinessProofFact {
+  awaitableReadiness: bool,
+  wakeDeduplicated: bool,
+  timeoutHoisted: bool,
+  cancelledSocketUnregistered: bool,
+}
+
+impl NetReadinessProofFact {
+  pub fn accepted(self: NetReadinessProofFact) -> bool {
+    return self.awaitableReadiness
+      && self.wakeDeduplicated
+      && self.timeoutHoisted
+      && self.cancelledSocketUnregistered
+  }
+}

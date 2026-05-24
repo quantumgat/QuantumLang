@@ -1,0 +1,45 @@
+pub struct OopClassFamilyCompilerRuntimeGapClosureFact {
+  sourceFactParityClosed: bool,
+  compilerExportsClosed: bool,
+  runtimeExportsClosed: bool,
+  runtimeEngineContractsClosed: bool,
+  backendDispatchProofClosed: bool,
+  executableFamilyProofRows: usize,
+  packageDeferralsExplicit: bool,
+  httpBlockedUntilUnblock: bool,
+}
+
+pub fn oopClassFamilyCompilerRuntimeGapClosureFact(
+  sourceFactParityClosed: bool,
+  compilerExportsClosed: bool,
+  runtimeExportsClosed: bool,
+  runtimeEngineContractsClosed: bool,
+  backendDispatchProofClosed: bool,
+  executableFamilyProofRows: usize,
+  packageDeferralsExplicit: bool,
+  httpBlockedUntilUnblock: bool,
+) -> OopClassFamilyCompilerRuntimeGapClosureFact {
+  return OopClassFamilyCompilerRuntimeGapClosureFact {
+    sourceFactParityClosed: sourceFactParityClosed,
+    compilerExportsClosed: compilerExportsClosed,
+    runtimeExportsClosed: runtimeExportsClosed,
+    runtimeEngineContractsClosed: runtimeEngineContractsClosed,
+    backendDispatchProofClosed: backendDispatchProofClosed,
+    executableFamilyProofRows: executableFamilyProofRows,
+    packageDeferralsExplicit: packageDeferralsExplicit,
+    httpBlockedUntilUnblock: httpBlockedUntilUnblock,
+  }
+}
+
+impl OopClassFamilyCompilerRuntimeGapClosureFact {
+  pub fn complete(self: OopClassFamilyCompilerRuntimeGapClosureFact) -> bool {
+    return self.sourceFactParityClosed
+      && self.compilerExportsClosed
+      && self.runtimeExportsClosed
+      && self.runtimeEngineContractsClosed
+      && self.backendDispatchProofClosed
+      && self.executableFamilyProofRows >= 8
+      && self.packageDeferralsExplicit
+      && self.httpBlockedUntilUnblock
+  }
+}

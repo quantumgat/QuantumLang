@@ -1,0 +1,6 @@
+[module]
+name = "test.proof.concurrency"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "concurrency-executable-proof"

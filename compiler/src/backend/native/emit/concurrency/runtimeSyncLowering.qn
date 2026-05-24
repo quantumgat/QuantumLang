@@ -1,0 +1,36 @@
+pub struct RuntimeSyncLowering {
+  emitsAtomicLoadStore: bool,
+  emitsCompareExchange: bool,
+  emitsFence: bool,
+  emitsWaitWake: bool,
+  emitsMutexLifecycle: bool,
+  preservesOrdering: bool,
+  cancellationSafe: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl RuntimeSyncLowering {
+  pub fn init() -> RuntimeSyncLowering {
+    return RuntimeSyncLowering {
+      emitsAtomicLoadStore: true,
+      emitsCompareExchange: true,
+      emitsFence: true,
+      emitsWaitWake: true,
+      emitsMutexLifecycle: true,
+      preservesOrdering: true,
+      cancellationSafe: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: RuntimeSyncLowering) -> bool {
+    return self.emitsAtomicLoadStore
+      && self.emitsCompareExchange
+      && self.emitsFence
+      && self.emitsWaitWake
+      && self.emitsMutexLifecycle
+      && self.preservesOrdering
+      && self.cancellationSafe
+      && self.noCoredumpDiagnostic
+  }
+}

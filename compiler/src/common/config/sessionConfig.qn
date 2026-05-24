@@ -1,0 +1,23 @@
+pub struct SessionConfig {
+  targetName: string,
+  optimizationLevel: u8,
+  warningsAsErrors: bool,
+}
+
+pub fn sessionConfig(targetName: string, optimizationLevel: u8, warningsAsErrors: bool) -> SessionConfig {
+  return SessionConfig {
+    targetName: targetName,
+    optimizationLevel: optimizationLevel,
+    warningsAsErrors: warningsAsErrors,
+  }
+}
+
+impl SessionConfig {
+  pub fn target(self: SessionConfig) -> string {
+    return self.targetName
+  }
+
+  pub fn strictDiagnostics(self: SessionConfig) -> bool {
+    return self.warningsAsErrors
+  }
+}

@@ -1,0 +1,45 @@
+pub enum MirDynamicTypeOpKind {
+  ConstructUnion
+  ReadUnionTag
+  NarrowUnion
+  BoxAny
+  UnboxAny
+  WrapQAny
+  UnwrapQAny
+  RejectImplicitAny
+}
+
+pub struct MirDynamicTypeOp {
+  instruction: MirInstruction,
+  kind: MirDynamicTypeOpKind,
+  runtimeAbi: DynamicValueAbi,
+  nativeProof: DynamicTypeLoweringProof,
+  qirRequired: bool,
+  safeFailureReady: bool,
+}
+
+pub fn mirDynamicTypeOp(
+  instruction: MirInstruction,
+  kind: MirDynamicTypeOpKind,
+  runtimeAbi: DynamicValueAbi,
+  nativeProof: DynamicTypeLoweringProof,
+  qirRequired: bool,
+) -> MirDynamicTypeOp {
+  return MirDynamicTypeOp {
+    instruction: instruction,
+    kind: kind,
+    runtimeAbi: runtimeAbi,
+    nativeProof: nativeProof,
+    qirRequired: qirRequired,
+    safeFailureReady: true,
+  }
+}
+
+impl MirDynamicTypeOp {
+  pub fn executable(self: MirDynamicTypeOp) -> bool {
+    return self.instruction.instructionId() > 0
+      && self.runtimeAbi.safe()
+      && self.nativeProof.complete()
+      && self.safeFailureReady
+  }
+}

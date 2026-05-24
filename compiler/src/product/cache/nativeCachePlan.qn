@@ -1,0 +1,30 @@
+pub struct NativeCachePlan {
+  actionIndexExt: string,
+  metadataExt: string,
+  objectExt: string,
+  hidden: bool,
+  atomicWrites: bool,
+  leases: bool,
+  quarantine: bool,
+}
+
+pub fn nativeCachePlan() -> NativeCachePlan {
+  return NativeCachePlan {
+    actionIndexExt: ".qci",
+    metadataExt: ".qcm",
+    objectExt: ".qco",
+    hidden: true,
+    atomicWrites: true,
+    leases: true,
+    quarantine: true,
+  }
+}
+
+impl NativeCachePlan {
+  pub fn isStrict(self) -> bool {
+    return self.hidden &&
+      self.atomicWrites &&
+      self.leases &&
+      self.quarantine
+  }
+}

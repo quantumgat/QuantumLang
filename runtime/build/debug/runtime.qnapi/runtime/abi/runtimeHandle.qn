@@ -1,0 +1,22 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeHandleKind {
+  ObjectHandle,
+  TaskHandle,
+  QubitHandle,
+  ResultHandle,
+}
+pub struct RuntimeHandle {
+  slot: usize
+  generation: usize
+  kind: RuntimeHandleKind
+  ownerSubsystem: string
+  state: HandleState
+  leaseEpoch: u64
+}
+pub extern "qnpkg" {
+  pub fn runtimeHandle(
+  slot: usize,
+  generation: usize,
+  kind: RuntimeHandleKind,
+) -> RuntimeHandle
+}

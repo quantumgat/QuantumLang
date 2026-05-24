@@ -1,0 +1,210 @@
+pub enum CapabilityPolicyOrigin {
+  AppContext,
+  ControllerWith,
+  RouteParam,
+  RouteWithout,
+}
+
+pub struct ControllerCapabilityPolicy {
+  controllerName: string,
+  inheritedCapabilities: Vec<string>,
+}
+
+impl ControllerCapabilityPolicy {
+  pub fn empty(controllerName: string) -> ControllerCapabilityPolicy {
+    return ControllerCapabilityPolicy {
+      controllerName: controllerName,
+      inheritedCapabilities: [],
+    }
+  }
+
+  pub fn with<T>(self: ControllerCapabilityPolicy) -> ControllerCapabilityPolicy {
+    return self.withCapability(typeName<T>())
+  }
+
+  pub fn withCapability(self: ControllerCapabilityPolicy, capabilityType: string) -> ControllerCapabilityPolicy {
+    if self.has(capabilityType) {
+      return self
+    }
+    return ControllerCapabilityPolicy {
+      controllerName: self.controllerName,
+      inheritedCapabilities: self.inheritedCapabilities.push(capabilityType),
+    }
+  }
+
+  pub fn controllerName(self: ControllerCapabilityPolicy) -> string {
+    return self.controllerName
+  }
+
+  pub fn capabilityCount(self: ControllerCapabilityPolicy) -> usize {
+    return self.inheritedCapabilities.len()
+  }
+
+  pub fn has(self: ControllerCapabilityPolicy, capabilityType: string) -> bool {
+    let mut index: usize = 0
+    while index < self.inheritedCapabilities.len() {
+      if self.inheritedCapabilities[index] == capabilityType {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn activeAfter(self: ControllerCapabilityPolicy, endpointPolicy: EndpointCapabilityPolicy) -> usize {
+    let mut active: usize = 0
+    let mut index: usize = 0
+    while index < self.inheritedCapabilities.len() {
+      if !endpointPolicy.removes(self.inheritedCapabilities[index]) {
+        active = active + 1
+      }
+      index = index + 1
+    }
+    return active
+  }
+}
+
+pub struct EndpointCapabilityPolicy {
+  endpointName: string,
+  routeCapabilities: Vec<string>,
+  removedInheritedCapabilities: Vec<string>,
+}
+
+impl EndpointCapabilityPolicy {
+  pub fn empty(endpointName: string) -> EndpointCapabilityPolicy {
+    return EndpointCapabilityPolicy {
+      endpointName: endpointName,
+      routeCapabilities: [],
+      removedInheritedCapabilities: [],
+    }
+  }
+
+  pub fn requires<T>(self: EndpointCapabilityPolicy) -> EndpointCapabilityPolicy {
+    return self.requiresCapability(typeName<T>())
+  }
+
+  pub fn requiresCapability(self: EndpointCapabilityPolicy, capabilityType: string) -> EndpointCapabilityPolicy {
+    if self.hasRouteCapability(capabilityType) {
+      return self
+    }
+    return EndpointCapabilityPolicy {
+      endpointName: self.endpointName,
+      routeCapabilities: self.routeCapabilities.push(capabilityType),
+      removedInheritedCapabilities: self.removedInheritedCapabilities,
+    }
+  }
+
+  pub fn without<T>(self: EndpointCapabilityPolicy) -> EndpointCapabilityPolicy {
+    return self.withoutCapability(typeName<T>())
+  }
+
+  pub fn withoutCapability(self: EndpointCapabilityPolicy, capabilityType: string) -> EndpointCapabilityPolicy {
+    if self.removes(capabilityType) {
+      return self
+    }
+    return EndpointCapabilityPolicy {
+      endpointName: self.endpointName,
+      routeCapabilities: self.routeCapabilities,
+      removedInheritedCapabilities: self.removedInheritedCapabilities.push(capabilityType),
+    }
+  }
+
+  pub fn endpointName(self: EndpointCapabilityPolicy) -> string {
+    return self.endpointName
+  }
+
+  pub fn routeCapabilityCount(self: EndpointCapabilityPolicy) -> usize {
+    return self.routeCapabilities.len()
+  }
+
+  pub fn withoutCount(self: EndpointCapabilityPolicy) -> usize {
+    return self.removedInheritedCapabilities.len()
+  }
+
+  pub fn hasRouteCapability(self: EndpointCapabilityPolicy, capabilityType: string) -> bool {
+    let mut index: usize = 0
+    while index < self.routeCapabilities.len() {
+      if self.routeCapabilities[index] == capabilityType {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn removes(self: EndpointCapabilityPolicy, capabilityType: string) -> bool {
+    let mut index: usize = 0
+    while index < self.removedInheritedCapabilities.len() {
+      if self.removedInheritedCapabilities[index] == capabilityType {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn removedAllInherited(self: EndpointCapabilityPolicy, controllerPolicy: ControllerCapabilityPolicy) -> bool {
+    let mut index: usize = 0
+    while index < self.removedInheritedCapabilities.len() {
+      if !controllerPolicy.has(self.removedInheritedCapabilities[index]) {
+        return false
+      }
+      index = index + 1
+    }
+    return true
+  }
+}
+
+pub struct EndpointCapabilityResolution {
+  endpointName: string,
+  inheritedCount: usize,
+  activeInheritedCount: usize,
+  routeOnlyCount: usize,
+  removedInheritedCount: usize,
+  dataAccessCount: usize,
+  effectiveCount: usize,
+  validWithout: bool,
+}
+
+impl EndpointCapabilityResolution {
+  pub fn from(
+    controllerPolicy: ControllerCapabilityPolicy,
+    endpoint: EndpointFact,
+    endpointPolicy: EndpointCapabilityPolicy,
+  ) -> EndpointCapabilityResolution {
+    let activeInherited = controllerPolicy.activeAfter(endpointPolicy)
+    let routeOnly = endpointPolicy.routeCapabilityCount()
+    return EndpointCapabilityResolution {
+      endpointName: endpointPolicy.endpointName(),
+      inheritedCount: controllerPolicy.capabilityCount(),
+      activeInheritedCount: activeInherited,
+      routeOnlyCount: routeOnly,
+      removedInheritedCount: endpointPolicy.withoutCount(),
+      dataAccessCount: endpoint.capabilityParamCount(),
+      effectiveCount: activeInherited + routeOnly,
+      validWithout: endpointPolicy.removedAllInherited(controllerPolicy),
+    }
+  }
+
+  pub fn inheritedRuns(self: EndpointCapabilityResolution) -> bool {
+    return self.activeInheritedCount > 0
+  }
+
+  pub fn routeOnlyRuns(self: EndpointCapabilityResolution) -> bool {
+    return self.routeOnlyCount > 0
+  }
+
+  pub fn routeReceivesMiddlewareData(self: EndpointCapabilityResolution) -> bool {
+    return self.dataAccessCount > 0
+  }
+
+  pub fn publicRoute(self: EndpointCapabilityResolution) -> bool {
+    return self.effectiveCount == 0
+  }
+
+  pub fn complete(self: EndpointCapabilityResolution) -> bool {
+    return self.validWithout
+      && self.effectiveCount >= self.dataAccessCount
+      && self.inheritedCount >= self.removedInheritedCount
+  }
+}

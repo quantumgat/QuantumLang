@@ -1,0 +1,23 @@
+pub struct PinnedIoBufferFact {
+  address: usize,
+  bytes: usize,
+  aligned: bool,
+  pinned: bool,
+  pageLocked: bool,
+}
+
+impl PinnedIoBufferFact {
+  pub fn init(address: usize, bytes: usize, aligned: bool, pinned: bool, pageLocked: bool) -> PinnedIoBufferFact {
+    return PinnedIoBufferFact {
+      address: address,
+      bytes: bytes,
+      aligned: aligned,
+      pinned: pinned,
+      pageLocked: pageLocked,
+    }
+  }
+
+  pub fn accepted(self: PinnedIoBufferFact) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.aligned && self.pinned && self.pageLocked
+  }
+}

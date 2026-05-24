@@ -1,0 +1,15 @@
+pub struct TaskFacts {
+  node: u64,
+  spawnCount: usize,
+  joinsAllChildren: bool,
+}
+
+pub fn taskFacts(node: u64, spawnCount: usize, joinsAllChildren: bool) -> TaskFacts {
+  return TaskFacts { node: node, spawnCount: spawnCount, joinsAllChildren: joinsAllChildren }
+}
+
+impl TaskFacts {
+  pub fn structured(self: TaskFacts) -> bool {
+    return self.joinsAllChildren
+  }
+}

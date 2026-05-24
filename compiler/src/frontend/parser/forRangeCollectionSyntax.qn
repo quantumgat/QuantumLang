@@ -1,0 +1,35 @@
+pub enum ForRangeCollectionSyntaxKind {
+  ExclusiveRange
+  InclusiveRange
+  OpenEndedRange
+  ArrayLiteral
+  FixedArrayLocal
+  BytesView
+  VecLocal
+  SliceLocal
+  MapCursor
+  SetCursor
+}
+
+pub struct ForRangeCollectionSyntax {
+  kind: ForRangeCollectionSyntaxKind,
+  forTokenReady: bool,
+  patternParsed: bool,
+  inTokenReady: bool,
+  iterableParsed: bool,
+  bodyParsed: bool,
+  sourceRangeReady: bool,
+  recoveryReady: bool,
+}
+
+impl ForRangeCollectionSyntax {
+  pub fn parsed(self: ForRangeCollectionSyntax) -> bool {
+    return self.forTokenReady
+      && self.patternParsed
+      && self.inTokenReady
+      && self.iterableParsed
+      && self.bodyParsed
+      && self.sourceRangeReady
+      && self.recoveryReady
+  }
+}

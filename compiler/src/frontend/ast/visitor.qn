@@ -1,0 +1,6 @@
+pub trait AstVisitor {
+  fn visitNode(self, node: AstNode) -> ()
+  fn visitItem(self, item: Item) -> ()
+  fn visitStmt(self, stmt: Stmt) -> ()
+  fn visitExpr(self, expr: Expr) -> ()
+}

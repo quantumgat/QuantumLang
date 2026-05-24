@@ -1,0 +1,22 @@
+pub enum NativeCallableFlowLoweringKind {
+  DirectInlineCall
+  StackEnvironmentCall
+  AsyncPollCallable
+  CallableObjectDispatch
+  MethodReferenceDirectCall
+}
+
+pub struct NativeCallableFlowLowering {
+  kind: NativeCallableFlowLoweringKind,
+  mirOp: MirCallableFlowOp,
+  noHeapAllocation: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeCallableFlowLowering {
+  pub fn complete(self: NativeCallableFlowLowering) -> bool {
+    return self.mirOp.hotLowerable()
+      && self.noHeapAllocation
+      && self.noGeneratedFallback
+  }
+}

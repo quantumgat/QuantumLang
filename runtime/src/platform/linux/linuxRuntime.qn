@@ -1,0 +1,12 @@
+pub struct LinuxRuntime {
+  target: string,
+  epoll: bool,
+  procfs: bool,
+  ioUringOptional: bool,
+}
+
+impl LinuxRuntime {
+  pub fn accepted(self: LinuxRuntime) -> bool {
+    return self.target != "" && self.epoll
+  }
+}

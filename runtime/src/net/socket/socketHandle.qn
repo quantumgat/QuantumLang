@@ -1,0 +1,34 @@
+pub struct RuntimeSocketHandle {
+  raw: u64,
+  generation: u64,
+  open: bool,
+  ownerShard: usize,
+}
+
+pub enum RuntimeSocketCloseState {
+  Open
+  HalfClosedRead
+  HalfClosedWrite
+  Closed
+  Stale
+}
+
+impl RuntimeSocketHandle {
+  pub fn valid(self: RuntimeSocketHandle) -> bool {
+    return self.raw > 0 && self.generation > 0 && self.open
+  }
+
+  pub fn ownedBy(self: RuntimeSocketHandle, shard: usize) -> bool {
+    return self.valid() && self.ownerShard == shard
+  }
+
+  pub fn closeState(self: RuntimeSocketHandle) -> RuntimeSocketCloseState {
+    if self.valid() {
+      return RuntimeSocketCloseState.Open
+    }
+    if self.generation > 0 {
+      return RuntimeSocketCloseState.Closed
+    }
+    return RuntimeSocketCloseState.Stale
+  }
+}

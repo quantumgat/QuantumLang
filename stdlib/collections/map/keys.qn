@@ -1,0 +1,9 @@
+pub struct Keys<K> {
+  mapLength: usize,
+}
+
+impl<K> Keys<K> {
+  pub fn len(self: Keys<K>) -> usize {
+    return self.mapLength
+  }
+}

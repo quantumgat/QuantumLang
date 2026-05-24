@@ -1,0 +1,46 @@
+pub struct MirParallelLoopExecutablePerfOp {
+  op: MirParallelLoopOp,
+  workerFanout: bool,
+  batchShard: bool,
+  atomicStopFlag: bool,
+  firstResultSlot: bool,
+  cleanupOnBreak: bool,
+  directRuntimeCall: string,
+  allocationBudgetBytes: usize,
+}
+
+pub fn mirParallelLoopExecutablePerfOp(
+  op: MirParallelLoopOp,
+  workerFanout: bool,
+  batchShard: bool,
+  atomicStopFlag: bool,
+  firstResultSlot: bool,
+  cleanupOnBreak: bool,
+  directRuntimeCall: string,
+  allocationBudgetBytes: usize,
+) -> MirParallelLoopExecutablePerfOp {
+  return MirParallelLoopExecutablePerfOp {
+    op: op,
+    workerFanout: workerFanout,
+    batchShard: batchShard,
+    atomicStopFlag: atomicStopFlag,
+    firstResultSlot: firstResultSlot,
+    cleanupOnBreak: cleanupOnBreak,
+    directRuntimeCall: directRuntimeCall,
+    allocationBudgetBytes: allocationBudgetBytes,
+  }
+}
+
+impl MirParallelLoopExecutablePerfOp {
+  pub fn lowerable(self: MirParallelLoopExecutablePerfOp) -> bool {
+    return self.op.lowerable()
+      && self.workerFanout
+      && self.batchShard
+      && self.atomicStopFlag
+      && self.firstResultSlot
+      && self.cleanupOnBreak
+      && self.directRuntimeCall == "QnParallelForRange"
+      && self.allocationBudgetBytes == 0
+  }
+}
+

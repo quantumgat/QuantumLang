@@ -1,0 +1,21 @@
+pub struct RuntimeCachePlacement {
+  address: usize,
+  cacheLineBytes: usize,
+  padded: bool,
+  falseSharingRisk: bool,
+}
+
+impl RuntimeCachePlacement {
+  pub fn init(address: usize, cacheLineBytes: usize, padded: bool, falseSharingRisk: bool) -> RuntimeCachePlacement {
+    return RuntimeCachePlacement {
+      address: address,
+      cacheLineBytes: cacheLineBytes,
+      padded: padded,
+      falseSharingRisk: falseSharingRisk,
+    }
+  }
+
+  pub fn accepted(self: RuntimeCachePlacement) -> bool {
+    return self.cacheLineBytes > 0 && (self.falseSharingRisk == false || self.padded)
+  }
+}

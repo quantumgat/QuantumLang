@@ -1,0 +1,4 @@
+pub trait ObjectWriter {
+  fn formatName(self) -> string
+  fn writesDeterministicObject(self) -> bool
+}

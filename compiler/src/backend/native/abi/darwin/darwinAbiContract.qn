@@ -1,0 +1,12 @@
+pub struct DarwinAbiContract {
+  target: string,
+  machoRequired: bool,
+  compactUnwindRequired: bool,
+  objcInteropAllowed: bool,
+}
+
+impl DarwinAbiContract {
+  pub fn accepted(self: DarwinAbiContract) -> bool {
+    return self.target != "" && self.machoRequired && self.compactUnwindRequired
+  }
+}

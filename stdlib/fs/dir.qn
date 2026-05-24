@@ -1,0 +1,18 @@
+pub struct DirEntry {
+  path: PathBuf,
+  info: FileInfo,
+}
+
+pub fn exists(path: PathBuf) -> bool
+pub fn tryExists(path: PathBuf) -> FsResult<bool>
+pub fn createDir(path: PathBuf) -> FsResult<Unit>
+pub fn createDirAll(path: PathBuf) -> FsResult<Unit>
+pub fn remove(path: PathBuf) -> FsResult<Unit>
+pub fn remove(path: PathBuf, options: RemoveOptions) -> FsResult<Unit>
+pub fn removeFile(path: PathBuf) -> FsResult<Unit>
+pub fn removeDir(path: PathBuf) -> FsResult<Unit>
+pub fn removeDirAll(path: PathBuf) -> FsResult<Unit>
+pub fn rename(from: PathBuf, to: PathBuf) -> FsResult<Unit>
+pub fn list(path: PathBuf) -> FsResult<Vec<DirEntry>>
+pub fn walk(path: PathBuf) -> FsResult<Vec<DirEntry>>
+pub fn canonical(path: PathBuf) -> FsResult<PathBuf>

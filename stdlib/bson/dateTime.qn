@@ -1,0 +1,15 @@
+pub struct BsonDateTime {
+  millisecondsSinceUnixEpoch: i64,
+}
+
+impl BsonDateTime {
+  pub fn fromUnixMillis(value: i64) -> BsonDateTime {
+    return BsonDateTime {
+      millisecondsSinceUnixEpoch: value,
+    }
+  }
+
+  pub fn unixMillis(self: BsonDateTime) -> i64 {
+    return self.millisecondsSinceUnixEpoch
+  }
+}

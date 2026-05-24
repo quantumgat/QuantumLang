@@ -1,0 +1,381 @@
+pub enum BsonExactEncoding {
+  DecimalString
+  BinaryBigEndian
+  TypeTaggedDocument
+}
+
+pub enum BsonExactTypeKind {
+  Primitive
+  Struct
+  Array
+  Map
+  Option
+  Result
+  Tuple
+  Enum
+  LiveResource
+}
+
+pub enum BsonExactCarrierKind {
+  Text
+  Binary
+  Document
+  Array
+  Null
+  BsonNative
+}
+
+pub enum BsonExactResourceKind {
+  Ptr
+  RawPtr
+  NonNull
+  Ref
+  MutRef
+  File
+  Socket
+  Task
+  Channel
+  Actor
+  Qubit
+  QReg
+  Function
+  Closure
+  RuntimeHandle
+}
+
+pub struct BsonExactTypeTag {
+  typeName: string,
+  kind: BsonExactTypeKind,
+  carrier: BsonExactCarrierKind,
+  schemaHash: u64,
+  version: u32,
+}
+
+pub struct BsonExactField {
+  name: string,
+  typeName: string,
+  required: bool,
+  stableIndex: usize,
+}
+
+pub struct BsonExactSchema {
+  tag: BsonExactTypeTag,
+  fields: Vec<BsonExactField>,
+  elementType: string,
+  keyType: string,
+  valueType: string,
+  okType: string,
+  errorType: string,
+  variants: Vec<string>,
+}
+
+pub struct BsonExactRejection {
+  resource: BsonExactResourceKind,
+  typeName: string,
+  path: string,
+  message: string,
+}
+
+pub struct BsonExactValue {
+  typeName: string,
+  text: string,
+  bytes: BinaryView,
+  encoding: BsonExactEncoding,
+}
+
+impl BsonExactTypeTag {
+  /**
+    Creates a stable exact type tag for QuantumLang-preserving BSON.
+
+    example:
+      let tag = BsonExactTypeTag.init("User", BsonExactTypeKind.Struct, BsonExactCarrierKind.Document)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn init(typeName: string, kind: BsonExactTypeKind, carrier: BsonExactCarrierKind) -> BsonExactTypeTag {
+    return BsonExactTypeTag {
+      typeName: typeName,
+      kind: kind,
+      carrier: carrier,
+      schemaHash: 0,
+      version: 1,
+    }
+  }
+
+  pub fn withHash(self: BsonExactTypeTag, schemaHash: u64) -> BsonExactTypeTag {
+    return BsonExactTypeTag {
+      typeName: self.typeName,
+      kind: self.kind,
+      carrier: self.carrier,
+      schemaHash: schemaHash,
+      version: self.version,
+    }
+  }
+
+  pub fn name(self: BsonExactTypeTag) -> string {
+    return self.typeName
+  }
+}
+
+impl BsonExactField {
+  pub fn init(name: string, typeName: string, stableIndex: usize) -> BsonExactField {
+    return BsonExactField {
+      name: name,
+      typeName: typeName,
+      required: true,
+      stableIndex: stableIndex,
+    }
+  }
+
+  pub fn optional(name: string, typeName: string, stableIndex: usize) -> BsonExactField {
+    return BsonExactField {
+      name: name,
+      typeName: typeName,
+      required: false,
+      stableIndex: stableIndex,
+    }
+  }
+}
+
+impl BsonExactSchema {
+  /**
+    Creates an exact struct schema with stable field metadata.
+
+    example:
+      let fields = Vec<BsonExactField>()
+        .push(BsonExactField.init("id", "u256", 0))
+        .push(BsonExactField.init("name", "string", 1))
+      let schema = BsonExactSchema.structSchema("User", fields)
+
+    effects: pure
+    complexity: O(field count)
+    allocation: fields vector
+    stability: public since 0.1
+  */
+  pub fn structSchema(typeName: string, fields: Vec<BsonExactField>) -> BsonExactSchema {
+    return BsonExactSchema.init(
+      BsonExactTypeTag.init(typeName, BsonExactTypeKind.Struct, BsonExactCarrierKind.Document),
+      fields,
+      "",
+      "",
+      "",
+      "",
+      "",
+      Vec<string>()
+    )
+  }
+
+  pub fn primitive(typeName: string, carrier: BsonExactCarrierKind) -> BsonExactSchema {
+    return BsonExactSchema.init(
+      BsonExactTypeTag.init(typeName, BsonExactTypeKind.Primitive, carrier),
+      Vec<BsonExactField>(),
+      "",
+      "",
+      "",
+      "",
+      "",
+      Vec<string>()
+    )
+  }
+
+  pub fn array(typeName: string, elementType: string) -> BsonExactSchema {
+    return BsonExactSchema.init(
+      BsonExactTypeTag.init(typeName, BsonExactTypeKind.Array, BsonExactCarrierKind.Array),
+      Vec<BsonExactField>(),
+      elementType,
+      "",
+      "",
+      "",
+      "",
+      Vec<string>()
+    )
+  }
+
+  pub fn map(typeName: string, keyType: string, valueType: string) -> BsonExactSchema {
+    return BsonExactSchema.init(
+      BsonExactTypeTag.init(typeName, BsonExactTypeKind.Map, BsonExactCarrierKind.Document),
+      Vec<BsonExactField>(),
+      "",
+      keyType,
+      valueType,
+      "",
+      "",
+      Vec<string>()
+    )
+  }
+
+  pub fn option(typeName: string, valueType: string) -> BsonExactSchema {
+    return BsonExactSchema.init(
+      BsonExactTypeTag.init(typeName, BsonExactTypeKind.Option, BsonExactCarrierKind.Document),
+      Vec<BsonExactField>(),
+      "",
+      "",
+      valueType,
+      "",
+      "",
+      Vec<string>()
+    )
+  }
+
+  pub fn result(typeName: string, okType: string, errorType: string) -> BsonExactSchema {
+    return BsonExactSchema.init(
+      BsonExactTypeTag.init(typeName, BsonExactTypeKind.Result, BsonExactCarrierKind.Document),
+      Vec<BsonExactField>(),
+      "",
+      "",
+      "",
+      okType,
+      errorType,
+      Vec<string>()
+    )
+  }
+
+  pub fn tuple(typeName: string, fields: Vec<BsonExactField>) -> BsonExactSchema {
+    return BsonExactSchema.init(
+      BsonExactTypeTag.init(typeName, BsonExactTypeKind.Tuple, BsonExactCarrierKind.Array),
+      fields,
+      "",
+      "",
+      "",
+      "",
+      "",
+      Vec<string>()
+    )
+  }
+
+  pub fn enumSchema(typeName: string, variants: Vec<string>) -> BsonExactSchema {
+    return BsonExactSchema.init(
+      BsonExactTypeTag.init(typeName, BsonExactTypeKind.Enum, BsonExactCarrierKind.Document),
+      Vec<BsonExactField>(),
+      "",
+      "",
+      "",
+      "",
+      "",
+      variants
+    )
+  }
+
+  pub fn tag(self: BsonExactSchema) -> BsonExactTypeTag {
+    return self.tag
+  }
+
+  pub fn typeName(self: BsonExactSchema) -> string {
+    return self.tag.typeName
+  }
+
+  pub fn fieldCount(self: BsonExactSchema) -> usize {
+    return self.fields.len
+  }
+
+  pub fn init(
+    tag: BsonExactTypeTag,
+    fields: Vec<BsonExactField>,
+    elementType: string,
+    keyType: string,
+    valueType: string,
+    okType: string,
+    errorType: string,
+    variants: Vec<string>,
+  ) -> BsonExactSchema {
+    return BsonExactSchema {
+      tag: tag,
+      fields: fields,
+      elementType: elementType,
+      keyType: keyType,
+      valueType: valueType,
+      okType: okType,
+      errorType: errorType,
+      variants: variants,
+    }
+  }
+}
+
+impl BsonExactRejection {
+  pub fn liveResource(resource: BsonExactResourceKind, typeName: string, path: string) -> BsonExactRejection {
+    return BsonExactRejection {
+      resource: resource,
+      typeName: typeName,
+      path: path,
+      message: "live resource cannot be encoded by exact BSON",
+    }
+  }
+
+  pub fn error(self: BsonExactRejection) -> BsonError {
+    return BsonError.liveResource(self.path, self.typeName)
+  }
+}
+
+impl BsonExactValue {
+  /**
+    Creates an exact text carrier with the original QuantumLang type name.
+
+    example:
+      let value = BsonExactValue.string("u256", amountText)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn string(typeName: string, text: string) -> BsonExactValue {
+    return BsonExactValue {
+      typeName: typeName,
+      text: text,
+      bytes: bsonExactEmptyBinaryView(),
+      encoding: BsonExactEncoding.DecimalString,
+    }
+  }
+
+  pub fn binary(typeName: string, bytes: BinaryView) -> BsonExactValue {
+    return BsonExactValue {
+      typeName: typeName,
+      text: "",
+      bytes: bytes,
+      encoding: BsonExactEncoding.BinaryBigEndian,
+    }
+  }
+
+  pub fn tagged(typeName: string, bytes: BinaryView) -> BsonExactValue {
+    return BsonExactValue {
+      typeName: typeName,
+      text: "",
+      bytes: bytes,
+      encoding: BsonExactEncoding.TypeTaggedDocument,
+    }
+  }
+
+  pub fn taggedSchema(schema: BsonExactSchema, bytes: BinaryView) -> BsonExactValue {
+    return BsonExactValue {
+      typeName: schema.typeName(),
+      text: "",
+      bytes: bytes,
+      encoding: BsonExactEncoding.TypeTaggedDocument,
+    }
+  }
+
+  pub fn name(self: BsonExactValue) -> string {
+    return self.typeName
+  }
+
+  pub fn typeName(self: BsonExactValue) -> string {
+    return self.typeName
+  }
+
+  pub fn decimalText(self: BsonExactValue) -> string {
+    return self.text
+  }
+
+  pub fn binaryBytes(self: BsonExactValue) -> BinaryView {
+    return self.bytes
+  }
+
+  pub fn carrier(self: BsonExactValue) -> BsonExactEncoding {
+    return self.encoding
+  }
+}
+
+fn bsonExactEmptyBinaryView() -> BinaryView

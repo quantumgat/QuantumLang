@@ -1,0 +1,42 @@
+pub enum BuilderInitializationState {
+  Empty
+  Partial
+  Complete
+  Invalid
+}
+
+pub struct BuilderInitializationStateFact {
+  builderId: u64,
+  ownerTypeId: u64,
+  state: BuilderInitializationState,
+  initializedCount: usize,
+  requiredCount: usize,
+}
+
+pub fn builderInitializationStateFact(
+  builderId: u64,
+  ownerTypeId: u64,
+  state: BuilderInitializationState,
+  initializedCount: usize,
+  requiredCount: usize,
+) -> BuilderInitializationStateFact {
+  return BuilderInitializationStateFact {
+    builderId: builderId,
+    ownerTypeId: ownerTypeId,
+    state: state,
+    initializedCount: initializedCount,
+    requiredCount: requiredCount,
+  }
+}
+
+impl BuilderInitializationStateFact {
+  pub fn complete(self: BuilderInitializationStateFact) -> bool {
+    return self.state == BuilderInitializationState.Complete
+      && self.initializedCount == self.requiredCount
+  }
+
+  pub fn partial(self: BuilderInitializationStateFact) -> bool {
+    return self.state == BuilderInitializationState.Partial
+      || self.initializedCount < self.requiredCount
+  }
+}

@@ -1,0 +1,40 @@
+pub enum OverloadDiagnosticKind {
+  None
+  Ambiguous
+  ReturnTypeOnly
+  ImpureDefault
+  BreakingLabelRename
+}
+
+pub struct OverloadArgumentFact {
+  overloadSetId: u64,
+  functionId: u64,
+  candidateCount: usize,
+  labelCount: usize,
+  defaultArgumentCount: usize,
+  diagnosticKind: OverloadDiagnosticKind,
+}
+
+pub fn overloadArgumentFact(
+  overloadSetId: u64,
+  functionId: u64,
+  candidateCount: usize,
+  labelCount: usize,
+  defaultArgumentCount: usize,
+  diagnosticKind: OverloadDiagnosticKind,
+) -> OverloadArgumentFact {
+  return OverloadArgumentFact {
+    overloadSetId: overloadSetId,
+    functionId: functionId,
+    candidateCount: candidateCount,
+    labelCount: labelCount,
+    defaultArgumentCount: defaultArgumentCount,
+    diagnosticKind: diagnosticKind,
+  }
+}
+
+impl OverloadArgumentFact {
+  pub fn accepted(self: OverloadArgumentFact) -> bool {
+    return self.diagnosticKind == OverloadDiagnosticKind.None
+  }
+}

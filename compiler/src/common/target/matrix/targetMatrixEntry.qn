@@ -1,0 +1,13 @@
+pub struct TargetMatrixEntry {
+  triple: string,
+  profile: string,
+  nativeSupported: bool,
+  runtimeSupported: bool,
+  diagnosticCode: string,
+}
+
+impl TargetMatrixEntry {
+  pub fn accepted(self: TargetMatrixEntry) -> bool {
+    return self.triple != "" && self.profile != "" && self.diagnosticCode != ""
+  }
+}

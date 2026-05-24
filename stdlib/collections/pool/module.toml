@@ -1,0 +1,6 @@
+[module]
+name = "collections.pool"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "pool"

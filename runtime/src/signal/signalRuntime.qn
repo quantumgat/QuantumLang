@@ -1,0 +1,81 @@
+pub enum RuntimeSignalAction {
+  Default
+  Ignore
+  Handler
+  Shutdown
+  Reload
+}
+
+pub struct RuntimeSignal {
+  number: i32,
+  portable: bool,
+}
+
+pub struct RuntimeSignalSet {
+  count: usize,
+  portableOnly: bool,
+  boundedWait: bool,
+}
+
+pub struct RuntimeSignalSubscription {
+  signal: RuntimeSignal,
+  action: RuntimeSignalAction,
+  restoreRequired: bool,
+  installed: bool,
+}
+
+pub struct RuntimeShutdownSignal {
+  signal: RuntimeSignal,
+  cancellationWake: bool,
+  graceful: bool,
+}
+
+pub struct RuntimeSignalRegistry {
+  installed: usize,
+  maxHandlers: usize,
+  wakeSafe: bool,
+  noCoredump: bool,
+  subscriptionRestore: bool,
+  shutdownWake: bool,
+}
+
+impl RuntimeSignal {
+  pub fn valid(self: RuntimeSignal) -> bool {
+    return self.number > 0 && self.portable
+  }
+}
+
+impl RuntimeSignalRegistry {
+  pub fn canInstall(self: RuntimeSignalRegistry) -> bool {
+    return self.installed < self.maxHandlers
+  }
+
+  pub fn safe(self: RuntimeSignalRegistry) -> bool {
+    return self.wakeSafe
+      && self.noCoredump
+      && self.subscriptionRestore
+      && self.shutdownWake
+  }
+}
+
+impl RuntimeSignalSet {
+  pub fn waitSafe(self: RuntimeSignalSet) -> bool {
+    return self.count > 0 && self.portableOnly && self.boundedWait
+  }
+}
+
+impl RuntimeSignalSubscription {
+  pub fn active(self: RuntimeSignalSubscription) -> bool {
+    return self.installed && self.signal.valid()
+  }
+
+  pub fn restoreSafe(self: RuntimeSignalSubscription) -> bool {
+    return self.restoreRequired && self.active()
+  }
+}
+
+impl RuntimeShutdownSignal {
+  pub fn safe(self: RuntimeShutdownSignal) -> bool {
+    return self.signal.valid() && self.cancellationWake && self.graceful
+  }
+}

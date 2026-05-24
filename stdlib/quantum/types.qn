@@ -1,0 +1,14 @@
+pub struct QubitRef {
+  value: qubit,
+}
+
+pub struct QResultRef {
+  value: qresult,
+}
+
+pub fn allocateQubit() -> qubit
+pub fn allocateRegister<N>() -> qreg<N>
+pub fn releaseQubit(target: qubit) -> Unit
+pub fn toBit(value: qresult) -> bit
+pub fn bitsLen<N>(value: bits<N>) -> usize
+pub fn callQuantum(fnValue: qfunc) -> Unit

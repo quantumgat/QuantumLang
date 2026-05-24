@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct CancellationScopeRuntime {
+  scopeId: u64
+  parentTokenId: u64
+  childCount: usize
+  cleanupRegistered: bool
+  open: bool
+}

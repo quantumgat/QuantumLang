@@ -1,0 +1,29 @@
+pub enum ObjectSymbolBinding {
+  LocalSymbol
+  GlobalSymbol
+  WeakSymbol
+}
+
+pub struct ObjectSymbol {
+  name: string,
+  section: string,
+  binding: ObjectSymbolBinding,
+}
+
+pub fn objectSymbol(name: string, section: string, binding: ObjectSymbolBinding) -> ObjectSymbol {
+  return ObjectSymbol { name: name, section: section, binding: binding }
+}
+
+impl ObjectSymbol {
+  pub fn symbolName(self: ObjectSymbol) -> string {
+    return self.name
+  }
+
+  pub fn sectionName(self: ObjectSymbol) -> string {
+    return self.section
+  }
+
+  pub fn symbolBinding(self: ObjectSymbol) -> ObjectSymbolBinding {
+    return self.binding
+  }
+}

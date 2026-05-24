@@ -1,0 +1,60 @@
+pub enum CallableClassFamilyKind {
+  InlineClosure
+  CapturingClosure
+  AsyncClosure
+  CallableObject
+  MethodReference
+  HotCallback
+}
+
+pub struct CallableClassFamilyFact {
+  ownerId: u64,
+  kind: CallableClassFamilyKind,
+  signatureChecked: bool,
+  captureModelChecked: bool,
+  receiverModelChecked: bool,
+  allocationFreeWhenHot: bool,
+  dispatchProofBound: bool,
+  sourceMapBound: bool,
+  safeFailureBound: bool,
+}
+
+pub fn callableClassFamilyFact(
+  ownerId: u64,
+  kind: CallableClassFamilyKind,
+  signatureChecked: bool,
+  captureModelChecked: bool,
+  receiverModelChecked: bool,
+  allocationFreeWhenHot: bool,
+  dispatchProofBound: bool,
+  sourceMapBound: bool,
+  safeFailureBound: bool,
+) -> CallableClassFamilyFact {
+  return CallableClassFamilyFact {
+    ownerId: ownerId,
+    kind: kind,
+    signatureChecked: signatureChecked,
+    captureModelChecked: captureModelChecked,
+    receiverModelChecked: receiverModelChecked,
+    allocationFreeWhenHot: allocationFreeWhenHot,
+    dispatchProofBound: dispatchProofBound,
+    sourceMapBound: sourceMapBound,
+    safeFailureBound: safeFailureBound,
+  }
+}
+
+impl CallableClassFamilyFact {
+  pub fn complete(self: CallableClassFamilyFact) -> bool {
+    return self.ownerId > 0
+      && self.signatureChecked
+      && self.captureModelChecked
+      && self.receiverModelChecked
+      && self.dispatchProofBound
+      && self.sourceMapBound
+      && self.safeFailureBound
+  }
+
+  pub fn hotPathSafe(self: CallableClassFamilyFact) -> bool {
+    return self.complete() && self.allocationFreeWhenHot
+  }
+}

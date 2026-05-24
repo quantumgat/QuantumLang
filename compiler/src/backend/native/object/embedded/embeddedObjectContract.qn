@@ -1,0 +1,12 @@
+pub struct EmbeddedObjectContract {
+  target: string,
+  freestandingSections: bool,
+  vectorTableAware: bool,
+  linkerScriptRequired: bool,
+}
+
+impl EmbeddedObjectContract {
+  pub fn accepted(self: EmbeddedObjectContract) -> bool {
+    return self.target != "" && self.freestandingSections && self.linkerScriptRequired
+  }
+}

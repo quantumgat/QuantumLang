@@ -1,0 +1,21 @@
+pub struct RuntimeUnboundedChannel {
+  channelId: u64,
+  depth: usize,
+  memoryBudget: usize,
+  closed: bool,
+}
+
+impl RuntimeUnboundedChannel {
+  pub fn init(channelId: u64, depth: usize, memoryBudget: usize, closed: bool) -> RuntimeUnboundedChannel {
+    return RuntimeUnboundedChannel {
+      channelId: channelId,
+      depth: depth,
+      memoryBudget: memoryBudget,
+      closed: closed,
+    }
+  }
+
+  pub fn memorySafe(self: RuntimeUnboundedChannel) -> bool {
+    return self.memoryBudget > 0 && self.depth <= self.memoryBudget
+  }
+}

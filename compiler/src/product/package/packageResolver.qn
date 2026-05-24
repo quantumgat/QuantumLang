@@ -1,0 +1,36 @@
+pub class PackageResolver {
+  workspaceRoot: string,
+  usesManifestGraph: bool,
+  validatesVersionConstraints: bool,
+  verifiesLockfileSignatures: bool,
+  enforcesRegistryTrust: bool,
+  loadsPluginManifests: bool,
+  keepsPluginGraphDeterministic: bool,
+  mutatesCompilerFacts: bool,
+
+  pub init(workspaceRoot: string) {
+    self.workspaceRoot = workspaceRoot
+    self.usesManifestGraph = true
+    self.validatesVersionConstraints = true
+    self.verifiesLockfileSignatures = true
+    self.enforcesRegistryTrust = true
+    self.loadsPluginManifests = true
+    self.keepsPluginGraphDeterministic = true
+    self.mutatesCompilerFacts = false
+  }
+
+  pub fn resolveWorkspace(self: &PackageResolver) -> bool {
+    return self.usesManifestGraph
+      && self.validatesVersionConstraints
+      && self.verifiesLockfileSignatures
+      && self.enforcesRegistryTrust
+      && self.loadsPluginManifests
+      && self.keepsPluginGraphDeterministic
+      && self.mutatesCompilerFacts == false
+  }
+
+  pub fn resolvePluginDependency(self: &PackageResolver, dependency: PackageDependency, pluginTomlPath: string, pluginTomlText: string) -> PackagePluginManifestLoad {
+    let pluginDependency = PackagePluginDependency.fromPackageDependency(dependency, pluginTomlPath)
+    return PackagePluginManifestLoad.fromDependency(pluginDependency, pluginTomlText)
+  }
+}

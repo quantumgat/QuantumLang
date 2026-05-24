@@ -1,0 +1,35 @@
+pub struct TypeAliasDeclarationFact {
+  aliasSymbol: u64,
+  targetNode: u64,
+  genericParameterCount: usize,
+  publicVisible: bool,
+  exported: bool,
+}
+
+pub fn typeAliasDeclarationFact(
+  aliasSymbol: u64,
+  targetNode: u64,
+  genericParameterCount: usize,
+  publicVisible: bool,
+  exported: bool,
+) -> TypeAliasDeclarationFact {
+  return TypeAliasDeclarationFact {
+    aliasSymbol: aliasSymbol,
+    targetNode: targetNode,
+    genericParameterCount: genericParameterCount,
+    publicVisible: publicVisible,
+    exported: exported,
+  }
+}
+
+impl TypeAliasDeclarationFact {
+  pub fn accepted(self: TypeAliasDeclarationFact) -> bool {
+    return self.aliasSymbol > 0
+      && self.targetNode > 0
+      && (!self.exported || self.publicVisible)
+  }
+
+  pub fn generic(self: TypeAliasDeclarationFact) -> bool {
+    return self.genericParameterCount > 0
+  }
+}

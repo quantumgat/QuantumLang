@@ -1,0 +1,21 @@
+pub struct WeakPtrUpgradeFact {
+  controlBlock: u64,
+  generationMatches: bool,
+  strongLive: bool,
+  incrementsStrong: bool,
+}
+
+impl WeakPtrUpgradeFact {
+  pub fn init(controlBlock: u64, generationMatches: bool, strongLive: bool, incrementsStrong: bool) -> WeakPtrUpgradeFact {
+    return WeakPtrUpgradeFact {
+      controlBlock: controlBlock,
+      generationMatches: generationMatches,
+      strongLive: strongLive,
+      incrementsStrong: incrementsStrong,
+    }
+  }
+
+  pub fn accepted(self: WeakPtrUpgradeFact) -> bool {
+    return self.controlBlock > 0 && self.generationMatches && self.strongLive && self.incrementsStrong
+  }
+}

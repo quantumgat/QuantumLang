@@ -1,0 +1,24 @@
+pub struct HttpAcceleratedTargetGate {
+  simdParserOptional: bool,
+  scalarFallbackRequired: bool,
+  sendfileOptional: bool,
+  genericWriterFallbackRequired: bool,
+}
+
+impl HttpAcceleratedTargetGate {
+  pub fn portable() -> HttpAcceleratedTargetGate {
+    return HttpAcceleratedTargetGate {
+      simdParserOptional: true,
+      scalarFallbackRequired: true,
+      sendfileOptional: true,
+      genericWriterFallbackRequired: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedTargetGate) -> bool {
+    return self.simdParserOptional
+      && self.scalarFallbackRequired
+      && self.sendfileOptional
+      && self.genericWriterFallbackRequired
+  }
+}

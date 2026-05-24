@@ -1,0 +1,64 @@
+[report]
+name = "httpAcceleratedMeasuredReport"
+runner = "qtlc-http-accelerated-measured-v1"
+serialSafe = true
+maxParallel = 1
+allCoreDisabled = true
+timestamp = "fixture-owned"
+productSpeedClaimBlocked = true
+
+[[case]]
+name = "http-accelerated-parser-headers-measured"
+path = "parser headers"
+measured = true
+fallbackCompared = true
+allocationBudgetChecked = true
+sourceMapped = true
+
+[[case]]
+name = "http-accelerated-route-trie-measured"
+path = "route trie"
+measured = true
+fallbackCompared = true
+allocationBudgetChecked = true
+sourceMapped = true
+
+[[case]]
+name = "http-accelerated-extractor-chain-measured"
+path = "extractor chain"
+measured = true
+fallbackCompared = true
+allocationBudgetChecked = true
+sourceMapped = true
+
+[[case]]
+name = "http-accelerated-handler-thunk-measured"
+path = "handler thunk"
+measured = true
+fallbackCompared = true
+allocationBudgetChecked = true
+sourceMapped = true
+
+[[case]]
+name = "http-accelerated-response-writer-measured"
+path = "response writer"
+measured = true
+fallbackCompared = true
+allocationBudgetChecked = true
+sourceMapped = true
+
+[[case]]
+name = "http-accelerated-sendfile-path-measured"
+path = "sendfile path"
+measured = true
+fallbackCompared = true
+allocationBudgetChecked = true
+sourceMapped = true
+
+[[case]]
+name = "http-accelerated-backpressure-queue-measured"
+path = "backpressure queue"
+measured = true
+fallbackCompared = true
+allocationBudgetChecked = true
+sourceMapped = true

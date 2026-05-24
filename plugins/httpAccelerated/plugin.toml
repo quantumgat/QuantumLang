@@ -1,0 +1,99 @@
+[plugin]
+name = "httpAccelerated"
+version = "0.1.0"
+schema = 1
+edition = "2026"
+kind = "capability-pack"
+official = true
+free = true
+
+[publicBinaryPolicy]
+command = "qtlc"
+role = "official-plugin-artifacts"
+publicCompilerBinary = false
+embeddedInCompilerByDefault = false
+shippedArtifacts = ["plugin-metadata", "plugin-native-kernels"]
+consumedByQtlcBuild = true
+defaultAppOutput = "static-one-executable"
+extraRuntimeFilesInDefaultStaticMode = false
+nativeBackendOnly = true
+
+[stdlib]
+root = "stdlib"
+include = ["**/*.qn"]
+public_roots = ["http.accelerated"]
+extends = ["http"]
+docs = "docs"
+examples = "examples"
+
+[integration]
+package = "http"
+package_manifest_key = "officialPlugin"
+package_manifest_value = "httpAccelerated"
+package_optional = true
+generic_hooks_only = true
+forbidden_core_paths = [
+  "compiler/src/product/httpModel",
+  "compiler/src/backend/native/emit/http",
+  "runtime/src/http"
+]
+
+[compiler]
+types = ["HttpAccelerationPlan", "HttpPackageFactSet"]
+facts = [
+  "http.endpointGraph",
+  "http.routeGraph",
+  "http.extractorGraph",
+  "http.capabilityGraph",
+  "http.handlerThunkGraph",
+  "http.sourceMap",
+  "http.asyncTransportPlan",
+  "http.accelerated.hotPathPipeline",
+  "http.accelerated.kernelBinding"
+]
+hooks = [
+  "package-fact-lowering",
+  "intrinsic-lowering",
+  "target-specialize",
+  "native-emit-specialize"
+]
+lowering = ["hir", "mir", "native"]
+diagnostics = ["http.accelerated"]
+fallback = "required"
+source_maps = "required"
+
+[runtime]
+abi = "qtlc-plugin-runtime-v1"
+kernels = [
+  "http.parser.simd",
+  "http.route.trie",
+  "http.writer.scatterGather",
+  "http.sendfile.splice",
+  "http.backpressure.queue"
+]
+typed_failure = "required"
+no_coredump = "required"
+target_gate = "required"
+lifecycle = "required"
+
+[exports]
+modules = ["http.accelerated"]
+intrinsics = [
+  "http.accelerated.parse",
+  "http.accelerated.route",
+  "http.accelerated.extract",
+  "http.accelerated.call",
+  "http.accelerated.write",
+  "http.accelerated.sendfile"
+]
+diagnostics = ["http.accelerated"]
+
+[proof]
+positive_tests = "required"
+negative_tests = "required"
+fallback_tests = "required"
+perf_tests = "required"
+source_maps = "required"
+typed_failure = "required"
+no_coredump = "required"
+no_core_http = "required"

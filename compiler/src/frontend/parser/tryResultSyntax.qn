@@ -1,0 +1,26 @@
+pub enum TryResultSyntaxFamily {
+  Question
+  TryBlock
+  TryQuestion
+  AwaitQuestion
+  OptionFlow
+  ResultFlow
+  ErrorConversion
+  NestedControlFlow
+}
+
+pub struct TryResultSyntaxParse {
+  family: TryResultSyntaxFamily,
+  formCount: usize,
+  sourceRangeReady: bool,
+  recoveryReady: bool,
+  asyncAllowed: bool,
+}
+
+impl TryResultSyntaxParse {
+  pub fn complete(self: TryResultSyntaxParse) -> bool {
+    return self.formCount >= 9
+      && self.sourceRangeReady
+      && self.recoveryReady
+  }
+}

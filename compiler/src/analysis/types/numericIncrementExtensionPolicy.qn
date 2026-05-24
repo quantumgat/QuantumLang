@@ -1,0 +1,73 @@
+import analysis.types::{MathOperatorTypeFamily}
+
+pub enum NumericIncrementExtensionDecision {
+  DirectPrimitive
+  UseCompoundAssignment
+  Reject
+}
+
+pub struct NumericIncrementExtensionPolicy {
+  family: MathOperatorTypeFamily,
+  decision: NumericIncrementExtensionDecision,
+  runtimeKernelRequired: bool,
+  wrapperSyntaxAllowed: bool,
+  compoundAssignmentPreferred: bool,
+  mutableLvalueRequired: bool,
+  sourceMappedDiagnostic: bool,
+  noCoredump: bool,
+  reason: string,
+}
+
+impl NumericIncrementExtensionPolicy {
+  pub fn primitive(family: MathOperatorTypeFamily) -> NumericIncrementExtensionPolicy {
+    return NumericIncrementExtensionPolicy {
+      family: family,
+      decision: NumericIncrementExtensionDecision.DirectPrimitive,
+      runtimeKernelRequired: false,
+      wrapperSyntaxAllowed: false,
+      compoundAssignmentPreferred: false,
+      mutableLvalueRequired: true,
+      sourceMappedDiagnostic: true,
+      noCoredump: true,
+      reason: "prefix/postfix increment lowers to direct mutable scalar storage",
+    }
+  }
+
+  pub fn compoundAssignment(family: MathOperatorTypeFamily) -> NumericIncrementExtensionPolicy {
+    return NumericIncrementExtensionPolicy {
+      family: family,
+      decision: NumericIncrementExtensionDecision.UseCompoundAssignment,
+      runtimeKernelRequired: true,
+      wrapperSyntaxAllowed: false,
+      compoundAssignmentPreferred: true,
+      mutableLvalueRequired: true,
+      sourceMappedDiagnostic: true,
+      noCoredump: true,
+      reason: "runtime-backed numeric families must use explicit += 1 or -= 1 lowering",
+    }
+  }
+
+  pub fn rejected(family: MathOperatorTypeFamily, reason: string) -> NumericIncrementExtensionPolicy {
+    return NumericIncrementExtensionPolicy {
+      family: family,
+      decision: NumericIncrementExtensionDecision.Reject,
+      runtimeKernelRequired: false,
+      wrapperSyntaxAllowed: false,
+      compoundAssignmentPreferred: false,
+      mutableLvalueRequired: false,
+      sourceMappedDiagnostic: true,
+      noCoredump: true,
+      reason: reason,
+    }
+  }
+
+  pub fn accepted(self: NumericIncrementExtensionPolicy) -> bool {
+    return self.reason != ""
+      && self.sourceMappedDiagnostic
+      && self.noCoredump
+      && !self.wrapperSyntaxAllowed
+      && (self.decision != NumericIncrementExtensionDecision.UseCompoundAssignment
+        || (self.runtimeKernelRequired && self.compoundAssignmentPreferred && self.mutableLvalueRequired))
+  }
+}
+

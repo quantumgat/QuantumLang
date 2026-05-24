@@ -1,0 +1,16 @@
+pub enum CfgEdgeKind {
+  Fallthrough
+  Branch
+  BackEdge
+  Exceptional
+}
+
+pub struct CfgEdge {
+  fromBlock: u64,
+  toBlock: u64,
+  kind: CfgEdgeKind,
+}
+
+pub fn cfgEdge(fromBlock: u64, toBlock: u64, kind: CfgEdgeKind) -> CfgEdge {
+  return CfgEdge { fromBlock: fromBlock, toBlock: toBlock, kind: kind }
+}

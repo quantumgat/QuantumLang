@@ -1,0 +1,11 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpCtxCapabilitySlot {
+  contextType: string
+  capabilityType: string
+  slotIndex: usize
+  required: bool
+}
+pub struct HttpCtxCapabilityPlan {
+  contextType: string
+  slots: Vec<HttpCtxCapabilitySlot>
+}

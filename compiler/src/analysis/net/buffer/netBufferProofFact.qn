@@ -1,0 +1,11 @@
+pub struct NetBufferProofFact {
+  boundsProven: bool,
+  vectoredIoValidatedOnce: bool,
+  hiddenAllocationRejected: bool,
+}
+
+impl NetBufferProofFact {
+  pub fn accepted(self: NetBufferProofFact) -> bool {
+    return self.boundsProven && self.vectoredIoValidatedOnce && self.hiddenAllocationRejected
+  }
+}

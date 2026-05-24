@@ -1,0 +1,23 @@
+pub struct DynObject {
+  dataPtr: u64,
+  vtablePtr: u64,
+  typeId: u64,
+}
+
+pub fn dynObject(dataPtr: u64, vtablePtr: u64, typeId: u64) -> DynObject {
+  return DynObject { dataPtr: dataPtr, vtablePtr: vtablePtr, typeId: typeId }
+}
+
+impl DynObject {
+  pub fn dataPointer(self: DynObject) -> u64 {
+    return self.dataPtr
+  }
+
+  pub fn vtablePointer(self: DynObject) -> u64 {
+    return self.vtablePtr
+  }
+
+  pub fn hasStableIdentity(self: DynObject) -> bool {
+    return self.dataPtr > 0 && self.vtablePtr > 0 && self.typeId > 0
+  }
+}

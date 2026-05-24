@@ -1,0 +1,29 @@
+pub enum PrintSinkKind {
+  Stdout,
+  Stderr,
+  Test,
+}
+
+pub struct PrintSink {
+  kind: PrintSinkKind,
+  lineBuffered: bool,
+  flushOnNewline: bool,
+}
+
+impl PrintSink {
+  pub fn stdout() -> PrintSink {
+    return PrintSink {
+      kind: PrintSinkKind.Stdout,
+      lineBuffered: true,
+      flushOnNewline: true,
+    }
+  }
+
+  pub fn stderr() -> PrintSink {
+    return PrintSink {
+      kind: PrintSinkKind.Stderr,
+      lineBuffered: false,
+      flushOnNewline: true,
+    }
+  }
+}

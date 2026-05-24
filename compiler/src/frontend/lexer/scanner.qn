@@ -1,0 +1,63 @@
+pub struct Scanner {
+  file: u32,
+  byteLength: usize,
+  cursor: usize,
+  tokenCount: usize,
+}
+
+pub fn scanner(file: u32, byteLength: usize) -> Scanner {
+  return Scanner { file: file, byteLength: byteLength, cursor: 0, tokenCount: 0 }
+}
+
+impl Scanner {
+  pub fn fileId(self: Scanner) -> u32 {
+    return self.file
+  }
+
+  pub fn position(self: Scanner) -> usize {
+    return self.cursor
+  }
+
+  pub fn lenBytes(self: Scanner) -> usize {
+    return self.byteLength
+  }
+
+  pub fn tokensSeen(self: Scanner) -> usize {
+    return self.tokenCount
+  }
+
+  pub fn atEnd(self: Scanner) -> bool {
+    return self.cursor >= self.byteLength
+  }
+
+  pub fn advance(self: Scanner, width: usize) -> Scanner {
+    let mut next = self.cursor + width
+    if next > self.byteLength {
+      next = self.byteLength
+    }
+
+    return Scanner {
+      file: self.file,
+      byteLength: self.byteLength,
+      cursor: next,
+      tokenCount: self.tokenCount,
+    }
+  }
+
+  pub fn withToken(self: Scanner, end: usize, kind: TokenKind) -> Token {
+    return token(kind, self.file, self.cursor, end)
+  }
+
+  pub fn afterToken(self: Scanner, tokenEnd: usize) -> Scanner {
+    return Scanner {
+      file: self.file,
+      byteLength: self.byteLength,
+      cursor: tokenEnd,
+      tokenCount: self.tokenCount + 1,
+    }
+  }
+
+  pub fn endToken(self: Scanner) -> Token {
+    return token(TokenKind.End, self.file, self.cursor, self.cursor)
+  }
+}

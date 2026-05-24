@@ -1,0 +1,29 @@
+pub enum HirBinaryNamedEndianCall {
+  Encode,
+  Decode,
+}
+
+pub struct HirBinaryNamedEndianCodecLowering {
+  hirNode: u64,
+  call: HirBinaryNamedEndianCall,
+  optionLabel: string,
+  enumValue: string,
+  contextualEnumResolved: bool,
+  qualifiedEnumResolved: bool,
+  optionsRecordElided: bool,
+  typoDiagnosticsLowered: bool,
+}
+
+impl HirBinaryNamedEndianCodecLowering {
+  pub fn lowers(self: HirBinaryNamedEndianCodecLowering) -> bool {
+    return self.hirNode > 0
+      && self.optionLabel == "endian"
+      && (self.enumValue == "BinaryEndian.Big"
+        || self.enumValue == "BinaryEndian.Little")
+      && (self.contextualEnumResolved || self.qualifiedEnumResolved)
+      && self.optionsRecordElided
+      && self.typoDiagnosticsLowered
+      && (self.call == HirBinaryNamedEndianCall.Encode
+        || self.call == HirBinaryNamedEndianCall.Decode)
+  }
+}

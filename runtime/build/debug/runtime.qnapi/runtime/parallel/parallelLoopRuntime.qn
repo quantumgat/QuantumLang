@@ -1,0 +1,24 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum ParallelLoopStopKind {
+  Running
+  BreakAll
+  StopValue
+}
+pub struct ParallelLoopRuntime {
+  workers: usize
+  batch: usize
+  stopKind: ParallelLoopStopKind
+  atomicStopFlag: bool
+  firstResultWins: bool
+  cleanupComplete: bool
+}
+pub extern "qnpkg" {
+  pub fn parallelLoopRuntime(
+  workers: usize,
+  batch: usize,
+  stopKind: ParallelLoopStopKind,
+  atomicStopFlag: bool,
+  firstResultWins: bool,
+  cleanupComplete: bool,
+) -> ParallelLoopRuntime
+}

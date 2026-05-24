@@ -1,0 +1,31 @@
+pub enum ClassConstructorDeclKind {
+  Init
+  ClassNameSugar
+  ImplicitFieldConstructor
+}
+
+pub struct ClassConstructorDecl {
+  node: AstNode,
+  ownerTypeId: u64,
+  constructorId: u64,
+  kind: ClassConstructorDeclKind,
+  fieldInitCount: usize,
+  baseInitCount: usize,
+  partialCleanupRequired: bool,
+  directInitLoweringRequired: bool,
+  sourceMapBound: bool,
+}
+
+impl ClassConstructorDecl {
+  pub fn complete(self: ClassConstructorDecl) -> bool {
+    return self.node.nodeId() > 0
+      && self.ownerTypeId > 0
+      && self.constructorId > 0
+      && (self.kind == ClassConstructorDeclKind.Init
+        || self.kind == ClassConstructorDeclKind.ClassNameSugar
+        || self.kind == ClassConstructorDeclKind.ImplicitFieldConstructor)
+      && self.directInitLoweringRequired
+      && self.sourceMapBound
+      && (self.partialCleanupRequired || (self.fieldInitCount == 0 && self.baseInitCount == 0))
+  }
+}

@@ -1,0 +1,52 @@
+pub struct ModuleUnit {
+  id: u64,
+  path: string,
+  sourceFile: u32,
+  exported: bool,
+}
+
+pub struct ModuleEdge {
+  from: u64,
+  to: u64,
+  publicImport: bool,
+}
+
+pub fn moduleUnit(id: u64, path: string, sourceFile: u32, exported: bool) -> ModuleUnit {
+  return ModuleUnit { id: id, path: path, sourceFile: sourceFile, exported: exported }
+}
+
+pub fn moduleEdge(from: u64, to: u64, publicImport: bool) -> ModuleEdge {
+  return ModuleEdge { from: from, to: to, publicImport: publicImport }
+}
+
+impl ModuleUnit {
+  pub fn moduleId(self: ModuleUnit) -> u64 {
+    return self.id
+  }
+
+  pub fn modulePath(self: ModuleUnit) -> string {
+    return self.path
+  }
+
+  pub fn fileId(self: ModuleUnit) -> u32 {
+    return self.sourceFile
+  }
+
+  pub fn isExported(self: ModuleUnit) -> bool {
+    return self.exported
+  }
+}
+
+impl ModuleEdge {
+  pub fn source(self: ModuleEdge) -> u64 {
+    return self.from
+  }
+
+  pub fn target(self: ModuleEdge) -> u64 {
+    return self.to
+  }
+
+  pub fn isPublic(self: ModuleEdge) -> bool {
+    return self.publicImport
+  }
+}

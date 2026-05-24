@@ -1,0 +1,30 @@
+pub enum HardwareSafetyKind {
+  CheriCapability,
+  ArmMemoryTagging,
+  ArmPointerAuthentication,
+  X86MemoryProtectionKey,
+  WasmBounds,
+  SoftwareFallbackInstrumentation,
+}
+
+pub struct HardwareSafetyFeature {
+  kind: HardwareSafetyKind,
+  targetSupported: bool,
+  fallbackAvailable: bool,
+  diagnosticCode: string,
+}
+
+impl HardwareSafetyFeature {
+  pub fn init(kind: HardwareSafetyKind, targetSupported: bool, fallbackAvailable: bool, diagnosticCode: string) -> HardwareSafetyFeature {
+    return HardwareSafetyFeature {
+      kind: kind,
+      targetSupported: targetSupported,
+      fallbackAvailable: fallbackAvailable,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn usable(self: HardwareSafetyFeature) -> bool {
+    return (self.targetSupported || self.fallbackAvailable) && self.diagnosticCode != ""
+  }
+}

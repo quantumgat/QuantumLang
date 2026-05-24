@@ -1,0 +1,14 @@
+pub struct DnsQuery {
+  host: string,
+  recordType: string,
+}
+
+pub fn dnsQuery(host: string, recordType: string) -> DnsQuery {
+  return DnsQuery { host: host, recordType: recordType }
+}
+
+impl DnsQuery {
+  pub fn hostName(self: DnsQuery) -> string {
+    return self.host
+  }
+}

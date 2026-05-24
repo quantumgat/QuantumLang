@@ -1,0 +1,119 @@
+pub struct RequestContextResponseSurfaceProof {
+  requestSurface: bool,
+  typedAccess: bool,
+  helperAccess: bool,
+  responseBuilder: bool,
+  rawEscapeHatch: bool,
+  hotPathEligible: bool,
+}
+
+impl RequestContextResponseSurfaceProof {
+  pub fn complete(self: RequestContextResponseSurfaceProof) -> bool {
+    return self.requestSurface
+      && self.typedAccess
+      && self.helperAccess
+      && self.responseBuilder
+      && self.rawEscapeHatch
+      && self.hotPathEligible
+  }
+}
+
+pub struct RequestSurfaceMiddlewareData {
+  requestClass: string,
+}
+
+impl RequestSurfaceMiddlewareData {
+  pub fn init(requestClass: string) -> RequestSurfaceMiddlewareData {
+    return RequestSurfaceMiddlewareData {
+      requestClass: requestClass,
+    }
+  }
+}
+
+pub struct ProductResponse {
+  id: string,
+}
+
+impl ProductResponse {
+  pub fn init(id: string) -> ProductResponse {
+    return ProductResponse {
+      id: id,
+    }
+  }
+}
+
+pub type RequestSurfaceCtx = HttpCtx<AuthenticatedUser, TenantContext, TraceContext, RequestSurfaceMiddlewareData>
+
+pub fn responseSurfaceExample(product: ProductResponse, stream: HttpStreamBody) -> Result<HttpResponse, JsonError> {
+  let created = Response.status(.Created, product)?
+    .header("x-resource", "product")
+    .cookie(HttpCookie.init("session", "abc").path("/"))
+    .cache(Cache.noStore())
+  let empty = Response.empty(.NoContent)
+  let streamed = Response.stream(stream)
+  let download = Response.download(HttpBody.text("report"), "report.txt")
+  return created.header("x-empty-status", empty.status().code().toString())
+    .header("x-stream", streamed.status().code().toString())
+    .header("x-download", download.status().code().toString())
+}
+
+pub fn rawEscapeEndpointFact() -> EndpointFact {
+  return EndpointFact
+    .simple("product", EndpointMethod.get(), EndpointReturn.rawResponse())
+    .withParam(EndpointParam.request("request"))
+    .withParam(EndpointParam.httpCtx("ctx"))
+    .withParam(EndpointParam.response("response"))
+}
+
+pub fn requestContextResponseSurfaceProof() -> RequestContextResponseSurfaceProof {
+  let request = HttpRequest
+    .get("/products/42")
+    .withHeader("x-request-id", "r1")
+    .withBody(HttpBody.json("{\"name\":\"salam\"}"))
+  let ctx = RequestSurfaceCtx
+    .fromRequest(request)
+    .withClientIp("127.0.0.1")
+    .set<AuthenticatedUser>(AuthenticatedUser.init("u1", "salam", ["admin"]))
+    .set<TenantContext>(TenantContext.init("tenant-a", "local"))
+    .set<TraceContext>(TraceContext.init("trace-1", "span-1", true))
+    .set<RequestSurfaceMiddlewareData>(RequestSurfaceMiddlewareData.init("product"))
+
+  let id = ctx.path<ProductId>("id")?
+  let query = ctx.query<ProductQuery>()?
+  let body = ctx.body<CreateProductRequest>()?
+  let optional = ctx.optional<RequestSurfaceMiddlewareData>()
+  let rawEndpoint = rawEscapeEndpointFact()
+  let rawExtractors = ExtractorGraph
+    .empty()
+    .add(ExtractorFact.init("product.get", EndpointParam.request("request")))
+    .add(ExtractorFact.init("product.get", EndpointParam.httpCtx("ctx")))
+    .add(ExtractorFact.init("product.get", EndpointParam.response("response")))
+  let thunk = HandlerThunk.fromEndpoint(rawEndpoint, rawExtractors, CapabilityGraph.empty())
+
+  return RequestContextResponseSurfaceProof {
+    requestSurface: ctx.request().method() == HttpMethod.Get
+      && ctx.method() == HttpMethod.Get
+      && ctx.uri().path() == "/products/42"
+      && ctx.path() == "/products/42"
+      && ctx.rawQuery() == ""
+      && ctx.headers().len() == 1
+      && ctx.body().contentType() == "application/json",
+    typedAccess: typeName<ProductId>() != ""
+      && typeName<ProductQuery>() != ""
+      && typeName<CreateProductRequest>() != ""
+      && optional != None,
+    helperAccess: ctx.auth().userId() == "u1"
+      && ctx.tenant().tenantId() == "tenant-a"
+      && ctx.trace().traceId() == "trace-1"
+      && ctx.data<RequestSurfaceMiddlewareData>().requestClass == "product",
+    responseBuilder: responseSurfaceExample(ProductResponse.init("p1"), HttpStreamBody.init(1))?.status().code() == 201,
+    rawEscapeHatch: rawEndpoint.rawRequestParamCount() == 1
+      && rawEndpoint.rawContextParamCount() == 1
+      && rawEndpoint.rawResponseParamCount() == 1
+      && rawEndpoint.returnModel().rawResponse()
+      && rawExtractors.rawEscapeHatchExtractors() == 3,
+    hotPathEligible: rawEndpoint.rawEscapeHatchHotPathEligible()
+      && thunk.rawEscapeHatchCount() == 3
+      && thunk.rawEscapeHatchHotPath(),
+  }
+}

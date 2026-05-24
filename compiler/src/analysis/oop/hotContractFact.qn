@@ -1,0 +1,24 @@
+pub struct HotContractFact {
+  functionId: u64,
+  requiresHot: bool,
+  unresolvedDynamicCalls: usize,
+  hiddenAllocations: usize,
+  boxedItemLoops: usize,
+}
+
+pub fn hotContractFact(functionId: u64, requiresHot: bool, unresolvedDynamicCalls: usize, hiddenAllocations: usize, boxedItemLoops: usize) -> HotContractFact {
+  return HotContractFact {
+    functionId: functionId,
+    requiresHot: requiresHot,
+    unresolvedDynamicCalls: unresolvedDynamicCalls,
+    hiddenAllocations: hiddenAllocations,
+    boxedItemLoops: boxedItemLoops,
+  }
+}
+
+impl HotContractFact {
+  pub fn passes(self: HotContractFact) -> bool {
+    return !self.requiresHot ||
+      (self.unresolvedDynamicCalls == 0 && self.hiddenAllocations == 0 && self.boxedItemLoops == 0)
+  }
+}

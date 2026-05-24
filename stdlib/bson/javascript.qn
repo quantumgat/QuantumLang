@@ -1,0 +1,35 @@
+pub struct BsonJavaScript {
+  code: string,
+  scope: BsonDocument,
+  scoped: bool,
+}
+
+impl BsonJavaScript {
+  pub fn init(code: string) -> BsonJavaScript {
+    return BsonJavaScript {
+      code: code,
+      scope: BsonDocument.init(),
+      scoped: false,
+    }
+  }
+
+  pub fn withScope(code: string, scope: BsonDocument) -> BsonJavaScript {
+    return BsonJavaScript {
+      code: code,
+      scope: scope,
+      scoped: true,
+    }
+  }
+
+  pub fn source(self: BsonJavaScript) -> string {
+    return self.code
+  }
+
+  pub fn hasScope(self: BsonJavaScript) -> bool {
+    return self.scoped
+  }
+
+  pub fn scopeDocument(self: BsonJavaScript) -> BsonDocument {
+    return self.scope
+  }
+}

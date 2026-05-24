@@ -1,0 +1,21 @@
+pub enum HttpVersion {
+  Http10,
+  Http11,
+  Http2,
+  Http3,
+}
+
+impl HttpVersion {
+  pub fn text(self: HttpVersion) -> string {
+    match self {
+      HttpVersion.Http10 => return "HTTP/1.0"
+      HttpVersion.Http11 => return "HTTP/1.1"
+      HttpVersion.Http2 => return "HTTP/2"
+      HttpVersion.Http3 => return "HTTP/3"
+    }
+  }
+
+  pub fn keepAliveDefault(self: HttpVersion) -> bool {
+    return self != HttpVersion.Http10
+  }
+}

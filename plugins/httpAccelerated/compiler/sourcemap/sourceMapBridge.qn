@@ -1,0 +1,24 @@
+pub struct HttpAcceleratedSourceMapBridge {
+  packageSourceMaps: bool,
+  generatedRoutes: bool,
+  generatedExtractors: bool,
+  generatedHandlers: bool,
+}
+
+impl HttpAcceleratedSourceMapBridge {
+  pub fn required() -> HttpAcceleratedSourceMapBridge {
+    return HttpAcceleratedSourceMapBridge {
+      packageSourceMaps: true,
+      generatedRoutes: true,
+      generatedExtractors: true,
+      generatedHandlers: true,
+    }
+  }
+
+  pub fn complete(self: HttpAcceleratedSourceMapBridge) -> bool {
+    return self.packageSourceMaps
+      && self.generatedRoutes
+      && self.generatedExtractors
+      && self.generatedHandlers
+  }
+}

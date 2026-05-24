@@ -1,0 +1,43 @@
+pub struct DecimalStatus {
+  exact: bool,
+  rounded: bool,
+  overflow: bool,
+  underflow: bool,
+  message: string,
+}
+
+impl DecimalStatus {
+  pub fn ok() -> DecimalStatus {
+    return DecimalStatus {
+      exact: true,
+      rounded: false,
+      overflow: false,
+      underflow: false,
+      message: "",
+    }
+  }
+
+  pub fn rounded(message: string) -> DecimalStatus {
+    return DecimalStatus {
+      exact: false,
+      rounded: true,
+      overflow: false,
+      underflow: false,
+      message: message,
+    }
+  }
+
+  pub fn failed(message: string) -> DecimalStatus {
+    return DecimalStatus {
+      exact: false,
+      rounded: false,
+      overflow: false,
+      underflow: false,
+      message: message,
+    }
+  }
+
+  pub fn isOk(self: DecimalStatus) -> bool {
+    return self.exact && !self.overflow && !self.underflow
+  }
+}

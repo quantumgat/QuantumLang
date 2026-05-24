@@ -1,0 +1,10 @@
+pub enum CollectionGrowthPolicy {
+  Compact,
+  Balanced,
+  Throughput,
+}
+
+pub enum HashSecurityPolicy {
+  SecureDefault,
+  FastTrusted,
+}

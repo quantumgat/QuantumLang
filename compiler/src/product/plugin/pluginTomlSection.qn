@@ -1,0 +1,62 @@
+pub enum PluginTomlSectionKind {
+  Plugin,
+  Stdlib,
+  Exports,
+  Compiler,
+  CompilerTypes,
+  CompilerFacts,
+  CompilerLowering,
+  Runtime,
+  RuntimeKernels,
+  Proof,
+  Unknown,
+  LegacyTypes,
+  LegacyFacts,
+  LegacyLowering,
+}
+
+pub struct PluginTomlSection {
+  kind: PluginTomlSectionKind,
+  name: string,
+  line: usize,
+  keyCount: usize,
+  duplicate: bool,
+}
+
+impl PluginTomlSection {
+  pub fn known(kind: PluginTomlSectionKind, name: string, line: usize, keyCount: usize) -> PluginTomlSection {
+    return PluginTomlSection {
+      kind: kind,
+      name: name,
+      line: line,
+      keyCount: keyCount,
+      duplicate: false,
+    }
+  }
+
+  pub fn legacy(kind: PluginTomlSectionKind, name: string, line: usize) -> PluginTomlSection {
+    return PluginTomlSection {
+      kind: kind,
+      name: name,
+      line: line,
+      keyCount: 0,
+      duplicate: false,
+    }
+  }
+
+  pub fn accepted(self: PluginTomlSection) -> bool {
+    return self.kind != PluginTomlSectionKind.Unknown
+      && self.kind != PluginTomlSectionKind.LegacyTypes
+      && self.kind != PluginTomlSectionKind.LegacyFacts
+      && self.kind != PluginTomlSectionKind.LegacyLowering
+      && self.name != ""
+      && self.line > 0
+      && self.duplicate == false
+  }
+
+  pub fn legacySchema(self: PluginTomlSection) -> bool {
+    return self.kind == PluginTomlSectionKind.LegacyTypes
+      || self.kind == PluginTomlSectionKind.LegacyFacts
+      || self.kind == PluginTomlSectionKind.LegacyLowering
+  }
+}

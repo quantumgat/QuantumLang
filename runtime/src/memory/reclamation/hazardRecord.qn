@@ -1,0 +1,30 @@
+pub struct HazardRecord {
+  address: usize,
+  ownerThread: u64,
+  generation: u64,
+  protected: bool,
+}
+
+impl HazardRecord {
+  pub fn protect(address: usize, ownerThread: u64, generation: u64) -> HazardRecord {
+    return HazardRecord {
+      address: address,
+      ownerThread: ownerThread,
+      generation: generation,
+      protected: true,
+    }
+  }
+
+  pub fn release(self: HazardRecord) -> HazardRecord {
+    return HazardRecord {
+      address: self.address,
+      ownerThread: self.ownerThread,
+      generation: self.generation,
+      protected: false,
+    }
+  }
+
+  pub fn protects(self: HazardRecord, address: usize, generation: u64) -> bool {
+    return self.protected && self.address == address && self.generation == generation
+  }
+}

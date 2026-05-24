@@ -1,0 +1,33 @@
+pub struct PluginLoadedKernel {
+  library: PluginDynamicLibrary,
+  signature: PluginKernelSignature,
+  targetGate: PluginKernelTargetGate,
+  boundary: PluginKernelBoundary,
+  lifecycle: PluginKernelLifecycle,
+  generation: u64,
+  handleChecked: bool,
+}
+
+impl PluginLoadedKernel {
+  pub fn fromLibrary(library: PluginDynamicLibrary, symbol: string) -> PluginLoadedKernel {
+    return PluginLoadedKernel {
+      library: library,
+      signature: PluginKernelSignature.declared(symbol, "input", "output", 0),
+      targetGate: PluginKernelTargetGate.checked(true, true),
+      boundary: PluginKernelBoundary.isolated(),
+      lifecycle: PluginKernelLifecycle.active(),
+      generation: 1,
+      handleChecked: true,
+    }
+  }
+
+  pub fn accepted(self: PluginLoadedKernel) -> bool {
+    return self.library.accepted()
+      && self.signature.accepted()
+      && self.targetGate.accepted()
+      && self.boundary.accepted()
+      && self.lifecycle.accepted()
+      && self.generation > 0
+      && self.handleChecked
+  }
+}

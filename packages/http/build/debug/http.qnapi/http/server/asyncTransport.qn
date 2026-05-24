@@ -1,0 +1,62 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum HttpTransportEventKind {
+  Accept
+  Read
+  Parse
+  Dispatch
+  Write
+  Disconnect
+  Timeout
+  Cancel
+}
+pub enum HttpBackpressurePolicy {
+  Adaptive
+  Wait
+  FailFast
+  Shed
+  CloseSlowClient
+}
+pub struct HttpAsyncTransportPlan {
+  workers: usize
+  reactorShards: usize
+  perCore: bool
+  backpressure: HttpBackpressurePolicy
+  cancellationSafe: bool
+  noBlockingRequestThreads: bool
+  genericRuntimeTransport: bool
+  pluginConsumableFacts: bool
+}
+pub struct HttpRuntimeReactorBinding {
+  shardCount: usize
+  perCoreSharding: bool
+  schedulerWorkers: usize
+  packageOwnedProtocol: bool
+}
+pub struct HttpReactorShardPlan {
+  shard: usize
+  accepts: bool
+  reads: bool
+  writes: bool
+  timers: bool
+  cancellation: bool
+}
+pub struct HttpAcceptedSocketPlan {
+  asyncParser: bool
+  routeLookup: bool
+  extractorGraph: bool
+  handlerThunk: bool
+  noDedicatedThread: bool
+}
+pub struct HttpResponseWritePlan {
+  asyncWrite: bool
+  writeQueueBackpressure: bool
+  zeroCopyEligible: bool
+  disconnectAware: bool
+}
+pub struct HttpDisconnectCleanupPlan {
+  cancellationToken: bool
+  deadline: bool
+  bufferReturn: bool
+  stateCleanup: bool
+  typedFailure: bool
+}

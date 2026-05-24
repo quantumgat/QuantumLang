@@ -1,0 +1,12 @@
+pub struct NetBackpressureFact {
+  acceptThrottle: bool,
+  readThrottle: bool,
+  writeLimit: bool,
+  overloadTyped: bool,
+}
+
+impl NetBackpressureFact {
+  pub fn accepted(self: NetBackpressureFact) -> bool {
+    return self.acceptThrottle && self.readThrottle && self.writeLimit && self.overloadTyped
+  }
+}

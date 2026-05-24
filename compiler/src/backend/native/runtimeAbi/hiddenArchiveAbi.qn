@@ -1,0 +1,27 @@
+pub struct HiddenArchiveAbi {
+  archiveName: string,
+  hidden: bool,
+  linkMetadataHash: string,
+}
+
+pub fn hiddenArchiveAbi(archiveName: string, hidden: bool, linkMetadataHash: string) -> HiddenArchiveAbi {
+  return HiddenArchiveAbi {
+    archiveName: archiveName,
+    hidden: hidden,
+    linkMetadataHash: linkMetadataHash,
+  }
+}
+
+impl HiddenArchiveAbi {
+  pub fn archive(self: HiddenArchiveAbi) -> string {
+    return self.archiveName
+  }
+
+  pub fn isHidden(self: HiddenArchiveAbi) -> bool {
+    return self.hidden
+  }
+
+  pub fn metadataHash(self: HiddenArchiveAbi) -> string {
+    return self.linkMetadataHash
+  }
+}

@@ -1,0 +1,46 @@
+pub enum QubitResourceState {
+  Allocated
+  Moved
+  Measured
+  Reset
+  Released
+}
+
+pub struct QubitResourceFact {
+  qubitId: u64,
+  state: QubitResourceState,
+  copyAllowed: bool,
+  releaseRequired: bool,
+}
+
+pub fn qubitResourceFact(
+  qubitId: u64,
+  state: QubitResourceState,
+  copyAllowed: bool,
+  releaseRequired: bool
+) -> QubitResourceFact {
+  return QubitResourceFact {
+    qubitId: qubitId,
+    state: state,
+    copyAllowed: copyAllowed,
+    releaseRequired: releaseRequired,
+  }
+}
+
+impl QubitResourceFact {
+  pub fn resourceId(self: QubitResourceFact) -> u64 {
+    return self.qubitId
+  }
+
+  pub fn resourceState(self: QubitResourceFact) -> QubitResourceState {
+    return self.state
+  }
+
+  pub fn enforcesNoCloning(self: QubitResourceFact) -> bool {
+    return self.copyAllowed == false
+  }
+
+  pub fn mustRelease(self: QubitResourceFact) -> bool {
+    return self.releaseRequired
+  }
+}

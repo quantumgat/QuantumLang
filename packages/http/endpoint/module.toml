@@ -1,0 +1,6 @@
+[module]
+name = "http.endpoint"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-endpoint"

@@ -1,0 +1,22 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum SameSite {
+  Lax,
+  Strict,
+  None,
+}
+pub struct HttpCookie {
+  name: string
+  value: string
+  domain: string
+  path: string
+  maxAgeSeconds: usize
+  expiresAt: string
+  secure: bool
+  httpOnly: bool
+  sameSite: SameSite
+  signedValue: bool
+  encryptedValue: bool
+  partitioned: bool
+}
+pub struct Cookie {
+}

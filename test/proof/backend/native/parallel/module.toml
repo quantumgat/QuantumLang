@@ -1,0 +1,6 @@
+[module]
+name = "nativeParallelProof"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-parallel-proof-evidence"

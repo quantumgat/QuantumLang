@@ -1,0 +1,24 @@
+pub struct Instant {
+  nanos: u128,
+}
+
+pub struct Duration {
+  nanos: u128,
+}
+
+pub enum TimeError {
+  Timeout
+  Cancelled
+  StaleTimer
+}
+
+pub fn now() -> Instant
+pub fn elapsed(since: Instant) -> Duration
+pub fn sleep(duration: Duration) -> Sleep
+pub fn interval(period: Duration) -> Interval
+pub fn timeout<T>(duration: Duration, work: fn() -> T) -> Result<T, TimeError>
+
+pub use timer.timer.Deadline
+pub use timer.timer.Interval
+pub use timer.timer.Sleep
+pub use timer.timer.Timeout

@@ -1,0 +1,22 @@
+pub enum CpuFeatureIncidentKind {
+  UnsupportedFeature,
+  MissingFallback,
+  GeneratedFallbackRejected,
+  RuntimeDispatchUnavailable,
+}
+
+pub struct CpuFeatureIncident {
+  kind: CpuFeatureIncidentKind,
+  feature: string,
+  recoverable: bool,
+}
+
+impl CpuFeatureIncident {
+  pub fn init(kind: CpuFeatureIncidentKind, feature: string) -> CpuFeatureIncident {
+    return CpuFeatureIncident {
+      kind: kind,
+      feature: feature,
+      recoverable: true,
+    }
+  }
+}

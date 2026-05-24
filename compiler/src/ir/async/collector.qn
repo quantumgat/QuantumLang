@@ -1,0 +1,30 @@
+pub struct AsyncCollector {
+  bodyId: u64,
+  awaitCount: usize,
+  selectCount: usize,
+  channelOpCount: usize,
+  cancellationPointCount: usize,
+}
+
+pub fn asyncCollector(bodyId: u64, awaitCount: usize, cancellationPointCount: usize) -> AsyncCollector {
+  return AsyncCollector {
+    bodyId: bodyId,
+    awaitCount: awaitCount,
+    selectCount: 0,
+    channelOpCount: 0,
+    cancellationPointCount: cancellationPointCount,
+  }
+}
+
+impl AsyncCollector {
+  pub fn needsAsyncLowering(self: AsyncCollector) -> bool {
+    return self.awaitCount > 0
+      || self.selectCount > 0
+      || self.channelOpCount > 0
+      || self.cancellationPointCount > 0
+  }
+
+  pub fn suspensionCount(self: AsyncCollector) -> usize {
+    return self.awaitCount + self.selectCount
+  }
+}

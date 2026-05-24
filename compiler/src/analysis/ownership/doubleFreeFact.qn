@@ -1,0 +1,21 @@
+pub struct DoubleFreeFact {
+  allocationId: u64,
+  firstFreeToken: u64,
+  secondFreeToken: u64,
+  rejected: bool,
+}
+
+impl DoubleFreeFact {
+  pub fn init(allocationId: u64, firstFreeToken: u64, secondFreeToken: u64) -> DoubleFreeFact {
+    return DoubleFreeFact {
+      allocationId: allocationId,
+      firstFreeToken: firstFreeToken,
+      secondFreeToken: secondFreeToken,
+      rejected: firstFreeToken == secondFreeToken,
+    }
+  }
+
+  pub fn mustReject(self: DoubleFreeFact) -> bool {
+    return self.rejected
+  }
+}

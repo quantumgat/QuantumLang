@@ -1,0 +1,130 @@
+pub enum HttpDefaultPreset {
+  None,
+  Production,
+  Api,
+  PublicWeb,
+  Internal,
+}
+
+pub struct HttpDefaultMiddlewarePolicy {
+  preset: HttpDefaultPreset,
+  responseCore: bool,
+  securityDefaults: bool,
+  requestIdAuto: bool,
+  traceAuto: bool,
+  noServerLeak: bool,
+  crashlessErrorJson: bool,
+  corsConfigured: bool,
+}
+
+pub struct Defaults {
+}
+
+impl Defaults {
+  pub fn none() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.none()
+  }
+
+  pub fn production() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.production()
+  }
+
+  pub fn api() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.api()
+  }
+
+  pub fn publicWeb() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.publicWeb()
+  }
+
+  pub fn internal() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.internal()
+  }
+}
+
+impl HttpDefaultMiddlewarePolicy {
+  pub fn none() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.init(HttpDefaultPreset.None, false, false, false, false, true, true, false)
+  }
+
+  pub fn production() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.init(HttpDefaultPreset.Production, true, true, true, true, true, true, false)
+  }
+
+  pub fn api() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.init(HttpDefaultPreset.Api, true, true, true, true, true, true, false)
+  }
+
+  pub fn publicWeb() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.init(HttpDefaultPreset.PublicWeb, true, true, true, true, true, true, true)
+  }
+
+  pub fn internal() -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy.init(HttpDefaultPreset.Internal, true, false, true, true, true, true, false)
+  }
+
+  pub fn init(
+    preset: HttpDefaultPreset,
+    responseCore: bool,
+    securityDefaults: bool,
+    requestIdAuto: bool,
+    traceAuto: bool,
+    noServerLeak: bool,
+    crashlessErrorJson: bool,
+    corsConfigured: bool,
+  ) -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy {
+      preset: preset,
+      responseCore: responseCore,
+      securityDefaults: securityDefaults,
+      requestIdAuto: requestIdAuto,
+      traceAuto: traceAuto,
+      noServerLeak: noServerLeak,
+      crashlessErrorJson: crashlessErrorJson,
+      corsConfigured: corsConfigured,
+    }
+  }
+
+  pub fn withCors(self: HttpDefaultMiddlewarePolicy, cors: CorsPolicy) -> HttpDefaultMiddlewarePolicy {
+    return HttpDefaultMiddlewarePolicy {
+      preset: self.preset,
+      responseCore: self.responseCore,
+      securityDefaults: self.securityDefaults,
+      requestIdAuto: self.requestIdAuto,
+      traceAuto: self.traceAuto,
+      noServerLeak: self.noServerLeak,
+      crashlessErrorJson: self.crashlessErrorJson,
+      corsConfigured: true,
+    }
+  }
+
+  pub fn complete(self: HttpDefaultMiddlewarePolicy) -> bool {
+    return self.noServerLeak && self.crashlessErrorJson
+  }
+
+  pub fn autoMagic(self: HttpDefaultMiddlewarePolicy) -> bool {
+    return self.responseCore
+      && self.requestIdAuto
+      && self.traceAuto
+      && self.noServerLeak
+      && self.crashlessErrorJson
+  }
+
+  pub fn securityEnabled(self: HttpDefaultMiddlewarePolicy) -> bool {
+    return self.securityDefaults
+  }
+
+  pub fn corsConfigured(self: HttpDefaultMiddlewarePolicy) -> bool {
+    return self.corsConfigured
+  }
+
+  pub fn presetName(self: HttpDefaultMiddlewarePolicy) -> string {
+    match self.preset {
+      HttpDefaultPreset.None => return "none"
+      HttpDefaultPreset.Production => return "production"
+      HttpDefaultPreset.Api => return "api"
+      HttpDefaultPreset.PublicWeb => return "public-web"
+      HttpDefaultPreset.Internal => return "internal"
+    }
+  }
+}

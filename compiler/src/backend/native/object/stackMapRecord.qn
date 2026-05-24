@@ -1,0 +1,27 @@
+pub struct StackMapRecord {
+  functionSymbol: string,
+  frameOffset: usize,
+  liveRootCount: usize,
+}
+
+pub fn stackMapRecord(functionSymbol: string, frameOffset: usize, liveRootCount: usize) -> StackMapRecord {
+  return StackMapRecord {
+    functionSymbol: functionSymbol,
+    frameOffset: frameOffset,
+    liveRootCount: liveRootCount,
+  }
+}
+
+impl StackMapRecord {
+  pub fn symbol(self: StackMapRecord) -> string {
+    return self.functionSymbol
+  }
+
+  pub fn offset(self: StackMapRecord) -> usize {
+    return self.frameOffset
+  }
+
+  pub fn roots(self: StackMapRecord) -> usize {
+    return self.liveRootCount
+  }
+}

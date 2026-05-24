@@ -1,0 +1,27 @@
+pub struct CollectionFormatPolicy {
+  option: bool,
+  result: bool,
+  tuple: bool,
+  array: bool,
+  vec: bool,
+  map: bool,
+  set: bool,
+  stableOrderedMaps: bool,
+  unorderedMapsRequireDebugPolicy: bool,
+}
+
+impl CollectionFormatPolicy {
+  pub fn complete() -> CollectionFormatPolicy {
+    return CollectionFormatPolicy {
+      option: true,
+      result: true,
+      tuple: true,
+      array: true,
+      vec: true,
+      map: true,
+      set: true,
+      stableOrderedMaps: true,
+      unorderedMapsRequireDebugPolicy: true,
+    }
+  }
+}

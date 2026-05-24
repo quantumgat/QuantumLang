@@ -1,0 +1,55 @@
+pub struct LogFields {
+  len: usize,
+  redacted: bool,
+  stableKeys: bool,
+  compactEncoded: bool,
+  inlineCapacity: usize,
+  allocationFreeCommonCase: bool,
+}
+
+pub fn fields() -> LogFields {
+  return LogFields {
+    len: 0,
+    redacted: true,
+    stableKeys: true,
+    compactEncoded: true,
+    inlineCapacity: 8,
+    allocationFreeCommonCase: true,
+  }
+}
+
+impl LogFields {
+  pub fn empty() -> LogFields {
+    return fields()
+  }
+
+  /**
+    Adds a typed field to the builder.
+
+    example:
+      let fs = fields().add(LogField.uint("user_id", id))
+
+    effects: pure
+    complexity: O(1) for inline capacity
+    allocation: none while len <= inlineCapacity
+    stability: public since 0.1
+  */
+  pub fn add(self: LogFields, field: LogField) -> LogFields {
+    return LogFields {
+      len: self.len + 1,
+      redacted: self.redacted && field.safe(),
+      stableKeys: self.stableKeys && field.stableKey,
+      compactEncoded: self.compactEncoded && field.compactEncoded,
+      inlineCapacity: self.inlineCapacity,
+      allocationFreeCommonCase: self.allocationFreeCommonCase && self.len < self.inlineCapacity,
+    }
+  }
+
+  pub fn hasInlineRoom(self: LogFields) -> bool {
+    return self.len < self.inlineCapacity
+  }
+
+  pub fn safe(self: LogFields) -> bool {
+    return self.redacted && self.stableKeys && self.compactEncoded
+  }
+}

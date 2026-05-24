@@ -1,0 +1,58 @@
+import analysis.types::{MathDiagnosticCode}
+
+pub enum RuntimeNumericEdgeKind {
+  DivideByZero
+  BigUintUnderflow
+  FixedScaleMismatch
+  DecimalRoundingTrap
+}
+
+pub struct RuntimeNumericEdgeDiagnosticPolicy {
+  kind: RuntimeNumericEdgeKind,
+  code: MathDiagnosticCode,
+  runtimeTypedErrorRequired: bool,
+  exactSourceSpanRequired: bool,
+  safeFixitRequired: bool,
+  executableNegativeTestRequired: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeNumericEdgeDiagnosticPolicy {
+  pub fn divideByZero() -> RuntimeNumericEdgeDiagnosticPolicy {
+    return RuntimeNumericEdgeDiagnosticPolicy.init(RuntimeNumericEdgeKind.DivideByZero, MathDiagnosticCode.divideByZero())
+  }
+
+  pub fn bigUintUnderflow() -> RuntimeNumericEdgeDiagnosticPolicy {
+    return RuntimeNumericEdgeDiagnosticPolicy.init(RuntimeNumericEdgeKind.BigUintUnderflow, MathDiagnosticCode.bigUintUnderflow())
+  }
+
+  pub fn fixedScaleMismatch() -> RuntimeNumericEdgeDiagnosticPolicy {
+    return RuntimeNumericEdgeDiagnosticPolicy.init(RuntimeNumericEdgeKind.FixedScaleMismatch, MathDiagnosticCode.fixedScaleMismatch())
+  }
+
+  pub fn decimalRoundingTrap() -> RuntimeNumericEdgeDiagnosticPolicy {
+    return RuntimeNumericEdgeDiagnosticPolicy.init(RuntimeNumericEdgeKind.DecimalRoundingTrap, MathDiagnosticCode.decimalRoundingTrap())
+  }
+
+  pub fn init(kind: RuntimeNumericEdgeKind, code: MathDiagnosticCode) -> RuntimeNumericEdgeDiagnosticPolicy {
+    return RuntimeNumericEdgeDiagnosticPolicy {
+      kind: kind,
+      code: code,
+      runtimeTypedErrorRequired: true,
+      exactSourceSpanRequired: true,
+      safeFixitRequired: true,
+      executableNegativeTestRequired: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: RuntimeNumericEdgeDiagnosticPolicy) -> bool {
+    return self.code.code() != ""
+      && self.code.safeFailure()
+      && self.runtimeTypedErrorRequired
+      && self.exactSourceSpanRequired
+      && self.safeFixitRequired
+      && self.executableNegativeTestRequired
+      && self.noCoredump
+  }
+}

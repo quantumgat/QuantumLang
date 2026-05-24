@@ -1,0 +1,17 @@
+pub struct TargetVariantPolicy {
+  variant: TargetVariantId,
+  nativeBackendAllowed: bool,
+  runtimeRequired: bool,
+  crossCompileAllowed: bool,
+  qirProviderRequired: bool,
+}
+
+impl TargetVariantPolicy {
+  pub fn accepted(self: TargetVariantPolicy) -> bool {
+    return self.variant != TargetVariantId.UnknownVariant
+  }
+
+  pub fn needsRuntimeArtifact(self: TargetVariantPolicy) -> bool {
+    return self.runtimeRequired || self.qirProviderRequired
+  }
+}

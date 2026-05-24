@@ -1,0 +1,21 @@
+pub struct RuntimeStartPlan {
+  profileName: string,
+  deterministicProfile: bool,
+  sourceMapped: bool,
+  subsystemPortsReady: bool,
+}
+
+pub fn runtimeStartPlan(profileName: string) -> RuntimeStartPlan {
+  return RuntimeStartPlan {
+    profileName: profileName,
+    deterministicProfile: true,
+    sourceMapped: true,
+    subsystemPortsReady: true,
+  }
+}
+
+impl RuntimeStartPlan {
+  pub fn canStart(self: RuntimeStartPlan) -> bool {
+    return self.deterministicProfile && self.sourceMapped && self.subsystemPortsReady
+  }
+}

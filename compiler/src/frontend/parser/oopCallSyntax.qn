@@ -1,0 +1,27 @@
+pub enum OopCallSyntaxKind {
+  MethodCallSyntax
+  BaseCallSyntax
+  ConstructorCallSyntax
+}
+
+pub struct OopCallSyntax {
+  callId: u64,
+  kind: OopCallSyntaxKind,
+  receiverTypeId: u64,
+  methodNameId: u64,
+}
+
+pub fn oopCallSyntax(callId: u64, kind: OopCallSyntaxKind, receiverTypeId: u64, methodNameId: u64) -> OopCallSyntax {
+  return OopCallSyntax {
+    callId: callId,
+    kind: kind,
+    receiverTypeId: receiverTypeId,
+    methodNameId: methodNameId,
+  }
+}
+
+impl OopCallSyntax {
+  pub fn isBaseCall(self: OopCallSyntax) -> bool {
+    return self.kind == OopCallSyntaxKind.BaseCallSyntax
+  }
+}

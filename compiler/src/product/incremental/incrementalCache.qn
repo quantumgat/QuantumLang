@@ -1,0 +1,20 @@
+pub class IncrementalCache {
+  cacheRoot: string,
+  usesFingerprints: bool,
+  tracksDependencies: bool,
+
+  pub init(cacheRoot: string) {
+    self.cacheRoot = cacheRoot
+    self.usesFingerprints = true
+    self.tracksDependencies = true
+  }
+
+  pub fn invalidate(self: &mut IncrementalCache) -> bool {
+    self.tracksDependencies = true
+    return self.tracksDependencies
+  }
+
+  pub fn isEnabled(self: &IncrementalCache) -> bool {
+    return self.usesFingerprints && self.tracksDependencies
+  }
+}

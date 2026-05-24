@@ -1,0 +1,185 @@
+pub enum MatchDiagnosticKind {
+  NonExhaustive
+  UnreachableArm
+  DuplicatePattern
+  InvalidGuard
+  TypeNarrowingRequired
+  AnyRequiresExplicitType
+  QAnyClassicalMix
+  ListPatternLengthMismatch
+  BinaryPatternTooShort
+  AsyncMatchRequiresAwait
+  RangeOverlap
+  OrPatternUnreachable
+  DestructureShapeMismatch
+  TypeTestImpossible
+}
+
+pub struct MatchDiagnostic {
+  kind: MatchDiagnosticKind,
+  sourceNode: u64,
+  code: string,
+  message: string,
+  exactSourceRange: bool,
+  fixitAvailable: bool,
+  safeFailure: bool,
+}
+
+pub fn matchDiagnostic(
+  kind: MatchDiagnosticKind,
+  sourceNode: u64,
+  code: string,
+  message: string,
+  exactSourceRange: bool,
+  fixitAvailable: bool,
+  safeFailure: bool,
+) -> MatchDiagnostic {
+  return MatchDiagnostic {
+    kind: kind,
+    sourceNode: sourceNode,
+    code: code,
+    message: message,
+    exactSourceRange: exactSourceRange,
+    fixitAvailable: fixitAvailable,
+    safeFailure: safeFailure,
+  }
+}
+
+pub fn matchDiagnosticForMissingCase(sourceNode: u64, missingCaseCount: usize) -> MatchDiagnostic {
+  let mut code = "QLMATCH0001"
+  let mut message = "match is not exhaustive"
+  if missingCaseCount == 0 {
+    code = "QLMATCH0000"
+    message = "match is exhaustive"
+  }
+
+  return matchDiagnostic(
+    MatchDiagnosticKind.NonExhaustive,
+    sourceNode,
+    code,
+    message,
+    true,
+    true,
+    true
+  )
+}
+
+pub fn matchDiagnosticForUnreachableArm(sourceNode: u64, unreachableArmCount: usize) -> MatchDiagnostic {
+  let mut code = "QLMATCH0002"
+  let mut message = "match arm is unreachable"
+  if unreachableArmCount == 0 {
+    code = "QLMATCH0000"
+    message = "all match arms are reachable"
+  }
+
+  return matchDiagnostic(
+    MatchDiagnosticKind.UnreachableArm,
+    sourceNode,
+    code,
+    message,
+    true,
+    true,
+    true
+  )
+}
+
+pub fn matchDiagnosticForDuplicatePattern(sourceNode: u64, duplicatePatternCount: usize) -> MatchDiagnostic {
+  let mut code = "QLMATCH0003"
+  let mut message = "duplicate match pattern"
+  if duplicatePatternCount == 0 {
+    code = "QLMATCH0000"
+    message = "no duplicate match patterns"
+  }
+
+  return matchDiagnostic(
+    MatchDiagnosticKind.DuplicatePattern,
+    sourceNode,
+    code,
+    message,
+    true,
+    true,
+    true
+  )
+}
+
+pub fn matchDiagnosticForTypePolicy(
+  sourceNode: u64,
+  anyPolicyViolation: bool,
+  qanyClassicalMix: bool,
+) -> MatchDiagnostic {
+  if qanyClassicalMix {
+    return matchDiagnostic(
+      MatchDiagnosticKind.QAnyClassicalMix,
+      sourceNode,
+      "QLMATCH0005",
+      "qany pattern cannot be mixed with classical match arms without an explicit boundary",
+      true,
+      true,
+      true
+    )
+  }
+
+  if anyPolicyViolation {
+    return matchDiagnostic(
+      MatchDiagnosticKind.AnyRequiresExplicitType,
+      sourceNode,
+      "QLMATCH0004",
+      "any match pattern requires an explicit type",
+      true,
+      true,
+      true
+    )
+  }
+
+  return matchDiagnostic(
+    MatchDiagnosticKind.TypeNarrowingRequired,
+    sourceNode,
+    "QLMATCH0000",
+    "match type policy accepted",
+    true,
+    false,
+    true
+  )
+}
+
+pub fn matchDiagnosticForAsyncPolicy(sourceNode: u64, asyncRequiresAwait: bool) -> MatchDiagnostic {
+  if asyncRequiresAwait {
+    return matchDiagnostic(
+      MatchDiagnosticKind.AsyncMatchRequiresAwait,
+      sourceNode,
+      "QLMATCH0006",
+      "async match source requires await",
+      true,
+      true,
+      true
+    )
+  }
+
+  return matchDiagnostic(
+    MatchDiagnosticKind.AsyncMatchRequiresAwait,
+    sourceNode,
+    "QLMATCH0000",
+    "async match policy accepted",
+    true,
+    false,
+    true
+  )
+}
+
+impl MatchDiagnostic {
+  pub fn reportable(self: MatchDiagnostic) -> bool {
+    return self.sourceNode > 0
+      && self.code != ""
+      && self.message != ""
+      && self.exactSourceRange
+      && self.safeFailure
+  }
+
+  pub fn accepted(self: MatchDiagnostic) -> bool {
+    return self.code == "QLMATCH0000" && self.safeFailure
+  }
+
+  pub fn safeFailureReady(self: MatchDiagnostic) -> bool {
+    return self.safeFailure
+  }
+}

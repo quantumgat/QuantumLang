@@ -1,0 +1,15 @@
+pub struct CursorPosition {
+  row: usize,
+  col: usize,
+}
+
+pub fn cursorPosition(fd: i64) -> Result<CursorPosition, OsError>
+pub fn moveCursor(fd: i64, row: usize, col: usize) -> Result<Unit, OsError>
+pub fn hideCursor(fd: i64) -> Result<Unit, OsError>
+pub fn showCursor(fd: i64) -> Result<Unit, OsError>
+
+impl CursorPosition {
+  pub fn valid(self: CursorPosition) -> bool {
+    return self.row > 0 && self.col > 0
+  }
+}

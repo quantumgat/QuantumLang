@@ -1,0 +1,160 @@
+pub enum AstWhileLoopFormKind {
+  Condition
+  WhileLet
+  Loop
+  Break
+  BreakValue
+  Continue
+  LabeledBreak
+  LabeledContinue
+  Question
+  AwaitQuestion
+  ElseNoBreak
+  Until
+  Timeout
+  Poll
+  Qwhile
+}
+
+pub struct AstWhileLoopForm {
+  node: AstNode,
+  kind: AstWhileLoopFormKind,
+  conditionId: u64,
+  patternId: u64,
+  optionPayloadBindingId: u64,
+  optionScrutineeId: u64,
+  awaitQuestionExprId: u64,
+  deadlineExprId: u64,
+  pollSourceId: u64,
+  cancellationTokenId: u64,
+  quantumRegionId: u64,
+  qwhileProfileId: u64,
+  qwhileBoundExprId: u64,
+  bodyId: u64,
+  elseBodyId: u64,
+  labelId: u64,
+  hotPathCandidate: bool,
+}
+
+pub fn astWhileLoopForm(
+  node: AstNode,
+  kind: AstWhileLoopFormKind,
+  conditionId: u64,
+  patternId: u64,
+  optionPayloadBindingId: u64,
+  optionScrutineeId: u64,
+  awaitQuestionExprId: u64,
+  deadlineExprId: u64,
+  pollSourceId: u64,
+  cancellationTokenId: u64,
+  quantumRegionId: u64,
+  qwhileProfileId: u64,
+  qwhileBoundExprId: u64,
+  bodyId: u64,
+  elseBodyId: u64,
+  labelId: u64,
+  hotPathCandidate: bool,
+) -> AstWhileLoopForm {
+  return AstWhileLoopForm {
+    node: node,
+    kind: kind,
+    conditionId: conditionId,
+    patternId: patternId,
+    optionPayloadBindingId: optionPayloadBindingId,
+    optionScrutineeId: optionScrutineeId,
+    awaitQuestionExprId: awaitQuestionExprId,
+    deadlineExprId: deadlineExprId,
+    pollSourceId: pollSourceId,
+    cancellationTokenId: cancellationTokenId,
+    quantumRegionId: quantumRegionId,
+    qwhileProfileId: qwhileProfileId,
+    qwhileBoundExprId: qwhileBoundExprId,
+    bodyId: bodyId,
+    elseBodyId: elseBodyId,
+    labelId: labelId,
+    hotPathCandidate: hotPathCandidate,
+  }
+}
+
+pub fn buildAstWhileLoopForm(
+  node: AstNode,
+  kind: AstWhileLoopFormKind,
+  conditionId: u64,
+  bodyId: u64,
+  hotPathCandidate: bool,
+) -> AstWhileLoopForm {
+  return astWhileLoopForm(
+    node,
+    kind,
+    conditionId,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    bodyId,
+    0,
+    0,
+    hotPathCandidate
+  )
+}
+
+impl AstWhileLoopForm {
+  pub fn nodeId(self: AstWhileLoopForm) -> u64 {
+    return self.node.nodeId()
+  }
+
+  pub fn formKind(self: AstWhileLoopForm) -> AstWhileLoopFormKind {
+    return self.kind
+  }
+
+  pub fn complete(self: AstWhileLoopForm) -> bool {
+    return self.node.nodeId() > 0 && self.bodyId > 0
+  }
+
+  pub fn hasCondition(self: AstWhileLoopForm) -> bool {
+    return self.conditionId > 0 || self.patternId > 0
+  }
+
+  pub fn optionPayloadReady(self: AstWhileLoopForm) -> bool {
+    return self.kind == AstWhileLoopFormKind.WhileLet
+      && self.patternId > 0
+      && self.optionPayloadBindingId > 0
+      && self.optionScrutineeId > 0
+      && self.bodyId > 0
+  }
+
+  pub fn hasLabel(self: AstWhileLoopForm) -> bool {
+    return self.labelId > 0
+  }
+
+  pub fn isAsyncPollTimeout(self: AstWhileLoopForm) -> bool {
+    return self.kind == AstWhileLoopFormKind.AwaitQuestion
+      || self.kind == AstWhileLoopFormKind.Timeout
+      || self.kind == AstWhileLoopFormKind.Poll
+  }
+
+  pub fn asyncPollTimeoutReady(self: AstWhileLoopForm) -> bool {
+    return self.bodyId > 0
+      && self.hotPathCandidate
+      && self.isAsyncPollTimeout()
+      && self.awaitQuestionExprId > 0
+      && self.deadlineExprId > 0
+      && self.pollSourceId > 0
+      && self.cancellationTokenId > 0
+  }
+
+  pub fn qwhileReady(self: AstWhileLoopForm) -> bool {
+    return self.kind == AstWhileLoopFormKind.Qwhile
+      && self.quantumRegionId > 0
+      && self.qwhileProfileId > 0
+      && self.qwhileBoundExprId > 0
+      && self.bodyId > 0
+      && self.hotPathCandidate
+  }
+}

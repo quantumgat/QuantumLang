@@ -1,0 +1,25 @@
+pub struct UnsafePermit {
+  name: string,
+  capability: UnsafeCapabilityKind,
+  known: bool,
+  targetAllowed: bool,
+}
+
+impl UnsafePermit {
+  pub fn init(name: string, capability: UnsafeCapabilityKind, known: bool, targetAllowed: bool) -> UnsafePermit {
+    return UnsafePermit {
+      name: name,
+      capability: capability,
+      known: known,
+      targetAllowed: targetAllowed,
+    }
+  }
+
+  pub fn accepted(self: UnsafePermit) -> bool {
+    return self.known && self.name != "" && self.targetAllowed
+  }
+
+  pub fn unknown(self: UnsafePermit) -> bool {
+    return self.known == false
+  }
+}

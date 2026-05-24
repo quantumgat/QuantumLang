@@ -1,0 +1,13 @@
+[capabilities]
+schema = "self-hosted-stdlib-capabilities-v1"
+sourceOwned = true
+
+[effects]
+io = true
+blocking = true
+allocation = true
+concurrency = true
+unsafe = true
+platform = true
+qir = true
+ffi = true

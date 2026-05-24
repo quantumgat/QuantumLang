@@ -1,0 +1,29 @@
+pub struct LogCausalChain {
+  traceId: u64,
+  rootSpanId: u64,
+  currentSpanId: u64,
+  parentSpanId: u64,
+  depth: usize,
+  asyncBoundaryCount: usize,
+  cancellationMarked: bool,
+}
+
+impl LogCausalChain {
+  pub fn fromSpan(span: LogSpan) -> LogCausalChain {
+    return LogCausalChain {
+      traceId: span.traceId,
+      rootSpanId: span.traceId,
+      currentSpanId: span.spanId,
+      parentSpanId: span.parentId,
+      depth: 1,
+      asyncBoundaryCount: if span.asyncBoundary { 1 } else { 0 },
+      cancellationMarked: span.cancellationBoundary,
+    }
+  }
+
+  pub fn valid(self: LogCausalChain) -> bool {
+    return self.traceId > 0
+      && self.currentSpanId > 0
+      && self.depth > 0
+  }
+}

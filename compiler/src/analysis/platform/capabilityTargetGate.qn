@@ -1,0 +1,30 @@
+pub struct CapabilityTargetGate {
+  unsafeCapability: UnsafeCapabilityKind,
+  targetCapability: TargetCapabilityKind,
+  targetAllowed: bool,
+  diagnosticCode: string,
+}
+
+impl CapabilityTargetGate {
+  pub fn init(
+    unsafeCapability: UnsafeCapabilityKind,
+    targetCapability: TargetCapabilityKind,
+    targetAllowed: bool,
+    diagnosticCode: string,
+  ) -> CapabilityTargetGate {
+    return CapabilityTargetGate {
+      unsafeCapability: unsafeCapability,
+      targetCapability: targetCapability,
+      targetAllowed: targetAllowed,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn accepted(self: CapabilityTargetGate) -> bool {
+    return self.targetAllowed && self.diagnosticCode != ""
+  }
+
+  pub fn rejects(self: CapabilityTargetGate) -> bool {
+    return self.accepted() == false
+  }
+}

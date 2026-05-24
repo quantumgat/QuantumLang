@@ -1,0 +1,19 @@
+pub struct MmapViewLowering {
+  emitsMapping: bool,
+  preservesBounds: bool,
+  preservesGeneration: bool,
+}
+
+impl MmapViewLowering {
+  pub fn init(emitsMapping: bool, preservesBounds: bool, preservesGeneration: bool) -> MmapViewLowering {
+    return MmapViewLowering {
+      emitsMapping: emitsMapping,
+      preservesBounds: preservesBounds,
+      preservesGeneration: preservesGeneration,
+    }
+  }
+
+  pub fn accepted(self: MmapViewLowering) -> bool {
+    return self.emitsMapping && self.preservesBounds && self.preservesGeneration
+  }
+}

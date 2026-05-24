@@ -1,0 +1,56 @@
+pub struct ProductionContract {
+  objectWriterOwned: bool,
+  linkPlanOwned: bool,
+  runtimeArchiveHidden: bool,
+  stdlibArchiveHidden: bool,
+  packageArchiveHidden: bool,
+  linkCacheHidden: bool,
+}
+
+pub fn productionContract(
+  objectWriterOwned: bool,
+  linkPlanOwned: bool,
+  runtimeArchiveHidden: bool,
+  stdlibArchiveHidden: bool,
+  packageArchiveHidden: bool,
+  linkCacheHidden: bool,
+) -> ProductionContract {
+  return ProductionContract {
+    objectWriterOwned: objectWriterOwned,
+    linkPlanOwned: linkPlanOwned,
+    runtimeArchiveHidden: runtimeArchiveHidden,
+    stdlibArchiveHidden: stdlibArchiveHidden,
+    packageArchiveHidden: packageArchiveHidden,
+    linkCacheHidden: linkCacheHidden,
+  }
+}
+
+impl ProductionContract {
+  pub fn ownsObjectWriter(self: ProductionContract) -> bool {
+    return self.objectWriterOwned
+  }
+
+  pub fn ownsLinkPlan(self: ProductionContract) -> bool {
+    return self.linkPlanOwned
+  }
+
+  pub fn hidesRuntimeArchive(self: ProductionContract) -> bool {
+    return self.runtimeArchiveHidden
+  }
+
+  pub fn hidesStdlibArchive(self: ProductionContract) -> bool {
+    return self.stdlibArchiveHidden
+  }
+
+  pub fn hidesPackageArchive(self: ProductionContract) -> bool {
+    return self.packageArchiveHidden
+  }
+
+  pub fn hidesLinkCache(self: ProductionContract) -> bool {
+    return self.linkCacheHidden
+  }
+
+  pub fn isProductionReady(self: ProductionContract) -> bool {
+    return self.objectWriterOwned && self.linkPlanOwned && self.runtimeArchiveHidden && self.stdlibArchiveHidden && self.packageArchiveHidden && self.linkCacheHidden
+  }
+}

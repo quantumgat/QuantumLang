@@ -1,0 +1,89 @@
+pub enum MathDiagnosticSpanKind {
+  Operator
+  LeftOperand
+  RightOperand
+  TypeName
+  Literal
+  TargetFeature
+  DecimalContext
+  NumericFamily
+  FixedScale
+}
+
+pub struct MathDiagnosticCode {
+  stableCode: string,
+  namespace: string,
+  spanKind: MathDiagnosticSpanKind,
+  runtimeSafeFailure: bool,
+}
+
+impl MathDiagnosticCode {
+  pub fn init(stableCode: string, spanKind: MathDiagnosticSpanKind) -> MathDiagnosticCode {
+    return MathDiagnosticCode {
+      stableCode: stableCode,
+      namespace: "QLMATH",
+      spanKind: spanKind,
+      runtimeSafeFailure: true,
+    }
+  }
+
+  pub fn divideByZero() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0001", MathDiagnosticSpanKind.RightOperand)
+  }
+
+  pub fn invalidShift() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0002", MathDiagnosticSpanKind.RightOperand)
+  }
+
+  pub fn overflow() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0003", MathDiagnosticSpanKind.Operator)
+  }
+
+  pub fn silentNumericMixing() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0004", MathDiagnosticSpanKind.TypeName)
+  }
+
+  pub fn unsupportedComplexOrdering() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0005", MathDiagnosticSpanKind.Operator)
+  }
+
+  pub fn targetFeatureRequired() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0006", MathDiagnosticSpanKind.TargetFeature)
+  }
+
+  pub fn decimalContextFailure() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0007", MathDiagnosticSpanKind.DecimalContext)
+  }
+
+  pub fn resourceLimit() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0008", MathDiagnosticSpanKind.Literal)
+  }
+
+  pub fn bigUintUnderflow() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0009", MathDiagnosticSpanKind.Operator)
+  }
+
+  pub fn fixedScaleMismatch() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0010", MathDiagnosticSpanKind.FixedScale)
+  }
+
+  pub fn decimalRoundingTrap() -> MathDiagnosticCode {
+    return MathDiagnosticCode.init("QLMATH0011", MathDiagnosticSpanKind.DecimalContext)
+  }
+
+  pub fn code(self: MathDiagnosticCode) -> string {
+    return self.stableCode
+  }
+
+  pub fn namespaceName(self: MathDiagnosticCode) -> string {
+    return self.namespace
+  }
+
+  pub fn spanKindValue(self: MathDiagnosticCode) -> MathDiagnosticSpanKind {
+    return self.spanKind
+  }
+
+  pub fn safeFailure(self: MathDiagnosticCode) -> bool {
+    return self.runtimeSafeFailure
+  }
+}

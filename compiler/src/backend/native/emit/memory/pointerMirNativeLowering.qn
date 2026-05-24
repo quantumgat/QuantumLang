@@ -1,0 +1,22 @@
+pub struct PointerMirNativeLowering {
+  instruction: u64,
+  variant: TargetVariantId,
+  pointerBits: usize,
+  emitsDirectLoadStore: bool,
+  emitsMemcpyMoveMemset: bool,
+  erasesPointerWrapper: bool,
+  preservesNoCoredumpDiagnostic: bool,
+  runtimeFallbackRejected: bool,
+}
+
+impl PointerMirNativeLowering {
+  pub fn hotPath(self: PointerMirNativeLowering) -> bool {
+    return self.instruction > 0
+      && self.variant != TargetVariantId.UnknownVariant
+      && self.pointerBits > 0
+      && self.erasesPointerWrapper
+      && self.preservesNoCoredumpDiagnostic
+      && self.runtimeFallbackRejected
+      && (self.emitsDirectLoadStore || self.emitsMemcpyMoveMemset)
+  }
+}

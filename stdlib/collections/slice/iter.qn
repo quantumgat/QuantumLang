@@ -1,0 +1,50 @@
+/**
+  Direct-index iterator over a Slice view.
+
+  effects: pure
+  complexity: O(1) next/advance
+  allocation: none
+  stability: public since 0.1
+*/
+pub struct SliceIter<T> {
+  slice: Slice<T>,
+  index: usize,
+  len: usize,
+  generation: usize,
+}
+
+impl<T> SliceIter<T> {
+  pub fn fromSlice(slice: Slice<T>) -> SliceIter<T> {
+    let len = slice.len
+    let generation = slice.generation
+    return SliceIter<T> {
+      slice: slice,
+      index: 0,
+      len: len,
+      generation: generation,
+    }
+  }
+
+  pub fn isEmpty(self: SliceIter<T>) -> bool {
+    return self.index >= self.len
+  }
+
+  pub fn next(self: SliceIter<T>) -> Option<T> {
+    if self.isEmpty() {
+      return None
+    }
+    return Some(self.slice.items[self.slice.start + self.index])
+  }
+
+  pub fn advance(self: SliceIter<T>) -> SliceIter<T> {
+    if self.isEmpty() {
+      return self
+    }
+    return SliceIter<T> {
+      slice: self.slice,
+      index: self.index + 1,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}

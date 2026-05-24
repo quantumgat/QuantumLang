@@ -1,0 +1,39 @@
+pub struct PluginLockfileEntry {
+  name: string,
+  version: string,
+  abi: string,
+  sourceFingerprint: string,
+  manifestFingerprint: string,
+  publicRootFingerprint: string,
+  compilerFingerprint: string,
+  runtimeFingerprint: string,
+  proofFingerprint: string,
+}
+
+impl PluginLockfileEntry {
+  pub fn fromManifest(manifest: PluginManifest) -> PluginLockfileEntry {
+    return PluginLockfileEntry {
+      name: manifest.name,
+      version: manifest.version,
+      abi: manifest.abi.abi,
+      sourceFingerprint: "source",
+      manifestFingerprint: "manifest",
+      publicRootFingerprint: "public-root",
+      compilerFingerprint: "compiler",
+      runtimeFingerprint: "runtime",
+      proofFingerprint: "proof",
+    }
+  }
+
+  pub fn accepted(self: PluginLockfileEntry) -> bool {
+    return self.name != ""
+      && self.version != ""
+      && self.abi != ""
+      && self.sourceFingerprint != ""
+      && self.manifestFingerprint != ""
+      && self.publicRootFingerprint != ""
+      && self.compilerFingerprint != ""
+      && self.runtimeFingerprint != ""
+      && self.proofFingerprint != ""
+  }
+}

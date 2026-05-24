@@ -1,0 +1,21 @@
+pub struct RuntimeActorRef {
+  actorId: ActorId,
+  generation: u64,
+  typed: bool,
+  alive: bool,
+}
+
+impl RuntimeActorRef {
+  pub fn init(actorId: ActorId, generation: u64, typed: bool, alive: bool) -> RuntimeActorRef {
+    return RuntimeActorRef {
+      actorId: actorId,
+      generation: generation,
+      typed: typed,
+      alive: alive,
+    }
+  }
+
+  pub fn valid(self: RuntimeActorRef) -> bool {
+    return self.actorId.raw() > 0 && self.generation > 0 && self.typed && self.alive
+  }
+}

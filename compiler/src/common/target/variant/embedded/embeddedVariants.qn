@@ -1,0 +1,20 @@
+pub struct EmbeddedTargetVariants {
+  esp32XtensaFreeRtos: TargetVariantId,
+  esp32s3XtensaFreeRtos: TargetVariantId,
+  esp32c3Riscv32FreeRtos: TargetVariantId,
+  cortexM4Baremetal: TargetVariantId,
+  cortexM7Baremetal: TargetVariantId,
+}
+
+impl EmbeddedTargetVariants {
+  pub fn coversEsp32Family(self: EmbeddedTargetVariants) -> bool {
+    return self.esp32XtensaFreeRtos == TargetVariantId.Esp32XtensaFreeRtos
+      && self.esp32s3XtensaFreeRtos == TargetVariantId.Esp32s3XtensaFreeRtos
+      && self.esp32c3Riscv32FreeRtos == TargetVariantId.Esp32c3Riscv32FreeRtos
+  }
+
+  pub fn coversBaremetalArm(self: EmbeddedTargetVariants) -> bool {
+    return self.cortexM4Baremetal == TargetVariantId.CortexM4Baremetal
+      && self.cortexM7Baremetal == TargetVariantId.CortexM7Baremetal
+  }
+}

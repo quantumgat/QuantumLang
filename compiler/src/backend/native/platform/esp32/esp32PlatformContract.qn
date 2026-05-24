@@ -1,0 +1,12 @@
+pub struct Esp32PlatformContract {
+  target: string,
+  xtensaSupported: bool,
+  espIdfAware: bool,
+  deviceMemoryRequired: bool,
+}
+
+impl Esp32PlatformContract {
+  pub fn accepted(self: Esp32PlatformContract) -> bool {
+    return self.target != "" && self.xtensaSupported && self.espIdfAware
+  }
+}

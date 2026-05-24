@@ -1,0 +1,32 @@
+pub enum HirStreamKind {
+  StreamCreate
+  Next
+  Map
+  Filter
+  Retry
+  Timeout
+  Backpressure
+  PartialError
+}
+
+pub struct HirStreamHandoff {
+  nodeId: u64,
+  kind: HirStreamKind,
+  asyncLoweringRequired: bool,
+  partialErrorRequired: bool,
+}
+
+impl HirStreamHandoff {
+  pub fn init(nodeId: u64, kind: HirStreamKind, asyncLoweringRequired: bool, partialErrorRequired: bool) -> HirStreamHandoff {
+    return HirStreamHandoff {
+      nodeId: nodeId,
+      kind: kind,
+      asyncLoweringRequired: asyncLoweringRequired,
+      partialErrorRequired: partialErrorRequired,
+    }
+  }
+
+  pub fn accepted(self: HirStreamHandoff) -> bool {
+    return self.nodeId > 0 && self.asyncLoweringRequired && self.partialErrorRequired
+  }
+}

@@ -1,0 +1,57 @@
+pub enum AdvancedOopFamily {
+  ContractInvariant
+  State
+  AppState
+  CapabilityEffect
+  ActorService
+  DataRegion
+  Persistent
+  Reactive
+  PluginRemote
+  RoleDelegation
+}
+
+pub enum AdvancedOopDisposition {
+  CompilerCore
+  RuntimeCore
+  PackageLayer
+  DeferredDiagnostic
+}
+
+pub struct AdvancedOopFamilyFact {
+  family: AdvancedOopFamily,
+  disposition: AdvancedOopDisposition,
+  bootstrapMapped: bool,
+  sourceFactsPresent: bool,
+  hotPathBoundary: bool,
+}
+
+pub fn advancedOopFamilyFact(
+  family: AdvancedOopFamily,
+  disposition: AdvancedOopDisposition,
+  bootstrapMapped: bool,
+  sourceFactsPresent: bool,
+  hotPathBoundary: bool,
+) -> AdvancedOopFamilyFact {
+  return AdvancedOopFamilyFact {
+    family: family,
+    disposition: disposition,
+    bootstrapMapped: bootstrapMapped,
+    sourceFactsPresent: sourceFactsPresent,
+    hotPathBoundary: hotPathBoundary,
+  }
+}
+
+impl AdvancedOopFamilyFact {
+  pub fn blocksCompletion(self: AdvancedOopFamilyFact) -> bool {
+    return self.bootstrapMapped && self.sourceFactsPresent == false
+  }
+
+  pub fn requiresHotProof(self: AdvancedOopFamilyFact) -> bool {
+    return self.hotPathBoundary && self.disposition != AdvancedOopDisposition.PackageLayer
+  }
+
+  pub fn executableOrDeferred(self: AdvancedOopFamilyFact) -> bool {
+    return self.sourceFactsPresent || self.disposition == AdvancedOopDisposition.DeferredDiagnostic
+  }
+}

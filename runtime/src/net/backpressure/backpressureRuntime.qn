@@ -1,0 +1,12 @@
+pub struct RuntimeNetBackpressure {
+  acceptThrottle: bool,
+  readThrottle: bool,
+  writeQueueLimit: bool,
+  slowClientDetection: bool,
+}
+
+impl RuntimeNetBackpressure {
+  pub fn accepted(self: RuntimeNetBackpressure) -> bool {
+    return self.acceptThrottle && self.readThrottle && self.writeQueueLimit && self.slowClientDetection
+  }
+}

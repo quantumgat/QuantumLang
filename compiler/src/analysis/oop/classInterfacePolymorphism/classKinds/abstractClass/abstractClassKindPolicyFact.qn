@@ -1,0 +1,19 @@
+pub struct AbstractClassKindPolicyFact {
+  ownerId: u64,
+  directInstantiationRejected: bool,
+  abstractMethodSetBound: bool,
+  subtypeObligationBound: bool,
+  protectedMemberPolicyBound: bool,
+  sourceMapBound: bool,
+}
+
+impl AbstractClassKindPolicyFact {
+  pub fn complete(self: AbstractClassKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.directInstantiationRejected
+      && self.abstractMethodSetBound
+      && self.subtypeObligationBound
+      && self.protectedMemberPolicyBound
+      && self.sourceMapBound
+  }
+}

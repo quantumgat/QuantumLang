@@ -1,0 +1,27 @@
+pub struct ComplexFormat {
+  precision: usize,
+  showSign: bool,
+}
+
+impl ComplexFormat {
+  pub fn standard() -> ComplexFormat {
+    return ComplexFormat {
+      precision: 6,
+      showSign: true,
+    }
+  }
+
+  pub fn compact() -> ComplexFormat {
+    return ComplexFormat {
+      precision: 6,
+      showSign: false,
+    }
+  }
+
+  pub fn precision(precision: usize) -> ComplexFormat {
+    return ComplexFormat {
+      precision: precision,
+      showSign: true,
+    }
+  }
+}

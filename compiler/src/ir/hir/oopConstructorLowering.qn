@@ -1,0 +1,35 @@
+pub enum OopConstructorLoweringKind {
+  InitBody
+  ClassNameSugarToInit
+  ImplicitFieldConstructorToInit
+  BaseInit
+  FieldInit
+  PartialInitCleanup
+}
+
+pub struct OopConstructorLowering {
+  ownerTypeId: u64,
+  constructorId: u64,
+  kind: OopConstructorLoweringKind,
+  astBound: bool,
+  hirBound: bool,
+  constructorFactsBound: bool,
+  lifecycleFactsBound: bool,
+  virtualDispatchRejectedBeforeFullInit: bool,
+  fakeFactoryRejected: bool,
+  explicitInitWins: bool,
+}
+
+impl OopConstructorLowering {
+  pub fn complete(self: OopConstructorLowering) -> bool {
+    return self.ownerTypeId > 0
+      && self.constructorId > 0
+      && self.astBound
+      && self.hirBound
+      && self.constructorFactsBound
+      && self.lifecycleFactsBound
+      && self.virtualDispatchRejectedBeforeFullInit
+      && self.fakeFactoryRejected
+      && self.explicitInitWins
+  }
+}

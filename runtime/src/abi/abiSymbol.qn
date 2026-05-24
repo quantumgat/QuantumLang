@@ -1,0 +1,24 @@
+pub enum AbiSymbolKind {
+  RuntimeCallSymbol,
+  MemorySymbol,
+  QuantumSymbol,
+  OopSymbol,
+}
+
+pub struct AbiSymbol {
+  name: string,
+  kind: AbiSymbolKind,
+  version: string,
+  stable: bool,
+  publicHeaderRequired: bool,
+}
+
+pub fn abiSymbol(name: string, kind: AbiSymbolKind) -> AbiSymbol {
+  return AbiSymbol {
+    name: name,
+    kind: kind,
+    version: "0.1",
+    stable: true,
+    publicHeaderRequired: false,
+  }
+}

@@ -1,0 +1,91 @@
+pub struct LogField {
+  key: string,
+  value: string,
+  valueKind: LogFieldValueKind,
+  redaction: Redaction,
+  stableKey: bool,
+  compactEncoded: bool,
+  allocationFree: bool,
+}
+
+pub enum LogFieldValueKind {
+  Text,
+  Int,
+  UInt,
+  Bool,
+  Float,
+  Code,
+  Error,
+}
+
+impl LogField {
+  /**
+    Creates a text field.
+
+    example:
+      let field = LogField.text("route", "/users", Redaction.Path)
+
+    effects: pure
+    complexity: O(1)
+    allocation: stores caller-provided strings
+    stability: public since 0.1
+  */
+  pub fn text(key: string, value: string, redaction: Redaction) -> LogField {
+    return LogField {
+      key: key,
+      value: value,
+      valueKind: LogFieldValueKind.Text,
+      redaction: redaction,
+      stableKey: true,
+      compactEncoded: true,
+      allocationFree: false,
+    }
+  }
+
+  pub fn int(key: string, value: i64) -> LogField {
+    return LogField {
+      key: key,
+      value: "",
+      valueKind: LogFieldValueKind.Int,
+      redaction: Redaction.Public,
+      stableKey: true,
+      compactEncoded: true,
+      allocationFree: true,
+    }
+  }
+
+  pub fn uint(key: string, value: u64) -> LogField {
+    return LogField {
+      key: key,
+      value: "",
+      valueKind: LogFieldValueKind.UInt,
+      redaction: Redaction.Public,
+      stableKey: true,
+      compactEncoded: true,
+      allocationFree: true,
+    }
+  }
+
+  pub fn bool(key: string, value: bool) -> LogField {
+    return LogField {
+      key: key,
+      value: "",
+      valueKind: LogFieldValueKind.Bool,
+      redaction: Redaction.Public,
+      stableKey: true,
+      compactEncoded: true,
+      allocationFree: true,
+    }
+  }
+
+  pub fn visible(self: LogField) -> bool {
+    return self.key != "" && self.redaction == Redaction.Public
+  }
+
+  pub fn safe(self: LogField) -> bool {
+    return self.key != ""
+      && self.stableKey
+      && self.compactEncoded
+      && (self.redaction != Redaction.Secret || self.value == "")
+  }
+}

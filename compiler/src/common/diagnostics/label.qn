@@ -1,0 +1,29 @@
+pub enum DiagnosticLabelKind {
+  Primary
+  Secondary
+  Related
+}
+
+pub struct DiagnosticLabel {
+  kind: DiagnosticLabelKind,
+  range: SourceRange,
+  message: string,
+  redacted: bool,
+}
+
+impl DiagnosticLabel {
+  pub fn primary(range: SourceRange, message: string) -> DiagnosticLabel {
+    return DiagnosticLabel {
+      kind: DiagnosticLabelKind.Primary,
+      range: range,
+      message: message,
+      redacted: true,
+    }
+  }
+
+  pub fn safe(self: DiagnosticLabel) -> bool {
+    return self.range.exact()
+      && self.message != ""
+      && self.redacted
+  }
+}

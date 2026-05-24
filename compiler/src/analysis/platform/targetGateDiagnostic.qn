@@ -1,0 +1,21 @@
+pub struct TargetGateDiagnostic {
+  capability: TargetCapabilityKind,
+  code: string,
+  hasRange: bool,
+  hasFixIt: bool,
+}
+
+impl TargetGateDiagnostic {
+  pub fn init(capability: TargetCapabilityKind, code: string, hasRange: bool, hasFixIt: bool) -> TargetGateDiagnostic {
+    return TargetGateDiagnostic {
+      capability: capability,
+      code: code,
+      hasRange: hasRange,
+      hasFixIt: hasFixIt,
+    }
+  }
+
+  pub fn reportable(self: TargetGateDiagnostic) -> bool {
+    return self.code != "" && self.hasRange
+  }
+}

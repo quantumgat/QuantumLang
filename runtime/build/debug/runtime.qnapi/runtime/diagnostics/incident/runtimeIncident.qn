@@ -1,0 +1,43 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeIncidentKind {
+  Panic,
+  MemoryError,
+  TaskFailure,
+  AsyncCancellation,
+  OsFailure,
+  FatalRuntimeBoundary,
+}
+pub struct RuntimeIncidentSource {
+  subsystem: string
+  sourceFile: string
+  functionName: string
+  line: u32
+  column: u32
+  sourceMapped: bool
+  redacted: bool
+}
+pub struct RuntimeIncidentContext {
+  taskId: u64
+  threadId: u64
+  actorId: u64
+  cancellationId: u64
+  traceId: u64
+  spanId: u64
+  asyncBoundary: bool
+  taskContextPreserved: bool
+}
+pub struct RuntimeIncident {
+  incidentId: u64
+  kind: RuntimeIncidentKind
+  code: string
+  category: string
+  source: RuntimeIncidentSource
+  context: RuntimeIncidentContext
+  memoryReport: MemoryIncident
+  osReport: OsIoIncident
+  recoverable: bool
+  fatalBoundary: bool
+  panicCaptured: bool
+  redacted: bool
+  noCoredump: bool
+}

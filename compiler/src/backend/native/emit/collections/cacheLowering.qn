@@ -1,0 +1,60 @@
+pub struct CacheLowering {
+  mapBackedLookup: bool,
+  linkedOrderBackedRecency: bool,
+  generationStampedOrder: bool,
+  getLoweredToMapProbe: bool,
+  putLoweredToMapInsertAndOrderAppend: bool,
+  removeLoweredToMapRemove: bool,
+  evictionLoweredToLiveOrderCursor: bool,
+  cursorErased: bool,
+  cursorSkipsStaleOrderKeys: bool,
+  iteratorUsesCursor: bool,
+  toVecUsesCursor: bool,
+  forEachUsesCursor: bool,
+  callableLoopsInlined: bool,
+  zeroCopyEntryLoadWherePossible: bool,
+  optionMatchRemovedFromHotScans: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn cacheLowering() -> CacheLowering {
+  return CacheLowering {
+    mapBackedLookup: true,
+    linkedOrderBackedRecency: true,
+    generationStampedOrder: true,
+    getLoweredToMapProbe: true,
+    putLoweredToMapInsertAndOrderAppend: true,
+    removeLoweredToMapRemove: true,
+    evictionLoweredToLiveOrderCursor: true,
+    cursorErased: true,
+    cursorSkipsStaleOrderKeys: true,
+    iteratorUsesCursor: true,
+    toVecUsesCursor: true,
+    forEachUsesCursor: true,
+    callableLoopsInlined: true,
+    zeroCopyEntryLoadWherePossible: true,
+    optionMatchRemovedFromHotScans: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl CacheLowering {
+  pub fn hotPathReady(self: CacheLowering) -> bool {
+    return self.mapBackedLookup
+      && self.linkedOrderBackedRecency
+      && self.generationStampedOrder
+      && self.getLoweredToMapProbe
+      && self.putLoweredToMapInsertAndOrderAppend
+      && self.removeLoweredToMapRemove
+      && self.evictionLoweredToLiveOrderCursor
+      && self.cursorErased
+      && self.cursorSkipsStaleOrderKeys
+      && self.iteratorUsesCursor
+      && self.toVecUsesCursor
+      && self.forEachUsesCursor
+      && self.callableLoopsInlined
+      && self.zeroCopyEntryLoadWherePossible
+      && self.optionMatchRemovedFromHotScans
+      && self.boundsProofRequired
+  }
+}

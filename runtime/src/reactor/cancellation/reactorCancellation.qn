@@ -1,0 +1,21 @@
+pub struct RuntimeReactorCancellation {
+  registrationId: u64,
+  tokenId: u64,
+  cleanupRegistered: bool,
+  backendCancelReady: bool,
+}
+
+impl RuntimeReactorCancellation {
+  pub fn init(registrationId: u64, tokenId: u64, cleanupRegistered: bool, backendCancelReady: bool) -> RuntimeReactorCancellation {
+    return RuntimeReactorCancellation {
+      registrationId: registrationId,
+      tokenId: tokenId,
+      cleanupRegistered: cleanupRegistered,
+      backendCancelReady: backendCancelReady,
+    }
+  }
+
+  pub fn safe(self: RuntimeReactorCancellation) -> bool {
+    return self.registrationId > 0 && self.tokenId > 0 && self.cleanupRegistered && self.backendCancelReady
+  }
+}

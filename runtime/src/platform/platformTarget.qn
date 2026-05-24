@@ -1,0 +1,24 @@
+pub struct PlatformTarget {
+  arch: string,
+  os: string,
+  supportsThreads: bool,
+  supportsNativeArchive: bool,
+  publicSyscallSurface: bool,
+}
+
+pub fn platformTarget(arch: string, os: string) -> PlatformTarget {
+  return PlatformTarget {
+    arch: arch,
+    os: os,
+    supportsThreads: true,
+    supportsNativeArchive: true,
+    publicSyscallSurface: false,
+  }
+}
+
+impl PlatformTarget {
+  pub fn supportsHiddenRuntime(self) -> bool {
+    return self.supportsNativeArchive &&
+      self.publicSyscallSurface == false
+  }
+}

@@ -1,0 +1,45 @@
+pub struct ErrorPublicApiPolicy {
+  typedCode: bool,
+  typedCategory: bool,
+  typedFields: bool,
+  sourceLocation: bool,
+  causeChain: bool,
+  stableDisplayDebug: bool,
+  conversionPolicy: bool,
+  secretRedaction: bool,
+  analyzerAvailable: bool,
+  stringOnlyIncidentsRejected: bool,
+  resultQuestionMarkCompatible: bool,
+}
+
+pub fn errorPublicApiPolicy() -> ErrorPublicApiPolicy {
+  return ErrorPublicApiPolicy {
+    typedCode: true,
+    typedCategory: true,
+    typedFields: true,
+    sourceLocation: true,
+    causeChain: true,
+    stableDisplayDebug: true,
+    conversionPolicy: true,
+    secretRedaction: true,
+    analyzerAvailable: true,
+    stringOnlyIncidentsRejected: true,
+    resultQuestionMarkCompatible: true,
+  }
+}
+
+impl ErrorPublicApiPolicy {
+  pub fn accepted(self: ErrorPublicApiPolicy) -> bool {
+    return self.typedCode
+      && self.typedCategory
+      && self.typedFields
+      && self.sourceLocation
+      && self.causeChain
+      && self.stableDisplayDebug
+      && self.conversionPolicy
+      && self.secretRedaction
+      && self.analyzerAvailable
+      && self.stringOnlyIncidentsRejected
+      && self.resultQuestionMarkCompatible
+  }
+}

@@ -1,0 +1,19 @@
+pub struct BirLowerPlan {
+  mirFunction: u64,
+  ssaValueCount: usize,
+  preservesSourceMap: bool,
+}
+
+pub fn birLowerPlan(mirFunction: u64, ssaValueCount: usize, preservesSourceMap: bool) -> BirLowerPlan {
+  return BirLowerPlan {
+    mirFunction: mirFunction,
+    ssaValueCount: ssaValueCount,
+    preservesSourceMap: preservesSourceMap,
+  }
+}
+
+impl BirLowerPlan {
+  pub fn valid(self: BirLowerPlan) -> bool {
+    return self.preservesSourceMap
+  }
+}

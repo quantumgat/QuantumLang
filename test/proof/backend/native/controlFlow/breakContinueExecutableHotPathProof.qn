@@ -1,0 +1,25 @@
+pub struct BreakContinueExecutableHotPathProof {
+  parserReady: bool,
+  astReady: bool,
+  analysisReady: bool,
+  hirReady: bool,
+  mirReady: bool,
+  nativeReady: bool,
+  runtimeSafeFailureReady: bool,
+  executablePositiveCases: usize,
+  executableNegativeCases: usize,
+}
+
+impl BreakContinueExecutableHotPathProof {
+  pub fn complete(self: BreakContinueExecutableHotPathProof) -> bool {
+    return self.parserReady
+      && self.astReady
+      && self.analysisReady
+      && self.hirReady
+      && self.mirReady
+      && self.nativeReady
+      && self.runtimeSafeFailureReady
+      && self.executablePositiveCases >= 3
+      && self.executableNegativeCases >= 2
+  }
+}

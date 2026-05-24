@@ -1,0 +1,37 @@
+pub enum NativeForAsyncParallelLoweringKind {
+  AsyncFramePollLoop
+  AsyncQuestionRuntimeLoop
+  ConcurrentTaskLoop
+  LimitedConcurrentTaskLoop
+  ParallelForRangeCall
+  ParallelChunkedCall
+  ParallelReduceCall
+  ParallelMapCall
+  ParallelFindCall
+  CancellationSafeLoop
+}
+
+pub struct NativeForAsyncParallelLowering {
+  kind: NativeForAsyncParallelLoweringKind,
+  mir: MirForAsyncParallelOp,
+  emitsAsyncFrame: bool,
+  emitsRuntimeCalls: bool,
+  emitsShardPlan: bool,
+  emitsReducerMerge: bool,
+  emitsCancellationEdges: bool,
+  emitsCleanup: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeForAsyncParallelLowering {
+  pub fn complete(self: NativeForAsyncParallelLowering) -> bool {
+    return self.mir.complete()
+      && self.emitsAsyncFrame
+      && self.emitsRuntimeCalls
+      && self.emitsShardPlan
+      && self.emitsReducerMerge
+      && self.emitsCancellationEdges
+      && self.emitsCleanup
+      && self.noGeneratedFallback
+  }
+}

@@ -1,0 +1,6 @@
+pub struct TempDir {
+  path: PathBuf,
+}
+
+pub fn tempDir() -> TempDir
+pub fn path(dir: TempDir) -> PathBuf

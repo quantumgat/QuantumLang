@@ -1,0 +1,54 @@
+pub enum JsonFieldMatchStrategy {
+  PerfectHash4
+  PerfectHash8
+  CollisionFallback
+  LinearFallback
+}
+
+pub struct JsonFieldMatchPlan {
+  typeName: string,
+  fieldCount: usize,
+  strategy: JsonFieldMatchStrategy,
+  generatedPerType: bool,
+  noRuntimeHashMap: bool,
+  serdeFieldPolicyChecked: bool,
+  duplicateFieldDiagnostic: bool,
+  missingFieldDiagnostic: bool,
+  unknownFieldPolicyChecked: bool,
+}
+
+impl JsonFieldMatchPlan {
+  pub fn forFields(typeName: string, fieldCount: usize) -> JsonFieldMatchPlan {
+    return JsonFieldMatchPlan {
+      typeName: typeName,
+      fieldCount: fieldCount,
+      strategy: JsonFieldMatchPlan.strategyFor(fieldCount),
+      generatedPerType: true,
+      noRuntimeHashMap: true,
+      serdeFieldPolicyChecked: true,
+      duplicateFieldDiagnostic: true,
+      missingFieldDiagnostic: true,
+      unknownFieldPolicyChecked: true,
+    }
+  }
+
+  pub fn strategyFor(fieldCount: usize) -> JsonFieldMatchStrategy {
+    if fieldCount <= 4 {
+      return JsonFieldMatchStrategy.PerfectHash4
+    }
+    if fieldCount <= 8 {
+      return JsonFieldMatchStrategy.PerfectHash8
+    }
+    return JsonFieldMatchStrategy.CollisionFallback
+  }
+
+  pub fn hotPathReady(self: JsonFieldMatchPlan) -> bool {
+    return self.typeName != ""
+      && self.generatedPerType
+      && self.noRuntimeHashMap
+      && self.serdeFieldPolicyChecked
+      && self.duplicateFieldDiagnostic
+      && self.missingFieldDiagnostic
+      && self.unknownFieldPolicyChecked
+  }
+}

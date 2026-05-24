@@ -1,0 +1,139 @@
+pub enum BsonErrorKind {
+  InvalidType
+  InvalidLength
+  InvalidObjectId
+  UnsupportedType
+  DuplicateKey
+  MissingField
+  Eof
+  Overflow
+  PrecisionLoss
+  MalformedExactCarrier
+  LiveResource
+}
+
+pub struct BsonError {
+  kind: BsonErrorKind,
+  path: string,
+  expected: string,
+  found: string,
+  offset: usize,
+  message: string,
+}
+
+pub struct BsonDiagnostic {
+  path: string,
+  expected: string,
+  found: string,
+  offset: usize,
+  message: string,
+}
+
+impl BsonError {
+  pub fn at(kind: BsonErrorKind, path: string, expected: string, found: string, offset: usize, message: string) -> BsonError {
+    return BsonError {
+      kind: kind,
+      path: path,
+      expected: expected,
+      found: found,
+      offset: offset,
+      message: message,
+    }
+  }
+
+  pub fn invalidType(path: string, message: string) -> BsonError {
+    return BsonError.at(BsonErrorKind.InvalidType, path, "matching BSON type", "different BSON type", 0, message)
+  }
+
+  pub fn invalidType(path: string, expected: string, found: string, offset: usize) -> BsonError {
+    return BsonError.at(BsonErrorKind.InvalidType, path, expected, found, offset, "invalid BSON type")
+  }
+
+  pub fn invalidLength(path: string, message: string) -> BsonError {
+    return BsonError.at(BsonErrorKind.InvalidLength, path, "valid BSON length", "invalid BSON length", 0, message)
+  }
+
+  pub fn invalidLength(path: string, expected: string, found: string, offset: usize) -> BsonError {
+    return BsonError.at(BsonErrorKind.InvalidLength, path, expected, found, offset, "invalid BSON length")
+  }
+
+  pub fn invalidObjectId(path: string) -> BsonError {
+    return BsonError.at(BsonErrorKind.InvalidObjectId, path, "12-byte ObjectId", "invalid ObjectId", 0, "invalid BSON ObjectId")
+  }
+
+  pub fn unsupportedType(path: string, message: string) -> BsonError {
+    return BsonError.at(BsonErrorKind.UnsupportedType, path, "supported BSON tag", "unsupported BSON tag", 0, message)
+  }
+
+  pub fn duplicateKey(path: string, key: string) -> BsonError {
+    return BsonError.at(BsonErrorKind.DuplicateKey, path, "unique key", key, 0, key)
+  }
+
+  pub fn missingField(path: string, field: string) -> BsonError {
+    return BsonError.at(BsonErrorKind.MissingField, path, field, "missing", 0, field)
+  }
+
+  pub fn eof(path: string) -> BsonError {
+    return BsonError.at(BsonErrorKind.Eof, path, "more bytes", "end of BSON document", 0, "unexpected end of BSON document")
+  }
+
+  pub fn overflow(path: string, message: string) -> BsonError {
+    return BsonError.at(BsonErrorKind.Overflow, path, "in-range value", "overflow", 0, message)
+  }
+
+  pub fn precisionLoss(path: string, expected: string, found: string, offset: usize) -> BsonError {
+    return BsonError.at(BsonErrorKind.PrecisionLoss, path, expected, found, offset, "BSON value would lose precision")
+  }
+
+  pub fn malformedExactCarrier(path: string, expected: string, found: string, offset: usize) -> BsonError {
+    return BsonError.at(BsonErrorKind.MalformedExactCarrier, path, expected, found, offset, "malformed exact BSON carrier")
+  }
+
+  pub fn liveResource(path: string, typeName: string) -> BsonError {
+    return BsonError.at(BsonErrorKind.LiveResource, path, "serializable value", typeName, 0, "live resource cannot be encoded by BSON")
+  }
+
+  pub fn byteOffset(self: BsonError) -> usize {
+    return self.offset
+  }
+
+  pub fn fieldPath(self: BsonError) -> string {
+    return self.path
+  }
+
+  pub fn expectedType(self: BsonError) -> string {
+    return self.expected
+  }
+
+  pub fn foundType(self: BsonError) -> string {
+    return self.found
+  }
+
+  pub fn diagnostic(self: BsonError) -> BsonDiagnostic {
+    return BsonDiagnostic {
+      path: self.path,
+      expected: self.expected,
+      found: self.found,
+      offset: self.offset,
+      message: self.message,
+    }
+  }
+}
+
+impl BsonDiagnostic {
+  pub fn byteOffset(self: BsonDiagnostic) -> usize {
+    return self.offset
+  }
+
+  pub fn fieldPath(self: BsonDiagnostic) -> string {
+    return self.path
+  }
+
+  pub fn expectedType(self: BsonDiagnostic) -> string {
+    return self.expected
+  }
+
+  pub fn foundType(self: BsonDiagnostic) -> string {
+    return self.found
+  }
+}

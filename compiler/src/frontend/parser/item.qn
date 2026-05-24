@@ -1,0 +1,18 @@
+pub struct ItemParse {
+  parsedItems: usize,
+  errors: usize,
+}
+
+pub fn itemParse(parsedItems: usize, errors: usize) -> ItemParse {
+  return ItemParse { parsedItems: parsedItems, errors: errors }
+}
+
+impl ItemParse {
+  pub fn itemCount(self: ItemParse) -> usize {
+    return self.parsedItems
+  }
+
+  pub fn errorCount(self: ItemParse) -> usize {
+    return self.errors
+  }
+}

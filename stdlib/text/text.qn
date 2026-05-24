@@ -1,0 +1,4 @@
+pub fn len(value: string) -> usize
+pub fn isEmpty(value: string) -> bool
+pub fn trim(value: string) -> string
+pub fn contains(value: string, needle: string) -> bool

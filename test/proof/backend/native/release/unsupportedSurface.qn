@@ -1,0 +1,43 @@
+pub enum UnsupportedNativeSurfaceKind {
+  UnsupportedType
+  UnsupportedTarget
+  UnsupportedRuntimeAbi
+  UnsupportedObjectFormat
+  UnsupportedLinker
+}
+
+pub struct UnsupportedSurface {
+  kind: UnsupportedNativeSurfaceKind,
+  diagnosticCode: string,
+  artifactEmitted: bool,
+}
+
+pub fn unsupportedSurface(
+  kind: UnsupportedNativeSurfaceKind,
+  diagnosticCode: string,
+  artifactEmitted: bool,
+) -> UnsupportedSurface {
+  return UnsupportedSurface {
+    kind: kind,
+    diagnosticCode: diagnosticCode,
+    artifactEmitted: artifactEmitted,
+  }
+}
+
+impl UnsupportedSurface {
+  pub fn surfaceKind(self: UnsupportedSurface) -> UnsupportedNativeSurfaceKind {
+    return self.kind
+  }
+
+  pub fn diagnostic(self: UnsupportedSurface) -> string {
+    return self.diagnosticCode
+  }
+
+  pub fn emittedArtifact(self: UnsupportedSurface) -> bool {
+    return self.artifactEmitted
+  }
+
+  pub fn stopsBeforeArtifact(self: UnsupportedSurface) -> bool {
+    return !self.artifactEmitted
+  }
+}

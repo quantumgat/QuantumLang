@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeLowLevelReport {
+  snapshot: RuntimeLowLevelSnapshot
+  memoryDiagnostic: RuntimeMemoryDiagnostic
+  syncDiagnostic: RuntimeSyncDiagnostic
+  report: RuntimeReport
+  replay: ReplayArtifact
+  query: DiagnosticQuery
+  redacted: bool
+  emergencyNoAllocation: bool
+  noCoredump: bool
+}

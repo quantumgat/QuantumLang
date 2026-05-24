@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum MemoryOwner {
+  RuntimeOwned,
+  CompilerOwned,
+  UserOwned,
+}
+pub struct MemoryOwnership {
+  owner: MemoryOwner
+  trackedBytes: usize
+  accountingEnabled: bool
+  transferable: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeMemoryOwnership(bytes: usize) -> MemoryOwnership
+}

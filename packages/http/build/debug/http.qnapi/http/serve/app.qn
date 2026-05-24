@@ -1,0 +1,66 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+abstract class HttpAppFactory {
+  builderCount: usize
+  pub init() {}
+  pub fn builder(self: HttpAppFactory) -> AppBuilder
+}
+pub abstract class AppBuilder {
+  stateGraph: AppStateGraph
+  controllerGraph: ControllerGraph
+  apiGraph: ApiGraph
+  dependencyGraph: AppDependencyGraph
+  policyGraph: MiddlewarePolicyGraph
+  serverPolicy: ServerPolicy
+  lifecycleHooks: LifecycleHooks
+  diagnosticPolicy: AppStateDiagnosticPolicy
+  errorPolicy: HttpErrorPolicy
+  responsePolicy: ResponsePolicy
+  defaultMiddleware: HttpDefaultMiddlewarePolicy
+  trustedProxyPolicy: TrustedProxyPolicy
+  bindAddress: HttpBindAddress
+  pub init() {}
+  pub fn state<T>(self: AppBuilder, value: T) -> AppBuilder
+  pub fn controller<T>(self: AppBuilder) -> AppBuilder
+  pub fn controllerNamed(self: AppBuilder, controllerName: string, ownerId: u64) -> AppBuilder
+  pub fn api<T>(self: AppBuilder) -> AppBuilder
+  pub fn controller<T, Ctx>(self: AppBuilder, requires: Ctx) -> AppBuilder
+  pub fn use<T>(self: AppBuilder, policy: T) -> AppBuilder
+  pub fn context<Ctx>(self: AppBuilder) -> AppBuilder
+  pub fn defaults(self: AppBuilder, defaults: HttpDefaultMiddlewarePolicy) -> AppBuilder
+  pub fn workers(self: AppBuilder, workers: usize) -> AppBuilder
+  pub fn mode(self: AppBuilder, mode: HttpTransportMode) -> AppBuilder
+  pub fn blockingPool(self: AppBuilder, workers: usize) -> AppBuilder
+  pub fn bind(self: AppBuilder, host: string, port: usize) -> AppBuilder
+  pub fn bind(self: AppBuilder, address: HttpBindAddress) -> AppBuilder
+  pub fn bindAddress(self: AppBuilder) -> HttpBindAddress
+  pub fn timeout(self: AppBuilder, seconds: usize) -> AppBuilder
+  pub fn maxBodySize(self: AppBuilder, bytes: usize) -> AppBuilder
+  pub fn trustedProxies(self: AppBuilder, policy: TrustedProxyPolicy) -> AppBuilder
+  pub fn error<T>(self: AppBuilder) -> AppBuilder
+  pub fn error<T>(self: AppBuilder, mapper: T) -> AppBuilder
+  pub fn response(self: AppBuilder, policy: ResponsePolicy) -> AppBuilder
+  pub fn onStart(self: AppBuilder, name: string) -> AppBuilder
+  pub fn onStop(self: AppBuilder, name: string) -> AppBuilder
+  pub fn requireHealth(self: AppBuilder) -> AppBuilder
+  pub fn requireReconnect(self: AppBuilder) -> AppBuilder
+  pub fn plan(self: AppBuilder, port: usize) -> AppPlan
+  pub fn plan(self: AppBuilder) -> AppPlan
+  pub fn plan(self: AppBuilder, address: string) -> Result<AppPlan, AppBuilderDiagnostic>
+  pub fn diagnostics(self: AppBuilder) -> AppStateDiagnosticReport
+  pub fn diagnostics(self: AppBuilder, port: usize) -> AppStateDiagnosticReport
+  pub fn asyncTransportPlan(self: AppBuilder, port: usize) -> Result<HttpAsyncTransportPlan, AppBuilderDiagnostic>
+  pub fn asyncTransportPlan(self: AppBuilder) -> Result<HttpAsyncTransportPlan, AppBuilderDiagnostic>
+  pub fn transportModePlan(self: AppBuilder, port: usize) -> Result<HttpTransportModePlan, AppBuilderDiagnostic>
+  pub fn transportModePlan(self: AppBuilder) -> Result<HttpTransportModePlan, AppBuilderDiagnostic>
+  pub fn validate(self: AppBuilder, port: usize) -> Result<AppPlan, AppBuilderDiagnostic>
+  pub fn validate(self: AppBuilder) -> Result<AppPlan, AppBuilderDiagnostic>
+  pub fn validate(self: AppBuilder, address: string) -> Result<AppPlan, AppBuilderDiagnostic>
+  pub fn ready(self: AppBuilder) -> bool
+  pub fn ready(self: AppBuilder, port: usize) -> bool
+  pub fn run(self: AppBuilder, port: usize) -> Result<Unit, AppBuilderDiagnostic>
+  pub fn run(self: AppBuilder, address: string) -> Result<Unit, AppBuilderDiagnostic>
+  pub fn run(self: AppBuilder) -> Result<Unit, AppBuilderDiagnostic>
+}
+pub extern "qnpkg" {
+  pub fn App() -> AppBuilder
+}

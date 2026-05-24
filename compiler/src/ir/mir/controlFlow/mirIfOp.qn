@@ -1,0 +1,109 @@
+pub enum MirIfOpKind {
+  DirectBranch
+  ElseChainBranch
+  PhiValueBranch
+  PatternTestBranch
+  GuardBranch
+  RangeCompareBranch
+  TypeTagBranch
+  QuestionFastExitBranch
+  AwaitQuestionPollBranch
+  StaticElidedBranch
+  TargetFeatureBranch
+  QirConditionalBranch
+}
+
+pub struct MirIfOp {
+  instruction: u64,
+  kind: MirIfOpKind,
+  allocationFree: bool,
+  branchesDirect: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+pub struct MirIfInput {
+  instruction: u64,
+  kind: MirIfOpKind,
+  conditionBlock: u64,
+  thenBlock: u64,
+  elseBlock: u64,
+  mergeBlock: u64,
+  resultSlot: u64,
+}
+
+pub struct MirIfBuild {
+  input: MirIfInput,
+  op: MirIfOp,
+  branchCount: usize,
+  phiReady: bool,
+}
+
+pub fn mirIfOp(
+  instruction: u64,
+  kind: MirIfOpKind,
+  allocationFree: bool,
+  branchesDirect: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+) -> MirIfOp {
+  return MirIfOp {
+    instruction: instruction,
+    kind: kind,
+    allocationFree: allocationFree,
+    branchesDirect: branchesDirect,
+    sourceMapReady: sourceMapReady,
+    safeFailureReady: safeFailureReady,
+  }
+}
+
+pub fn mirIfInput(
+  instruction: u64,
+  kind: MirIfOpKind,
+  conditionBlock: u64,
+  thenBlock: u64,
+  elseBlock: u64,
+  mergeBlock: u64,
+  resultSlot: u64,
+) -> MirIfInput {
+  return MirIfInput {
+    instruction: instruction,
+    kind: kind,
+    conditionBlock: conditionBlock,
+    thenBlock: thenBlock,
+    elseBlock: elseBlock,
+    mergeBlock: mergeBlock,
+    resultSlot: resultSlot,
+  }
+}
+
+pub fn buildMirIf(input: MirIfInput) -> MirIfBuild {
+  let blocksReady = input.conditionBlock > 0
+    && input.thenBlock > 0
+    && input.mergeBlock > 0
+  let hasElse = input.elseBlock > 0
+  let op = mirIfOp(input.instruction, input.kind, true, blocksReady, true, true)
+  return MirIfBuild {
+    input: input,
+    op: op,
+    branchCount: if hasElse { 2 } else { 1 },
+    phiReady: input.resultSlot > 0 && input.mergeBlock > 0,
+  }
+}
+
+impl MirIfOp {
+  pub fn hotLowerable(self: MirIfOp) -> bool {
+    return self.instruction > 0
+      && self.allocationFree
+      && self.branchesDirect
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}
+
+impl MirIfBuild {
+  pub fn complete(self: MirIfBuild) -> bool {
+    return self.op.hotLowerable()
+      && self.branchCount > 0
+  }
+}

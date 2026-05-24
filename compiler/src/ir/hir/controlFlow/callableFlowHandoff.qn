@@ -1,0 +1,23 @@
+pub enum HirCallableFlowHandoffKind {
+  InlineLambda
+  CapturingEnvironment
+  AsyncCallableFrame
+  CallableObjectInvoke
+  MethodReferenceInvoke
+  HotCallbackInline
+}
+
+pub struct HirCallableFlowHandoff {
+  sourceNode: u64,
+  kind: HirCallableFlowHandoffKind,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+}
+
+impl HirCallableFlowHandoff {
+  pub fn complete(self: HirCallableFlowHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+}

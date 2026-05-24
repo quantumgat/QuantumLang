@@ -1,0 +1,54 @@
+pub struct RingBufferLowering {
+  circularBufferBacked: bool,
+  headTailDirect: bool,
+  moduloIndexLowered: bool,
+  pushBackLoweredToTailStore: bool,
+  pushFrontLoweredToHeadDecAndStore: bool,
+  popFrontLoweredToHeadLoadAndHeadInc: bool,
+  popBackLoweredToTailDecAndLoad: bool,
+  overwriteOldestLowered: bool,
+  rejectFullLowered: bool,
+  peekLoweredToDirectLoad: bool,
+  iteratorLoweredToRingCursor: bool,
+  toVecLoweredToLinearizedCopy: bool,
+  callableLoopsInlined: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn ringBufferLowering() -> RingBufferLowering {
+  return RingBufferLowering {
+    circularBufferBacked: true,
+    headTailDirect: true,
+    moduloIndexLowered: true,
+    pushBackLoweredToTailStore: true,
+    pushFrontLoweredToHeadDecAndStore: true,
+    popFrontLoweredToHeadLoadAndHeadInc: true,
+    popBackLoweredToTailDecAndLoad: true,
+    overwriteOldestLowered: true,
+    rejectFullLowered: true,
+    peekLoweredToDirectLoad: true,
+    iteratorLoweredToRingCursor: true,
+    toVecLoweredToLinearizedCopy: true,
+    callableLoopsInlined: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl RingBufferLowering {
+  pub fn hotPathReady(self: RingBufferLowering) -> bool {
+    return self.circularBufferBacked
+      && self.headTailDirect
+      && self.moduloIndexLowered
+      && self.pushBackLoweredToTailStore
+      && self.pushFrontLoweredToHeadDecAndStore
+      && self.popFrontLoweredToHeadLoadAndHeadInc
+      && self.popBackLoweredToTailDecAndLoad
+      && self.overwriteOldestLowered
+      && self.rejectFullLowered
+      && self.peekLoweredToDirectLoad
+      && self.iteratorLoweredToRingCursor
+      && self.toVecLoweredToLinearizedCopy
+      && self.callableLoopsInlined
+      && self.boundsProofRequired
+  }
+}

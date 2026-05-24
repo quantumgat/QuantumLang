@@ -1,0 +1,12 @@
+pub struct RuntimeTlsVerifier {
+  certificateChain: bool,
+  hostname: bool,
+  pinning: bool,
+  unsafeDisabledRejected: bool,
+}
+
+impl RuntimeTlsVerifier {
+  pub fn accepted(self: RuntimeTlsVerifier) -> bool {
+    return self.certificateChain && self.hostname && self.unsafeDisabledRejected
+  }
+}

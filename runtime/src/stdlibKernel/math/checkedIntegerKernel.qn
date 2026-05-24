@@ -1,0 +1,64 @@
+pub struct CheckedIntegerKernel {
+  noCoredump: bool,
+}
+
+impl CheckedIntegerKernel {
+  pub fn init() -> CheckedIntegerKernel {
+    return CheckedIntegerKernel { noCoredump: true }
+  }
+
+  pub fn addU64(self: CheckedIntegerKernel, left: u64, right: u64) -> Result<u64, MathRuntimeError> {
+    let max: u64 = 18446744073709551615
+    if right > max - left {
+      return Err(MathRuntimeError.Overflow)
+    }
+    return Ok(left + right)
+  }
+
+  pub fn subU64(self: CheckedIntegerKernel, left: u64, right: u64) -> Result<u64, MathRuntimeError> {
+    if right > left {
+      return Err(MathRuntimeError.Overflow)
+    }
+    return Ok(left - right)
+  }
+
+  pub fn mulU64(self: CheckedIntegerKernel, left: u64, right: u64) -> Result<u64, MathRuntimeError> {
+    let max: u64 = 18446744073709551615
+    if left != 0 && right > max / left {
+      return Err(MathRuntimeError.Overflow)
+    }
+    return Ok(left * right)
+  }
+
+  pub fn divU64(self: CheckedIntegerKernel, left: u64, right: u64) -> Result<u64, MathRuntimeError> {
+    if right == 0 {
+      return Err(MathRuntimeError.DivideByZero)
+    }
+    return Ok(left / right)
+  }
+
+  pub fn remU64(self: CheckedIntegerKernel, left: u64, right: u64) -> Result<u64, MathRuntimeError> {
+    if right == 0 {
+      return Err(MathRuntimeError.DivideByZero)
+    }
+    return Ok(left % right)
+  }
+
+  pub fn shlU64(self: CheckedIntegerKernel, value: u64, amount: usize) -> Result<u64, MathRuntimeError> {
+    if amount >= 64 {
+      return Err(MathRuntimeError.InvalidShift)
+    }
+    return Ok(value << amount)
+  }
+
+  pub fn shrU64(self: CheckedIntegerKernel, value: u64, amount: usize) -> Result<u64, MathRuntimeError> {
+    if amount >= 64 {
+      return Err(MathRuntimeError.InvalidShift)
+    }
+    return Ok(value >> amount)
+  }
+
+  pub fn accepted(self: CheckedIntegerKernel) -> bool {
+    return self.noCoredump
+  }
+}

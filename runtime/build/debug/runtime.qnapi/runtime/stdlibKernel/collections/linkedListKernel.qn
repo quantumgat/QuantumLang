@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct LinkedListKernel {
+  nodeIndexBacked: bool
+  headTailDirect: bool
+  pushFrontUsesNodeAllocAndHeadLink: bool
+  pushBackUsesNodeAllocAndTailLink: bool
+  popFrontUsesHeadUnlink: bool
+  popBackUsesTailUnlink: bool
+  iteratorNodeCursorStable: bool
+  toVecUsesCursorCopy: bool
+  appendUsesCursorPushBack: bool
+  tombstoneRemovalStable: bool
+  callableLoopsInlineable: bool
+}

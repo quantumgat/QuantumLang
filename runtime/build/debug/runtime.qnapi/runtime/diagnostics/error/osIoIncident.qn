@@ -1,0 +1,20 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum OsIoIncidentKind {
+  PlatformMapped,
+  Interrupted,
+  TimedOut,
+  Cancelled,
+  PartialWritePreserved,
+  RetryScheduled,
+}
+pub struct OsIoIncident {
+  kind: OsIoIncidentKind
+  platform: string
+  platformCode: i32
+  stableCode: string
+  bytesCompleted: usize
+  resumeOffset: usize
+  retryable: bool
+  redacted: bool
+  noCoredump: bool
+}

@@ -1,0 +1,32 @@
+pub struct LogTemplate {
+  text: string,
+  placeholderCount: usize,
+  staticText: bool,
+  redactionChecked: bool,
+}
+
+impl LogTemplate {
+  /**
+    Creates a static message template.
+
+    example:
+      log.info(LogTemplate.static("server started"))
+
+    effects: pure
+    complexity: O(1)
+    allocation: stores caller-provided text
+    stability: public since 0.1
+  */
+  pub fn static(text: string) -> LogTemplate {
+    return LogTemplate {
+      text: text,
+      placeholderCount: 0,
+      staticText: true,
+      redactionChecked: true,
+    }
+  }
+
+  pub fn safe(self: LogTemplate) -> bool {
+    return self.text != "" && self.redactionChecked
+  }
+}

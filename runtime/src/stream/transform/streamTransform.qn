@@ -1,0 +1,19 @@
+pub struct StreamTransform {
+  transformName: string,
+  preservesProvenance: bool,
+  deterministic: bool,
+}
+
+pub fn streamTransform(transformName: string) -> StreamTransform {
+  return StreamTransform {
+    transformName: transformName,
+    preservesProvenance: true,
+    deterministic: true,
+  }
+}
+
+impl StreamTransform {
+  pub fn isReplaySafe(self: StreamTransform) -> bool {
+    return self.preservesProvenance && self.deterministic
+  }
+}

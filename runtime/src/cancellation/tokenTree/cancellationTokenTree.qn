@@ -1,0 +1,25 @@
+pub struct CancellationTokenTree {
+  rootTokenId: u64,
+  tokenCount: usize,
+  cancelledCount: usize,
+  generation: u64,
+}
+
+impl CancellationTokenTree {
+  pub fn init(rootTokenId: u64, tokenCount: usize, cancelledCount: usize, generation: u64) -> CancellationTokenTree {
+    return CancellationTokenTree {
+      rootTokenId: rootTokenId,
+      tokenCount: tokenCount,
+      cancelledCount: cancelledCount,
+      generation: generation,
+    }
+  }
+
+  pub fn valid(self: CancellationTokenTree) -> bool {
+    return self.rootTokenId > 0 && self.tokenCount > 0 && self.generation > 0
+  }
+
+  pub fn hasCancellation(self: CancellationTokenTree) -> bool {
+    return self.cancelledCount > 0
+  }
+}

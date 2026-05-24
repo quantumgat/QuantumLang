@@ -1,0 +1,26 @@
+pub struct AsyncCfgPlan {
+  bodyId: u64,
+  suspensionBlocks: usize,
+  resumeBlocks: usize,
+  cleanupBlocks: usize,
+  sourceMapBlocks: usize,
+}
+
+pub fn asyncCfgPlan(bodyId: u64, suspensionBlocks: usize, resumeBlocks: usize) -> AsyncCfgPlan {
+  return AsyncCfgPlan {
+    bodyId: bodyId,
+    suspensionBlocks: suspensionBlocks,
+    resumeBlocks: resumeBlocks,
+    cleanupBlocks: suspensionBlocks,
+    sourceMapBlocks: suspensionBlocks + resumeBlocks,
+  }
+}
+
+impl AsyncCfgPlan {
+  pub fn balanced(self: AsyncCfgPlan) -> bool {
+    return self.bodyId > 0
+      && self.suspensionBlocks == self.resumeBlocks
+      && self.cleanupBlocks >= self.suspensionBlocks
+      && self.sourceMapBlocks >= self.resumeBlocks
+  }
+}

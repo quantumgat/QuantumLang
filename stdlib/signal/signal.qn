@@ -1,0 +1,30 @@
+pub struct Signal {
+  number: i32,
+}
+
+pub fn signal(number: i32) -> Signal
+pub fn number(signal: Signal) -> i32
+pub fn name(signal: Signal) -> string
+pub fn interrupt() -> Signal
+pub fn terminate() -> Signal
+pub fn hangup() -> Signal
+pub fn quit() -> Signal
+pub fn pipe() -> Signal
+pub fn child() -> Signal
+pub fn user1() -> Signal
+pub fn user2() -> Signal
+pub fn portableSignals() -> Vec<Signal> requires(alloc)
+
+impl Signal {
+  pub fn valid(self: Signal) -> bool {
+    return self.number > 0
+  }
+
+  pub fn portable(self: Signal) -> bool {
+    return self.valid()
+  }
+
+  pub fn name(self: Signal) -> string {
+    return name(self)
+  }
+}

@@ -1,0 +1,6 @@
+pub struct OpenQasm3Error {
+  message: string,
+}
+
+pub fn importOpenQasm3(source: string) -> Result<QuantumCircuit, OpenQasm3Error>
+pub fn exportOpenQasm3(circuit: QuantumCircuit) -> Result<string, OpenQasm3Error>

@@ -1,0 +1,41 @@
+pub enum ScopeKind {
+  PackageScope
+  ModuleScope
+  TypeBodyScope
+  FunctionBodyScope
+  BlockScope
+  MatchArmScope
+}
+
+pub struct Scope {
+  id: u64,
+  parent: u64,
+  kind: ScopeKind,
+  symbolCount: usize,
+}
+
+pub fn scope(id: u64, parent: u64, kind: ScopeKind, symbolCount: usize) -> Scope {
+  return Scope { id: id, parent: parent, kind: kind, symbolCount: symbolCount }
+}
+
+impl Scope {
+  pub fn scopeId(self: Scope) -> u64 {
+    return self.id
+  }
+
+  pub fn parentId(self: Scope) -> u64 {
+    return self.parent
+  }
+
+  pub fn scopeKind(self: Scope) -> ScopeKind {
+    return self.kind
+  }
+
+  pub fn isRoot(self: Scope) -> bool {
+    return self.parent == 0
+  }
+
+  pub fn isEmpty(self: Scope) -> bool {
+    return self.symbolCount == 0
+  }
+}

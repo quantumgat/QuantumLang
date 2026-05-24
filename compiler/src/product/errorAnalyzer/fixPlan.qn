@@ -1,0 +1,45 @@
+pub struct ErrorFixPlan {
+  diagnostic: Diagnostic,
+  safeFix: string,
+  advancedFix: string,
+  nextAction: string,
+  docsLink: string,
+  explainCommand: string,
+  safeFixMachineApplicable: bool,
+  advancedFixRequiresReview: bool,
+  redacted: bool,
+}
+
+pub fn errorFixPlan(
+  diagnostic: Diagnostic,
+  safeFix: string,
+  advancedFix: string,
+  nextAction: string,
+  docsLink: string,
+) -> ErrorFixPlan {
+  return ErrorFixPlan {
+    diagnostic: diagnostic,
+    safeFix: safeFix,
+    advancedFix: advancedFix,
+    nextAction: nextAction,
+    docsLink: docsLink,
+    explainCommand: "qtlc explain diagnostic",
+    safeFixMachineApplicable: true,
+    advancedFixRequiresReview: true,
+    redacted: diagnostic.redacted,
+  }
+}
+
+impl ErrorFixPlan {
+  pub fn useful(self: ErrorFixPlan) -> bool {
+    return self.diagnostic.complete()
+      && self.safeFix != ""
+      && self.advancedFix != ""
+      && self.nextAction != ""
+      && self.docsLink != ""
+      && self.explainCommand != ""
+      && self.safeFixMachineApplicable
+      && self.advancedFixRequiresReview
+      && self.redacted
+  }
+}

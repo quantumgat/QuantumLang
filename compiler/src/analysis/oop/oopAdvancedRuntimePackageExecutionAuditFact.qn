@@ -1,0 +1,89 @@
+pub enum AdvancedOopExecutionOwner {
+  CompilerCore
+  RuntimeCore
+  BackendCore
+  PackageLayer
+  MixedCoreAndPackage
+}
+
+pub enum AdvancedOopExecutionAuditStatus {
+  Executable
+  DeferredWithDiagnostic
+  SourceContractOnly
+  MissingRuntimeBinding
+  MissingBackendBinding
+  MissingPackageDeferral
+}
+
+pub struct OopAdvancedRuntimePackageExecutionAuditFact {
+  familyName: string,
+  owner: AdvancedOopExecutionOwner,
+  bootstrapFixtureBound: bool,
+  sourceFactBound: bool,
+  dumpExplainBound: bool,
+  runtimeBindingRequired: bool,
+  runtimeBindingPresent: bool,
+  backendBindingRequired: bool,
+  backendBindingPresent: bool,
+  packageLayerRequired: bool,
+  packageDeferralDiagnosticBound: bool,
+  hotPathProofRequired: bool,
+  hotPathProofBound: bool,
+  status: AdvancedOopExecutionAuditStatus,
+}
+
+pub fn oopAdvancedRuntimePackageExecutionAuditFact(
+  familyName: string,
+  owner: AdvancedOopExecutionOwner,
+  bootstrapFixtureBound: bool,
+  sourceFactBound: bool,
+  dumpExplainBound: bool,
+  runtimeBindingRequired: bool,
+  runtimeBindingPresent: bool,
+  backendBindingRequired: bool,
+  backendBindingPresent: bool,
+  packageLayerRequired: bool,
+  packageDeferralDiagnosticBound: bool,
+  hotPathProofRequired: bool,
+  hotPathProofBound: bool,
+  status: AdvancedOopExecutionAuditStatus,
+) -> OopAdvancedRuntimePackageExecutionAuditFact {
+  return OopAdvancedRuntimePackageExecutionAuditFact {
+    familyName: familyName,
+    owner: owner,
+    bootstrapFixtureBound: bootstrapFixtureBound,
+    sourceFactBound: sourceFactBound,
+    dumpExplainBound: dumpExplainBound,
+    runtimeBindingRequired: runtimeBindingRequired,
+    runtimeBindingPresent: runtimeBindingPresent,
+    backendBindingRequired: backendBindingRequired,
+    backendBindingPresent: backendBindingPresent,
+    packageLayerRequired: packageLayerRequired,
+    packageDeferralDiagnosticBound: packageDeferralDiagnosticBound,
+    hotPathProofRequired: hotPathProofRequired,
+    hotPathProofBound: hotPathProofBound,
+    status: status,
+  }
+}
+
+impl OopAdvancedRuntimePackageExecutionAuditFact {
+  pub fn inventoryAudited(self: OopAdvancedRuntimePackageExecutionAuditFact) -> bool {
+    return self.bootstrapFixtureBound && self.sourceFactBound && self.dumpExplainBound
+  }
+
+  pub fn executionOrDeferralClosed(self: OopAdvancedRuntimePackageExecutionAuditFact) -> bool {
+    return self.inventoryAudited()
+      && (self.runtimeBindingRequired == false || self.runtimeBindingPresent)
+      && (self.backendBindingRequired == false || self.backendBindingPresent)
+      && (self.packageLayerRequired == false || self.packageDeferralDiagnosticBound)
+      && (self.hotPathProofRequired == false || self.hotPathProofBound)
+      && (
+        self.status == AdvancedOopExecutionAuditStatus.Executable
+        || self.status == AdvancedOopExecutionAuditStatus.DeferredWithDiagnostic
+      )
+  }
+
+  pub fn blocksAdvancedCompletion(self: OopAdvancedRuntimePackageExecutionAuditFact) -> bool {
+    return self.executionOrDeferralClosed() == false
+  }
+}

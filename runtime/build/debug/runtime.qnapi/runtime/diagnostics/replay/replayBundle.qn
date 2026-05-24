@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ReplayBundle {
+  artifact: ReplayArtifact
+  reportSnapshot: RuntimeReportSnapshot
+  incidentId: DeterministicIncidentId
+  command: string
+  deterministicOrdering: bool
+  redactedPayload: bool
+  canReplayToTest: bool
+  noCompilerDependency: bool
+}

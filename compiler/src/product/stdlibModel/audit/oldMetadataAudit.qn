@@ -1,0 +1,11 @@
+pub struct StdlibOldMetadataAudit {
+  path: string,
+  rejected: bool,
+  replacement: string,
+}
+
+impl StdlibOldMetadataAudit {
+  pub fn accepted(self: StdlibOldMetadataAudit) -> bool {
+    return self.path != "" && self.rejected && self.replacement != ""
+  }
+}

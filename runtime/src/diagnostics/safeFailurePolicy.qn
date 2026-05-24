@@ -1,0 +1,45 @@
+pub struct SafeFailurePolicy {
+  safeCodeNeverCoredumps: bool,
+  resultErrorPreferred: bool,
+  panicCaptured: bool,
+  oomReturnsDiagnostic: bool,
+  ffiBoundaryCaptured: bool,
+  stackOverflowReported: bool,
+  sourceMapRequired: bool,
+  redactionRequired: bool,
+  emergencyReportBufferRequired: bool,
+  fatalRecoverableSeparated: bool,
+  coredumpDisabled: bool,
+}
+
+pub fn safeFailurePolicy() -> SafeFailurePolicy {
+  return SafeFailurePolicy {
+    safeCodeNeverCoredumps: true,
+    resultErrorPreferred: true,
+    panicCaptured: true,
+    oomReturnsDiagnostic: true,
+    ffiBoundaryCaptured: true,
+    stackOverflowReported: true,
+    sourceMapRequired: true,
+    redactionRequired: true,
+    emergencyReportBufferRequired: true,
+    fatalRecoverableSeparated: true,
+    coredumpDisabled: true,
+  }
+}
+
+impl SafeFailurePolicy {
+  pub fn guaranteesSafeFailure(self: SafeFailurePolicy) -> bool {
+    return self.safeCodeNeverCoredumps
+      && self.resultErrorPreferred
+      && self.panicCaptured
+      && self.oomReturnsDiagnostic
+      && self.ffiBoundaryCaptured
+      && self.stackOverflowReported
+      && self.sourceMapRequired
+      && self.redactionRequired
+      && self.emergencyReportBufferRequired
+      && self.fatalRecoverableSeparated
+      && self.coredumpDisabled
+  }
+}

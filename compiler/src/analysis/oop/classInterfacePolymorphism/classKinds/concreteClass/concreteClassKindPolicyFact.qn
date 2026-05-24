@@ -1,0 +1,19 @@
+pub struct ConcreteClassKindPolicyFact {
+  ownerId: u64,
+  constructorBound: bool,
+  objectLayoutBound: bool,
+  lifecyclePolicyBound: bool,
+  directDispatchEligible: bool,
+  sourceMapBound: bool,
+}
+
+impl ConcreteClassKindPolicyFact {
+  pub fn complete(self: ConcreteClassKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.constructorBound
+      && self.objectLayoutBound
+      && self.lifecyclePolicyBound
+      && self.directDispatchEligible
+      && self.sourceMapBound
+  }
+}

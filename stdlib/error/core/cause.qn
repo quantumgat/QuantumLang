@@ -1,0 +1,61 @@
+pub struct ErrorCause {
+  code: ErrorCode,
+  message: string,
+  source: ErrorSource,
+}
+
+pub struct ErrorCauseChain {
+  len: usize,
+  rootKnown: bool,
+  bounded: bool,
+  redacted: bool,
+}
+
+impl ErrorCause {
+  /**
+    Creates a single cause record.
+
+    example:
+      let cause = ErrorCause.new(code, "socket closed", ErrorSource.unknown())
+
+    effects: pure
+    complexity: O(1)
+    allocation: stores caller-provided message
+    stability: public since 0.1
+  */
+  pub fn new(code: ErrorCode, message: string, source: ErrorSource) -> ErrorCause {
+    return ErrorCause {
+      code: code,
+      message: message,
+      source: source,
+    }
+  }
+
+  pub fn stable(self: ErrorCause) -> bool {
+    return self.code.stable() && self.message != ""
+  }
+}
+
+impl ErrorCauseChain {
+  pub fn empty() -> ErrorCauseChain {
+    return ErrorCauseChain {
+      len: 0,
+      rootKnown: false,
+      bounded: true,
+      redacted: true,
+    }
+  }
+
+  pub fn single(cause: ErrorCause) -> ErrorCauseChain {
+    return ErrorCauseChain {
+      len: 1,
+      rootKnown: cause.stable(),
+      bounded: true,
+      redacted: true,
+    }
+  }
+
+  pub fn safe(self: ErrorCauseChain) -> bool {
+    return self.bounded && self.redacted
+  }
+}

@@ -1,0 +1,46 @@
+pub enum AstTypeSyntaxKind {
+  Named
+  Generic
+  Union
+  Any
+  QAny
+}
+
+pub struct AstTypeSyntax {
+  node: AstNode,
+  kind: AstTypeSyntaxKind,
+  alternativeCount: usize,
+  explicitDynamic: bool,
+  quantumDynamic: bool,
+}
+
+pub fn astTypeSyntax(
+  node: AstNode,
+  kind: AstTypeSyntaxKind,
+  alternativeCount: usize,
+) -> AstTypeSyntax {
+  return AstTypeSyntax {
+    node: node,
+    kind: kind,
+    alternativeCount: alternativeCount,
+    explicitDynamic: kind == AstTypeSyntaxKind.Any || kind == AstTypeSyntaxKind.QAny,
+    quantumDynamic: kind == AstTypeSyntaxKind.QAny,
+  }
+}
+
+impl AstTypeSyntax {
+  pub fn valid(self: AstTypeSyntax) -> bool {
+    return self.node.nodeKind() == NodeKind.TypeSyntax
+      && (self.kind != AstTypeSyntaxKind.Union || self.alternativeCount >= 2)
+  }
+
+  pub fn dynamicExplicit(self: AstTypeSyntax) -> bool {
+    return self.kind != AstTypeSyntaxKind.Any
+      || self.explicitDynamic
+  }
+
+  pub fn qanySeparated(self: AstTypeSyntax) -> bool {
+    return self.kind != AstTypeSyntaxKind.QAny
+      || (self.explicitDynamic && self.quantumDynamic)
+  }
+}

@@ -1,0 +1,29 @@
+pub struct DispatchProofIntegration {
+  functionId: u64,
+  directCalls: usize,
+  devirtualizedCalls: usize,
+  sealedDispatches: usize,
+  cachedDispatches: usize,
+  unresolvedHotCalls: usize,
+}
+
+pub fn dispatchProofIntegration(functionId: u64, directCalls: usize, devirtualizedCalls: usize, sealedDispatches: usize, cachedDispatches: usize, unresolvedHotCalls: usize) -> DispatchProofIntegration {
+  return DispatchProofIntegration {
+    functionId: functionId,
+    directCalls: directCalls,
+    devirtualizedCalls: devirtualizedCalls,
+    sealedDispatches: sealedDispatches,
+    cachedDispatches: cachedDispatches,
+    unresolvedHotCalls: unresolvedHotCalls,
+  }
+}
+
+impl DispatchProofIntegration {
+  pub fn totalResolvedCalls(self: DispatchProofIntegration) -> usize {
+    return self.directCalls + self.devirtualizedCalls + self.sealedDispatches + self.cachedDispatches
+  }
+
+  pub fn passesDispatchProof(self: DispatchProofIntegration) -> bool {
+    return self.unresolvedHotCalls == 0
+  }
+}

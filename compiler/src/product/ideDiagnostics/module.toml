@@ -1,0 +1,13 @@
+[module]
+name = "ideDiagnostics"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "diagnostic-ide-projection"
+
+[dependencies]
+allowed = ["common", "product.dumps", "product.codeActions", "product.queryProtocol"]
+forbidden = ["runtime internals", "test perf", "backend mutation"]
+
+[tests]
+required = ["qtlc_qtlang_compiler_ide_diagnostic_ux_gap_closure"]

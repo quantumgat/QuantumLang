@@ -1,0 +1,103 @@
+pub struct HttpControllerRouteMiddlewarePolicyProof {
+  controllerWithLocked: bool,
+  inheritedRunsWithoutRouteParam: bool,
+  routeParamReceivesData: bool,
+  routeOnlyMiddlewareAdded: bool,
+  healthWithoutPublic: bool,
+  invalidWithoutRejected: bool,
+  staticResolutionReady: bool,
+}
+
+impl HttpControllerRouteMiddlewarePolicyProof {
+  pub fn init(
+    controllerPolicy: ControllerCapabilityPolicy,
+    getResolution: EndpointCapabilityResolution,
+    createResolution: EndpointCapabilityResolution,
+    deleteResolution: EndpointCapabilityResolution,
+    healthResolution: EndpointCapabilityResolution,
+    invalidResolution: EndpointCapabilityResolution,
+  ) -> HttpControllerRouteMiddlewarePolicyProof {
+    return HttpControllerRouteMiddlewarePolicyProof {
+      controllerWithLocked: controllerPolicy.capabilityCount() == 3,
+      inheritedRunsWithoutRouteParam: createResolution.inheritedRuns()
+        && createResolution.routeReceivesMiddlewareData()
+        && createResolution.effectiveCount == 3,
+      routeParamReceivesData: getResolution.dataAccessCount == 2
+        && getResolution.effectiveCount == 3,
+      routeOnlyMiddlewareAdded: deleteResolution.routeOnlyRuns()
+        && deleteResolution.effectiveCount == 5,
+      healthWithoutPublic: healthResolution.publicRoute()
+        && healthResolution.removedInheritedCount == 3,
+      invalidWithoutRejected: !invalidResolution.complete(),
+      staticResolutionReady: getResolution.complete()
+        && createResolution.complete()
+        && deleteResolution.complete()
+        && healthResolution.complete(),
+    }
+  }
+
+  pub fn complete(self: HttpControllerRouteMiddlewarePolicyProof) -> bool {
+    return self.controllerWithLocked
+      && self.inheritedRunsWithoutRouteParam
+      && self.routeParamReceivesData
+      && self.routeOnlyMiddlewareAdded
+      && self.healthWithoutPublic
+      && self.invalidWithoutRejected
+      && self.staticResolutionReady
+  }
+}
+
+pub fn productControllerPolicy() -> ControllerCapabilityPolicy {
+  return ControllerCapabilityPolicy
+    .empty("ProductController")
+    .with<AuthenticatedUser>()
+    .with<TenantContext>()
+    .with<RateLimited>()
+}
+
+pub fn httpControllerRouteMiddlewarePolicyProof() -> HttpControllerRouteMiddlewarePolicyProof {
+  let controllerPolicy = productControllerPolicy()
+
+  let getEndpoint = EndpointFact
+    .simple("ProductController", EndpointMethod.magicGet(), EndpointReturn.json("ProductResponse"))
+    .withParam(EndpointParam.path("id", "ProductId"))
+    .withParam(EndpointParam.capability("auth", "AuthenticatedUser"))
+    .withParam(EndpointParam.capability("tenant", "TenantContext"))
+  let getPolicy = EndpointCapabilityPolicy.empty("ProductController.get")
+
+  let createEndpoint = EndpointFact
+    .simple("ProductController", EndpointMethod.create(), EndpointReturn.json("ProductResponse"))
+    .withParam(EndpointParam.body("body", "CreateProductRequest"))
+    .withParam(EndpointParam.capability("auth", "AuthenticatedUser"))
+  let createPolicy = EndpointCapabilityPolicy.empty("ProductController.create")
+
+  let deleteEndpoint = EndpointFact
+    .simple("ProductController", EndpointMethod.magicDelete(), EndpointReturn.json("Deleted"))
+    .withParam(EndpointParam.path("id", "ProductId"))
+    .withParam(EndpointParam.capability("admin", "Admin"))
+    .withParam(EndpointParam.capability("audit", "AuditLog"))
+  let deletePolicy = EndpointCapabilityPolicy
+    .empty("ProductController.delete")
+    .requires<Admin>()
+    .requires<AuditLog>()
+
+  let healthEndpoint = EndpointFact.simple("ProductController", EndpointMethod.find(), EndpointReturn.json("Health"))
+  let healthPolicy = EndpointCapabilityPolicy
+    .empty("ProductController.health")
+    .without<AuthenticatedUser>()
+    .without<TenantContext>()
+    .without<RateLimited>()
+
+  let invalidPolicy = EndpointCapabilityPolicy
+    .empty("ProductController.health")
+    .without<Admin>()
+
+  return HttpControllerRouteMiddlewarePolicyProof.init(
+    controllerPolicy,
+    EndpointCapabilityResolution.from(controllerPolicy, getEndpoint, getPolicy),
+    EndpointCapabilityResolution.from(controllerPolicy, createEndpoint, createPolicy),
+    EndpointCapabilityResolution.from(controllerPolicy, deleteEndpoint, deletePolicy),
+    EndpointCapabilityResolution.from(controllerPolicy, healthEndpoint, healthPolicy),
+    EndpointCapabilityResolution.from(controllerPolicy, healthEndpoint, invalidPolicy)
+  )
+}

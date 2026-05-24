@@ -1,0 +1,27 @@
+pub enum DropBehaviorKind {
+  NoDrop
+  DirectDrop
+  InterfaceErasedDrop
+}
+
+pub struct DropBehavior {
+  typeId: u64,
+  dropFnPtr: u64,
+  kind: DropBehaviorKind,
+  panicSafe: bool,
+}
+
+pub fn dropBehavior(typeId: u64, dropFnPtr: u64, kind: DropBehaviorKind, panicSafe: bool) -> DropBehavior {
+  return DropBehavior {
+    typeId: typeId,
+    dropFnPtr: dropFnPtr,
+    kind: kind,
+    panicSafe: panicSafe,
+  }
+}
+
+impl DropBehavior {
+  pub fn isValid(self: DropBehavior) -> bool {
+    return self.typeId > 0 && (self.kind == DropBehaviorKind.NoDrop || self.dropFnPtr > 0) && self.panicSafe
+  }
+}

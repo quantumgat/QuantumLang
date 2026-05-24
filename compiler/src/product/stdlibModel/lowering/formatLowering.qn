@@ -1,0 +1,29 @@
+pub struct StdlibFormatLowering {
+  symbolName: string,
+  diagnosticChecked: bool,
+  noSecretLeak: bool,
+  formatSpecChecked: bool,
+  fStringChecked: bool,
+  textMethodSugarChecked: bool,
+  numericViewsChecked: bool,
+  collectionsChecked: bool,
+  errorsChecked: bool,
+  quantumOpaqueChecked: bool,
+  unsafeDebugRejectedByDefault: bool,
+}
+
+impl StdlibFormatLowering {
+  pub fn accepted(self: StdlibFormatLowering) -> bool {
+    return self.symbolName != ""
+      && self.diagnosticChecked
+      && self.noSecretLeak
+      && self.formatSpecChecked
+      && self.fStringChecked
+      && self.textMethodSugarChecked
+      && self.numericViewsChecked
+      && self.collectionsChecked
+      && self.errorsChecked
+      && self.quantumOpaqueChecked
+      && self.unsafeDebugRejectedByDefault
+  }
+}

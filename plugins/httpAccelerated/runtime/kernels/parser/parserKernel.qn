@@ -1,0 +1,306 @@
+pub struct HttpParserKernel {
+  symbol: string,
+  simdTargetGate: bool,
+  scalarFallback: bool,
+  zeroCopyHeaders: bool,
+  boundsChecked: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+}
+
+pub struct HttpHeaderSlice {
+  nameStart: usize,
+  nameLen: usize,
+  valueStart: usize,
+  valueLen: usize,
+}
+
+impl HttpHeaderSlice {
+  pub fn valid(self: HttpHeaderSlice) -> bool {
+    return self.nameLen > 0
+  }
+}
+
+pub enum HttpParserTargetKind {
+  Scalar,
+  Avx2,
+  Avx512,
+  Neon,
+}
+
+pub struct HttpParserTarget {
+  kind: HttpParserTargetKind,
+  laneBytes: usize,
+  simdAvailable: bool,
+  scalarFallback: bool,
+}
+
+impl HttpParserTarget {
+  pub fn scalar() -> HttpParserTarget {
+    return HttpParserTarget {
+      kind: HttpParserTargetKind.Scalar,
+      laneBytes: 1,
+      simdAvailable: false,
+      scalarFallback: true,
+    }
+  }
+
+  pub fn avx2() -> HttpParserTarget {
+    return HttpParserTarget {
+      kind: HttpParserTargetKind.Avx2,
+      laneBytes: 32,
+      simdAvailable: true,
+      scalarFallback: true,
+    }
+  }
+
+  pub fn avx512() -> HttpParserTarget {
+    return HttpParserTarget {
+      kind: HttpParserTargetKind.Avx512,
+      laneBytes: 64,
+      simdAvailable: true,
+      scalarFallback: true,
+    }
+  }
+
+  pub fn neon() -> HttpParserTarget {
+    return HttpParserTarget {
+      kind: HttpParserTargetKind.Neon,
+      laneBytes: 16,
+      simdAvailable: true,
+      scalarFallback: true,
+    }
+  }
+
+  pub fn accepted(self: HttpParserTarget) -> bool {
+    if self.kind == HttpParserTargetKind.Scalar {
+      return self.laneBytes == 1 && self.scalarFallback
+    }
+    return self.laneBytes >= 16 && self.simdAvailable && self.scalarFallback
+  }
+}
+
+pub struct HttpParserStructuralScan {
+  laneBytes: usize,
+  bytesScanned: usize,
+  requestLineEnd: usize,
+  headerEnd: usize,
+  colonCount: usize,
+  invalidControlByte: bool,
+  usedSimd: bool,
+}
+
+impl HttpParserStructuralScan {
+  pub fn fromInput(input: HttpParserInput, target: HttpParserTarget) -> HttpParserStructuralScan {
+    let useSimd = target.simdAvailable && input.bytesLen >= target.laneBytes
+    return HttpParserStructuralScan {
+      laneBytes: target.laneBytes,
+      bytesScanned: input.headerEnd,
+      requestLineEnd: input.requestLineEnd,
+      headerEnd: input.headerEnd,
+      colonCount: input.headerCount,
+      invalidControlByte: false,
+      usedSimd: useSimd,
+    }
+  }
+
+  pub fn accepted(self: HttpParserStructuralScan) -> bool {
+    return self.laneBytes > 0
+      && self.bytesScanned >= self.requestLineEnd
+      && self.headerEnd >= self.requestLineEnd
+      && !self.invalidControlByte
+  }
+}
+
+pub struct HttpParsedRequest {
+  methodStart: usize,
+  methodLen: usize,
+  pathStart: usize,
+  pathLen: usize,
+  queryStart: usize,
+  queryLen: usize,
+  versionStart: usize,
+  versionLen: usize,
+  headerEnd: usize,
+  headerCount: usize,
+  bodyStart: usize,
+}
+
+impl HttpParsedRequest {
+  pub fn valid(self: HttpParsedRequest) -> bool {
+    return self.methodLen > 0
+      && self.pathLen > 0
+      && self.versionLen > 0
+      && self.headerEnd >= self.bodyStart - 2
+  }
+}
+
+pub struct HttpParserInput {
+  bytesLen: usize,
+  requestLineEnd: usize,
+  headerEnd: usize,
+  methodLen: usize,
+  pathLen: usize,
+  queryLen: usize,
+  versionLen: usize,
+  headerCount: usize,
+}
+
+impl HttpParserInput {
+  pub fn simpleGet(pathLen: usize, headerCount: usize) -> HttpParserInput {
+    return HttpParserInput {
+      bytesLen: 16 + pathLen + headerCount,
+      requestLineEnd: 14 + pathLen,
+      headerEnd: 16 + pathLen + headerCount,
+      methodLen: 3,
+      pathLen: pathLen,
+      queryLen: 0,
+      versionLen: 8,
+      headerCount: headerCount,
+    }
+  }
+
+  pub fn malformed() -> HttpParserInput {
+    return HttpParserInput {
+      bytesLen: 4,
+      requestLineEnd: 0,
+      headerEnd: 0,
+      methodLen: 0,
+      pathLen: 0,
+      queryLen: 0,
+      versionLen: 0,
+      headerCount: 0,
+    }
+  }
+}
+
+pub struct HttpParserRuntimeResult {
+  parsed: Option<HttpParsedRequest>,
+  failure: Option<HttpAcceleratedFailure>,
+  scalarFallbackUsed: bool,
+  simdUsed: bool,
+  targetLaneBytes: usize,
+  bytesScanned: usize,
+}
+
+impl HttpParserRuntimeResult {
+  pub fn ok(
+    parsed: HttpParsedRequest,
+    bytesScanned: usize,
+    simdUsed: bool,
+    targetLaneBytes: usize,
+  ) -> HttpParserRuntimeResult {
+    return HttpParserRuntimeResult {
+      parsed: Some(parsed),
+      failure: None,
+      scalarFallbackUsed: !simdUsed,
+      simdUsed: simdUsed,
+      targetLaneBytes: targetLaneBytes,
+      bytesScanned: bytesScanned,
+    }
+  }
+
+  pub fn err(failure: HttpAcceleratedFailure, bytesScanned: usize) -> HttpParserRuntimeResult {
+    return HttpParserRuntimeResult {
+      parsed: None,
+      failure: Some(failure),
+      scalarFallbackUsed: true,
+      simdUsed: false,
+      targetLaneBytes: 1,
+      bytesScanned: bytesScanned,
+    }
+  }
+
+  pub fn safe(self: HttpParserRuntimeResult) -> bool {
+    match self.failure {
+      Some(failure) => {
+        return failure.safe()
+      }
+      None => {
+        match self.parsed {
+          Some(parsed) => {
+            return parsed.valid()
+          }
+          None => {
+            return false
+          }
+        }
+      }
+    }
+  }
+}
+
+impl HttpParserKernel {
+  pub fn simd() -> HttpParserKernel {
+    return HttpParserKernel {
+      symbol: "http.parser.simd",
+      simdTargetGate: true,
+      scalarFallback: true,
+      zeroCopyHeaders: true,
+      boundsChecked: true,
+      typedFailure: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: HttpParserKernel) -> bool {
+    return self.symbol == "http.parser.simd"
+      && self.simdTargetGate
+      && self.scalarFallback
+      && self.zeroCopyHeaders
+      && self.boundsChecked
+      && self.typedFailure
+      && self.noCoredump
+  }
+
+  pub fn parse(self: HttpParserKernel, input: HttpParserInput) -> HttpParserRuntimeResult {
+    return self.parseFast(input, HttpParserTarget.scalar())
+  }
+
+  pub fn parseFast(
+    self: HttpParserKernel,
+    input: HttpParserInput,
+    target: HttpParserTarget,
+  ) -> HttpParserRuntimeResult {
+    if !self.accepted() {
+      return HttpParserRuntimeResult.err(HttpAcceleratedFailure.kernelUnavailable(), 0)
+    }
+    if !target.accepted() {
+      return HttpParserRuntimeResult.err(HttpAcceleratedFailure.targetUnsupported("unsupported HTTP parser target"), 0)
+    }
+    let scan = HttpParserStructuralScan.fromInput(input, target)
+    if !scan.accepted() {
+      return HttpParserRuntimeResult.err(HttpAcceleratedFailure.badRequest(scan.bytesScanned, "invalid HTTP structural bytes"), scan.bytesScanned)
+    }
+    if input.bytesLen == 0 || input.methodLen == 0 {
+      return HttpParserRuntimeResult.err(HttpAcceleratedFailure.badRequest(0, "missing method"), input.bytesLen)
+    }
+    if input.pathLen == 0 {
+      return HttpParserRuntimeResult.err(HttpAcceleratedFailure.badRequest(input.methodLen + 1, "missing path"), input.bytesLen)
+    }
+    if input.versionLen == 0 {
+      return HttpParserRuntimeResult.err(HttpAcceleratedFailure.badRequest(input.requestLineEnd, "missing version"), input.bytesLen)
+    }
+    if input.headerEnd > input.bytesLen {
+      return HttpParserRuntimeResult.err(HttpAcceleratedFailure.badRequest(input.bytesLen, "header extends past input"), input.bytesLen)
+    }
+    return HttpParserRuntimeResult.ok(
+      HttpParsedRequest {
+        methodStart: 0,
+        methodLen: input.methodLen,
+        pathStart: input.methodLen + 1,
+        pathLen: input.pathLen,
+        queryStart: input.methodLen + 1 + input.pathLen,
+        queryLen: input.queryLen,
+        versionStart: input.requestLineEnd - input.versionLen,
+        versionLen: input.versionLen,
+        headerEnd: input.headerEnd,
+        headerCount: input.headerCount,
+        bodyStart: input.headerEnd + 2,
+      },
+      input.headerEnd,
+      scan.usedSimd,
+      scan.laneBytes
+    )
+  }
+}

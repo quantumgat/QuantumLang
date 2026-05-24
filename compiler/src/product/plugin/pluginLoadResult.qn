@@ -1,0 +1,45 @@
+pub struct PluginLoadResult {
+  plan: PluginLoadPlan,
+  sandbox: PluginSandbox,
+  hookRegistry: PluginCompilerHookRegistry,
+  sourceMapBridge: PluginSourceMapBridge,
+  diagnosticBridge: PluginDiagnosticBridge,
+  manifestValidation: PluginManifestValidation,
+  externalSandboxRequired: bool,
+}
+
+impl PluginLoadResult {
+  pub fn fromParseResult(result: PluginManifestParseResult) -> PluginLoadResult {
+    return PluginLoadResult {
+      plan: PluginLoadPlan.fromManifests(1, 1),
+      sandbox: PluginSandbox.compileTime(),
+      hookRegistry: PluginCompilerHookRegistry.fromManifest(result.manifest),
+      sourceMapBridge: PluginSourceMapBridge.fromManifest(result.manifest),
+      diagnosticBridge: PluginDiagnosticBridge.fromManifest(result.manifest),
+      manifestValidation: PluginManifestValidation.fromManifest(result.manifest),
+      externalSandboxRequired: true,
+    }
+  }
+
+  pub fn fromManifest(manifest: PluginManifest) -> PluginLoadResult {
+    return PluginLoadResult {
+      plan: PluginLoadPlan.fromManifests(1, 1),
+      sandbox: PluginSandbox.compileTime(),
+      hookRegistry: PluginCompilerHookRegistry.fromManifest(manifest),
+      sourceMapBridge: PluginSourceMapBridge.fromManifest(manifest),
+      diagnosticBridge: PluginDiagnosticBridge.fromManifest(manifest),
+      manifestValidation: PluginManifestValidation.fromManifest(manifest),
+      externalSandboxRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginLoadResult) -> bool {
+    return self.plan.accepted()
+      && self.sandbox.accepted()
+      && self.hookRegistry.accepted()
+      && self.sourceMapBridge.accepted()
+      && self.diagnosticBridge.accepted()
+      && self.manifestValidation.accepted()
+      && self.externalSandboxRequired
+  }
+}

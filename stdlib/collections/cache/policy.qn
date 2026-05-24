@@ -1,0 +1,21 @@
+pub enum CacheEvictionPolicy {
+  Lru,
+  Fifo,
+}
+
+impl CacheEvictionPolicy {
+  pub fn default() -> CacheEvictionPolicy {
+    return CacheEvictionPolicy.Lru
+  }
+
+  pub fn touchesOnRead(self: CacheEvictionPolicy) -> bool {
+    match self {
+      CacheEvictionPolicy.Lru => {
+        return true
+      }
+      CacheEvictionPolicy.Fifo => {
+        return false
+      }
+    }
+  }
+}

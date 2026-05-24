@@ -1,0 +1,17 @@
+pub struct PlatformFilesystemFact {
+  target: string,
+  available: bool,
+  sandboxed: bool,
+  diagnosticRequired: bool,
+  streamingProof: bool,
+  noCoredump: bool,
+}
+
+impl PlatformFilesystemFact {
+  pub fn accepted(self: PlatformFilesystemFact) -> bool {
+    return self.target != ""
+      && (self.available || self.diagnosticRequired)
+      && self.streamingProof
+      && self.noCoredump
+  }
+}

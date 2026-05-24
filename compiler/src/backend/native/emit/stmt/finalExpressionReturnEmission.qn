@@ -1,0 +1,42 @@
+pub struct FinalExpressionReturnEmission {
+  functionId: u64,
+  emittedReturn: bool,
+  allocatedWrapper: bool,
+  usedExceptionPath: bool,
+  emittedConversion: bool,
+  wrappedResultOk: bool,
+}
+
+pub fn finalExpressionReturnEmission(
+  functionId: u64,
+  emittedReturn: bool,
+  allocatedWrapper: bool,
+  usedExceptionPath: bool,
+  emittedConversion: bool,
+  wrappedResultOk: bool,
+) -> FinalExpressionReturnEmission {
+  return FinalExpressionReturnEmission {
+    functionId: functionId,
+    emittedReturn: emittedReturn,
+    allocatedWrapper: allocatedWrapper,
+    usedExceptionPath: usedExceptionPath,
+    emittedConversion: emittedConversion,
+    wrappedResultOk: wrappedResultOk,
+  }
+}
+
+impl FinalExpressionReturnEmission {
+  pub fn isZeroOverhead(self: FinalExpressionReturnEmission) -> bool {
+    return self.emittedReturn &&
+      self.allocatedWrapper == false &&
+      self.usedExceptionPath == false
+  }
+
+  pub fn convertsTailExpression(self: FinalExpressionReturnEmission) -> bool {
+    return self.emittedConversion
+  }
+
+  pub fn returnsResultOk(self: FinalExpressionReturnEmission) -> bool {
+    return self.wrappedResultOk
+  }
+}

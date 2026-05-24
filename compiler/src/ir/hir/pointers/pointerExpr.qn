@@ -1,0 +1,27 @@
+pub enum HirPointerExprKind {
+  Null,
+  AddressOf,
+  Deref,
+  Offset,
+  Cast,
+  Slice,
+  NonNullPayload,
+  SmartPointerBorrow,
+}
+
+pub struct HirPointerExpr {
+  node: u64,
+  kind: HirPointerExprKind,
+  typeName: string,
+  checked: bool,
+  targetVariantRequired: bool,
+}
+
+impl HirPointerExpr {
+  pub fn accepted(self: HirPointerExpr) -> bool {
+    return self.node > 0
+      && self.typeName != ""
+      && self.checked
+      && self.targetVariantRequired
+  }
+}

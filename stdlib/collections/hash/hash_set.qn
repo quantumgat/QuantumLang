@@ -1,0 +1,90 @@
+pub struct HashSet<T> {
+  map: HashMap<T, bool>,
+  len: usize,
+  generation: usize,
+}
+
+impl<T> HashSet<T> {
+  pub fn init() -> HashSet<T> requires(alloc) {
+    return HashSet<T>.withCapacity(16)
+  }
+
+  pub fn empty() -> HashSet<T> requires(alloc) {
+    return HashSet<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> HashSet<T> requires(alloc) {
+    let map = HashMap<T, bool>.withCapacity(capacity)
+    return HashSet<T> { map: map, len: 0, generation: 0 }
+  }
+
+  pub fn contains(self: HashSet<T>, value: T) -> bool {
+    return self.map.containsKey(value)
+  }
+
+  pub fn insert(self: HashSet<T>, value: T) -> HashSet<T> requires(alloc) {
+    let inserted = self.map.putResult(value, true)
+    if inserted.updated {
+      return HashSet<T> { map: inserted.map, len: self.len, generation: self.generation + 1 }
+    }
+    return HashSet<T> { map: inserted.map, len: self.len + 1, generation: self.generation + 1 }
+  }
+
+  pub fn remove(self: HashSet<T>, value: T) -> HashSet<T> requires(alloc) {
+    let removed = self.map.remove(value)
+    let nextMap = removed.0
+    match removed.1 {
+      Some(stored) => {
+        return HashSet<T> { map: nextMap, len: self.len - 1, generation: self.generation + 1 }
+      }
+      None => {
+        return self
+      }
+    }
+  }
+
+  pub fn len(self: HashSet<T>) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: HashSet<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn entryAt(self: HashSet<T>, index: usize) -> Option<T> {
+    let entry = self.map.entryAt(index)
+    match entry {
+      Some(pair) => {
+        return Some(pair.0)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn directCursorLimit(self: HashSet<T>) -> usize {
+    return self.map.directCursorLimit()
+  }
+
+  pub fn directIsFullAt(self: HashSet<T>, index: usize) -> bool {
+    return self.map.directIsFullAt(index)
+  }
+
+  pub fn directValueAt(self: HashSet<T>, index: usize) -> T {
+    return self.map.directKeyAt(index)
+  }
+
+  pub fn toVec(self: HashSet<T>) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut index: usize = 0
+    let limit = self.directCursorLimit()
+    while index < limit {
+      if self.directIsFullAt(index) {
+        result = result.push(self.directValueAt(index))
+      }
+      index = index + 1
+    }
+    return result
+  }
+}

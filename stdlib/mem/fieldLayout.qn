@@ -1,0 +1,37 @@
+pub struct FieldLayout {
+  name: string,
+  offset: usize,
+  layout: Layout,
+  paddingBefore: usize,
+}
+
+impl FieldLayout {
+  pub fn init(name: string, offset: usize, layout: Layout, previousEnd: usize) -> FieldLayout {
+    return FieldLayout {
+      name: name,
+      offset: offset,
+      layout: layout,
+      paddingBefore: offset - previousEnd,
+    }
+  }
+
+  pub fn name(self: FieldLayout) -> string {
+    return self.name
+  }
+
+  pub fn offset(self: FieldLayout) -> usize {
+    return self.offset
+  }
+
+  pub fn endOffset(self: FieldLayout) -> usize {
+    return self.offset + self.layout.size()
+  }
+
+  pub fn paddingBefore(self: FieldLayout) -> usize {
+    return self.paddingBefore
+  }
+
+  pub fn aligned(self: FieldLayout) -> bool {
+    return self.layout.isAlignedOffset(self.offset)
+  }
+}

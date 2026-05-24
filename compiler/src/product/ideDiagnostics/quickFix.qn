@@ -1,0 +1,40 @@
+pub struct IdeQuickFix {
+  diagnostic: Diagnostic,
+  fixIt: FixIt,
+  action: CodeAction,
+  command: string,
+  title: string,
+  exactRange: SourceRange,
+  safe: bool,
+  machineApplicable: bool,
+  mutatesCompilerFacts: bool,
+}
+
+pub fn ideQuickFix(diagnostic: Diagnostic, fixIt: FixIt, title: string, command: string) -> IdeQuickFix {
+  return IdeQuickFix {
+    diagnostic: diagnostic,
+    fixIt: fixIt,
+    action: codeAction(title, CodeActionKind.QuickFixAction),
+    command: command,
+    title: title,
+    exactRange: fixIt.range,
+    safe: fixIt.safety == FixItSafety.Safe,
+    machineApplicable: fixIt.machineApplicable,
+    mutatesCompilerFacts: false,
+  }
+}
+
+impl IdeQuickFix {
+  pub fn ready(self: IdeQuickFix) -> bool {
+    return self.diagnostic.complete()
+      && self.fixIt.applicable()
+      && self.action.sourceMapped
+      && self.action.mutatesCompilerFacts == false
+      && self.command != ""
+      && self.title != ""
+      && self.exactRange.exact()
+      && self.safe
+      && self.machineApplicable
+      && self.mutatesCompilerFacts == false
+  }
+}

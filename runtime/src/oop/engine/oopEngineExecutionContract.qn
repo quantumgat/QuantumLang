@@ -1,0 +1,42 @@
+pub struct OopEngineExecutionContract {
+  metadataRuntime: bool,
+  vtableRuntime: bool,
+  interfaceObjectRuntime: bool,
+  dispatchRuntime: bool,
+  downcastRuntime: bool,
+  reflectionColdPath: bool,
+  memoryBoundaryRuntime: bool,
+  ffiBoundaryRuntime: bool,
+  hiddenAllocationRejected: bool,
+  staleHandleDiagnostics: bool,
+}
+
+pub fn oopEngineExecutionContract() -> OopEngineExecutionContract {
+  return OopEngineExecutionContract {
+    metadataRuntime: true,
+    vtableRuntime: true,
+    interfaceObjectRuntime: true,
+    dispatchRuntime: true,
+    downcastRuntime: true,
+    reflectionColdPath: true,
+    memoryBoundaryRuntime: true,
+    ffiBoundaryRuntime: true,
+    hiddenAllocationRejected: true,
+    staleHandleDiagnostics: true,
+  }
+}
+
+impl OopEngineExecutionContract {
+  pub fn complete(self: OopEngineExecutionContract) -> bool {
+    return self.metadataRuntime
+      && self.vtableRuntime
+      && self.interfaceObjectRuntime
+      && self.dispatchRuntime
+      && self.downcastRuntime
+      && self.reflectionColdPath
+      && self.memoryBoundaryRuntime
+      && self.ffiBoundaryRuntime
+      && self.hiddenAllocationRejected
+      && self.staleHandleDiagnostics
+  }
+}

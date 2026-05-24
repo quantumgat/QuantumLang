@@ -1,0 +1,41 @@
+pub enum DirectMemoryOpKind {
+  Load
+  Store
+  Copy
+  Move
+  Fill
+  Zero
+}
+
+pub struct DirectMemoryLowering {
+  instruction: u64,
+  kind: DirectMemoryOpKind,
+  bytes: usize,
+  directInstruction: bool,
+  wrapperErased: bool,
+  provenancePreserved: bool,
+  diagnosticFallback: bool,
+}
+
+impl DirectMemoryLowering {
+  pub fn init(instruction: u64, kind: DirectMemoryOpKind, bytes: usize) -> DirectMemoryLowering {
+    return DirectMemoryLowering {
+      instruction: instruction,
+      kind: kind,
+      bytes: bytes,
+      directInstruction: true,
+      wrapperErased: true,
+      provenancePreserved: true,
+      diagnosticFallback: true,
+    }
+  }
+
+  pub fn hotPath(self: DirectMemoryLowering) -> bool {
+    return self.instruction > 0
+      && self.bytes > 0
+      && self.directInstruction
+      && self.wrapperErased
+      && self.provenancePreserved
+      && self.diagnosticFallback
+  }
+}

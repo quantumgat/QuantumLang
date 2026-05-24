@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct CancellationToken {
+  id: u64
+  parent: u64
+  cancelled: bool
+}
+pub extern "qnpkg" {
+  pub fn cancellationToken(id: u64, parent: u64) -> CancellationToken
+}

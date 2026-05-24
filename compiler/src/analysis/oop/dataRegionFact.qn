@@ -1,0 +1,51 @@
+pub struct DataRegionFact {
+  classId: u64,
+  dataClassBound: bool,
+  layoutBound: bool,
+  fieldPlacementBound: bool,
+  regionOwnershipBound: bool,
+  poolAllocationBound: bool,
+  handleStabilityBound: bool,
+  viewInvalidationBound: bool,
+  vectorizationBound: bool,
+  performanceDumpBound: bool,
+}
+
+pub fn dataRegionFact(
+  classId: u64,
+  dataClassBound: bool,
+  layoutBound: bool,
+  fieldPlacementBound: bool,
+  regionOwnershipBound: bool,
+  poolAllocationBound: bool,
+  handleStabilityBound: bool,
+  viewInvalidationBound: bool,
+  vectorizationBound: bool,
+  performanceDumpBound: bool,
+) -> DataRegionFact {
+  return DataRegionFact {
+    classId: classId,
+    dataClassBound: dataClassBound,
+    layoutBound: layoutBound,
+    fieldPlacementBound: fieldPlacementBound,
+    regionOwnershipBound: regionOwnershipBound,
+    poolAllocationBound: poolAllocationBound,
+    handleStabilityBound: handleStabilityBound,
+    viewInvalidationBound: viewInvalidationBound,
+    vectorizationBound: vectorizationBound,
+    performanceDumpBound: performanceDumpBound,
+  }
+}
+
+impl DataRegionFact {
+  pub fn complete(self: DataRegionFact) -> bool {
+    return self.dataClassBound
+      && self.layoutBound
+      && self.fieldPlacementBound
+      && self.regionOwnershipBound
+      && self.poolAllocationBound
+      && self.handleStabilityBound
+      && self.viewInvalidationBound
+      && self.performanceDumpBound
+  }
+}

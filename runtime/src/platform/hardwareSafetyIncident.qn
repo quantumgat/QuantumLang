@@ -1,0 +1,19 @@
+pub struct HardwareSafetyIncident {
+  diagnosticCode: string,
+  recoverable: bool,
+  coredump: bool,
+}
+
+impl HardwareSafetyIncident {
+  pub fn init(diagnosticCode: string) -> HardwareSafetyIncident {
+    return HardwareSafetyIncident {
+      diagnosticCode: diagnosticCode,
+      recoverable: true,
+      coredump: false,
+    }
+  }
+
+  pub fn productionSafe(self: HardwareSafetyIncident) -> bool {
+    return self.recoverable && self.coredump == false
+  }
+}

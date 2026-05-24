@@ -1,0 +1,42 @@
+pub struct ErrorCode {
+  category: ErrorCategory,
+  family: string,
+  number: u32,
+}
+
+impl ErrorCode {
+  /**
+    Creates a stable typed error code.
+
+    example:
+      let code = ErrorCode.new(ErrorCategory.Io, "QIO", 1001)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn new(category: ErrorCategory, family: string, number: u32) -> ErrorCode {
+    return ErrorCode {
+      category: category,
+      family: family,
+      number: number,
+    }
+  }
+
+  pub fn stable(self: ErrorCode) -> bool {
+    return self.category.stable() && self.family != "" && self.number > 0
+  }
+
+  pub fn category(self: ErrorCode) -> ErrorCategory {
+    return self.category
+  }
+
+  pub fn family(self: ErrorCode) -> string {
+    return self.family
+  }
+
+  pub fn number(self: ErrorCode) -> u32 {
+    return self.number
+  }
+}

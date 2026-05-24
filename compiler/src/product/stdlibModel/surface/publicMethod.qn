@@ -1,0 +1,11 @@
+pub struct StdlibPublicMethod {
+  receiverType: string,
+  methodName: string,
+  returnType: string,
+}
+
+impl StdlibPublicMethod {
+  pub fn accepted(self: StdlibPublicMethod) -> bool {
+    return self.receiverType != "" && self.methodName != "" && self.returnType != ""
+  }
+}

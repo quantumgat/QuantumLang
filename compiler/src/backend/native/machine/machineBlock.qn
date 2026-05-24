@@ -1,0 +1,23 @@
+pub struct MachineBlock {
+  id: u64,
+  instructionCount: usize,
+  successorCount: usize,
+}
+
+pub fn machineBlock(id: u64, instructionCount: usize, successorCount: usize) -> MachineBlock {
+  return MachineBlock { id: id, instructionCount: instructionCount, successorCount: successorCount }
+}
+
+impl MachineBlock {
+  pub fn blockId(self: MachineBlock) -> u64 {
+    return self.id
+  }
+
+  pub fn instructions(self: MachineBlock) -> usize {
+    return self.instructionCount
+  }
+
+  pub fn successors(self: MachineBlock) -> usize {
+    return self.successorCount
+  }
+}

@@ -1,0 +1,19 @@
+pub struct CpuFeatureLowering {
+  feature: string,
+  emitsTargetAttribute: bool,
+  preservesFallbackGate: bool,
+}
+
+impl CpuFeatureLowering {
+  pub fn init(feature: string, emitsTargetAttribute: bool, preservesFallbackGate: bool) -> CpuFeatureLowering {
+    return CpuFeatureLowering {
+      feature: feature,
+      emitsTargetAttribute: emitsTargetAttribute,
+      preservesFallbackGate: preservesFallbackGate,
+    }
+  }
+
+  pub fn accepted(self: CpuFeatureLowering) -> bool {
+    return self.feature != "" && self.emitsTargetAttribute && self.preservesFallbackGate
+  }
+}

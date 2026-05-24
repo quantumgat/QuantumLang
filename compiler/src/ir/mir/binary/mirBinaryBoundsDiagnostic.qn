@@ -1,0 +1,25 @@
+pub enum MirBinaryDiagnosticKind {
+  Eof,
+  WriterOverflow,
+  InvalidAlignment,
+  WideIntMismatch,
+}
+
+pub struct MirBinaryBoundsDiagnostic {
+  instruction: u64,
+  kind: MirBinaryDiagnosticKind,
+  diagnosticCode: string,
+  byteOffsetAttached: bool,
+  requiredBytesAttached: bool,
+  noCoredump: bool,
+}
+
+impl MirBinaryBoundsDiagnostic {
+  pub fn accepted(self: MirBinaryBoundsDiagnostic) -> bool {
+    return self.instruction > 0
+      && self.diagnosticCode != ""
+      && self.byteOffsetAttached
+      && self.requiredBytesAttached
+      && self.noCoredump
+  }
+}

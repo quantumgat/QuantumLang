@@ -1,0 +1,21 @@
+pub struct StaticTargetFeatureFact {
+  target: string,
+  feature: string,
+  enabledAtCompileTime: bool,
+  requiredByCode: bool,
+}
+
+impl StaticTargetFeatureFact {
+  pub fn init(target: string, feature: string, enabledAtCompileTime: bool, requiredByCode: bool) -> StaticTargetFeatureFact {
+    return StaticTargetFeatureFact {
+      target: target,
+      feature: feature,
+      enabledAtCompileTime: enabledAtCompileTime,
+      requiredByCode: requiredByCode,
+    }
+  }
+
+  pub fn accepted(self: StaticTargetFeatureFact) -> bool {
+    return self.requiredByCode == false || self.enabledAtCompileTime
+  }
+}

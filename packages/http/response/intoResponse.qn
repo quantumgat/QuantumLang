@@ -1,0 +1,83 @@
+import body::{HttpBody}
+import request::{HttpHeaderMap}
+
+pub struct IntoHttpResponse {
+  status: HttpStatus,
+}
+
+pub struct RawJson {
+  text: string,
+}
+
+impl RawJson {
+  pub fn init(text: string) -> RawJson {
+    return RawJson {
+      text: text,
+    }
+  }
+
+  pub fn text(self: RawJson) -> string {
+    return self.text
+  }
+}
+
+impl IntoHttpResponse {
+  pub fn ok() -> IntoHttpResponse {
+    return IntoHttpResponse.init(HttpStatus.ok())
+  }
+
+  pub fn init(status: HttpStatus) -> IntoHttpResponse {
+    return IntoHttpResponse {
+      status: status,
+    }
+  }
+
+  pub fn status(self: IntoHttpResponse) -> HttpStatus {
+    return self.status
+  }
+
+  pub fn text(self: IntoHttpResponse, body: string) -> HttpResponse {
+    return HttpResponse.init(
+      self.status,
+      HttpHeaderMap.empty().add("content-type", "text/plain; charset=utf-8"),
+      HttpBody.text(body)
+    )
+  }
+
+  pub fn json(self: IntoHttpResponse, body: json) -> Result<HttpResponse, JsonError> {
+    let encodedResult = intoHttpJsonEncode(body)
+    match encodedResult {
+      Ok(encoded) => {
+        return Ok(self.rawJson(RawJson.init(encoded)))
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn rawJson(self: IntoHttpResponse, body: RawJson) -> HttpResponse {
+    return HttpResponse.init(
+      self.status,
+      HttpHeaderMap.empty().add("content-type", "application/json"),
+      HttpBody.json(body.text())
+    )
+  }
+
+  pub fn response(self: IntoHttpResponse, body: HttpResponse) -> HttpResponse {
+    return body
+  }
+
+  pub fn typed<T>(self: IntoHttpResponse, body: T, policy: ResponsePolicy) -> Result<HttpResponse, JsonError> {
+    if policy.wrapsTypedReturns() {
+      return Response.envelope(self.status, body)
+    }
+    return Response.raw(self.status, body)
+  }
+}
+
+pub fn RawJson(text: string) -> RawJson {
+  return RawJson.init(text)
+}
+
+fn intoHttpJsonEncode(value: json) -> Result<string, JsonError>

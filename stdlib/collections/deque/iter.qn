@@ -1,0 +1,31 @@
+pub struct DequeIter<T> {
+  deque: Deque<T>,
+  index: usize,
+  len: usize,
+  generation: usize,
+}
+
+impl<T> DequeIter<T> {
+  pub fn isEmpty(self: DequeIter<T>) -> bool {
+    return self.index >= self.len
+  }
+
+  pub fn next(self: DequeIter<T>) -> Option<T> {
+    if self.isEmpty() {
+      return None
+    }
+    return Some(self.deque.items[self.deque.physicalIndex(self.index)])
+  }
+
+  pub fn advance(self: DequeIter<T>) -> DequeIter<T> {
+    if self.isEmpty() {
+      return self
+    }
+    return DequeIter<T> {
+      deque: self.deque,
+      index: self.index + 1,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}

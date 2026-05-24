@@ -1,0 +1,15 @@
+pub struct WatchChannel<T> {
+  sender: Sender<T>,
+  receiver: Receiver<T>,
+  version: u64,
+}
+
+impl WatchChannel<T> {
+  pub fn update(self: WatchChannel<T>, value: T) -> Result<Unit, ChannelError>
+
+  pub fn changed(self: WatchChannel<T>) -> Result<T, ChannelError>
+
+  pub fn currentVersion(self: WatchChannel<T>) -> u64 {
+    return self.version
+  }
+}

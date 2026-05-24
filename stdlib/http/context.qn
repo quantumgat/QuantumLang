@@ -1,0 +1,77 @@
+/**
+  Grouped HTTP endpoint capability context.
+
+  example:
+    pub type ApiCtx = HttpCtx<AuthenticatedUser, TenantContext, TraceContext>
+
+  effects: pure
+  allocation: none
+  stability: public since 0.1
+*/
+pub struct HttpCtx<Auth, Tenant, Trace> {
+  auth: Auth,
+  tenant: Tenant,
+  trace: Trace,
+}
+
+impl<Auth, Tenant, Trace> HttpCtx<Auth, Tenant, Trace> {
+  /**
+    Builds a grouped endpoint context from capability values.
+
+    example:
+      let ctx = HttpCtx<AuthenticatedUser, TenantContext, TraceContext>.init(auth, tenant, trace)
+
+    effects: pure
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn init(auth: Auth, tenant: Tenant, trace: Trace) -> HttpCtx<Auth, Tenant, Trace> {
+    return HttpCtx<Auth, Tenant, Trace> {
+      auth: auth,
+      tenant: tenant,
+      trace: trace,
+    }
+  }
+
+  /**
+    Returns the authentication capability value.
+
+    example:
+      let userId = ctx.authValue().userId
+
+    effects: pure
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn authValue(self: HttpCtx<Auth, Tenant, Trace>) -> Auth {
+    return self.auth
+  }
+
+  /**
+    Returns the tenant capability value.
+
+    example:
+      let tenantId = ctx.tenantValue().id
+
+    effects: pure
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn tenantValue(self: HttpCtx<Auth, Tenant, Trace>) -> Tenant {
+    return self.tenant
+  }
+
+  /**
+    Returns the trace capability value.
+
+    example:
+      let traceId = ctx.traceValue().id
+
+    effects: pure
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn traceValue(self: HttpCtx<Auth, Tenant, Trace>) -> Trace {
+    return self.trace
+  }
+}

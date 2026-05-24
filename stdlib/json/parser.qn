@@ -1,0 +1,78 @@
+pub struct JsonParsePlan {
+  typedDecode: bool,
+  dynamicValueAllowed: bool,
+  pathAwareErrors: bool,
+  exactNumbers: bool,
+  rejectNonFiniteNumbers: bool,
+  rejectTrailingData: bool,
+  depthLimit: usize,
+}
+
+pub struct JsonParser {
+  bytes: Bytes,
+  offset: usize,
+  depth: usize,
+  plan: JsonParsePlan,
+}
+
+impl JsonParsePlan {
+  pub fn default() -> JsonParsePlan {
+    return JsonParsePlan {
+      typedDecode: true,
+      dynamicValueAllowed: true,
+      pathAwareErrors: true,
+      exactNumbers: true,
+      rejectNonFiniteNumbers: true,
+      rejectTrailingData: true,
+      depthLimit: 1024,
+    }
+  }
+
+  pub fn safe(self: JsonParsePlan) -> bool {
+    return self.pathAwareErrors
+      && self.exactNumbers
+      && self.rejectNonFiniteNumbers
+      && self.depthLimit > 0
+  }
+}
+
+impl JsonParser {
+  pub fn init(bytes: Bytes, plan: JsonParsePlan) -> JsonParser {
+    return JsonParser {
+      bytes: bytes,
+      offset: 0,
+      depth: 0,
+      plan: plan,
+    }
+  }
+
+  pub fn parse(self: JsonParser) -> Result<JsonValue, JsonError> {
+    let value = self.parseValue("$")?
+    if self.plan.rejectTrailingData {
+      self.expectEnd()?
+    }
+    return Ok(value)
+  }
+
+  pub fn parseValue(self: JsonParser, path: string) -> Result<JsonValue, JsonError> {
+    if self.depth > self.plan.depthLimit {
+      return Err(JsonError.new(JsonErrorKind.DepthLimit, path, self.offset))
+    }
+    return jsonParseValueKernel(self.bytes, self.offset, path, self.plan)
+  }
+
+  pub fn expectEnd(self: JsonParser) -> Result<Unit, JsonError> {
+    return jsonExpectEndKernel(self.bytes, self.offset)
+  }
+}
+
+pub fn parse(bytes: Bytes) -> Result<JsonValue, JsonError> {
+  return JsonParser.init(bytes, JsonParsePlan.default()).parse()
+}
+
+pub fn parse(bytes: Bytes, plan: JsonParsePlan) -> Result<JsonValue, JsonError> {
+  return JsonParser.init(bytes, plan).parse()
+}
+
+fn jsonParseValueKernel(bytes: Bytes, offset: usize, path: string, plan: JsonParsePlan) -> Result<JsonValue, JsonError>
+fn jsonExpectEndKernel(bytes: Bytes, offset: usize) -> Result<Unit, JsonError>

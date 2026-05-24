@@ -1,0 +1,7 @@
+[module]
+name = "json"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "json-analysis-facts"
+

@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct EmergencyReportBuffer {
+  capacityBytes: usize
+  usedBytes: usize
+  allocationFree: bool
+  redacted: bool
+  ringBuffered: bool
+  preservesNewestFatal: bool
+  stableSchema: bool
+  writableDuringOom: bool
+  noCoredump: bool
+}

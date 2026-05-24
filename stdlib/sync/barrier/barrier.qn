@@ -1,0 +1,16 @@
+pub struct Barrier {
+  parties: usize,
+  arrived: usize,
+}
+
+pub struct BarrierWait {
+  leader: bool,
+}
+
+impl Barrier {
+  pub fn wait(self: Barrier) -> Result<BarrierWait, SyncError>
+
+  pub fn parties(self: Barrier) -> usize {
+    return self.parties
+  }
+}

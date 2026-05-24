@@ -1,0 +1,37 @@
+pub struct BinaryAcceleratedCodecFact {
+  decodeViewLifetimeProven: bool,
+  encodeIntoNoTempBuffer: bool,
+  encodedSizeExact: bool,
+  pageArenaBounded: bool,
+  fieldProjectionSkipsUnused: bool,
+  predicatePushdownEncodedCompare: bool,
+  columnBlockVectorized: bool,
+  stableKeySortable: bool,
+  rowDeltaOnlyChangedFields: bool,
+  layoutHashSkipsTypeMetadata: bool,
+  builderProducesCompiledCodec: bool,
+  codecReuseNoReflection: bool,
+  limitsEnforced: bool,
+  validatedFastPathProof: bool,
+  toOwnedExplicitCopy: bool,
+}
+
+impl BinaryAcceleratedCodecFact {
+  pub fn accepted(self: BinaryAcceleratedCodecFact) -> bool {
+    return self.decodeViewLifetimeProven
+      && self.encodeIntoNoTempBuffer
+      && self.encodedSizeExact
+      && self.pageArenaBounded
+      && self.fieldProjectionSkipsUnused
+      && self.predicatePushdownEncodedCompare
+      && self.columnBlockVectorized
+      && self.stableKeySortable
+      && self.rowDeltaOnlyChangedFields
+      && self.layoutHashSkipsTypeMetadata
+      && self.builderProducesCompiledCodec
+      && self.codecReuseNoReflection
+      && self.limitsEnforced
+      && self.validatedFastPathProof
+      && self.toOwnedExplicitCopy
+  }
+}

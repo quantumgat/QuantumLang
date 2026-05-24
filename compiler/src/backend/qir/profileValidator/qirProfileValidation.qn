@@ -1,0 +1,23 @@
+pub struct QirProfileValidation {
+  profileName: string,
+  qubitModelAccepted: bool,
+  resultModelAccepted: bool,
+  providerAccepted: bool,
+  qwhileLoopAccepted: bool,
+  boundedLoopRequired: bool,
+}
+
+impl QirProfileValidation {
+  pub fn accepted(self: QirProfileValidation) -> bool {
+    return self.profileName != ""
+      && self.qubitModelAccepted
+      && self.resultModelAccepted
+      && self.providerAccepted
+  }
+
+  pub fn qwhileAccepted(self: QirProfileValidation) -> bool {
+    return self.accepted()
+      && self.qwhileLoopAccepted
+      && self.boundedLoopRequired
+  }
+}

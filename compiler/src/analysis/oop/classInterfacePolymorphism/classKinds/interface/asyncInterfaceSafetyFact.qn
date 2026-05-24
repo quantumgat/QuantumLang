@@ -1,0 +1,28 @@
+pub struct AsyncInterfaceSafetyFact {
+  interfaceTypeId: u64,
+  asyncObligationBound: bool,
+  objectSafetyRuleBound: bool,
+  explicitDynAdapterRequired: bool,
+  dynFutureAbiBound: bool,
+  sealedStaticDirectLoweringBound: bool,
+  typedFailureDiagnosticBound: bool,
+  sourceMapBound: bool,
+}
+
+impl AsyncInterfaceSafetyFact {
+  pub fn complete(self: AsyncInterfaceSafetyFact) -> bool {
+    return self.interfaceTypeId > 0
+      && self.asyncObligationBound
+      && self.objectSafetyRuleBound
+      && self.explicitDynAdapterRequired
+      && self.dynFutureAbiBound
+      && self.sealedStaticDirectLoweringBound
+      && self.typedFailureDiagnosticBound
+      && self.sourceMapBound
+  }
+
+  pub fn staticHotPathReady(self: AsyncInterfaceSafetyFact) -> bool {
+    return self.complete()
+      && self.sealedStaticDirectLoweringBound
+  }
+}

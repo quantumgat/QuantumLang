@@ -1,0 +1,3 @@
+pub mod foreignClassRuntimeContract
+
+pub use foreignClassRuntimeContract.ForeignClassRuntimeContract

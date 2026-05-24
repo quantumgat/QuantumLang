@@ -1,0 +1,120 @@
+pub struct MiddlewareSessionCtxDataProof {
+  middlewareLifecycle: bool,
+  typedContextData: bool,
+  helperAccess: bool,
+  cookiePolicy: bool,
+  sessionPolicy: bool,
+  sessionStore: bool,
+  csrfPolicy: bool,
+  shortCookieSurface: bool,
+}
+
+impl MiddlewareSessionCtxDataProof {
+  pub fn complete(self: MiddlewareSessionCtxDataProof) -> bool {
+    return self.middlewareLifecycle
+      && self.typedContextData
+      && self.helperAccess
+      && self.cookiePolicy
+      && self.sessionPolicy
+      && self.sessionStore
+      && self.csrfPolicy
+      && self.shortCookieSurface
+  }
+}
+
+pub struct MiddlewareUser {
+  id: string,
+  name: string,
+}
+
+pub struct AuthMiddleware {
+}
+
+impl MiddlewareUser {
+  pub fn init(id: string, name: string) -> MiddlewareUser {
+    return MiddlewareUser { id: id, name: name }
+  }
+
+  pub fn userId(self: MiddlewareUser) -> string {
+    return self.id
+  }
+}
+
+pub struct MiddlewareTenantData {
+  tenantId: string,
+}
+
+impl MiddlewareTenantData {
+  pub fn init(tenantId: string) -> MiddlewareTenantData {
+    return MiddlewareTenantData { tenantId: tenantId }
+  }
+}
+
+pub type MiddlewareProofCtx = HttpCtx<MiddlewareUser, MiddlewareTenantData, HttpSession<MiddlewareUser>>
+
+pub async fn middlewareSessionCtxDataProof() -> Result<MiddlewareSessionCtxDataProof, HttpError> {
+  let runtime = HttpMiddlewareRuntime
+    .init("AuthMiddleware")
+    .withLifecycle()
+    .withHooks()
+    .writesContextData()
+  let request = HttpRequest
+    .get("/products/42")
+    .withHeader("cookie", "sid=abc")
+    .withHeader("x-csrf-token", "csrf")
+  let sessionHandle = HttpSessionHandle.init(HttpSessionId.init("sid-1"))
+  let userSession = HttpSession<MiddlewareUser>.init(sessionHandle, MiddlewareUser.init("u1", "salam"))
+  let ctx = MiddlewareProofCtx
+    .fromRequest(request)
+    .set<MiddlewareUser>(MiddlewareUser.init("u1", "salam"))
+    .set<MiddlewareTenantData>(MiddlewareTenantData.init("tenant-a"))
+    .set<HttpSession<MiddlewareUser>>(userSession)
+  let savedSession = ctx.session().set("user", ctx.get<MiddlewareUser>())?
+  let cookie = Cookie
+    .session("sid", "signed")
+    .domain("example.com")
+    .path("/")
+    .maxAge(30.days)
+    .sameSite(SameSite.Lax)
+    .signed()
+    .encrypted()
+  let shortCookieResponse = Response
+    .ok(ctx.get<MiddlewareUser>())?
+    .cookie("sid", "token")
+    .cookie("theme", "dark", false)
+    .cookie("sid", "token", 30.days)
+    .deleteCookie("old_sid")
+    .deleteCookie("scoped_sid", "/")
+    .session(ctx.session())
+    .cookie(Cookie.session("sid", "token").signed().encrypted().maxAge(30.days))
+  let sessionPolicy = SessionPolicy.secure().rolling().rotateEveryRequest()
+  let storePolicy = SessionStorePolicy.init(SessionStoreKind.Redis)
+  let csrf = CsrfPolicy.default()
+
+  return Ok(MiddlewareSessionCtxDataProof {
+    middlewareLifecycle: runtime.complete()
+      && runtime.contextDataWriteCount() == 1
+      && typeName<HttpMiddlewareLifecycle<AuthMiddleware>>() != ""
+      && typeName<HttpMiddlewareHooks<AuthMiddleware>>() != "",
+    typedContextData: ctx.dataCount() == 3
+      && ctx.get<MiddlewareUser>().userId() == "u1"
+      && ctx.data<MiddlewareTenantData>().tenantId == "tenant-a"
+      && ctx.sessionData<MiddlewareUser>()?.userId() == "u1",
+    helperAccess: ctx.currentUser<MiddlewareUser>().userId() == "u1"
+      && ctx.state<MiddlewareTenantData>().tenantId == "tenant-a",
+    cookiePolicy: cookie.valid()
+      && Cookie.delete("sid").valid()
+      && cookie.headerValue() != "",
+    sessionPolicy: sessionPolicy.complete()
+      && SessionCookiePolicy.secure("sid").ttl(3600).complete(),
+    sessionStore: storePolicy.complete()
+      && CookieSessionStore.secure().policy().complete()
+      && ServerSessionStore.memory().policy().complete()
+      && RedisSessionStore.connect("redis://localhost").policy().complete()
+      && DatabaseSessionStore.table("sessions").policy().complete(),
+    csrfPolicy: csrf.complete()
+      && sessionHandle.csrfToken()?.valid(),
+    shortCookieSurface: savedSession.changed()
+      && shortCookieResponse.status().code() == 200,
+  })
+}

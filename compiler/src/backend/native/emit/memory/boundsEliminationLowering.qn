@@ -1,0 +1,30 @@
+pub struct BoundsEliminationLowering {
+  rangeProof: bool,
+  loopInvariant: bool,
+  dominatesAccess: bool,
+  preservesTrapFreeFailure: bool,
+  removesRedundantCheck: bool,
+}
+
+impl BoundsEliminationLowering {
+  pub fn init() -> BoundsEliminationLowering {
+    return BoundsEliminationLowering {
+      rangeProof: true,
+      loopInvariant: true,
+      dominatesAccess: true,
+      preservesTrapFreeFailure: true,
+      removesRedundantCheck: true,
+    }
+  }
+
+  pub fn accepted(self: BoundsEliminationLowering) -> bool {
+    return self.rangeProof
+      && self.dominatesAccess
+      && self.preservesTrapFreeFailure
+      && self.removesRedundantCheck
+  }
+
+  pub fn loopFastPath(self: BoundsEliminationLowering) -> bool {
+    return self.accepted() && self.loopInvariant
+  }
+}

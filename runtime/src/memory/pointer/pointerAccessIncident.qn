@@ -1,0 +1,32 @@
+pub enum PointerAccessIncidentKind {
+  NullDereference,
+  OutOfBounds,
+  ProvenanceRejected,
+  MisalignedAccess,
+  UseAfterFree,
+  DoubleDrop,
+  WeakUpgradeExpired,
+  MoveWhilePinned,
+}
+
+pub struct PointerAccessIncident {
+  kind: PointerAccessIncidentKind,
+  allocationId: u64,
+  coredump: bool,
+  diagnosticCode: string,
+}
+
+impl PointerAccessIncident {
+  pub fn init(kind: PointerAccessIncidentKind, allocationId: u64, diagnosticCode: string) -> PointerAccessIncident {
+    return PointerAccessIncident {
+      kind: kind,
+      allocationId: allocationId,
+      coredump: false,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn safe(self: PointerAccessIncident) -> bool {
+    return self.coredump == false && self.diagnosticCode != ""
+  }
+}

@@ -1,0 +1,13 @@
+pub struct ActorId {
+  value: u64,
+}
+
+pub fn actorId(value: u64) -> ActorId {
+  return ActorId { value: value }
+}
+
+impl ActorId {
+  pub fn raw(self: ActorId) -> u64 {
+    return self.value
+  }
+}

@@ -1,0 +1,25 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeCapabilityKind {
+  FilesystemCapability
+  NetworkCapability
+  ProcessCapability
+  TerminalCapability
+  ThreadCapability
+  MmioCapability
+  SimdCapability
+  AtomicCapability
+  PointerAuthenticationCapability
+  MemoryTaggingCapability
+  DirectIoCapability
+  ForeignMemoryCapability
+  SignalCapability
+  RawHandleCapability
+  SystemInfoCapability
+}
+pub struct RuntimeCapability {
+  kind: RuntimeCapabilityKind
+  allowed: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeCapability(kind: RuntimeCapabilityKind, allowed: bool) -> RuntimeCapability
+}

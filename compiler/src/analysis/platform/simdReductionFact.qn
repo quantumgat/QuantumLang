@@ -1,0 +1,19 @@
+pub struct SimdReductionFact {
+  laneCount: usize,
+  associative: bool,
+  targetSupported: bool,
+}
+
+impl SimdReductionFact {
+  pub fn init(laneCount: usize, associative: bool, targetSupported: bool) -> SimdReductionFact {
+    return SimdReductionFact {
+      laneCount: laneCount,
+      associative: associative,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn accepted(self: SimdReductionFact) -> bool {
+    return self.laneCount > 0 && self.associative && self.targetSupported
+  }
+}

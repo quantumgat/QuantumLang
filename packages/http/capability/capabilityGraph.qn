@@ -1,0 +1,106 @@
+pub enum CapabilityKind {
+  Authenticated,
+  Admin,
+  RateLimit,
+  Tenant,
+  Csrf,
+  Idempotency,
+  Custom,
+}
+
+pub struct CapabilityFact {
+  endpointName: string,
+  typeName: string,
+  kind: CapabilityKind,
+  required: bool,
+}
+
+impl CapabilityFact {
+  pub fn init(endpointName: string, typeName: string, kind: CapabilityKind, required: bool) -> CapabilityFact {
+    return CapabilityFact {
+      endpointName: endpointName,
+      typeName: typeName,
+      kind: kind,
+      required: required,
+    }
+  }
+
+  pub fn authenticated(endpointName: string) -> CapabilityFact {
+    return CapabilityFact.init(endpointName, "AuthenticatedUser", CapabilityKind.Authenticated, true)
+  }
+
+  pub fn admin(endpointName: string) -> CapabilityFact {
+    return CapabilityFact.init(endpointName, "Admin", CapabilityKind.Admin, true)
+  }
+
+  pub fn of<T>(endpointName: string) -> CapabilityFact {
+    return CapabilityFact.init(endpointName, typeName<T>(), CapabilityKind.Custom, true)
+  }
+
+  pub fn custom(endpointName: string, typeName: string) -> CapabilityFact {
+    return CapabilityFact.init(endpointName, typeName, CapabilityKind.Custom, true)
+  }
+
+  pub fn fromContextSlot(endpointName: string, slot: HttpCtxCapabilitySlot) -> CapabilityFact {
+    return CapabilityFact.init(endpointName, slot.capabilityType(), CapabilityKind.Custom, slot.required())
+  }
+
+  pub fn typeName(self: CapabilityFact) -> string {
+    return self.typeName
+  }
+
+  pub fn required(self: CapabilityFact) -> bool {
+    return self.required
+  }
+}
+
+pub struct CapabilityGraph {
+  facts: Vec<CapabilityFact>,
+  requiredCount: usize,
+}
+
+impl CapabilityGraph {
+  pub fn empty() -> CapabilityGraph {
+    return CapabilityGraph {
+      facts: [],
+      requiredCount: 0,
+    }
+  }
+
+  pub fn add(self: CapabilityGraph, fact: CapabilityFact) -> CapabilityGraph {
+    let requiredCount = self.requiredCount + CapabilityGraph.countRequired(fact.required())
+    return CapabilityGraph {
+      facts: self.facts.push(fact),
+      requiredCount: requiredCount,
+    }
+  }
+
+  pub fn countRequired(required: bool) -> usize {
+    if required {
+      return 1
+    }
+    return 0
+  }
+
+  pub fn addContext(self: CapabilityGraph, endpointName: string, plan: HttpCtxCapabilityPlan) -> CapabilityGraph {
+    let mut graph = self
+    let mut index: usize = 0
+    while index < plan.slotCount() {
+      graph = graph.add(CapabilityFact.fromContextSlot(endpointName, plan.slotAt(index)))
+      index = index + 1
+    }
+    return graph
+  }
+
+  pub fn factCount(self: CapabilityGraph) -> usize {
+    return self.facts.len()
+  }
+
+  pub fn requiredCount(self: CapabilityGraph) -> usize {
+    return self.requiredCount
+  }
+
+  pub fn hasRequiredCapabilities(self: CapabilityGraph) -> bool {
+    return self.requiredCount > 0
+  }
+}

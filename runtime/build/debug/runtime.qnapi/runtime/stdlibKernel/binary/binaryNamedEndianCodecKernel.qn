@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct BinaryNamedEndianCodecKernel {
+  namedEndianAccepted: bool
+  contextualEnumAccepted: bool
+  qualifiedEnumAccepted: bool
+  bigEndianPortable: bool
+  littleEndianPortable: bool
+  lowercaseEndianRejected: bool
+  unknownOptionRejected: bool
+  unknownEndianRejected: bool
+  diagnosticsNoCoredump: bool
+}

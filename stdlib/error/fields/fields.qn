@@ -1,0 +1,36 @@
+pub struct ErrorFields {
+  len: usize,
+  redacted: bool,
+  stableOrder: bool,
+  maxFields: usize,
+}
+
+impl ErrorFields {
+  pub fn empty() -> ErrorFields {
+    return ErrorFields {
+      len: 0,
+      redacted: true,
+      stableOrder: true,
+      maxFields: 0,
+    }
+  }
+
+  pub fn bounded(maxFields: usize) -> ErrorFields {
+    return ErrorFields {
+      len: 0,
+      redacted: true,
+      stableOrder: true,
+      maxFields: maxFields,
+    }
+  }
+
+  pub fn hasRoom(self: ErrorFields) -> bool {
+    return self.maxFields == 0 || self.len < self.maxFields
+  }
+
+  pub fn safe(self: ErrorFields) -> bool {
+    return self.redacted
+      && self.stableOrder
+      && (self.maxFields == 0 || self.len <= self.maxFields)
+  }
+}

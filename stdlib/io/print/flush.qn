@@ -1,0 +1,113 @@
+pub enum PrintFlushMode {
+  Manual,
+  OnNewline,
+  OnFull,
+  Always,
+}
+
+pub struct PrintFlushPolicy {
+  mode: PrintFlushMode,
+  flushStdoutBeforeStderr: bool,
+  flushOnError: bool,
+  returnsResult: bool,
+  noPanic: bool,
+}
+
+impl PrintFlushPolicy {
+  /**
+    Keeps output buffered until the caller explicitly flushes.
+
+    example:
+      let options = PrintOptions.flushManual()
+      printWith(options, "chunk")?
+      flush()?
+
+    effects: delays runtime IO until explicit flush or cleanup
+    complexity: O(1) policy construction
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn manual() -> PrintFlushPolicy {
+    return PrintFlushPolicy {
+      mode: PrintFlushMode.Manual,
+      flushStdoutBeforeStderr: true,
+      flushOnError: true,
+      returnsResult: true,
+      noPanic: true,
+    }
+  }
+
+  /**
+    Flushes when a newline is emitted.
+
+    example:
+      println("ready")?
+
+    effects: may write buffered bytes through runtime IO
+    complexity: O(n) for pending bytes
+    allocation: none in the common literal path
+    stability: public since 0.1
+  */
+  pub fn onNewline() -> PrintFlushPolicy {
+    return PrintFlushPolicy {
+      mode: PrintFlushMode.OnNewline,
+      flushStdoutBeforeStderr: true,
+      flushOnError: true,
+      returnsResult: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn onFull() -> PrintFlushPolicy {
+    return PrintFlushPolicy {
+      mode: PrintFlushMode.OnFull,
+      flushStdoutBeforeStderr: true,
+      flushOnError: true,
+      returnsResult: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn always() -> PrintFlushPolicy {
+    return PrintFlushPolicy {
+      mode: PrintFlushMode.Always,
+      flushStdoutBeforeStderr: true,
+      flushOnError: true,
+      returnsResult: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn safe(self: PrintFlushPolicy) -> bool {
+    return self.flushOnError && self.returnsResult && self.noPanic
+  }
+}
+
+pub struct PrintFlushResult {
+  flushedBytes: usize,
+  complete: bool,
+  partial: PrintPartialWrite,
+}
+
+impl PrintFlushResult {
+  pub fn complete(byteCount: usize) -> PrintFlushResult {
+    return PrintFlushResult {
+      flushedBytes: byteCount,
+      complete: true,
+      partial: PrintPartialWrite.complete(byteCount),
+    }
+  }
+
+  pub fn partial(requestedBytes: usize, writtenBytes: usize) -> PrintFlushResult {
+    return PrintFlushResult {
+      flushedBytes: writtenBytes,
+      complete: false,
+      partial: PrintPartialWrite.pending(requestedBytes, writtenBytes),
+    }
+  }
+
+  pub fn safe(self: PrintFlushResult) -> bool {
+    return self.flushedBytes <= self.partial.requestedBytes
+      && self.partial.safe()
+  }
+}

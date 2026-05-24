@@ -1,0 +1,13 @@
+pub struct CompletionCoverage {
+  expectedRows: usize,
+  coveredRows: usize,
+  thresholdPercent: usize,
+}
+
+pub fn completionCoverage(expectedRows: usize, coveredRows: usize) -> CompletionCoverage {
+  return CompletionCoverage {
+    expectedRows: expectedRows,
+    coveredRows: coveredRows,
+    thresholdPercent: 100,
+  }
+}

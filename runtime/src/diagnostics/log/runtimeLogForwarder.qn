@@ -1,0 +1,55 @@
+pub struct RuntimeLogForwarder {
+  observerCount: usize,
+  transport: RuntimeLogTransport,
+  backpressure: RuntimeLogBackpressure,
+  dropPolicy: RuntimeLogDropPolicy,
+  dropsWhenBackpressured: bool,
+  boundedQueue: bool,
+  sinkCount: usize,
+  forwardsToConsole: bool,
+  forwardsToFile: bool,
+  forwardsToRingBuffer: bool,
+  forwardsToMemory: bool,
+  forwardsToJson: bool,
+  forwardsToTest: bool,
+  forwardsToIncident: bool,
+  redactsBeforeForwarding: bool,
+  observerDeliveryChecked: bool,
+  panicSafeEmergencyPath: bool,
+}
+
+impl RuntimeLogForwarder {
+  pub fn bounded(observerCount: usize, sinkCount: usize, queueCapacity: usize) -> RuntimeLogForwarder {
+    return RuntimeLogForwarder {
+      observerCount: observerCount,
+      transport: RuntimeLogTransport.bounded(queueCapacity),
+      backpressure: RuntimeLogBackpressure.dropOldest(queueCapacity),
+      dropPolicy: RuntimeLogDropPolicy.pressure("log queue pressure"),
+      dropsWhenBackpressured: true,
+      boundedQueue: true,
+      sinkCount: sinkCount,
+      forwardsToConsole: true,
+      forwardsToFile: false,
+      forwardsToRingBuffer: true,
+      forwardsToMemory: true,
+      forwardsToJson: false,
+      forwardsToTest: false,
+      forwardsToIncident: true,
+      redactsBeforeForwarding: true,
+      observerDeliveryChecked: true,
+      panicSafeEmergencyPath: true,
+    }
+  }
+
+  pub fn productionSafe(self: RuntimeLogForwarder) -> bool {
+    return self.dropsWhenBackpressured
+      && self.transport.safe()
+      && self.backpressure.safe()
+      && self.dropPolicy.safe()
+      && self.boundedQueue
+      && self.sinkCount > 0
+      && self.redactsBeforeForwarding
+      && self.observerDeliveryChecked
+      && self.panicSafeEmergencyPath
+  }
+}

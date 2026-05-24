@@ -1,0 +1,28 @@
+pub enum TryResultFlowFamily {
+  ResultPropagation
+  OptionPropagation
+  TryBlock
+  AwaitQuestion
+  ErrorConversion
+  NestedControlFlow
+  ClosurePropagation
+}
+
+pub struct TryResultFact {
+  family: TryResultFlowFamily,
+  propagates: bool,
+  conversionChecked: bool,
+  hotPathSelected: bool,
+  diagnosticsReady: bool,
+  noCoredump: bool,
+}
+
+impl TryResultFact {
+  pub fn complete(self: TryResultFact) -> bool {
+    return self.propagates
+      && self.conversionChecked
+      && self.hotPathSelected
+      && self.diagnosticsReady
+      && self.noCoredump
+  }
+}

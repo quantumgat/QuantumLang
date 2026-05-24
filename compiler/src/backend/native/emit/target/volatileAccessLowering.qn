@@ -1,0 +1,19 @@
+pub struct VolatileAccessLowering {
+  emitsVolatileLoadStore: bool,
+  preservesOrdering: bool,
+  preservesUnsafeGate: bool,
+}
+
+impl VolatileAccessLowering {
+  pub fn init(emitsVolatileLoadStore: bool, preservesOrdering: bool, preservesUnsafeGate: bool) -> VolatileAccessLowering {
+    return VolatileAccessLowering {
+      emitsVolatileLoadStore: emitsVolatileLoadStore,
+      preservesOrdering: preservesOrdering,
+      preservesUnsafeGate: preservesUnsafeGate,
+    }
+  }
+
+  pub fn accepted(self: VolatileAccessLowering) -> bool {
+    return self.emitsVolatileLoadStore && self.preservesOrdering && self.preservesUnsafeGate
+  }
+}

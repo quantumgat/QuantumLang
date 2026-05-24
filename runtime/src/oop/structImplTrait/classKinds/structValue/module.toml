@@ -1,0 +1,6 @@
+[module]
+name = "structValue"
+visibility = "internal"
+owner = "runtime"
+role = "oop-struct-impl-trait-class-kind"
+root = "mod.qn"

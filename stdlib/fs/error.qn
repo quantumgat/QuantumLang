@@ -1,0 +1,31 @@
+pub enum FsErrorKind {
+  NotFound
+  PermissionDenied
+  AlreadyExists
+  InvalidPath
+  TooLarge
+  Interrupted
+  IsDirectory
+  NotDirectory
+  DirectoryNotEmpty
+  InvalidEncoding
+  LockConflict
+  Unsupported
+  Platform
+}
+
+pub struct FsError {
+  kind: FsErrorKind,
+  path: PathBuf,
+  message: string,
+  retryable: bool,
+  noCoredump: bool,
+}
+
+pub type FsResult<T> = Result<T, FsError>
+
+impl FsError {
+  pub fn safe(self: FsError) -> bool {
+    return self.message != "" && self.noCoredump
+  }
+}

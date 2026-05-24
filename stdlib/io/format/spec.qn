@@ -1,0 +1,25 @@
+pub enum FormatSpecifier {
+  Display,
+  Debug,
+  Hex,
+  Binary,
+  Octal,
+  Bits,
+  Fixed,
+  Scientific,
+  Precision,
+  Width,
+}
+
+pub struct FormatSpec {
+  specifier: FormatSpecifier,
+  precision: usize,
+  width: usize,
+  checkedByCompiler: bool,
+}
+
+impl FormatSpec {
+  pub fn accepted(self: FormatSpec) -> bool {
+    return self.checkedByCompiler
+  }
+}

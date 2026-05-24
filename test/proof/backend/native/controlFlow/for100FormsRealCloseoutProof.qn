@@ -1,0 +1,31 @@
+pub struct For100FormsRealCloseoutProof {
+  rangeCollectionRows: usize,
+  iteratorAlgorithmRows: usize,
+  patternControlRows: usize,
+  asyncParallelRows: usize,
+  domainDataLowLevelRows: usize,
+  quantumComptimeRows: usize,
+  realImplementationBackedRows: usize,
+  executableFixtureRows: usize,
+  sliceDocsComplete: bool,
+  sliceGatesRegistered: bool,
+  proofRowsExported: bool,
+  noGeneratedFallback: bool,
+}
+
+impl For100FormsRealCloseoutProof {
+  pub fn complete(self: For100FormsRealCloseoutProof) -> bool {
+    return self.rangeCollectionRows
+        + self.iteratorAlgorithmRows
+        + self.patternControlRows
+        + self.asyncParallelRows
+        + self.domainDataLowLevelRows
+        + self.quantumComptimeRows == 100
+      && self.realImplementationBackedRows == 100
+      && self.executableFixtureRows == 100
+      && self.sliceDocsComplete
+      && self.sliceGatesRegistered
+      && self.proofRowsExported
+      && self.noGeneratedFallback
+  }
+}

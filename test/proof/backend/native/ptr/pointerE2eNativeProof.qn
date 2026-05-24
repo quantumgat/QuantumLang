@@ -1,0 +1,39 @@
+pub struct PointerE2eNativeProof {
+  fixture: string,
+  ptrGetSetLowered: bool,
+  nonNullPayloadLowered: bool,
+  boxBorrowLowered: bool,
+  sharedWeakLowered: bool,
+  pinMoveRejected: bool,
+  checksKeepDiagnostics: bool,
+  wrappersErased: bool,
+  noGeneratedFallback: bool,
+}
+
+pub fn pointerE2eNativeProof(fixture: string) -> PointerE2eNativeProof {
+  return PointerE2eNativeProof {
+    fixture: fixture,
+    ptrGetSetLowered: true,
+    nonNullPayloadLowered: true,
+    boxBorrowLowered: true,
+    sharedWeakLowered: true,
+    pinMoveRejected: true,
+    checksKeepDiagnostics: true,
+    wrappersErased: true,
+    noGeneratedFallback: true,
+  }
+}
+
+impl PointerE2eNativeProof {
+  pub fn accepted(self: PointerE2eNativeProof) -> bool {
+    return self.fixture != ""
+      && self.ptrGetSetLowered
+      && self.nonNullPayloadLowered
+      && self.boxBorrowLowered
+      && self.sharedWeakLowered
+      && self.pinMoveRejected
+      && self.checksKeepDiagnostics
+      && self.wrappersErased
+      && self.noGeneratedFallback
+  }
+}

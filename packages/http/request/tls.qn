@@ -1,0 +1,85 @@
+pub struct TlsClientCert {
+  subject: string,
+  issuer: string,
+  verified: bool,
+}
+
+impl TlsClientCert {
+  pub fn init(subject: string, issuer: string, verified: bool) -> TlsClientCert {
+    return TlsClientCert {
+      subject: subject,
+      issuer: issuer,
+      verified: verified,
+    }
+  }
+
+  pub fn empty() -> TlsClientCert {
+    return TlsClientCert.init("", "", false)
+  }
+
+  pub fn subjectName(self: TlsClientCert) -> string {
+    return self.subject
+  }
+
+  pub fn issuerName(self: TlsClientCert) -> string {
+    return self.issuer
+  }
+
+  pub fn valid(self: TlsClientCert) -> bool {
+    return self.verified
+  }
+}
+
+pub struct TlsInfo {
+  enabled: bool,
+  version: string,
+  cipher: string,
+  sni: string,
+  alpn: string,
+  clientCert: TlsClientCert,
+}
+
+impl TlsInfo {
+  pub fn init(enabled: bool, version: string, cipher: string, sni: string, alpn: string, clientCert: TlsClientCert) -> TlsInfo {
+    return TlsInfo {
+      enabled: enabled,
+      version: version,
+      cipher: cipher,
+      sni: sni,
+      alpn: alpn,
+      clientCert: clientCert,
+    }
+  }
+
+  pub fn none() -> TlsInfo {
+    return TlsInfo.init(false, "", "", "", "", TlsClientCert.empty())
+  }
+
+  pub fn enabled(self: TlsInfo) -> bool {
+    return self.enabled
+  }
+
+  pub fn versionName(self: TlsInfo) -> string {
+    return self.version
+  }
+
+  pub fn cipherName(self: TlsInfo) -> string {
+    return self.cipher
+  }
+
+  pub fn serverName(self: TlsInfo) -> string {
+    return self.sni
+  }
+
+  pub fn alpnProtocol(self: TlsInfo) -> string {
+    return self.alpn
+  }
+
+  pub fn cert(self: TlsInfo) -> TlsClientCert {
+    return self.clientCert
+  }
+
+  pub fn mtlsVerified(self: TlsInfo) -> bool {
+    return self.clientCert.valid()
+  }
+}

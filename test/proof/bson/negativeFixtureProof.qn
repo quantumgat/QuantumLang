@@ -1,0 +1,63 @@
+pub struct BsonNegativeFixtureProof {
+  shortLengthRejected: bool,
+  lengthMismatchRejected: bool,
+  missingTerminatorRejected: bool,
+  unknownTypeRejected: bool,
+  cstringWithEmbeddedNullRejected: bool,
+  invalidStringLengthRejected: bool,
+  invalidObjectIdLengthRejected: bool,
+  eofRejected: bool,
+  overflowRejected: bool,
+  precisionLossRejected: bool,
+  wrongTargetTypeRejected: bool,
+  missingFieldRejected: bool,
+  malformedExactCarrierRejected: bool,
+  liveResourceRejected: bool,
+  diagnosticPayloadCarried: bool,
+  generatedExecutableCorpus: bool,
+  noCoredump: bool,
+}
+
+impl BsonNegativeFixtureProof {
+  pub fn required() -> BsonNegativeFixtureProof {
+    return BsonNegativeFixtureProof {
+      shortLengthRejected: true,
+      lengthMismatchRejected: true,
+      missingTerminatorRejected: true,
+      unknownTypeRejected: true,
+      cstringWithEmbeddedNullRejected: true,
+      invalidStringLengthRejected: true,
+      invalidObjectIdLengthRejected: true,
+      eofRejected: true,
+      overflowRejected: true,
+      precisionLossRejected: true,
+      wrongTargetTypeRejected: true,
+      missingFieldRejected: true,
+      malformedExactCarrierRejected: true,
+      liveResourceRejected: true,
+      diagnosticPayloadCarried: true,
+      generatedExecutableCorpus: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: BsonNegativeFixtureProof) -> bool {
+    return self.shortLengthRejected
+      && self.lengthMismatchRejected
+      && self.missingTerminatorRejected
+      && self.unknownTypeRejected
+      && self.cstringWithEmbeddedNullRejected
+      && self.invalidStringLengthRejected
+      && self.invalidObjectIdLengthRejected
+      && self.eofRejected
+      && self.overflowRejected
+      && self.precisionLossRejected
+      && self.wrongTargetTypeRejected
+      && self.missingFieldRejected
+      && self.malformedExactCarrierRejected
+      && self.liveResourceRejected
+      && self.diagnosticPayloadCarried
+      && self.generatedExecutableCorpus
+      && self.noCoredump
+  }
+}

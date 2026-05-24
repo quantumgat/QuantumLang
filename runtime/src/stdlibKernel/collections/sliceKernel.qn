@@ -1,0 +1,42 @@
+pub struct SliceKernel {
+  borrowedViewStable: bool,
+  startLenTracked: bool,
+  directIndexLoadStable: bool,
+  subSliceUsesOffsetLen: bool,
+  toVecUsesTightCopyLoop: bool,
+  iteratorIndexCursorStable: bool,
+  boundsProofRequired: bool,
+  zeroCopyViewCreation: bool,
+  arrayViewCompatible: bool,
+  noOwnershipTransferOnView: bool,
+}
+
+impl SliceKernel {
+  pub fn standard() -> SliceKernel {
+    return SliceKernel {
+      borrowedViewStable: true,
+      startLenTracked: true,
+      directIndexLoadStable: true,
+      subSliceUsesOffsetLen: true,
+      toVecUsesTightCopyLoop: true,
+      iteratorIndexCursorStable: true,
+      boundsProofRequired: true,
+      zeroCopyViewCreation: true,
+      arrayViewCompatible: true,
+      noOwnershipTransferOnView: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: SliceKernel) -> bool {
+    return self.borrowedViewStable
+      && self.startLenTracked
+      && self.directIndexLoadStable
+      && self.subSliceUsesOffsetLen
+      && self.toVecUsesTightCopyLoop
+      && self.iteratorIndexCursorStable
+      && self.boundsProofRequired
+      && self.zeroCopyViewCreation
+      && self.arrayViewCompatible
+      && self.noOwnershipTransferOnView
+  }
+}

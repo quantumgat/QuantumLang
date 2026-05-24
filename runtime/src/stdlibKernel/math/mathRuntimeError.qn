@@ -1,0 +1,18 @@
+pub enum MathRuntimeError {
+  Overflow,
+  DivideByZero,
+  InvalidShift,
+  InvalidScale,
+  ResourceLimit,
+  UnsupportedTargetFeature,
+  ComplexDomain,
+  ZeroModulus,
+  NonInvertible,
+  DimensionMismatch,
+}
+
+impl MathRuntimeError {
+  pub fn safe(self: MathRuntimeError) -> bool {
+    return true
+  }
+}

@@ -1,0 +1,31 @@
+pub enum BackendFamily {
+  Native
+  Qir
+}
+
+pub struct BackendEvidence {
+  selected: BackendFamily,
+  objectWriterOwned: bool,
+  linkPlanOwned: bool,
+  qirHandoffMetadata: bool,
+}
+
+pub fn backendEvidence(
+  selected: BackendFamily,
+  objectWriterOwned: bool,
+  linkPlanOwned: bool,
+  qirHandoffMetadata: bool,
+) -> BackendEvidence {
+  return BackendEvidence {
+    selected: selected,
+    objectWriterOwned: objectWriterOwned,
+    linkPlanOwned: linkPlanOwned,
+    qirHandoffMetadata: qirHandoffMetadata,
+  }
+}
+
+impl BackendEvidence {
+  pub fn nativeProofReady(self: BackendEvidence) -> bool {
+    return self.selected == BackendFamily.Native && self.objectWriterOwned && self.linkPlanOwned
+  }
+}

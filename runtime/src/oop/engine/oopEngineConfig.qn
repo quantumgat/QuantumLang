@@ -1,0 +1,30 @@
+pub struct OopEngineConfig {
+  abiVersionPolicy: string,
+  vtableSlotOrderStable: bool,
+  interfaceObjectFatPointer: bool,
+  deterministicTypeIds: bool,
+  reflectionColdPathOnly: bool,
+  hiddenInterfaceAllocationAllowed: bool,
+}
+
+pub fn oopEngineConfig() -> OopEngineConfig {
+  return OopEngineConfig {
+    abiVersionPolicy: "v1",
+    vtableSlotOrderStable: true,
+    interfaceObjectFatPointer: true,
+    deterministicTypeIds: true,
+    reflectionColdPathOnly: true,
+    hiddenInterfaceAllocationAllowed: false,
+  }
+}
+
+impl OopEngineConfig {
+  pub fn releaseSafe(self: OopEngineConfig) -> bool {
+    return self.abiVersionPolicy == "v1"
+      && self.vtableSlotOrderStable
+      && self.interfaceObjectFatPointer
+      && self.deterministicTypeIds
+      && self.reflectionColdPathOnly
+      && self.hiddenInterfaceAllocationAllowed == false
+  }
+}

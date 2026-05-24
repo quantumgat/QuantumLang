@@ -1,0 +1,40 @@
+pub enum QFuncBoundary {
+  QuantumOnly
+  ClassicalCallable
+  HybridCallable
+}
+
+pub struct QFuncFact {
+  functionId: u64,
+  boundary: QFuncBoundary,
+  capturesQubit: bool,
+  qirProfileChecked: bool,
+}
+
+pub fn qfuncFact(
+  functionId: u64,
+  boundary: QFuncBoundary,
+  capturesQubit: bool,
+  qirProfileChecked: bool
+) -> QFuncFact {
+  return QFuncFact {
+    functionId: functionId,
+    boundary: boundary,
+    capturesQubit: capturesQubit,
+    qirProfileChecked: qirProfileChecked,
+  }
+}
+
+impl QFuncFact {
+  pub fn function(self: QFuncFact) -> u64 {
+    return self.functionId
+  }
+
+  pub fn boundaryKind(self: QFuncFact) -> QFuncBoundary {
+    return self.boundary
+  }
+
+  pub fn profileReady(self: QFuncFact) -> bool {
+    return self.qirProfileChecked
+  }
+}

@@ -1,0 +1,27 @@
+pub struct PrintErrorLogRuntimePolicy {
+  stdoutStderrNoPanic: bool,
+  logsRedactedBeforeSink: bool,
+  incidentsStructured: bool,
+  noCoredumpForSafeFailures: bool,
+  partialWritesPreserved: bool,
+}
+
+pub fn printErrorLogRuntimePolicy() -> PrintErrorLogRuntimePolicy {
+  return PrintErrorLogRuntimePolicy {
+    stdoutStderrNoPanic: true,
+    logsRedactedBeforeSink: true,
+    incidentsStructured: true,
+    noCoredumpForSafeFailures: true,
+    partialWritesPreserved: true,
+  }
+}
+
+impl PrintErrorLogRuntimePolicy {
+  pub fn accepted(self: PrintErrorLogRuntimePolicy) -> bool {
+    return self.stdoutStderrNoPanic
+      && self.logsRedactedBeforeSink
+      && self.incidentsStructured
+      && self.noCoredumpForSafeFailures
+      && self.partialWritesPreserved
+  }
+}

@@ -1,0 +1,59 @@
+pub struct BsonArray {
+  elements: Vec<BsonValue>,
+}
+
+impl BsonArray {
+  pub fn init() -> BsonArray {
+    return BsonArray {
+      elements: Vec<BsonValue>(),
+    }
+  }
+
+  pub fn fromValues(elements: Vec<BsonValue>) -> BsonArray {
+    return BsonArray {
+      elements: elements,
+    }
+  }
+
+  pub fn len(self: BsonArray) -> usize {
+    return self.elements.len
+  }
+
+  pub fn isEmpty(self: BsonArray) -> bool {
+    return self.elements.len == 0
+  }
+
+  pub fn at(self: BsonArray, index: usize) -> Result<BsonValue, BsonError> {
+    if index >= self.elements.len {
+      return Err(BsonError.invalidLength("$", "array index out of range"))
+    }
+    return Ok(self.elements[index])
+  }
+
+  pub fn push(self: BsonArray, value: BsonValue) -> BsonArray requires(alloc) {
+    return BsonArray {
+      elements: self.elements.push(value),
+    }
+  }
+
+  pub fn push<T>(self: BsonArray, value: T) -> Result<BsonArray, BsonError> {
+    return Ok(self.push(BsonValue.from(value)?))
+  }
+
+  pub fn append<T>(self: BsonArray, value: T) -> Result<BsonArray, BsonError> {
+    return self.push(value)
+  }
+
+  pub fn removeAt(self: BsonArray, index: usize) -> Result<BsonArray, BsonError> {
+    if index >= self.elements.len {
+      return Err(BsonError.invalidLength("$", "array index out of range"))
+    }
+    return Ok(BsonArray {
+      elements: self.elements.removeAt(index),
+    })
+  }
+
+  pub fn values(self: BsonArray) -> Vec<BsonValue> {
+    return self.elements
+  }
+}

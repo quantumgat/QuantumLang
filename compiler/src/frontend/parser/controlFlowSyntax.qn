@@ -1,0 +1,36 @@
+pub enum ControlFlowSyntaxKind {
+  If
+  Else
+  While
+  ForIn
+  Loop
+  Break
+  Continue
+  Match
+  IfLet
+  WhileLet
+  ParallelFor
+  ParallelReduce
+  DomainLoop
+  Qif
+  Qfor
+}
+
+pub struct ControlFlowSyntaxParse {
+  kind: ControlFlowSyntaxKind,
+  tokenStart: usize,
+  tokenEnd: usize,
+  labelResolved: bool,
+  patternAllowed: bool,
+  recoveryPoint: bool,
+}
+
+impl ControlFlowSyntaxParse {
+  pub fn complete(self: ControlFlowSyntaxParse) -> bool {
+    return self.tokenEnd > self.tokenStart && !self.recoveryPoint
+  }
+
+  pub fn patternControlFlow(self: ControlFlowSyntaxParse) -> bool {
+    return self.patternAllowed
+  }
+}

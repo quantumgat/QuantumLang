@@ -1,0 +1,15 @@
+pub struct StdlibModuleManifest {
+  path: string,
+  moduleName: string,
+  sourceOwned: bool,
+  publicFacade: bool,
+}
+
+impl StdlibModuleManifest {
+  pub fn accepted(self: StdlibModuleManifest) -> bool {
+    return self.path != ""
+      && self.moduleName != ""
+      && self.sourceOwned
+      && self.publicFacade
+  }
+}

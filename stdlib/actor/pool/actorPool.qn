@@ -1,0 +1,12 @@
+pub struct ActorPool<T> {
+  workers: usize,
+  mailbox: MailboxOptions,
+}
+
+impl ActorPool<T> {
+  pub fn spawn(self: ActorPool<T>, handler: ActorHandler<T>) -> Result<ActorRef<T>, ActorError>
+
+  pub fn workerCount(self: ActorPool<T>) -> usize {
+    return self.workers
+  }
+}

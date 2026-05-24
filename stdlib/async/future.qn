@@ -1,0 +1,6 @@
+pub struct Future<T> {
+  state: usize,
+}
+
+pub fn ready<T>(value: T) -> Future<T>
+pub fn wait<T>(future: Future<T>) -> T

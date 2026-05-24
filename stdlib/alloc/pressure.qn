@@ -1,0 +1,14 @@
+pub struct MemoryPressurePolicy {
+  softLimitBytes: usize,
+  denyOnPressure: bool,
+}
+
+impl MemoryPressurePolicy {
+  pub fn softLimit(self: MemoryPressurePolicy) -> usize {
+    self.softLimitBytes
+  }
+
+  pub fn deniesOnPressure(self: MemoryPressurePolicy) -> bool {
+    self.denyOnPressure
+  }
+}

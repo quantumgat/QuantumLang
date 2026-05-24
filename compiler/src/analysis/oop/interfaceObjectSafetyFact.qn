@@ -1,0 +1,37 @@
+pub enum ObjectSafetyStatus {
+  Safe
+  GenericMethod
+  UnsafeReceiver
+  AssociatedTypeOpen
+  Unsupported
+}
+
+pub struct InterfaceObjectSafetyFact {
+  interfaceTypeId: u64,
+  status: ObjectSafetyStatus,
+  requiredMethodCount: usize,
+  associatedTypeCount: usize,
+  dynRepresentationAllowed: bool,
+}
+
+pub fn interfaceObjectSafetyFact(
+  interfaceTypeId: u64,
+  status: ObjectSafetyStatus,
+  requiredMethodCount: usize,
+  associatedTypeCount: usize,
+  dynRepresentationAllowed: bool,
+) -> InterfaceObjectSafetyFact {
+  return InterfaceObjectSafetyFact {
+    interfaceTypeId: interfaceTypeId,
+    status: status,
+    requiredMethodCount: requiredMethodCount,
+    associatedTypeCount: associatedTypeCount,
+    dynRepresentationAllowed: dynRepresentationAllowed,
+  }
+}
+
+impl InterfaceObjectSafetyFact {
+  pub fn objectSafe(self: InterfaceObjectSafetyFact) -> bool {
+    return self.status == ObjectSafetyStatus.Safe && self.dynRepresentationAllowed
+  }
+}

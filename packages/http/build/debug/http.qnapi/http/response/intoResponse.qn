@@ -1,0 +1,10 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct IntoHttpResponse {
+  status: HttpStatus
+}
+pub struct RawJson {
+  text: string
+}
+pub extern "qnpkg" {
+  pub fn RawJson(text: string) -> RawJson
+}

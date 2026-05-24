@@ -1,0 +1,28 @@
+pub struct SerdeFieldPolicyFact {
+  fieldName: string,
+  required: bool,
+  renameChecked: bool,
+  aliasChecked: bool,
+  defaultChecked: bool,
+  flattenChecked: bool,
+  unknownPolicyChecked: bool,
+  noImplicitLossyNumber: bool,
+  missingRequiredDiagnostic: bool,
+  duplicateFieldDiagnostic: bool,
+  sourceMappedDiagnostic: bool,
+}
+
+impl SerdeFieldPolicyFact {
+  pub fn safe(self: SerdeFieldPolicyFact) -> bool {
+    return self.fieldName != ""
+      && self.renameChecked
+      && self.aliasChecked
+      && self.defaultChecked
+      && self.flattenChecked
+      && self.unknownPolicyChecked
+      && self.noImplicitLossyNumber
+      && self.missingRequiredDiagnostic
+      && self.duplicateFieldDiagnostic
+      && self.sourceMappedDiagnostic
+  }
+}

@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopEngineConfig {
+  abiVersionPolicy: string
+  vtableSlotOrderStable: bool
+  interfaceObjectFatPointer: bool
+  deterministicTypeIds: bool
+  reflectionColdPathOnly: bool
+  hiddenInterfaceAllocationAllowed: bool
+}
+pub extern "qnpkg" {
+  pub fn oopEngineConfig() -> OopEngineConfig
+}

@@ -1,0 +1,26 @@
+pub enum JoinState {
+  Pending
+  Ready
+  Failed
+  Cancelled
+}
+
+pub struct JoinHandle<T> {
+  id: TaskId,
+  state: JoinState,
+  structured: bool,
+}
+
+impl JoinHandle<T> {
+  pub fn await(self: JoinHandle<T>) -> Result<T, TaskError>
+
+  pub fn cancel(self: JoinHandle<T>) -> Result<Unit, TaskError>
+
+  pub fn isReady(self: JoinHandle<T>) -> bool {
+    return self.state == JoinState.Ready
+  }
+
+  pub fn isStructured(self: JoinHandle<T>) -> bool {
+    return self.structured
+  }
+}

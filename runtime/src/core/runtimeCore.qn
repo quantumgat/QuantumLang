@@ -1,0 +1,46 @@
+import memory::{Allocator}
+import qirBridge::{QirBridge}
+import scheduler::{Scheduler}
+
+
+pub class Runtime {
+  name: string,
+  scheduler: Scheduler,
+  memory: Allocator,
+  qir: QirBridge,
+  running: bool,
+
+  pub init() {
+    self.name = "runtime"
+    self.scheduler = Scheduler(8)
+    self.memory = Allocator()
+    self.qir = QirBridge()
+    self.running = false
+  }
+
+  pub fn start(self: &mut Runtime) -> bool {
+    self.memory.start()
+    self.scheduler.start()
+    self.qir.start()
+    self.running = true
+    return self.running
+  }
+
+  pub fn shutdown(self: &mut Runtime) -> bool {
+    self.qir.shutdown()
+    self.scheduler.shutdown()
+    self.memory.shutdown()
+    self.running = false
+    return self.running == false
+  }
+
+  pub fn drop(self: &mut Runtime) -> bool {
+    return self.shutdown()
+  }
+
+  pub fn ownsCoreServices(self: &Runtime) -> bool {
+    return self.scheduler.ownsWorkers() &&
+      self.memory.tracksPressure() &&
+      self.qir.hasProviderBoundary()
+  }
+}

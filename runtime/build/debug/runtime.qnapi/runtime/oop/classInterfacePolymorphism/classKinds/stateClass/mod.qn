@@ -1,0 +1,4 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub mod oopStateRuntimeContract
+pub use oopStateRuntimeContract.OopStateRuntimeContract
+pub use oopStateRuntimeContract.oopStateRuntimeContract

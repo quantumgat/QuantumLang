@@ -1,0 +1,23 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum OopObserverEventKind {
+  StaleHandle
+  AbiPolicyViolation
+  AllocationPolicyViolation
+  InterfaceLifetimeViolation
+  DowncastFailure
+  FfiBoundaryViolation
+}
+pub struct OopEngineObserverEvent {
+  kind: OopObserverEventKind
+  diagnosticCode: string
+  sourceMapped: bool
+  valueBound: bool
+}
+pub extern "qnpkg" {
+  pub fn oopEngineObserverEvent(
+  kind: OopObserverEventKind,
+  diagnosticCode: string,
+  sourceMapped: bool,
+  valueBound: bool,
+) -> OopEngineObserverEvent
+}

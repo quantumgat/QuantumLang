@@ -1,0 +1,24 @@
+pub enum TargetAbiKind {
+  SysV,
+  SysV32,
+  Win64,
+  Darwin,
+  Aapcs,
+  AapcsHardFloat,
+  Eabi,
+  Wasm,
+  Freestanding,
+  UnknownAbi,
+}
+
+pub struct TargetAbiModel {
+  kind: TargetAbiKind,
+  stableCallingConvention: bool,
+  runtimeHandoffRequired: bool,
+}
+
+impl TargetAbiModel {
+  pub fn accepted(self: TargetAbiModel) -> bool {
+    return self.kind != TargetAbiKind.UnknownAbi && self.stableCallingConvention
+  }
+}

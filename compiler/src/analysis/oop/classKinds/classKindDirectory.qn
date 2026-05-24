@@ -1,0 +1,75 @@
+pub enum OopModelFamily {
+  StructImplTrait
+  ClassInterfacePolymorphism
+}
+
+pub enum OopClassKind {
+  StructValue
+  ConcreteClass
+  AbstractClass
+  FinalClass
+  SealedClass
+  ActorClass
+  ServiceClass
+  Interface
+  Trait
+  DynTrait
+  ForeignClass
+  CallableClass
+  StateClass
+  ResourceClass
+}
+
+pub struct OopClassKindDirectoryRow {
+  kind: OopClassKind,
+  modelFamily: OopModelFamily,
+  directory: string,
+  implementationRoot: string,
+  compilerFamily: string,
+  existingFacts: string,
+  runtimeOwner: string,
+  docsPage: string,
+  hotPathPolicy: string,
+}
+
+impl OopClassKindDirectoryRow {
+  pub fn mapped(self: OopClassKindDirectoryRow) -> bool {
+    return self.directory != ""
+      && self.implementationRoot != ""
+      && self.compilerFamily != ""
+      && self.existingFacts != ""
+      && self.runtimeOwner != ""
+      && self.docsPage != ""
+      && self.hotPathPolicy != ""
+  }
+}
+
+pub struct OopClassKindDirectory {
+  kindCount: usize,
+  indexRoot: string,
+  structImplTraitRoot: string,
+  classInterfacePolymorphismRoot: string,
+  docsRoot: string,
+  twoPartArchitecture: bool,
+  perKindDirectoriesRequired: bool,
+  perKindDocsRequired: bool,
+  noDuplicateImplementation: bool,
+  flatClassKindImplementationRejected: bool,
+  migrationSafe: bool,
+}
+
+impl OopClassKindDirectory {
+  pub fn complete(self: OopClassKindDirectory) -> bool {
+    return self.kindCount == 14
+      && self.indexRoot == "compiler/src/analysis/oop/classKinds"
+      && self.structImplTraitRoot == "compiler/src/analysis/oop/structImplTrait"
+      && self.classInterfacePolymorphismRoot == "compiler/src/analysis/oop/classInterfacePolymorphism"
+      && self.docsRoot == "docs/oop"
+      && self.twoPartArchitecture
+      && self.perKindDirectoriesRequired
+      && self.perKindDocsRequired
+      && self.noDuplicateImplementation
+      && self.flatClassKindImplementationRejected
+      && self.migrationSafe
+  }
+}

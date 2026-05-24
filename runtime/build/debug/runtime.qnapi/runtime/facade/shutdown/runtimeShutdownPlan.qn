@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeShutdownPlan {
+  graceful: bool
+  drainsPorts: bool
+  releasesHandles: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeShutdownPlan() -> RuntimeShutdownPlan
+}

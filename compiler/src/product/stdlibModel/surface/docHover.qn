@@ -1,0 +1,11 @@
+pub struct StdlibDocHover {
+  symbolName: string,
+  hasExample: bool,
+  exampleIsReal: bool,
+}
+
+impl StdlibDocHover {
+  pub fn accepted(self: StdlibDocHover) -> bool {
+    return self.symbolName != "" && self.hasExample && self.exampleIsReal
+  }
+}

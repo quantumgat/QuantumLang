@@ -1,0 +1,11 @@
+pub struct NativeNetUdpEmit {
+  datagramLowered: bool,
+  batchIoLowered: bool,
+  truncationDiagnosticLowered: bool,
+}
+
+impl NativeNetUdpEmit {
+  pub fn accepted(self: NativeNetUdpEmit) -> bool {
+    return self.datagramLowered && self.batchIoLowered && self.truncationDiagnosticLowered
+  }
+}

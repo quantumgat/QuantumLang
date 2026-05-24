@@ -1,0 +1,23 @@
+pub struct HandleLeaseFact {
+  handleId: u64,
+  generation: u64,
+  epoch: u64,
+  active: bool,
+}
+
+impl HandleLeaseFact {
+  pub fn init(handleId: u64, generation: u64, epoch: u64) -> HandleLeaseFact {
+    return HandleLeaseFact {
+      handleId: handleId,
+      generation: generation,
+      epoch: epoch,
+      active: true,
+    }
+  }
+
+  pub fn validFor(self: HandleLeaseFact, handle: HandleGenerationFact) -> bool {
+    return self.active
+      && handle.validates(self.generation, handle.ownerSubsystem())
+      && self.handleId == handle.handleId()
+  }
+}

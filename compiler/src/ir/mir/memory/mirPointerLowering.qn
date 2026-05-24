@@ -1,0 +1,22 @@
+pub struct MirPointerLowering {
+  hirNode: u64,
+  instruction: u64,
+  opKind: MirPointerOpKind,
+  checkSequenceRequired: bool,
+  accessFactAccepted: bool,
+  targetPointerFactAccepted: bool,
+  directNativeEligible: bool,
+  runtimeFallbackRejected: bool,
+}
+
+impl MirPointerLowering {
+  pub fn emitsMemoryOp(self: MirPointerLowering) -> bool {
+    return self.hirNode > 0
+      && self.instruction > 0
+      && self.checkSequenceRequired
+      && self.accessFactAccepted
+      && self.targetPointerFactAccepted
+      && self.directNativeEligible
+      && self.runtimeFallbackRejected
+  }
+}

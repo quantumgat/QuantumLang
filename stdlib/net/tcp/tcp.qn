@@ -1,0 +1,113 @@
+pub struct TcpOptions {
+  noDelay: bool,
+  reuseAddr: bool,
+  reusePort: bool,
+  backlog: usize,
+}
+
+pub struct TcpKeepAlive {
+  enabled: bool,
+  idleMillis: u64,
+  intervalMillis: u64,
+  probes: u32,
+}
+
+pub struct TcpStream {
+  handle: u64,
+  peer: SocketAddr,
+}
+
+pub struct TcpListener {
+  handle: u64,
+  local: SocketAddr,
+}
+
+pub struct TcpConnector {
+  timeout: NetTimeout,
+  options: TcpOptions,
+}
+
+pub struct TcpServer {
+  local: SocketAddr,
+  workers: usize,
+  backpressure: BackpressurePolicy,
+  maxConnections: usize,
+}
+
+impl TcpStream {
+  pub fn accepted(self: TcpStream) -> bool {
+    return self.handle > 0
+  }
+
+  pub async fn read(self: TcpStream, into: IoSliceMut) -> NetResult<usize> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.ConnectionReset,
+        message: "tcp stream is closed",
+        retryable: false,
+      })
+    }
+    return Ok(into.len)
+  }
+
+  pub async fn write(self: TcpStream, bytes: IoSlice) -> NetResult<usize> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.BrokenPipe,
+        message: "tcp stream is closed",
+        retryable: false,
+      })
+    }
+    return Ok(bytes.len)
+  }
+
+  pub async fn shutdown(self: TcpStream) -> NetResult<Unit> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.ConnectionReset,
+        message: "tcp stream is already closed",
+        retryable: false,
+      })
+    }
+    return Ok(())
+  }
+}
+
+impl TcpListener {
+  pub fn accepted(self: TcpListener) -> bool {
+    return self.handle > 0
+  }
+
+  pub async fn accept(self: TcpListener) -> NetResult<TcpStream> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.ConnectionReset,
+        message: "tcp listener is closed",
+        retryable: false,
+      })
+    }
+    return Ok(TcpStream {
+      handle: self.handle,
+      peer: self.local,
+    })
+  }
+}
+
+impl TcpConnector {
+  pub async fn connect(self: TcpConnector, endpoint: Endpoint) -> NetResult<TcpStream> {
+    if !self.timeout.enabled() {
+      return Err(NetError {
+        kind: NetErrorKind.Timeout,
+        message: "tcp connector requires a timeout",
+        retryable: true,
+      })
+    }
+    return Ok(TcpStream {
+      handle: 1,
+      peer: SocketAddr.V4(SocketAddrV4 {
+        ip: Ipv4Addr { octets: 0 },
+        port: endpoint.port,
+      }),
+    })
+  }
+}

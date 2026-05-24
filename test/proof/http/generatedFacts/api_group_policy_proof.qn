@@ -1,0 +1,114 @@
+pub type ProductApiCtx = HttpCtx<AuthenticatedUser, TenantContext, TraceContext>
+pub type AdminApiCtx = HttpCtx<AuthenticatedUser, Admin, AuditLog, TraceContext>
+
+pub struct HttpApiGroupPolicyProof {
+  smallAppControllerReady: bool,
+  bigAppApiGroupsReady: bool,
+  veryBigRootApiReady: bool,
+  rootMiddlewareInherited: bool,
+  groupMiddlewareInherited: bool,
+  controllerMiddlewareInherited: bool,
+  routeMiddlewareAdded: bool,
+  apiContextReady: bool,
+  noModuleNameRequired: bool,
+}
+
+impl HttpApiGroupPolicyProof {
+  pub fn init(
+    smallPlan: AppPlan,
+    bigPlan: AppPlan,
+    rootPlan: AppPlan,
+    rootApi: ApiFact,
+    productApi: ApiFact,
+    resolution: ApiCapabilityResolution,
+  ) -> HttpApiGroupPolicyProof {
+    return HttpApiGroupPolicyProof {
+      smallAppControllerReady: smallPlan.controllerCount() == 1 && smallPlan.apiCount() == 0,
+      bigAppApiGroupsReady: bigPlan.apiCount() == 3 && bigPlan.hasPublicHttpSurface(),
+      veryBigRootApiReady: rootPlan.apiCount() == 1 && rootApi.nestedApiCount() == 3,
+      rootMiddlewareInherited: resolution.rootCapabilityCount == 2,
+      groupMiddlewareInherited: resolution.groupCapabilityCount == 2,
+      controllerMiddlewareInherited: resolution.controllerCapabilityCount == 1,
+      routeMiddlewareAdded: resolution.routeCapabilityCount == 2,
+      apiContextReady: productApi.contextType() == "ProductApiCtx",
+      noModuleNameRequired: true,
+    }
+  }
+
+  pub fn complete(self: HttpApiGroupPolicyProof) -> bool {
+    return self.smallAppControllerReady
+      && self.bigAppApiGroupsReady
+      && self.veryBigRootApiReady
+      && self.rootMiddlewareInherited
+      && self.groupMiddlewareInherited
+      && self.controllerMiddlewareInherited
+      && self.routeMiddlewareAdded
+      && self.apiContextReady
+      && self.noModuleNameRequired
+  }
+}
+
+pub fn httpApiRootFact() -> ApiFact {
+  return ApiFact
+    .root<Api>()
+    .with<TraceContext>()
+    .with<RequestId>()
+    .api<ProductApi>()
+    .api<AdminApi>()
+    .api<OrderApi>()
+}
+
+pub fn productApiFact() -> ApiFact {
+  return ApiFact
+    .of<ProductApi>()
+    .context<ProductApiCtx>()
+    .with<AuthenticatedUser>()
+    .with<TenantContext>()
+    .controller<ProductController>()
+    .controller<ProductSearchController>()
+}
+
+pub fn adminApiFact() -> ApiFact {
+  return ApiFact
+    .of<AdminApi>()
+    .context<AdminApiCtx>()
+    .with<AuthenticatedUser>()
+    .with<Admin>()
+    .with<AuditLog>()
+    .controller<AdminController>()
+}
+
+pub fn httpApiGroupPolicyProof() -> HttpApiGroupPolicyProof {
+  let smallApp = App()
+    .state(Database(config.db))
+    .context<ApiCtx>()
+    .controller<ProductController>()
+    .plan(8080)
+
+  let bigApp = App()
+    .state(Database(config.db))
+    .context<ApiCtx>()
+    .api<ProductApi>()
+    .api<AdminApi>()
+    .api<OrderApi>()
+    .plan(8080)
+
+  let rootApp = App()
+    .state(Database(config.db))
+    .context<ApiCtx>()
+    .api<Api>()
+    .plan(8080)
+
+  let rootApi = httpApiRootFact()
+  let productApi = productApiFact()
+  let controllerPolicy = ControllerCapabilityPolicy
+    .empty("ProductController")
+    .with<RateLimited>()
+  let deletePolicy = EndpointCapabilityPolicy
+    .empty("ProductController.delete")
+    .requires<Admin>()
+    .requires<AuditLog>()
+  let resolution = ApiCapabilityResolution.from(rootApi, productApi, controllerPolicy, deletePolicy)
+
+  return HttpApiGroupPolicyProof.init(smallApp, bigApp, rootApp, rootApi, productApi, resolution)
+}

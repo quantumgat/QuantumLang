@@ -1,0 +1,3 @@
+pub mod abstractClassKindPolicyFact
+
+pub use abstractClassKindPolicyFact.AbstractClassKindPolicyFact

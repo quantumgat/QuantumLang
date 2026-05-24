@@ -1,0 +1,40 @@
+pub struct UnsafeCapsulePolicy {
+  allowBroadUnsafe: bool,
+  requirePermit: bool,
+  requireProof: bool,
+  requireReason: bool,
+  requireDiagnostic: bool,
+  requireTargetGate: bool,
+}
+
+impl UnsafeCapsulePolicy {
+  pub fn strict() -> UnsafeCapsulePolicy {
+    return UnsafeCapsulePolicy {
+      allowBroadUnsafe: false,
+      requirePermit: true,
+      requireProof: true,
+      requireReason: true,
+      requireDiagnostic: true,
+      requireTargetGate: true,
+    }
+  }
+
+  pub fn accepts(self: UnsafeCapsulePolicy, capsule: UnsafeCapsule) -> bool {
+    if self.allowBroadUnsafe {
+      return false
+    }
+    return capsule.accepted()
+  }
+
+  pub fn rejectsMissingPermit(self: UnsafeCapsulePolicy, capsule: UnsafeCapsule) -> bool {
+    return self.requirePermit && capsule.permit.accepted() == false
+  }
+
+  pub fn rejectsMissingProof(self: UnsafeCapsulePolicy, capsule: UnsafeCapsule) -> bool {
+    return self.requireProof && capsule.proof.accepted() == false
+  }
+
+  pub fn rejectsMissingReason(self: UnsafeCapsulePolicy, capsule: UnsafeCapsule) -> bool {
+    return self.requireReason && capsule.reason.accepted() == false
+  }
+}

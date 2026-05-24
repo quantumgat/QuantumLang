@@ -1,0 +1,19 @@
+pub struct OptimizationPipeline {
+  passCount: usize,
+  sourceMapPreserved: bool,
+  diagnosticTracePreserved: bool,
+}
+
+pub fn optimizationPipeline(passCount: usize, sourceMapPreserved: bool, diagnosticTracePreserved: bool) -> OptimizationPipeline {
+  return OptimizationPipeline {
+    passCount: passCount,
+    sourceMapPreserved: sourceMapPreserved,
+    diagnosticTracePreserved: diagnosticTracePreserved,
+  }
+}
+
+impl OptimizationPipeline {
+  pub fn valid(self: OptimizationPipeline) -> bool {
+    return self.sourceMapPreserved && self.diagnosticTracePreserved
+  }
+}

@@ -1,0 +1,21 @@
+pub struct ClassInterfacePolymorphismBoundary {
+  classLifecycleOwned: bool,
+  interfaceContractsOwned: bool,
+  dynamicDispatchPlanOwned: bool,
+  polymorphicDiagnosticsOwned: bool,
+  devirtualizesWhenProvable: bool,
+  runtimeHandoffExplicit: bool,
+  noRequestLoopReflection: bool,
+}
+
+impl ClassInterfacePolymorphismBoundary {
+  pub fn complete(self: ClassInterfacePolymorphismBoundary) -> bool {
+    return self.classLifecycleOwned
+      && self.interfaceContractsOwned
+      && self.dynamicDispatchPlanOwned
+      && self.polymorphicDiagnosticsOwned
+      && self.devirtualizesWhenProvable
+      && self.runtimeHandoffExplicit
+      && self.noRequestLoopReflection
+  }
+}

@@ -1,0 +1,50 @@
+pub enum MirParallelLoopExitKind {
+  ContinueWorker
+  BreakAll
+  StopValue
+}
+
+pub struct MirParallelLoopOp {
+  instruction: u64,
+  exitKind: MirParallelLoopExitKind,
+  shardPlanReady: bool,
+  atomicStopFlagReady: bool,
+  firstResultWinsReady: bool,
+  cleanupReady: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+pub fn mirParallelLoopOp(
+  instruction: u64,
+  exitKind: MirParallelLoopExitKind,
+  shardPlanReady: bool,
+  atomicStopFlagReady: bool,
+  firstResultWinsReady: bool,
+  cleanupReady: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+) -> MirParallelLoopOp {
+  return MirParallelLoopOp {
+    instruction: instruction,
+    exitKind: exitKind,
+    shardPlanReady: shardPlanReady,
+    atomicStopFlagReady: atomicStopFlagReady,
+    firstResultWinsReady: firstResultWinsReady,
+    cleanupReady: cleanupReady,
+    sourceMapReady: sourceMapReady,
+    safeFailureReady: safeFailureReady,
+  }
+}
+
+impl MirParallelLoopOp {
+  pub fn lowerable(self: MirParallelLoopOp) -> bool {
+    return self.instruction > 0
+      && self.shardPlanReady
+      && self.atomicStopFlagReady
+      && self.firstResultWinsReady
+      && self.cleanupReady
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

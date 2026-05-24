@@ -1,0 +1,66 @@
+pub enum ProofDiagnosticKind {
+  Memory
+  Ownership
+  Pointer
+  UnsafeObligation
+  AtomicOrder
+  SimdTarget
+  Layout
+  FfiBoundary
+  TargetGate
+  CoredumpRisk
+  DoubleFreeRisk
+}
+
+pub struct ProofDiagnostic {
+  kind: ProofDiagnosticKind,
+  code: string,
+  range: SourceRange,
+  explanation: ProofExplanation,
+  fixIt: Option<FixIt>,
+  hotPath: Option<HotPathWarning>,
+}
+
+impl ProofDiagnostic {
+  pub fn init(
+    kind: ProofDiagnosticKind,
+    code: string,
+    range: SourceRange,
+    explanation: ProofExplanation,
+  ) -> ProofDiagnostic {
+    return ProofDiagnostic {
+      kind: kind,
+      code: code,
+      range: range,
+      explanation: explanation,
+      fixIt: None,
+      hotPath: None,
+    }
+  }
+
+  pub fn reportable(self: ProofDiagnostic) -> bool {
+    return self.code != "" && self.range.exact() && self.explanation.publishable()
+  }
+
+  pub fn withFixIt(self: ProofDiagnostic, fixIt: FixIt) -> ProofDiagnostic {
+    return ProofDiagnostic {
+      kind: self.kind,
+      code: self.code,
+      range: self.range,
+      explanation: self.explanation,
+      fixIt: Some(fixIt),
+      hotPath: self.hotPath,
+    }
+  }
+
+  pub fn withHotPathWarning(self: ProofDiagnostic, warning: HotPathWarning) -> ProofDiagnostic {
+    return ProofDiagnostic {
+      kind: self.kind,
+      code: self.code,
+      range: self.range,
+      explanation: self.explanation,
+      fixIt: self.fixIt,
+      hotPath: Some(warning),
+    }
+  }
+}

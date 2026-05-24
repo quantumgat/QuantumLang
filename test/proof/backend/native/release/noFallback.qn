@@ -1,0 +1,55 @@
+pub struct NoFallbackProof {
+  nativeBackend: bool,
+  directBodyLowering: bool,
+  generatedC: bool,
+  generatedCpp: bool,
+  generatedHeader: bool,
+  publicRuntimeC: bool,
+  fakeArtifact: bool,
+}
+
+pub fn noFallbackProof(
+  nativeBackend: bool,
+  directBodyLowering: bool,
+  generatedC: bool,
+  generatedCpp: bool,
+  generatedHeader: bool,
+  publicRuntimeC: bool,
+  fakeArtifact: bool,
+) -> NoFallbackProof {
+  return NoFallbackProof {
+    nativeBackend: nativeBackend,
+    directBodyLowering: directBodyLowering,
+    generatedC: generatedC,
+    generatedCpp: generatedCpp,
+    generatedHeader: generatedHeader,
+    publicRuntimeC: publicRuntimeC,
+    fakeArtifact: fakeArtifact,
+  }
+}
+
+impl NoFallbackProof {
+  pub fn usesNativeBackend(self: NoFallbackProof) -> bool {
+    return self.nativeBackend
+  }
+
+  pub fn lowersBodiesDirectly(self: NoFallbackProof) -> bool {
+    return self.directBodyLowering
+  }
+
+  pub fn hasGeneratedSourceFallback(self: NoFallbackProof) -> bool {
+    return self.generatedC || self.generatedCpp || self.generatedHeader
+  }
+
+  pub fn exposesRuntimeC(self: NoFallbackProof) -> bool {
+    return self.publicRuntimeC
+  }
+
+  pub fn hasFakeArtifactSuccess(self: NoFallbackProof) -> bool {
+    return self.fakeArtifact
+  }
+
+  pub fn passed(self: NoFallbackProof) -> bool {
+    return self.nativeBackend && self.directBodyLowering && !self.hasGeneratedSourceFallback() && !self.publicRuntimeC && !self.fakeArtifact
+  }
+}

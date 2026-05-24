@@ -1,0 +1,45 @@
+pub struct PackagePluginRegistryIntegration {
+  pluginName: string,
+  versionRequirement: string,
+  registry: string,
+  signingKey: string,
+  sourceCacheRoot: string,
+  buildDepsRoot: string,
+  lockfileKind: string,
+  manifestFingerprintRequired: bool,
+  registryTrustRequired: bool,
+  signingKeyTrustRequired: bool,
+  noCompilerFactMutation: bool,
+}
+
+impl PackagePluginRegistryIntegration {
+  pub fn registryPlugin(pluginName: string, versionRequirement: string, registry: string, signingKey: string) -> PackagePluginRegistryIntegration {
+    return PackagePluginRegistryIntegration {
+      pluginName: pluginName,
+      versionRequirement: versionRequirement,
+      registry: registry,
+      signingKey: signingKey,
+      sourceCacheRoot: "~/.qtlc/packages",
+      buildDepsRoot: "build/deps",
+      lockfileKind: "plugin",
+      manifestFingerprintRequired: true,
+      registryTrustRequired: true,
+      signingKeyTrustRequired: true,
+      noCompilerFactMutation: true,
+    }
+  }
+
+  pub fn accepted(self: PackagePluginRegistryIntegration) -> bool {
+    return self.pluginName != ""
+      && self.versionRequirement != ""
+      && self.registry != ""
+      && self.signingKey != ""
+      && self.sourceCacheRoot == "~/.qtlc/packages"
+      && self.buildDepsRoot == "build/deps"
+      && self.lockfileKind == "plugin"
+      && self.manifestFingerprintRequired
+      && self.registryTrustRequired
+      && self.signingKeyTrustRequired
+      && self.noCompilerFactMutation
+  }
+}

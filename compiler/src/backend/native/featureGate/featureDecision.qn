@@ -1,0 +1,42 @@
+pub enum NativeFeatureStatus {
+  FeatureSupported
+  FeatureRejected
+}
+
+pub struct FeatureDecision {
+  feature: string,
+  status: NativeFeatureStatus,
+  diagnosticCode: string,
+  artifactAllowed: bool,
+}
+
+pub fn featureDecision(feature: string, status: NativeFeatureStatus, diagnosticCode: string, artifactAllowed: bool) -> FeatureDecision {
+  return FeatureDecision {
+    feature: feature,
+    status: status,
+    diagnosticCode: diagnosticCode,
+    artifactAllowed: artifactAllowed,
+  }
+}
+
+impl FeatureDecision {
+  pub fn featureName(self: FeatureDecision) -> string {
+    return self.feature
+  }
+
+  pub fn decisionStatus(self: FeatureDecision) -> NativeFeatureStatus {
+    return self.status
+  }
+
+  pub fn diagnostic(self: FeatureDecision) -> string {
+    return self.diagnosticCode
+  }
+
+  pub fn permitsArtifact(self: FeatureDecision) -> bool {
+    return self.artifactAllowed
+  }
+
+  pub fn stopsBeforeArtifact(self: FeatureDecision) -> bool {
+    return self.status == NativeFeatureStatus.FeatureRejected && !self.artifactAllowed
+  }
+}

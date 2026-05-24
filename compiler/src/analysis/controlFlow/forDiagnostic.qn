@@ -1,0 +1,31 @@
+pub enum ForDiagnosticKind {
+  NonIterable
+  InvalidPattern
+  BreakValueMismatch
+  InvalidStep
+  InfiniteRangeWithoutBreak
+  ParallelMutationCapture
+  AsyncForRequiresAwait
+  ConcurrentLimitInvalid
+  QuantumProfileUnsupported
+  UnsafeForRequiresUnsafe
+  HotLoopNotProvable
+  ZipLengthPolicyRequired
+  EnumerateIndexOverflow
+  QforRequiresStaticRegister
+  DomainLoopUnsupported
+}
+
+pub struct ForDiagnostic {
+  kind: ForDiagnosticKind,
+  sourceNode: u64,
+  exactSourceRange: bool,
+  fixitAvailable: bool,
+  safeFailure: bool,
+}
+
+impl ForDiagnostic {
+  pub fn reportable(self: ForDiagnostic) -> bool {
+    return self.sourceNode > 0 && self.exactSourceRange && self.safeFailure
+  }
+}

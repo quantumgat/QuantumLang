@@ -1,0 +1,37 @@
+pub enum InterfaceModifier {
+  PlainInterface
+  OpenInterface
+  SealedInterface
+}
+
+pub struct InterfaceDecl {
+  node: AstNode,
+  nameId: u64,
+  modifier: InterfaceModifier,
+  methodCount: usize,
+  objectSafe: bool,
+}
+
+pub fn interfaceDecl(node: AstNode, nameId: u64, modifier: InterfaceModifier, methodCount: usize, objectSafe: bool) -> InterfaceDecl {
+  return InterfaceDecl {
+    node: node,
+    nameId: nameId,
+    modifier: modifier,
+    methodCount: methodCount,
+    objectSafe: objectSafe,
+  }
+}
+
+impl InterfaceDecl {
+  pub fn ast(self: InterfaceDecl) -> AstNode {
+    return self.node
+  }
+
+  pub fn interfaceName(self: InterfaceDecl) -> u64 {
+    return self.nameId
+  }
+
+  pub fn supportsDynValue(self: InterfaceDecl) -> bool {
+    return self.objectSafe
+  }
+}

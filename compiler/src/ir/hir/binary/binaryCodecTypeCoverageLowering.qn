@@ -1,0 +1,21 @@
+pub struct HirBinaryCodecTypeCoverageLowering {
+  hirNode: u64,
+  typeName: string,
+  primitiveLowered: bool,
+  containerLowered: bool,
+  nestedStructLowered: bool,
+  stableCollectionChecked: bool,
+  unsupportedTypeDiagnostic: bool,
+}
+
+impl HirBinaryCodecTypeCoverageLowering {
+  pub fn accepted(self: HirBinaryCodecTypeCoverageLowering) -> bool {
+    return self.hirNode > 0
+      && self.typeName != ""
+      && self.primitiveLowered
+      && self.containerLowered
+      && self.nestedStructLowered
+      && self.stableCollectionChecked
+      && self.unsupportedTypeDiagnostic
+  }
+}

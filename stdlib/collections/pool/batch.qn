@@ -1,0 +1,68 @@
+pub struct PoolInsertMany<T> {
+  pool: Pool<T>,
+  handles: Vec<PoolHandle<T>>,
+}
+
+pub struct PoolRemoveMany<T> {
+  pool: Pool<T>,
+  values: Vec<Option<T>>,
+}
+
+impl<T> Pool<T> {
+  pub fn insertMany(self: Pool<T>, values: Vec<T>) -> PoolInsertMany<T> requires(alloc) {
+    let mut pool = self
+    let mut handles = Vec<PoolHandle<T>>.withCapacity(values.len)
+    let mut index: usize = 0
+    while index < values.len {
+      let inserted = pool.insert(values[index])
+      pool = inserted.0
+      handles = handles.push(inserted.1)
+      index = index + 1
+    }
+    return PoolInsertMany<T> { pool: pool, handles: handles }
+  }
+
+  pub fn removeMany(self: Pool<T>, handles: Vec<PoolHandle<T>>) -> PoolRemoveMany<T> requires(alloc) {
+    let mut pool = self
+    let mut values = Vec<Option<T>>.withCapacity(handles.len)
+    let mut index: usize = 0
+    while index < handles.len {
+      let removed = pool.remove(handles[index])
+      pool = removed.0
+      values = values.push(removed.1)
+      index = index + 1
+    }
+    return PoolRemoveMany<T> { pool: pool, values: values }
+  }
+
+  pub fn updateMany(self: Pool<T>, handles: Vec<PoolHandle<T>>, updater: fn(T) -> T) -> Pool<T> requires(alloc) {
+    let mut pool = self
+    let mut index: usize = 0
+    while index < handles.len {
+      pool = pool.mutate(handles[index], updater)
+      index = index + 1
+    }
+    return pool
+  }
+
+  pub fn replaceMany(self: Pool<T>, pairs: Vec<(PoolHandle<T>, T)>) -> Pool<T> requires(alloc) {
+    let mut pool = self
+    let mut index: usize = 0
+    while index < pairs.len {
+      let pair = pairs[index]
+      pool = pool.replace(pair.0, pair.1)
+      index = index + 1
+    }
+    return pool
+  }
+
+  pub fn activeHandles(self: Pool<T>) -> Vec<PoolHandle<T>> requires(alloc) {
+    let mut handles = Vec<PoolHandle<T>>.withCapacity(self.len)
+    let mut cursor = self.occupiedCursor()
+    while cursor.hasNext() {
+      handles = handles.push(cursor.handleUnchecked())
+      cursor = cursor.next()
+    }
+    return handles
+  }
+}

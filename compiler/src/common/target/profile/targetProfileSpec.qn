@@ -1,0 +1,20 @@
+pub enum TargetProfileFamily {
+  DesktopProfile,
+  MobileProfile,
+  SimulatorProfile,
+  EmbeddedProfile,
+  WasmProfile,
+  QuantumProviderProfile,
+}
+
+pub struct TargetProfileSpec {
+  family: TargetProfileFamily,
+  pointerBits: usize,
+  hosted: bool,
+}
+
+impl TargetProfileSpec {
+  pub fn accepted(self: TargetProfileSpec) -> bool {
+    return self.pointerBits > 0
+  }
+}

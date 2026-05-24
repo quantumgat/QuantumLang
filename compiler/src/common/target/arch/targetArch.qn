@@ -1,0 +1,25 @@
+pub enum TargetArchKind {
+  X86,
+  X86_64,
+  Aarch64,
+  Armv7,
+  Armv6M,
+  Armv7M,
+  Riscv32,
+  Riscv64,
+  Wasm32,
+  XtensaEsp32,
+  UnknownArch,
+}
+
+pub struct TargetArchModel {
+  kind: TargetArchKind,
+  pointerBits: usize,
+  embeddedClass: bool,
+}
+
+impl TargetArchModel {
+  pub fn accepted(self: TargetArchModel) -> bool {
+    return self.kind != TargetArchKind.UnknownArch && self.pointerBits > 0
+  }
+}

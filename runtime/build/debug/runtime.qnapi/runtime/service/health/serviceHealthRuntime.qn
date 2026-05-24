@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeServiceHealth {
+  serviceId: u64
+  healthy: bool
+  failureCount: usize
+  diagnosticReady: bool
+}

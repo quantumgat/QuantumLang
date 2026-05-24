@@ -1,0 +1,18 @@
+pub struct RuntimeAtomicFence {
+  order: RuntimeMemoryOrder,
+  targetSupported: bool,
+}
+
+impl RuntimeAtomicFence {
+  pub fn init(order: RuntimeMemoryOrder, targetSupported: bool) -> RuntimeAtomicFence {
+    return RuntimeAtomicFence {
+      order: order,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn valid(self: RuntimeAtomicFence) -> bool {
+    let policy = RuntimeMemoryOrderPolicy.init(RuntimeAtomicOperationKind.Fence, self.order)
+    return self.targetSupported && policy.valid()
+  }
+}

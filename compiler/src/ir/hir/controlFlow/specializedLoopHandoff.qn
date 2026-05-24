@@ -1,0 +1,30 @@
+pub enum HirSpecializedLoopHandoffKind {
+  AsyncStreamLoop
+  SelectJoinLoop
+  TimeoutCancelLoop
+  ParallelReduction
+  DeterministicReduction
+  DomainCursorLoop
+  DecodeScanLoop
+  LowLevelPointerLoop
+  AtomicRetryLoop
+  QuantumProfileLoop
+  ComptimeStaticExpansion
+}
+
+pub struct HirSpecializedLoopHandoff {
+  sourceNode: u64,
+  kind: HirSpecializedLoopHandoffKind,
+  formCount: usize,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+}
+
+impl HirSpecializedLoopHandoff {
+  pub fn complete(self: HirSpecializedLoopHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.formCount >= 22
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+}

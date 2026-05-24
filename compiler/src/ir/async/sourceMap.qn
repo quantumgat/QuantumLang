@@ -1,0 +1,20 @@
+pub struct AsyncSourceMap {
+  sourceMapId: u64,
+  sourceNode: u64,
+  frameSlotIndex: usize,
+  stateIndex: usize,
+  cleanupEdgeId: u64,
+  debuggerVisible: bool,
+}
+
+impl AsyncSourceMap {
+  pub fn valid(self: AsyncSourceMap) -> bool {
+    return self.sourceMapId > 0
+      && self.sourceNode > 0
+      && self.debuggerVisible
+  }
+
+  pub fn cleanupMapped(self: AsyncSourceMap) -> bool {
+    return self.cleanupEdgeId > 0
+  }
+}

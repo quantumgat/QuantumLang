@@ -1,0 +1,23 @@
+pub struct SharedPtrRefcountFact {
+  controlBlock: u64,
+  strongCountChecked: bool,
+  weakCountChecked: bool,
+  atomicUpdates: bool,
+  finalReleaseDropsValue: bool,
+}
+
+impl SharedPtrRefcountFact {
+  pub fn init(controlBlock: u64, strongCountChecked: bool, weakCountChecked: bool, atomicUpdates: bool, finalReleaseDropsValue: bool) -> SharedPtrRefcountFact {
+    return SharedPtrRefcountFact {
+      controlBlock: controlBlock,
+      strongCountChecked: strongCountChecked,
+      weakCountChecked: weakCountChecked,
+      atomicUpdates: atomicUpdates,
+      finalReleaseDropsValue: finalReleaseDropsValue,
+    }
+  }
+
+  pub fn accepted(self: SharedPtrRefcountFact) -> bool {
+    return self.controlBlock > 0 && self.strongCountChecked && self.weakCountChecked && self.atomicUpdates && self.finalReleaseDropsValue
+  }
+}

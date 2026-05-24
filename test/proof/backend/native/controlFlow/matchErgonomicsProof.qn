@@ -1,0 +1,24 @@
+pub enum MatchErgonomicsProofKind {
+  FortyFiveFormsCaptured
+  ExhaustivenessDiagnostic
+  UnreachableArmDiagnostic
+  HotPathLowering
+  NegativeFixtureCoverage
+}
+
+pub struct MatchErgonomicsProof {
+  kind: MatchErgonomicsProofKind,
+  fixture: string,
+  formCount: usize,
+  nativeLowering: NativeMatchLowering,
+  negativeFixtureCaptured: bool,
+}
+
+impl MatchErgonomicsProof {
+  pub fn complete(self: MatchErgonomicsProof) -> bool {
+    return self.fixture != ""
+      && self.formCount >= 45
+      && self.nativeLowering.complete()
+      && self.negativeFixtureCaptured
+  }
+}

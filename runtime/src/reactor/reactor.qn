@@ -1,0 +1,4 @@
+pub interface Reactor {
+  pub fn backendName(self: &Reactor) -> string
+  pub fn supportsTimers(self: &Reactor) -> bool
+}

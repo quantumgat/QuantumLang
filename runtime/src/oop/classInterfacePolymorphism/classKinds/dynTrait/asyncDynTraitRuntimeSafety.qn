@@ -1,0 +1,27 @@
+pub struct AsyncDynTraitRuntimeSafety {
+  dynTypeId: u64,
+  dataPointerBound: bool,
+  adapterTableBound: bool,
+  futureFrameBound: bool,
+  pollEntryBound: bool,
+  generationChecked: bool,
+  cancellationCleanupBound: bool,
+  staleHandleRejected: bool,
+  typedFailureNoCoredumpBound: bool,
+  sourceMapBound: bool,
+}
+
+impl AsyncDynTraitRuntimeSafety {
+  pub fn complete(self: AsyncDynTraitRuntimeSafety) -> bool {
+    return self.dynTypeId > 0
+      && self.dataPointerBound
+      && self.adapterTableBound
+      && self.futureFrameBound
+      && self.pollEntryBound
+      && self.generationChecked
+      && self.cancellationCleanupBound
+      && self.staleHandleRejected
+      && self.typedFailureNoCoredumpBound
+      && self.sourceMapBound
+  }
+}

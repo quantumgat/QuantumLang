@@ -1,0 +1,29 @@
+pub enum ControlFlowFactKind {
+  Branch
+  Loop
+  LabeledExit
+  MatchDispatch
+  PatternBinding
+  ParallelSplitJoin
+  DomainEngineLoop
+  QuantumControl
+}
+
+pub struct ControlFlowFact {
+  node: u64,
+  kind: ControlFlowFactKind,
+  sourceRangeReady: bool,
+  diagnosticsReady: bool,
+  hirReady: bool,
+  mirReady: bool,
+}
+
+impl ControlFlowFact {
+  pub fn complete(self: ControlFlowFact) -> bool {
+    return self.node > 0
+      && self.sourceRangeReady
+      && self.diagnosticsReady
+      && self.hirReady
+      && self.mirReady
+  }
+}

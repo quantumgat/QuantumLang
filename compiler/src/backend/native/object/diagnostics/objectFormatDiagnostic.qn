@@ -1,0 +1,12 @@
+pub struct ObjectFormatDiagnostic {
+  target: string,
+  format: string,
+  code: string,
+  blocksArtifact: bool,
+}
+
+impl ObjectFormatDiagnostic {
+  pub fn reportable(self: ObjectFormatDiagnostic) -> bool {
+    return self.target != "" && self.format != "" && self.code != "" && self.blocksArtifact
+  }
+}

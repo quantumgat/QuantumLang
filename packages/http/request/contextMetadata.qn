@@ -1,0 +1,188 @@
+import body::{HttpBody}
+import response::{HttpCookie}
+
+extend<...Caps> HttpCtx<...Caps> {
+  pub fn metadata(self: HttpCtx<...Caps>) -> Result<RequestMetadata, RequestSafetyDiagnostic> {
+    return httpCtxMetadataSurface(self)
+  }
+
+  pub fn realIp(self: HttpCtx<...Caps>) -> string {
+    return httpCtxRealIpSurface(self)
+  }
+
+  pub fn remoteAddr(self: HttpCtx<...Caps>) -> string {
+    return httpCtxRemoteAddrSurface(self)
+  }
+
+  pub fn remotePort(self: HttpCtx<...Caps>) -> usize {
+    return httpCtxRemotePortSurface(self)
+  }
+
+  pub fn localAddr(self: HttpCtx<...Caps>) -> string {
+    return httpCtxLocalAddrSurface(self)
+  }
+
+  pub fn localPort(self: HttpCtx<...Caps>) -> usize {
+    return httpCtxLocalPortSurface(self)
+  }
+
+  pub fn ipChain(self: HttpCtx<...Caps>) -> Vec<string> {
+    return httpCtxIpChainSurface(self)
+  }
+
+  pub fn isLoopbackIp(self: HttpCtx<...Caps>) -> bool { return httpCtxIsLoopbackIpSurface(self) }
+  pub fn isPrivateIp(self: HttpCtx<...Caps>) -> bool { return httpCtxIsPrivateIpSurface(self) }
+  pub fn isPublicIp(self: HttpCtx<...Caps>) -> bool { return httpCtxIsPublicIpSurface(self) }
+  pub fn forwarded(self: HttpCtx<...Caps>) -> Result<ForwardedChain, RequestSafetyDiagnostic> { return httpCtxForwardedSurface(self) }
+  pub fn firstUntrustedIp(self: HttpCtx<...Caps>) -> string { return httpCtxFirstUntrustedIpSurface(self) }
+  pub fn proxyVendor(self: HttpCtx<...Caps>) -> string { return httpCtxProxyVendorSurface(self) }
+  pub fn proxySpoofed(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().proxySpoofing() }
+  pub fn badForwardedChain(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().badForwardedChain() }
+
+  pub fn scheme(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "x-forwarded-proto", "http") }
+  pub fn host(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "host", "") }
+  pub fn port(self: HttpCtx<...Caps>) -> usize { return httpCtxPortSurface(self) }
+  pub fn authority(self: HttpCtx<...Caps>) -> string { return self.host() }
+  pub fn originalHost(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "x-forwarded-host", self.host()) }
+  pub fn originalScheme(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "x-forwarded-proto", self.scheme()) }
+  pub fn originalUri(self: HttpCtx<...Caps>) -> string { return self.uri().path() + self.rawQuery() }
+  pub fn basePath(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "x-forwarded-prefix", "") }
+  pub fn forwardedPrefix(self: HttpCtx<...Caps>) -> string { return self.basePath() }
+  pub fn fullUrl(self: HttpCtx<...Caps>) -> string { return self.scheme() + "://" + self.host() + self.uri().path() }
+  pub fn originUrl(self: HttpCtx<...Caps>) -> string { return self.originalScheme() + "://" + self.originalHost() + self.uri().path() }
+
+  pub fn userAgent(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "user-agent", "") }
+  pub fn referer(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "referer", "") }
+  pub fn referrer(self: HttpCtx<...Caps>) -> string { return self.referer() }
+  pub fn origin(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "origin", "") }
+  pub fn accept(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "accept", "") }
+  pub fn acceptJson(self: HttpCtx<...Caps>) -> bool { return httpCtxAcceptsSurface(self, "application/json") }
+  pub fn acceptLanguage(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "accept-language", "") }
+  pub fn acceptEncoding(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "accept-encoding", "") }
+  pub fn contentType(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "content-type", httpCtxBodyContentTypeSurface(self)) }
+  pub fn contentLength(self: HttpCtx<...Caps>) -> usize { return httpCtxContentLengthSurface(self) }
+  pub fn cacheControl(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "cache-control", "") }
+  pub fn authorization(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "authorization", "") }
+  pub fn bearerToken(self: HttpCtx<...Caps>) -> string { return httpCtxBearerTokenSurface(self) }
+  pub fn cookie(self: HttpCtx<...Caps>, name: string) -> Option<string> { return httpCtxCookieSurface(self, name) }
+  pub fn cookies(self: HttpCtx<...Caps>) -> HttpCookieJar { return httpCtxCookiesSurface(self) }
+
+  pub fn isSecure(self: HttpCtx<...Caps>) -> bool { return self.scheme() == "https" }
+  pub fn sameSite(self: HttpCtx<...Caps>) -> string { return httpCtxSameSiteSurface(self) }
+  pub fn secFetchSite(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "sec-fetch-site", "") }
+  pub fn secFetchMode(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "sec-fetch-mode", "") }
+  pub fn secFetchDest(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "sec-fetch-dest", "") }
+  pub fn secFetchUser(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "sec-fetch-user", "") }
+  pub fn csrfToken(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "x-csrf-token", "") }
+  pub fn corsOrigin(self: HttpCtx<...Caps>) -> string { return self.origin() }
+  pub fn corsPreflight(self: HttpCtx<...Caps>) -> bool { return self.method() == HttpMethod.Options && self.origin() != "" }
+
+  pub fn json<T>(self: HttpCtx<...Caps>) -> Result<T, IntoHttpError> { return httpCtxBodyTypedSurface<Caps, T>(self) }
+  pub fn form<T>(self: HttpCtx<...Caps>) -> Result<T, IntoHttpError> { return httpCtxFormSurface<Caps, T>(self) }
+  pub fn multipart(self: HttpCtx<...Caps>) -> Result<MultipartForm, IntoHttpError> { return httpCtxMultipartSurface(self) }
+  pub fn file(self: HttpCtx<...Caps>, name: string) -> Result<UploadedFile, IntoHttpError> { return httpCtxFileSurface(self, name) }
+  pub fn files(self: HttpCtx<...Caps>) -> Result<Vec<UploadedFile>, IntoHttpError> { return httpCtxFilesSurface(self) }
+  pub fn text(self: HttpCtx<...Caps>) -> Result<string, IntoHttpError> { return httpCtxBodyTextSurface(self) }
+  pub fn bytes(self: HttpCtx<...Caps>) -> Result<HttpBodyBytes, IntoHttpError> { return httpCtxBodyBytesSurface(self) }
+  pub fn stream(self: HttpCtx<...Caps>) -> HttpStreamBody { return httpCtxBodyStreamSurface(self) }
+  pub fn bodySize(self: HttpCtx<...Caps>) -> usize { return httpCtxBodySizeSurface(self) }
+  pub fn bodyHash(self: HttpCtx<...Caps>) -> string { return httpCtxBodyHashSurface(self) }
+
+  pub fn wantsJson(self: HttpCtx<...Caps>) -> bool { return httpCtxAcceptsSurface(self, "application/json") }
+  pub fn wantsHtml(self: HttpCtx<...Caps>) -> bool { return httpCtxAcceptsSurface(self, "text/html") }
+  pub fn wantsText(self: HttpCtx<...Caps>) -> bool { return httpCtxAcceptsSurface(self, "text/plain") }
+  pub fn bestContentType(self: HttpCtx<...Caps>, offered: Vec<string>) -> string { return httpCtxBestContentTypeSurface(self, offered) }
+  pub fn bestLanguage(self: HttpCtx<...Caps>, offered: Vec<string>) -> string { return httpCtxBestLanguageSurface(self, offered) }
+  pub fn bestEncoding(self: HttpCtx<...Caps>, offered: Vec<string>) -> string { return httpCtxBestEncodingSurface(self, offered) }
+
+  pub fn requestId(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "x-request-id", "") }
+  pub fn correlationId(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "x-correlation-id", self.requestId()) }
+  pub fn traceId(self: HttpCtx<...Caps>) -> string { return httpCtxTraceIdSurface(self) }
+  pub fn spanId(self: HttpCtx<...Caps>) -> string { return httpCtxSpanIdSurface(self) }
+  pub fn traceparent(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "traceparent", "") }
+  pub fn tracestate(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "tracestate", "") }
+  pub fn baggage(self: HttpCtx<...Caps>) -> string { return httpCtxHeaderOrSurface(self, "baggage", "") }
+  pub fn startTime(self: HttpCtx<...Caps>) -> u64 { return httpCtxStartTimeSurface(self) }
+  pub fn deadline(self: HttpCtx<...Caps>) -> u64 { return httpCtxDeadlineSurface(self) }
+  pub fn elapsed(self: HttpCtx<...Caps>) -> usize { return httpCtxElapsedSurface(self) }
+
+  pub fn protocol(self: HttpCtx<...Caps>) -> string { return self.request().version().text() }
+  pub fn alpn(self: HttpCtx<...Caps>) -> string { return httpCtxTlsSurface(self).alpn }
+  pub fn tls(self: HttpCtx<...Caps>) -> TlsInfo { return httpCtxTlsSurface(self) }
+  pub fn tlsVersion(self: HttpCtx<...Caps>) -> string { return httpCtxTlsSurface(self).version }
+  pub fn cipher(self: HttpCtx<...Caps>) -> string { return httpCtxTlsSurface(self).cipher }
+  pub fn sni(self: HttpCtx<...Caps>) -> string { return httpCtxTlsSurface(self).sni }
+  pub fn clientCert(self: HttpCtx<...Caps>) -> TlsClientCert { return httpCtxTlsSurface(self).clientCert }
+  pub fn mtlsVerified(self: HttpCtx<...Caps>) -> bool { return httpCtxTlsSurface(self).mtlsVerified() }
+
+  pub fn safetyReport(self: HttpCtx<...Caps>) -> RequestSafetyReport { return httpCtxSafetyReportSurface(self) }
+  pub fn safeToHandle(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().safeToHandle() }
+  pub fn duplicateContentLength(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().duplicateContentLength() }
+  pub fn contentLengthTransferEncodingConflict(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().contentLengthTransferEncodingConflict() }
+  pub fn invalidHeaderBytes(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().invalidHeaderBytes() }
+  pub fn headerTooLarge(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().headerTooLarge() }
+  pub fn tooManyHeaders(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().tooManyHeaders() }
+  pub fn uriTooLong(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().uriTooLong() }
+  pub fn requestSmugglingRisk(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().requestSmugglingRisk() }
+  pub fn slowlorisTimeout(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().slowlorisTimeout() }
+  pub fn bodyLimitExceeded(self: HttpCtx<...Caps>) -> bool { return self.safetyReport().bodyLimitExceeded() }
+}
+
+pub struct HttpCookieJar {
+  countValue: usize,
+}
+
+impl HttpCookieJar {
+  pub fn empty() -> HttpCookieJar {
+    return HttpCookieJar {
+      countValue: 0,
+    }
+  }
+
+  pub fn count(self: HttpCookieJar) -> usize {
+    return self.countValue
+  }
+}
+
+fn httpCtxMetadataSurface<...Caps>(ctx: HttpCtx<...Caps>) -> Result<RequestMetadata, RequestSafetyDiagnostic>
+fn httpCtxRealIpSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxRemoteAddrSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxRemotePortSurface<...Caps>(ctx: HttpCtx<...Caps>) -> usize
+fn httpCtxLocalAddrSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxLocalPortSurface<...Caps>(ctx: HttpCtx<...Caps>) -> usize
+fn httpCtxIpChainSurface<...Caps>(ctx: HttpCtx<...Caps>) -> Vec<string>
+fn httpCtxIsLoopbackIpSurface<...Caps>(ctx: HttpCtx<...Caps>) -> bool
+fn httpCtxIsPrivateIpSurface<...Caps>(ctx: HttpCtx<...Caps>) -> bool
+fn httpCtxIsPublicIpSurface<...Caps>(ctx: HttpCtx<...Caps>) -> bool
+fn httpCtxForwardedSurface<...Caps>(ctx: HttpCtx<...Caps>) -> Result<ForwardedChain, RequestSafetyDiagnostic>
+fn httpCtxFirstUntrustedIpSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxProxyVendorSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxHeaderOrSurface<...Caps>(ctx: HttpCtx<...Caps>, name: string, fallback: string) -> string
+fn httpCtxPortSurface<...Caps>(ctx: HttpCtx<...Caps>) -> usize
+fn httpCtxAcceptsSurface<...Caps>(ctx: HttpCtx<...Caps>, contentType: string) -> bool
+fn httpCtxContentLengthSurface<...Caps>(ctx: HttpCtx<...Caps>) -> usize
+fn httpCtxBearerTokenSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxCookieSurface<...Caps>(ctx: HttpCtx<...Caps>, name: string) -> Option<string>
+fn httpCtxCookiesSurface<...Caps>(ctx: HttpCtx<...Caps>) -> HttpCookieJar
+fn httpCtxSameSiteSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxBodyTypedSurface<...Caps, T>(ctx: HttpCtx<...Caps>) -> Result<T, IntoHttpError>
+fn httpCtxFormSurface<...Caps, T>(ctx: HttpCtx<...Caps>) -> Result<T, IntoHttpError>
+fn httpCtxMultipartSurface<...Caps>(ctx: HttpCtx<...Caps>) -> Result<MultipartForm, IntoHttpError>
+fn httpCtxFileSurface<...Caps>(ctx: HttpCtx<...Caps>, name: string) -> Result<UploadedFile, IntoHttpError>
+fn httpCtxFilesSurface<...Caps>(ctx: HttpCtx<...Caps>) -> Result<Vec<UploadedFile>, IntoHttpError>
+fn httpCtxBodyContentTypeSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxBodyTextSurface<...Caps>(ctx: HttpCtx<...Caps>) -> Result<string, IntoHttpError>
+fn httpCtxBodyBytesSurface<...Caps>(ctx: HttpCtx<...Caps>) -> Result<HttpBodyBytes, IntoHttpError>
+fn httpCtxBodyStreamSurface<...Caps>(ctx: HttpCtx<...Caps>) -> HttpStreamBody
+fn httpCtxBodySizeSurface<...Caps>(ctx: HttpCtx<...Caps>) -> usize
+fn httpCtxBodyHashSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxBestContentTypeSurface<...Caps>(ctx: HttpCtx<...Caps>, offered: Vec<string>) -> string
+fn httpCtxBestLanguageSurface<...Caps>(ctx: HttpCtx<...Caps>, offered: Vec<string>) -> string
+fn httpCtxBestEncodingSurface<...Caps>(ctx: HttpCtx<...Caps>, offered: Vec<string>) -> string
+fn httpCtxTraceIdSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxSpanIdSurface<...Caps>(ctx: HttpCtx<...Caps>) -> string
+fn httpCtxStartTimeSurface<...Caps>(ctx: HttpCtx<...Caps>) -> u64
+fn httpCtxDeadlineSurface<...Caps>(ctx: HttpCtx<...Caps>) -> u64
+fn httpCtxElapsedSurface<...Caps>(ctx: HttpCtx<...Caps>) -> usize
+fn httpCtxTlsSurface<...Caps>(ctx: HttpCtx<...Caps>) -> TlsInfo
+fn httpCtxSafetyReportSurface<...Caps>(ctx: HttpCtx<...Caps>) -> RequestSafetyReport

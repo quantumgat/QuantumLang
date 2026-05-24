@@ -1,0 +1,12 @@
+pub struct PosixIoRuntime {
+  target: string,
+  fdBacked: bool,
+  pollerRequired: bool,
+  nonblocking: bool,
+}
+
+impl PosixIoRuntime {
+  pub fn accepted(self: PosixIoRuntime) -> bool {
+    return self.target != "" && self.fdBacked
+  }
+}

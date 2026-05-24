@@ -1,0 +1,13 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub extern "qnpkg" {
+  pub fn App() -> AppBuilder
+}
+pub extern "qnpkg" {
+  pub fn serve<T>(port: usize, controller: T) -> Result<Unit, AppBuilderDiagnostic>
+}
+pub extern "qnpkg" {
+  pub fn serve<T>(host: string, port: usize, controller: T) -> Result<Unit, AppBuilderDiagnostic>
+}
+pub extern "qnpkg" {
+  pub fn serve<T>(address: string, controller: T) -> Result<Unit, AppBuilderDiagnostic>
+}

@@ -1,0 +1,78 @@
+pub enum SystemStdlibCall {
+  FsRead
+  FsWrite
+  FsOpen
+  FsList
+  FsMetadata
+  FsCopy
+  FsMove
+  FsRemove
+  FsPermissions
+  FsSymlink
+  FsTemp
+  FsStream
+  FsLock
+  PathLiteral
+  PathNormalize
+  PathJoin
+  PathSafeJoin
+  PathComponents
+  PathRelative
+  PathStyleConvert
+  OsArgs
+  OsEnv
+  OsSetEnv
+  OsRemoveEnv
+  OsCwd
+  OsSetCwd
+  OsInfo
+  OsUserDirs
+  OsProcessId
+  ProcessSpawn
+  ProcessOutput
+  ProcessStatus
+  ProcessWait
+  ProcessTryWait
+  ProcessKill
+  ProcessSignal
+  ProcessGroup
+  ProcessAsync
+  TerminalSize
+  TerminalTty
+  TerminalColor
+  TerminalMode
+  TerminalCursor
+  TerminalScreen
+  SignalInstall
+  SignalRaise
+  SignalWait
+  SignalSet
+  SignalSubscription
+  SignalShutdown
+  SysCapability
+  SysTargetGate
+  SysUnsupported
+  SysSystemInfo
+  SysRawHandle
+}
+
+pub struct SystemLoweringContract {
+  call: SystemStdlibCall,
+  stdlibShortForm: string,
+  directRuntimeAbi: bool,
+  targetGateBeforeEmit: bool,
+  capabilityChecked: bool,
+  resultErrorLowered: bool,
+  sourceMappedDiagnostic: bool,
+}
+
+impl SystemLoweringContract {
+  pub fn accepted(self: SystemLoweringContract) -> bool {
+    return self.stdlibShortForm != ""
+      && self.directRuntimeAbi
+      && self.targetGateBeforeEmit
+      && self.capabilityChecked
+      && self.resultErrorLowered
+      && self.sourceMappedDiagnostic
+  }
+}

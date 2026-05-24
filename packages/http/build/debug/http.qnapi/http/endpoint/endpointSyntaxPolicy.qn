@@ -1,0 +1,38 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum EndpointControllerKind {
+  Struct
+  Class
+}
+pub enum EndpointSyntaxStyle {
+  MagicDerived
+  ManualExact
+}
+pub enum EndpointActionInference {
+  Keyword
+  BodyMeansPost
+  QueryMeansGet
+  ManualRoute
+}
+pub struct EndpointKeywordPolicy {
+  pub keyword: string
+  pub method: HttpMethod
+  style: EndpointSyntaxStyle
+  reservedInController: bool
+  importRequired: bool
+  explicitPubFnRequired: bool
+}
+pub struct EndpointControllerSyntaxPolicy {
+  controllerKind: EndpointControllerKind
+  magicEndpointsAllowed: bool
+  manualExactRoutesAllowed: bool
+  endpointKeywordImportRequired: bool
+  staticHandlerThunkRequired: bool
+  dynamicDispatchForbidden: bool
+}
+pub struct EndpointDerivedActionPolicy {
+  inference: EndpointActionInference
+  arbitraryActionNamesAllowed: bool
+  bodyParamInfersPost: bool
+  queryParamInfersGet: bool
+  endpointKeywordImportRequired: bool
+}

@@ -1,0 +1,23 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopEngineSnapshot {
+  typeCount: usize
+  vtableCount: usize
+  interfaceObjectCount: usize
+  dispatchEntryCount: usize
+  reflectionRecordCount: usize
+  staleRejections: usize
+  downcastFailures: usize
+  deterministicOrder: bool
+  reflectionColdPath: bool
+}
+pub extern "qnpkg" {
+  pub fn oopEngineSnapshot(
+  typeCount: usize,
+  vtableCount: usize,
+  interfaceObjectCount: usize,
+  dispatchEntryCount: usize,
+  reflectionRecordCount: usize,
+  staleRejections: usize,
+  downcastFailures: usize,
+) -> OopEngineSnapshot
+}

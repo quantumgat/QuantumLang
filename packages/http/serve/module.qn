@@ -1,0 +1,52 @@
+pub struct Module {
+  name: string,
+  controllerCount: usize,
+  providerCount: usize,
+  routeBlockCount: usize,
+}
+
+pub class ModuleBuilder {
+  name: string,
+  controllerCount: usize,
+  providerCount: usize,
+  routeBlockCount: usize,
+  middlewareCount: usize,
+
+  pub init(name: string) {
+    self.name = name
+    self.controllerCount = 0
+    self.providerCount = 0
+    self.routeBlockCount = 0
+    self.middlewareCount = 0
+  }
+
+  pub fn controller(self: ModuleBuilder, name: string) -> ModuleBuilder {
+    self.controllerCount = self.controllerCount + 1
+    return self
+  }
+
+  pub fn provider(self: ModuleBuilder, name: string) -> ModuleBuilder {
+    self.providerCount = self.providerCount + 1
+    return self
+  }
+
+  pub fn routeBlock(self: ModuleBuilder, name: string) -> ModuleBuilder {
+    self.routeBlockCount = self.routeBlockCount + 1
+    return self
+  }
+
+  pub fn use(self: ModuleBuilder, name: string) -> ModuleBuilder {
+    self.middlewareCount = self.middlewareCount + 1
+    return self
+  }
+
+  pub fn build(self: ModuleBuilder) -> Module {
+    return Module {
+      name: self.name,
+      controllerCount: self.controllerCount,
+      providerCount: self.providerCount,
+      routeBlockCount: self.routeBlockCount,
+    }
+  }
+}
+

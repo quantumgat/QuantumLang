@@ -1,0 +1,204 @@
+pub enum MemoryErrorReportCaseKind {
+  DoubleFree
+  StaleHandle
+  WrongAllocator
+  UseAfterFree
+  Leak
+  OutOfMemory
+  PressureDenied
+}
+
+pub struct MemoryErrorReportCase {
+  kind: MemoryErrorReportCaseKind,
+  incident: MemoryIncident,
+  diagnostic: Diagnostic,
+  analyzer: ErrorAnalyzerOutput,
+  rejected: bool,
+  typedPayloadRequired: bool,
+  redactedReportRequired: bool,
+  noCoredumpRequired: bool,
+  sourceRangeRequired: bool,
+  structuredIncidentRequired: bool,
+  reportable: bool,
+}
+
+pub fn memoryErrorReportCase(
+  kind: MemoryErrorReportCaseKind,
+  incident: MemoryIncident,
+  diagnostic: Diagnostic,
+  analyzer: ErrorAnalyzerOutput,
+) -> MemoryErrorReportCase {
+  return MemoryErrorReportCase {
+    kind: kind,
+    incident: incident,
+    diagnostic: diagnostic,
+    analyzer: analyzer,
+    rejected: true,
+    typedPayloadRequired: true,
+    redactedReportRequired: true,
+    noCoredumpRequired: true,
+    sourceRangeRequired: true,
+    structuredIncidentRequired: true,
+    reportable: true,
+  }
+}
+
+impl MemoryErrorReportCase {
+  pub fn passed(self: MemoryErrorReportCase) -> bool {
+    let redacted = self.incident.redactedForReport()
+    return self.incident.productionSafe()
+      && self.incident.noCoredump()
+      && self.incident.hasTypedPayload()
+      && redacted.productionSafe()
+      && redacted.noCoredump()
+      && self.diagnostic.complete()
+      && self.analyzer.useful()
+      && self.rejected
+      && self.typedPayloadRequired
+      && self.redactedReportRequired
+      && self.noCoredumpRequired
+      && self.sourceRangeRequired
+      && self.structuredIncidentRequired
+      && self.reportable
+  }
+}
+
+pub struct MemoryErrorReportGate {
+  doubleFree: MemoryErrorReportCase,
+  staleHandle: MemoryErrorReportCase,
+  wrongAllocator: MemoryErrorReportCase,
+  useAfterFree: MemoryErrorReportCase,
+  leak: MemoryErrorReportCase,
+  outOfMemory: MemoryErrorReportCase,
+  pressureDenied: MemoryErrorReportCase,
+  ownershipFactsConnected: bool,
+  runtimeMemoryIncidentConnected: bool,
+  runtimeReportConnected: bool,
+  errorAnalyzerConnected: bool,
+  idePayloadConnected: bool,
+  noStringOnlyIncident: bool,
+  noCoredump: bool,
+}
+
+pub fn memoryErrorReportGate(file: u32) -> MemoryErrorReportGate {
+  let analyzer = errorAnalyzerOutput(file)
+  let doubleFree = memoryErrorReportCase(
+    MemoryErrorReportCaseKind.DoubleFree,
+    MemoryIncident.init(1, MemoryIncidentKind.DoubleFree, 101, 201),
+    Diagnostic.model(
+      diagnosticCode("QLMEM", 1001),
+      DiagnosticCategory.Memory,
+      DiagnosticSeverity.Error,
+      SourceRange.init(file, 1, 2),
+      "allocation can be freed twice"
+    ),
+    analyzer
+  )
+  let staleHandle = memoryErrorReportCase(
+    MemoryErrorReportCaseKind.StaleHandle,
+    MemoryIncident.init(2, MemoryIncidentKind.StaleHandle, 102, 202),
+    Diagnostic.model(
+      diagnosticCode("QLMEM", 1002),
+      DiagnosticCategory.Memory,
+      DiagnosticSeverity.Error,
+      SourceRange.init(file, 3, 4),
+      "handle generation is stale"
+    ),
+    analyzer
+  )
+  let wrongAllocator = memoryErrorReportCase(
+    MemoryErrorReportCaseKind.WrongAllocator,
+    MemoryIncident.init(3, MemoryIncidentKind.WrongAllocator, 103, 203),
+    Diagnostic.model(
+      diagnosticCode("QLMEM", 1003),
+      DiagnosticCategory.Memory,
+      DiagnosticSeverity.Error,
+      SourceRange.init(file, 5, 6),
+      "allocation is released through the wrong allocator domain"
+    ),
+    analyzer
+  )
+  let useAfterFree = memoryErrorReportCase(
+    MemoryErrorReportCaseKind.UseAfterFree,
+    MemoryIncident.init(4, MemoryIncidentKind.UseAfterFree, 104, 204),
+    Diagnostic.model(
+      diagnosticCode("QLMEM", 1004),
+      DiagnosticCategory.Memory,
+      DiagnosticSeverity.Error,
+      SourceRange.init(file, 7, 8),
+      "value is accessed after its allocation was released"
+    ),
+    analyzer
+  )
+  let leak = memoryErrorReportCase(
+    MemoryErrorReportCaseKind.Leak,
+    MemoryIncident.init(5, MemoryIncidentKind.Leak, 105, 205),
+    Diagnostic.model(
+      diagnosticCode("QLMEM", 1005),
+      DiagnosticCategory.Ownership,
+      DiagnosticSeverity.Error,
+      SourceRange.init(file, 9, 10),
+      "allocation has no proven release path"
+    ),
+    analyzer
+  )
+  let outOfMemory = memoryErrorReportCase(
+    MemoryErrorReportCaseKind.OutOfMemory,
+    MemoryIncident.init(6, MemoryIncidentKind.OutOfMemory, 106, 206),
+    Diagnostic.model(
+      diagnosticCode("QLMEM", 1006),
+      DiagnosticCategory.Memory,
+      DiagnosticSeverity.Error,
+      SourceRange.init(file, 11, 12),
+      "allocation request exceeds the active memory budget"
+    ),
+    analyzer
+  )
+  let pressureDenied = memoryErrorReportCase(
+    MemoryErrorReportCaseKind.PressureDenied,
+    MemoryIncident.init(7, MemoryIncidentKind.PressureDenied, 107, 207),
+    Diagnostic.model(
+      diagnosticCode("QLMEM", 1007),
+      DiagnosticCategory.Runtime,
+      DiagnosticSeverity.Error,
+      SourceRange.init(file, 13, 14),
+      "runtime denied allocation under memory pressure"
+    ),
+    analyzer
+  )
+  return MemoryErrorReportGate {
+    doubleFree: doubleFree,
+    staleHandle: staleHandle,
+    wrongAllocator: wrongAllocator,
+    useAfterFree: useAfterFree,
+    leak: leak,
+    outOfMemory: outOfMemory,
+    pressureDenied: pressureDenied,
+    ownershipFactsConnected: true,
+    runtimeMemoryIncidentConnected: true,
+    runtimeReportConnected: true,
+    errorAnalyzerConnected: true,
+    idePayloadConnected: true,
+    noStringOnlyIncident: true,
+    noCoredump: true,
+  }
+}
+
+impl MemoryErrorReportGate {
+  pub fn passed(self: MemoryErrorReportGate) -> bool {
+    return self.doubleFree.passed()
+      && self.staleHandle.passed()
+      && self.wrongAllocator.passed()
+      && self.useAfterFree.passed()
+      && self.leak.passed()
+      && self.outOfMemory.passed()
+      && self.pressureDenied.passed()
+      && self.ownershipFactsConnected
+      && self.runtimeMemoryIncidentConnected
+      && self.runtimeReportConnected
+      && self.errorAnalyzerConnected
+      && self.idePayloadConnected
+      && self.noStringOnlyIncident
+      && self.noCoredump
+  }
+}

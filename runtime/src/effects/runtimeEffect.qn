@@ -1,0 +1,23 @@
+pub enum RuntimeEffectKind {
+  FilesystemEffect
+  NetworkEffect
+  ProcessEffect
+  TerminalEffect
+  QuantumEffect
+}
+
+pub struct RuntimeEffect {
+  kind: RuntimeEffectKind,
+  capabilityChecked: bool,
+  sideEffect: bool,
+}
+
+pub fn runtimeEffect(kind: RuntimeEffectKind, sideEffect: bool) -> RuntimeEffect {
+  return RuntimeEffect { kind: kind, capabilityChecked: true, sideEffect: sideEffect }
+}
+
+impl RuntimeEffect {
+  pub fn isAllowed(self: RuntimeEffect) -> bool {
+    return self.capabilityChecked
+  }
+}

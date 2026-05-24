@@ -1,0 +1,33 @@
+[self_hosting]
+canonical = true
+stage = "source-root-scaffold"
+compiler_root = "compiler"
+runtime_root = "runtime"
+bootstrap_compiler_root = "../compiler"
+bootstrap_runtime_root = "../runtime"
+
+[backend]
+required = "native"
+generated_c_fallback = false
+generated_cpp_fallback = false
+generated_header_fallback = false
+pure_native_default = true
+
+[manifests]
+quantum_toml_roots = [".", "compiler", "runtime"]
+module_toml_policy = "major-owned-boundaries-only"
+forbidden_module_sections = ["library"]
+package_identity_source = "quantum.toml"
+module_identity_source = "source-path"
+forbidden_source_declarations = ["package"]
+
+[tests]
+focused_only = true
+source_root_gate = "qtlc_clean_qtlang_source_roots"
+
+[line_limits]
+implementation_source_file_standard_min = 700
+implementation_source_file_standard_max = 800
+implementation_source_file_hard = 1500
+planning_doc_hard = 1400
+module_file_hard = 300

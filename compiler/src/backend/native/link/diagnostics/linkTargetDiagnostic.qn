@@ -1,0 +1,12 @@
+pub struct LinkTargetDiagnostic {
+  target: string,
+  linker: string,
+  code: string,
+  blocksLink: bool,
+}
+
+impl LinkTargetDiagnostic {
+  pub fn reportable(self: LinkTargetDiagnostic) -> bool {
+    return self.target != "" && self.linker != "" && self.code != "" && self.blocksLink
+  }
+}

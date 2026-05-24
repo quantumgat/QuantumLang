@@ -1,0 +1,30 @@
+pub struct DiagnosticCoverageFact {
+  sourceRangesExact: bool,
+  safeFixItsOnly: bool,
+  proofExplanations: bool,
+  hotPathWarnings: bool,
+  noCoredumpPath: bool,
+  redacted: bool,
+}
+
+impl DiagnosticCoverageFact {
+  pub fn init() -> DiagnosticCoverageFact {
+    return DiagnosticCoverageFact {
+      sourceRangesExact: true,
+      safeFixItsOnly: true,
+      proofExplanations: true,
+      hotPathWarnings: true,
+      noCoredumpPath: true,
+      redacted: true,
+    }
+  }
+
+  pub fn complete(self: DiagnosticCoverageFact) -> bool {
+    return self.sourceRangesExact
+      && self.safeFixItsOnly
+      && self.proofExplanations
+      && self.hotPathWarnings
+      && self.noCoredumpPath
+      && self.redacted
+  }
+}

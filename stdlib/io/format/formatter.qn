@@ -1,0 +1,60 @@
+pub enum FormatMode {
+  Display,
+  Debug,
+  Compact,
+  Pretty,
+  Hex,
+  Binary,
+  Octal,
+  Bits,
+  Fixed,
+  Scientific,
+}
+
+pub enum FormatErrorKind {
+  UnprintableType,
+  SecretRedacted,
+  BufferFull,
+  InvalidSpecifier,
+  InvalidPrecision,
+  UnsafeDebugRejected,
+  QuantumValueOpaque,
+}
+
+pub struct FormatError {
+  kind: FormatErrorKind,
+  message: string,
+}
+
+pub struct Formatter {
+  mode: FormatMode,
+  redactsSecrets: bool,
+  allocationAllowed: bool,
+  checksSpecifiers: bool,
+  supportsAllSafeTypes: bool,
+}
+
+pub fn format<T>(value: T) -> Result<string, FormatError>
+pub fn toString<T>(value: T) -> Result<string, FormatError>
+
+impl Formatter {
+  pub fn display() -> Formatter {
+    return Formatter {
+      mode: FormatMode.Display,
+      redactsSecrets: true,
+      allocationAllowed: true,
+      checksSpecifiers: true,
+      supportsAllSafeTypes: true,
+    }
+  }
+
+  pub fn hotPath() -> Formatter {
+    return Formatter {
+      mode: FormatMode.Compact,
+      redactsSecrets: true,
+      allocationAllowed: false,
+      checksSpecifiers: true,
+      supportsAllSafeTypes: true,
+    }
+  }
+}

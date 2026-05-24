@@ -1,0 +1,26 @@
+pub struct BackendBoundary {
+  pub sealedInternalBackends: bool,
+  pub nativeImplementsBackend: bool,
+  pub qirImplementsBackend: bool,
+  pub dynamicPluginBoundary: bool,
+  pub hotLoopDispatch: bool,
+}
+
+pub fn backendBoundary() -> BackendBoundary {
+  return BackendBoundary {
+    sealedInternalBackends: true,
+    nativeImplementsBackend: true,
+    qirImplementsBackend: true,
+    dynamicPluginBoundary: true,
+    hotLoopDispatch: false,
+  }
+}
+
+impl BackendBoundary {
+  pub fn isHotPathSafe(self) -> bool {
+    return self.sealedInternalBackends &&
+      self.nativeImplementsBackend &&
+      self.qirImplementsBackend &&
+      self.hotLoopDispatch == false
+  }
+}

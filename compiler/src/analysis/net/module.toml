@@ -1,0 +1,6 @@
+[module]
+name = "net"
+visibility = "internal"
+root = "mod.qn"
+owner = "compiler"
+role = "core-network-analysis"

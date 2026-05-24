@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct AbiVtableIdentity {
+  typeId: u64
+  tableSymbolId: u64
+  abiVersion: string
+  methodCount: usize
+}
+pub extern "qnpkg" {
+  pub fn abiVtableIdentity(typeId: u64, tableSymbolId: u64, abiVersion: string, methodCount: usize) -> AbiVtableIdentity
+}

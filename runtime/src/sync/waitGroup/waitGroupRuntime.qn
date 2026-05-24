@@ -1,0 +1,21 @@
+pub struct RuntimeWaitGroup {
+  handle: SyncHandle,
+  count: usize,
+  waiters: usize,
+  closed: bool,
+}
+
+impl RuntimeWaitGroup {
+  pub fn init(handle: SyncHandle, count: usize, waiters: usize, closed: bool) -> RuntimeWaitGroup {
+    return RuntimeWaitGroup {
+      handle: handle,
+      count: count,
+      waiters: waiters,
+      closed: closed,
+    }
+  }
+
+  pub fn canComplete(self: RuntimeWaitGroup) -> bool {
+    return self.count == 0 && self.closed == false
+  }
+}

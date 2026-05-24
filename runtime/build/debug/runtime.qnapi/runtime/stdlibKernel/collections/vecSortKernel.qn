@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum VecSortKernelAlgorithm {
+  PdqIntrosort
+  TimSort
+  Radix
+  InsertionSmallRange
+}
+pub struct VecSortKernel {
+  generalAlgorithm: VecSortKernelAlgorithm
+  stableAlgorithm: VecSortKernelAlgorithm
+  numericAlgorithm: VecSortKernelAlgorithm
+  smallRangeAlgorithm: VecSortKernelAlgorithm
+  worstCaseGuarded: bool
+  runAwareStable: bool
+  fixedWidthNumericRadix: bool
+}

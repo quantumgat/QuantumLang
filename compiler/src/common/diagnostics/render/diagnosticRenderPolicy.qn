@@ -1,0 +1,24 @@
+pub enum DiagnosticOutputForm {
+  CompactHumanText,
+  RichHumanText,
+  JsonReport,
+  QtReportJson,
+  IdeDiagnostic,
+  ReplayArtifact,
+}
+
+pub struct DiagnosticRenderPolicy {
+  output: DiagnosticOutputForm,
+  includesFixIts: bool,
+  redactsSecrets: bool,
+}
+
+impl DiagnosticRenderPolicy {
+  pub fn ide() -> DiagnosticRenderPolicy {
+    return DiagnosticRenderPolicy {
+      output: DiagnosticOutputForm.IdeDiagnostic,
+      includesFixIts: true,
+      redactsSecrets: true,
+    }
+  }
+}

@@ -1,0 +1,53 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum AppStateFamily {
+  Value
+  Resource
+  Pool
+  Cache
+  Service
+  Scoped
+  TestOverride
+}
+pub struct AppStateLifecycle {
+  lifecycleOwned: bool
+  startRequired: bool
+  shutdownRequired: bool
+  dropRequired: bool
+  healthCheckAvailable: bool
+  reconnectAvailable: bool
+  warmupAvailable: bool
+}
+pub struct AppStateDependency {
+  ownerId: u64
+  dependsOnOwnerId: u64
+  required: bool
+  startupBeforeOwner: bool
+  shutdownAfterOwner: bool
+}
+pub struct AppStateFact {
+  typeName: string
+  oopOwnerId: u64
+  family: AppStateFamily
+  lifecycle: AppStateLifecycle
+  dependencyCount: usize
+  scoped: bool
+  testOverrideIsolated: bool
+}
+pub struct AppStateGraphSummary {
+  stateCount: usize
+  dependencyCount: usize
+  lifecycleOwnedCount: usize
+  startRequiredCount: usize
+  shutdownRequiredCount: usize
+  dropRequiredCount: usize
+  healthCheckCount: usize
+  reconnectCount: usize
+  warmupCount: usize
+  scopedStateCount: usize
+  testOverrideCount: usize
+  projectionPendingCount: usize
+}
+pub struct AppStateGraph {
+  states: Vec<AppStateFact>
+  dependencies: Vec<AppStateDependency>
+}

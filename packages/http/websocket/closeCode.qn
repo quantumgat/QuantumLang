@@ -1,0 +1,51 @@
+pub struct CloseCode {
+  code: usize,
+}
+
+impl CloseCode {
+  pub fn init(code: usize) -> CloseCode {
+    return CloseCode {
+      code: code,
+    }
+  }
+
+  pub fn normal() -> CloseCode {
+    return CloseCode.init(1000)
+  }
+
+  pub fn goingAway() -> CloseCode {
+    return CloseCode.init(1001)
+  }
+
+  pub fn protocolError() -> CloseCode {
+    return CloseCode.init(1002)
+  }
+
+  pub fn unsupportedData() -> CloseCode {
+    return CloseCode.init(1003)
+  }
+
+  pub fn invalidPayload() -> CloseCode {
+    return CloseCode.init(1007)
+  }
+
+  pub fn policyViolation() -> CloseCode {
+    return CloseCode.init(1008)
+  }
+
+  pub fn messageTooBig() -> CloseCode {
+    return CloseCode.init(1009)
+  }
+
+  pub fn internalError() -> CloseCode {
+    return CloseCode.init(1011)
+  }
+
+  pub fn code(self: CloseCode) -> usize {
+    return self.code
+  }
+
+  pub fn valid(self: CloseCode) -> bool {
+    return self.code >= 1000 && self.code < 5000
+  }
+}

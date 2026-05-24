@@ -1,0 +1,37 @@
+pub enum NativeForQuantumComptimeLoweringKind {
+  QirStaticRegisterLoop
+  QirIndexedRegisterLoop
+  QirControlledLoop
+  QirMeasurementLoop
+  QirNestedQifQforLoop
+  QirRestrictedQwhileLoop
+  ComptimeFiniteExpansion
+  StaticFieldExpansion
+  ReflectionColdPathExpansion
+  BuilderErasedExpansion
+}
+
+pub struct NativeForQuantumComptimeLowering {
+  kind: NativeForQuantumComptimeLoweringKind,
+  mir: MirForQuantumComptimeOp,
+  emitsQirHandoff: bool,
+  emitsQirProfileCheck: bool,
+  emitsQubitLifetimeCleanup: bool,
+  emitsFiniteExpansion: bool,
+  emitsBuilderErasure: bool,
+  emitsDiagnostics: bool,
+  noNativeFallback: bool,
+}
+
+impl NativeForQuantumComptimeLowering {
+  pub fn complete(self: NativeForQuantumComptimeLowering) -> bool {
+    return self.mir.complete()
+      && self.emitsQirHandoff
+      && self.emitsQirProfileCheck
+      && self.emitsQubitLifetimeCleanup
+      && self.emitsFiniteExpansion
+      && self.emitsBuilderErasure
+      && self.emitsDiagnostics
+      && self.noNativeFallback
+  }
+}

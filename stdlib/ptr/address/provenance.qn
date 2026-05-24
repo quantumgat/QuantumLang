@@ -1,0 +1,94 @@
+/**
+  Allocation provenance metadata carried by pointer wrappers.
+
+  example:
+    let provenance = Provenance.init(allocationId, true, false)
+    if provenance.valid() == false { return }
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: metadata supports diagnostics and proof; it does not access memory
+  stability: public since 0.1
+*/
+pub struct Provenance {
+  allocationId: usize,
+  live: bool,
+  mutable: bool,
+}
+
+impl Provenance {
+  /**
+    Creates provenance metadata for an allocation.
+
+    example:
+      let provenance = Provenance.init(allocationId, true, true)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must use the allocation id assigned by the runtime/compiler
+    stability: public since 0.1
+  */
+  pub fn init(allocationId: usize, live: bool, mutable: bool) -> Provenance {
+    return Provenance {
+      allocationId: allocationId,
+      live: live,
+      mutable: mutable,
+    }
+  }
+
+  /**
+    Returns true when the provenance is marked live.
+
+    example:
+      if provenance.valid() == false {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: liveness metadata still requires bounds and access checks
+    stability: public since 0.1
+  */
+  pub fn valid(self: Provenance) -> bool {
+    return self.live
+  }
+
+  /**
+    Returns true when the provenance allows mutable access.
+
+    example:
+      if provenance.mutable() == false {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: mutable metadata must agree with the active borrow state
+    stability: public since 0.1
+  */
+  pub fn mutable(self: Provenance) -> bool {
+    return self.mutable
+  }
+
+  /**
+    Returns the allocation identity.
+
+    example:
+      if left.provenance().allocation() != right.provenance().allocation() {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: same allocation id does not prove a particular offset is valid
+    stability: public since 0.1
+  */
+  pub fn allocation(self: Provenance) -> usize {
+    return self.allocationId
+  }
+}

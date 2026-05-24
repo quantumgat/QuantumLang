@@ -1,0 +1,23 @@
+pub struct DispatchTableContract {
+  abiVersioned: bool,
+  typeIdentityStable: bool,
+  dropBehaviorKnown: bool,
+  methodOrderingProven: bool,
+  interfaceEntriesBound: bool,
+}
+
+pub fn dispatchTableContract(abiVersioned: bool, typeIdentityStable: bool, dropBehaviorKnown: bool, methodOrderingProven: bool, interfaceEntriesBound: bool) -> DispatchTableContract {
+  return DispatchTableContract {
+    abiVersioned: abiVersioned,
+    typeIdentityStable: typeIdentityStable,
+    dropBehaviorKnown: dropBehaviorKnown,
+    methodOrderingProven: methodOrderingProven,
+    interfaceEntriesBound: interfaceEntriesBound,
+  }
+}
+
+impl DispatchTableContract {
+  pub fn isComplete(self: DispatchTableContract) -> bool {
+    return self.abiVersioned && self.typeIdentityStable && self.dropBehaviorKnown && self.methodOrderingProven && self.interfaceEntriesBound
+  }
+}

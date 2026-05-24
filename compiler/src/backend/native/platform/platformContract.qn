@@ -1,0 +1,33 @@
+pub struct PlatformContract {
+  platformName: string,
+  runtimeHandoffMode: string,
+  fastPathAllowed: bool,
+  targetContractSatisfied: bool,
+}
+
+pub fn platformContract(platformName: string, runtimeHandoffMode: string, fastPathAllowed: bool, targetContractSatisfied: bool) -> PlatformContract {
+  return PlatformContract {
+    platformName: platformName,
+    runtimeHandoffMode: runtimeHandoffMode,
+    fastPathAllowed: fastPathAllowed,
+    targetContractSatisfied: targetContractSatisfied,
+  }
+}
+
+impl PlatformContract {
+  pub fn name(self: PlatformContract) -> string {
+    return self.platformName
+  }
+
+  pub fn handoffMode(self: PlatformContract) -> string {
+    return self.runtimeHandoffMode
+  }
+
+  pub fn permitsFastPath(self: PlatformContract) -> bool {
+    return self.fastPathAllowed
+  }
+
+  pub fn isSatisfied(self: PlatformContract) -> bool {
+    return self.targetContractSatisfied
+  }
+}

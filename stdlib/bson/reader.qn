@@ -1,0 +1,177 @@
+pub struct BsonReader {
+  bytes: BinaryView,
+}
+
+impl BsonReader {
+  pub fn init(bytes: BinaryView) -> Result<BsonReader, BsonError> {
+    Bson.validate(bytes)?
+    return Ok(BsonReader { bytes: bytes })
+  }
+
+  pub fn get(self: BsonReader, name: string) -> Result<BsonValue, BsonError> {
+    return bsonReaderGet(self, name)
+  }
+
+  pub fn has(self: BsonReader, name: string) -> bool {
+    return bsonReaderHas(self, name)
+  }
+
+  pub fn bool(self: BsonReader, name: string) -> Result<bool, BsonError> {
+    return self.get(name)?.bool()
+  }
+
+  pub fn i8(self: BsonReader, name: string) -> Result<i8, BsonError> {
+    return self.get(name)?.i8()
+  }
+
+  pub fn u8(self: BsonReader, name: string) -> Result<u8, BsonError> {
+    return self.get(name)?.u8()
+  }
+
+  pub fn i16(self: BsonReader, name: string) -> Result<i16, BsonError> {
+    return self.get(name)?.i16()
+  }
+
+  pub fn u16(self: BsonReader, name: string) -> Result<u16, BsonError> {
+    return self.get(name)?.u16()
+  }
+
+  pub fn i32(self: BsonReader, name: string) -> Result<i32, BsonError> {
+    return self.get(name)?.i32()
+  }
+
+  pub fn u32(self: BsonReader, name: string) -> Result<u32, BsonError> {
+    return self.get(name)?.u32()
+  }
+
+  pub fn i64(self: BsonReader, name: string) -> Result<i64, BsonError> {
+    return self.get(name)?.i64()
+  }
+
+  pub fn u64(self: BsonReader, name: string) -> Result<u64, BsonError> {
+    return self.get(name)?.u64()
+  }
+
+  pub fn i128(self: BsonReader, name: string) -> Result<i128, BsonError> {
+    return self.get(name)?.i128()
+  }
+
+  pub fn u128(self: BsonReader, name: string) -> Result<u128, BsonError> {
+    return self.get(name)?.u128()
+  }
+
+  pub fn i256(self: BsonReader, name: string) -> Result<i256, BsonError> {
+    return self.get(name)?.i256()
+  }
+
+  pub fn u256(self: BsonReader, name: string) -> Result<u256, BsonError> {
+    return self.get(name)?.u256()
+  }
+
+  pub fn isize(self: BsonReader, name: string) -> Result<isize, BsonError> {
+    return self.get(name)?.isize()
+  }
+
+  pub fn usize(self: BsonReader, name: string) -> Result<usize, BsonError> {
+    return self.get(name)?.usize()
+  }
+
+  pub fn f64(self: BsonReader, name: string) -> Result<f64, BsonError> {
+    return self.get(name)?.f64()
+  }
+
+  pub fn f16(self: BsonReader, name: string) -> Result<f16, BsonError> {
+    return self.get(name)?.f16()
+  }
+
+  pub fn f32(self: BsonReader, name: string) -> Result<f32, BsonError> {
+    return self.get(name)?.f32()
+  }
+
+  pub fn f128(self: BsonReader, name: string) -> Result<f128, BsonError> {
+    return self.get(name)?.f128()
+  }
+
+  pub fn char(self: BsonReader, name: string) -> Result<char, BsonError> {
+    return self.get(name)?.char()
+  }
+
+  pub fn string(self: BsonReader, name: string) -> Result<string, BsonError> {
+    return self.get(name)?.string()
+  }
+
+  pub fn bytes(self: BsonReader, name: string) -> Result<BinaryView, BsonError> {
+    return self.get(name)?.bytes()
+  }
+
+  pub fn binary(self: BsonReader, name: string) -> Result<BsonBinary, BsonError> {
+    return self.get(name)?.asBinary()
+  }
+
+  pub fn objectId(self: BsonReader, name: string) -> Result<ObjectId, BsonError> {
+    return self.get(name)?.asObjectId()
+  }
+
+  pub fn dateTime(self: BsonReader, name: string) -> Result<BsonDateTime, BsonError> {
+    return self.get(name)?.asDateTime()
+  }
+
+  pub fn decimal128(self: BsonReader, name: string) -> Result<BsonDecimal128, BsonError> {
+    return self.get(name)?.asDecimal128()
+  }
+
+  pub fn dec128(self: BsonReader, name: string) -> Result<dec128, BsonError> {
+    return self.get(name)?.dec128()
+  }
+
+  pub fn array(self: BsonReader, name: string) -> Result<BsonArray, BsonError> {
+    return self.get(name)?.array()
+  }
+
+  pub fn document(self: BsonReader, name: string) -> Result<BsonDocument, BsonError> {
+    return self.get(name)?.document()
+  }
+
+  pub fn timestamp(self: BsonReader, name: string) -> Result<BsonTimestamp, BsonError> {
+    return self.get(name)?.timestamp()
+  }
+
+  pub fn regex(self: BsonReader, name: string) -> Result<BsonRegex, BsonError> {
+    return self.get(name)?.regex()
+  }
+
+  pub fn javaScript(self: BsonReader, name: string) -> Result<BsonJavaScript, BsonError> {
+    return self.get(name)?.javaScript()
+  }
+
+  pub fn symbol(self: BsonReader, name: string) -> Result<string, BsonError> {
+    return self.get(name)?.symbol()
+  }
+
+  pub fn dbPointer(self: BsonReader, name: string) -> Result<BsonDbPointer, BsonError> {
+    return self.get(name)?.dbPointer()
+  }
+
+  pub fn exact(self: BsonReader, name: string) -> Result<BsonExactValue, BsonError> {
+    return self.get(name)?.exact()
+  }
+
+  pub fn isNull(self: BsonReader, name: string) -> Result<bool, BsonError> {
+    return Ok(self.get(name)?.isNull())
+  }
+
+  pub fn isUndefined(self: BsonReader, name: string) -> Result<bool, BsonError> {
+    return Ok(self.get(name)?.isUndefined())
+  }
+
+  pub fn isMinKey(self: BsonReader, name: string) -> Result<bool, BsonError> {
+    return Ok(self.get(name)?.isMinKey())
+  }
+
+  pub fn isMaxKey(self: BsonReader, name: string) -> Result<bool, BsonError> {
+    return Ok(self.get(name)?.isMaxKey())
+  }
+}
+
+fn bsonReaderGet(reader: BsonReader, name: string) -> Result<BsonValue, BsonError>
+fn bsonReaderHas(reader: BsonReader, name: string) -> bool

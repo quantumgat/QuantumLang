@@ -1,0 +1,57 @@
+pub enum FormatTypeFamily {
+  Primitive,
+  Integer,
+  Float,
+  Decimal,
+  BigInt,
+  BigUInt,
+  Complex,
+  Bool,
+  Char,
+  String,
+  Bytes,
+  Option,
+  Result,
+  Tuple,
+  Array,
+  Vec,
+  Map,
+  Set,
+  Struct,
+  Class,
+  Error,
+  Diagnostic,
+  Quantum,
+  PointerDebug,
+}
+
+pub struct FormatTypeCoverage {
+  safeFamilies: usize,
+  allPrimitiveWidths: bool,
+  collections: bool,
+  userTypes: bool,
+  quantumOpaque: bool,
+  unsafeValuesRedacted: bool,
+}
+
+pub fn formatTypeCoverage() -> FormatTypeCoverage {
+  return FormatTypeCoverage {
+    safeFamilies: 24,
+    allPrimitiveWidths: true,
+    collections: true,
+    userTypes: true,
+    quantumOpaque: true,
+    unsafeValuesRedacted: true,
+  }
+}
+
+impl FormatTypeCoverage {
+  pub fn complete(self: FormatTypeCoverage) -> bool {
+    return self.safeFamilies >= 24
+      && self.allPrimitiveWidths
+      && self.collections
+      && self.userTypes
+      && self.quantumOpaque
+      && self.unsafeValuesRedacted
+  }
+}

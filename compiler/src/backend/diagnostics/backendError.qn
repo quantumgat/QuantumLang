@@ -1,0 +1,22 @@
+pub enum BackendErrorKind {
+  UnsupportedTarget
+  UnsupportedFeature
+  BackendSelection
+  ArtifactProof
+}
+
+pub struct BackendError {
+  kind: BackendErrorKind,
+  stableCode: u32,
+  recoverable: bool,
+}
+
+pub fn backendError(kind: BackendErrorKind, stableCode: u32, recoverable: bool) -> BackendError {
+  return BackendError { kind: kind, stableCode: stableCode, recoverable: recoverable }
+}
+
+impl BackendError {
+  pub fn canContinue(self: BackendError) -> bool {
+    return self.recoverable
+  }
+}

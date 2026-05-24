@@ -1,0 +1,19 @@
+pub struct InterfaceKindPolicyFact {
+  ownerId: u64,
+  objectSafetyBound: bool,
+  obligationSetBound: bool,
+  dispatchTableBound: bool,
+  dynBoundaryExplicit: bool,
+  sourceMapBound: bool,
+}
+
+impl InterfaceKindPolicyFact {
+  pub fn complete(self: InterfaceKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.objectSafetyBound
+      && self.obligationSetBound
+      && self.dispatchTableBound
+      && self.dynBoundaryExplicit
+      && self.sourceMapBound
+  }
+}

@@ -1,0 +1,19 @@
+pub struct Semaphore {
+  permits: usize,
+}
+
+pub struct Permit {
+  active: bool,
+}
+
+impl Semaphore {
+  pub fn acquire(self: Semaphore) -> Result<Permit, SyncError>
+
+  pub fn tryAcquire(self: Semaphore) -> Result<Permit, SyncError>
+
+  pub fn release(self: Semaphore, permit: Permit) -> Result<Unit, SyncError>
+
+  pub fn available(self: Semaphore) -> usize {
+    return self.permits
+  }
+}

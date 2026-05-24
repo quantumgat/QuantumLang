@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum SimdIncidentKind {
+  UnsupportedLaneWidth,
+  UnsupportedLaneCount,
+  InvalidShuffle,
+  MisalignedLoadStore,
+  ScalarFallbackMissing,
+}
+pub struct SimdIncident {
+  kind: SimdIncidentKind
+  recoverable: bool
+}

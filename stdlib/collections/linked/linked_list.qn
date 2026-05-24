@@ -1,0 +1,360 @@
+pub struct LinkedListNode<T> {
+  value: T,
+  next: Option<usize>,
+  prev: Option<usize>,
+  alive: bool,
+}
+
+pub struct LinkedList<T> {
+  nodes: Vec<LinkedListNode<T>>,
+  head: Option<usize>,
+  tail: Option<usize>,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<T> LinkedList<T> {
+  pub fn init() -> LinkedList<T> {
+    return LinkedList<T> {
+      nodes: Vec<LinkedListNode<T>>.empty(),
+      head: None,
+      tail: None,
+      len: 0,
+      capacity: 0,
+      generation: 0,
+    }
+  }
+
+  pub fn empty() -> LinkedList<T> {
+    return LinkedList<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> LinkedList<T> requires(alloc) {
+    return LinkedList<T> {
+      nodes: Vec<LinkedListNode<T>>.withCapacity(capacity),
+      head: None,
+      tail: None,
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn fromVec(items: Vec<T>) -> LinkedList<T> requires(alloc) {
+    let mut list = LinkedList<T>.withCapacity(items.len)
+    let mut index: usize = 0
+    while index < items.len {
+      list = list.pushBack(items[index])
+      index = index + 1
+    }
+    return list
+  }
+
+  pub fn builder() -> LinkedListBuilder<T> {
+    return LinkedListBuilder<T> { capacity: 0 }
+  }
+
+  pub fn len(self: LinkedList<T>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: LinkedList<T>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: LinkedList<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn pushFront(self: LinkedList<T>, value: T) -> LinkedList<T> requires(alloc) {
+    let inserted = self.allocateNode(value, None, self.head)
+    let mut list = inserted.0
+    let index = inserted.1
+    match list.head {
+      Some(oldHead) => {
+        list = list.withNodePrev(oldHead, Some(index))
+      }
+      None => {
+        list = list.withTail(Some(index))
+      }
+    }
+    return list.withHead(Some(index)).withLen(list.len + 1).withGeneration(list.generation + 1)
+  }
+
+  pub fn pushBack(self: LinkedList<T>, value: T) -> LinkedList<T> requires(alloc) {
+    let inserted = self.allocateNode(value, self.tail, None)
+    let mut list = inserted.0
+    let index = inserted.1
+    match list.tail {
+      Some(oldTail) => {
+        list = list.withNodeNext(oldTail, Some(index))
+      }
+      None => {
+        list = list.withHead(Some(index))
+      }
+    }
+    return list.withTail(Some(index)).withLen(list.len + 1).withGeneration(list.generation + 1)
+  }
+
+  pub fn popFront(self: LinkedList<T>) -> (LinkedList<T>, Option<T>) requires(alloc) {
+    match self.head {
+      Some(index) => {
+        return self.removeNode(index)
+      }
+      None => {
+        return (self, None)
+      }
+    }
+  }
+
+  pub fn popBack(self: LinkedList<T>) -> (LinkedList<T>, Option<T>) requires(alloc) {
+    match self.tail {
+      Some(index) => {
+        return self.removeNode(index)
+      }
+      None => {
+        return (self, None)
+      }
+    }
+  }
+
+  pub fn front(self: LinkedList<T>) -> Option<T> {
+    match self.head {
+      Some(index) => {
+        return Some(self.nodes[index].value)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn back(self: LinkedList<T>) -> Option<T> {
+    match self.tail {
+      Some(index) => {
+        return Some(self.nodes[index].value)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn clear(self: LinkedList<T>) -> LinkedList<T> requires(alloc) {
+    return LinkedList<T>.withCapacity(self.capacity).withGeneration(self.generation + 1)
+  }
+
+  pub fn iter(self: LinkedList<T>) -> LinkedListIter<T> {
+    return LinkedListIter<T> {
+      list: self,
+      current: self.head,
+      generation: self.generation,
+    }
+  }
+
+  pub fn forEach(self: LinkedList<T>, action: fn(T) -> ()) -> () {
+    let mut cursor = self.head
+    while cursor != None {
+      match cursor {
+        Some(index) => {
+          let node = self.nodes[index]
+          action(node.value)
+          cursor = node.next
+        }
+        None => {
+        }
+      }
+    }
+  }
+
+  pub fn find(self: LinkedList<T>, predicate: fn(T) -> bool) -> Option<T> {
+    let mut cursor = self.head
+    while cursor != None {
+      match cursor {
+        Some(index) => {
+          let node = self.nodes[index]
+          if predicate(node.value) {
+            return Some(node.value)
+          }
+          cursor = node.next
+        }
+        None => {
+        }
+      }
+    }
+    return None
+  }
+
+  pub fn toVec(self: LinkedList<T>) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut cursor = self.head
+    while cursor != None {
+      match cursor {
+        Some(index) => {
+          let node = self.nodes[index]
+          result = result.push(node.value)
+          cursor = node.next
+        }
+        None => {
+        }
+      }
+    }
+    return result
+  }
+
+  pub fn append(self: LinkedList<T>, other: LinkedList<T>) -> LinkedList<T> requires(alloc) {
+    let mut result = self
+    let mut cursor = other.head
+    while cursor != None {
+      match cursor {
+        Some(index) => {
+          let node = other.nodes[index]
+          result = result.pushBack(node.value)
+          cursor = node.next
+        }
+        None => {
+        }
+      }
+    }
+    return result
+  }
+
+  pub fn allocateNode(self: LinkedList<T>, value: T, prev: Option<usize>, next: Option<usize>) -> (LinkedList<T>, usize) requires(alloc) {
+    let node = LinkedListNode<T> {
+      value: value,
+      next: next,
+      prev: prev,
+      alive: true,
+    }
+    let nodes = self.nodes.push(node)
+    return (
+      LinkedList<T> {
+        nodes: nodes,
+        head: self.head,
+        tail: self.tail,
+        len: self.len,
+        capacity: nodes.capacity,
+        generation: self.generation,
+      },
+      self.nodes.len
+    )
+  }
+
+  pub fn removeNode(self: LinkedList<T>, index: usize) -> (LinkedList<T>, Option<T>) requires(alloc) {
+    let node = self.nodes[index]
+    let removedValue = node.value
+    let mut list = self
+    match node.prev {
+      Some(prevIndex) => {
+        list = list.withNodeNext(prevIndex, node.next)
+      }
+      None => {
+        list = list.withHead(node.next)
+      }
+    }
+    match node.next {
+      Some(nextIndex) => {
+        list = list.withNodePrev(nextIndex, node.prev)
+      }
+      None => {
+        list = list.withTail(node.prev)
+      }
+    }
+    let tombstone = LinkedListNode<T> {
+      value: removedValue,
+      next: None,
+      prev: None,
+      alive: false,
+    }
+    let nodes = list.nodes.set(index, tombstone)
+    return (
+      LinkedList<T> {
+        nodes: nodes,
+        head: list.head,
+        tail: list.tail,
+        len: list.len - 1,
+        capacity: list.capacity,
+        generation: list.generation + 1,
+      },
+      Some(removedValue)
+    )
+  }
+
+  pub fn withNodeNext(self: LinkedList<T>, index: usize, next: Option<usize>) -> LinkedList<T> requires(alloc) {
+    let node = self.nodes[index]
+    let updated = LinkedListNode<T> {
+      value: node.value,
+      next: next,
+      prev: node.prev,
+      alive: node.alive,
+    }
+    return self.withNodes(self.nodes.set(index, updated))
+  }
+
+  pub fn withNodePrev(self: LinkedList<T>, index: usize, prev: Option<usize>) -> LinkedList<T> requires(alloc) {
+    let node = self.nodes[index]
+    let updated = LinkedListNode<T> {
+      value: node.value,
+      next: node.next,
+      prev: prev,
+      alive: node.alive,
+    }
+    return self.withNodes(self.nodes.set(index, updated))
+  }
+
+  pub fn withNodes(self: LinkedList<T>, nodes: Vec<LinkedListNode<T>>) -> LinkedList<T> {
+    return LinkedList<T> {
+      nodes: nodes,
+      head: self.head,
+      tail: self.tail,
+      len: self.len,
+      capacity: nodes.capacity,
+      generation: self.generation,
+    }
+  }
+
+  pub fn withHead(self: LinkedList<T>, head: Option<usize>) -> LinkedList<T> {
+    return LinkedList<T> {
+      nodes: self.nodes,
+      head: head,
+      tail: self.tail,
+      len: self.len,
+      capacity: self.capacity,
+      generation: self.generation,
+    }
+  }
+
+  pub fn withTail(self: LinkedList<T>, tail: Option<usize>) -> LinkedList<T> {
+    return LinkedList<T> {
+      nodes: self.nodes,
+      head: self.head,
+      tail: tail,
+      len: self.len,
+      capacity: self.capacity,
+      generation: self.generation,
+    }
+  }
+
+  pub fn withLen(self: LinkedList<T>, len: usize) -> LinkedList<T> {
+    return LinkedList<T> {
+      nodes: self.nodes,
+      head: self.head,
+      tail: self.tail,
+      len: len,
+      capacity: self.capacity,
+      generation: self.generation,
+    }
+  }
+
+  pub fn withGeneration(self: LinkedList<T>, generation: usize) -> LinkedList<T> {
+    return LinkedList<T> {
+      nodes: self.nodes,
+      head: self.head,
+      tail: self.tail,
+      len: self.len,
+      capacity: self.capacity,
+      generation: generation,
+    }
+  }
+}

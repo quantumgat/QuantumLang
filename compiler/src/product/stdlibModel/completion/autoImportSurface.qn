@@ -1,0 +1,11 @@
+pub struct StdlibAutoImportSurface {
+  symbolName: string,
+  importPath: string,
+  publicOnly: bool,
+}
+
+impl StdlibAutoImportSurface {
+  pub fn accepted(self: StdlibAutoImportSurface) -> bool {
+    return self.symbolName != "" && self.importPath != "" && self.publicOnly
+  }
+}

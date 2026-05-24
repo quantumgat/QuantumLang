@@ -1,0 +1,42 @@
+pub struct IdeHoverSummary {
+  diagnostic: Diagnostic,
+  title: string,
+  summary: string,
+  rule: string,
+  safeFixSummary: string,
+  exactRange: SourceRange,
+  markdownSafe: bool,
+  redacted: bool,
+  includesExplainLink: bool,
+  mutatesCompilerFacts: bool,
+}
+
+pub fn ideHoverSummary(diagnostic: Diagnostic, rule: string, safeFixSummary: string) -> IdeHoverSummary {
+  return IdeHoverSummary {
+    diagnostic: diagnostic,
+    title: diagnostic.family(),
+    summary: diagnostic.text(),
+    rule: rule,
+    safeFixSummary: safeFixSummary,
+    exactRange: diagnostic.primaryRange,
+    markdownSafe: true,
+    redacted: diagnostic.redacted,
+    includesExplainLink: true,
+    mutatesCompilerFacts: false,
+  }
+}
+
+impl IdeHoverSummary {
+  pub fn ready(self: IdeHoverSummary) -> bool {
+    return self.diagnostic.complete()
+      && self.title != ""
+      && self.summary != ""
+      && self.rule != ""
+      && self.safeFixSummary != ""
+      && self.exactRange.exact()
+      && self.markdownSafe
+      && self.redacted
+      && self.includesExplainLink
+      && self.mutatesCompilerFacts == false
+  }
+}

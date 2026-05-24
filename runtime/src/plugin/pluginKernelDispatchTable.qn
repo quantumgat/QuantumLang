@@ -1,0 +1,30 @@
+pub struct PluginKernelDispatchTable {
+  kernelCount: usize,
+  targetGateCount: usize,
+  fallbackCount: usize,
+  deterministicOrder: bool,
+  staleHandlesRejected: bool,
+  noDomainBranches: bool,
+}
+
+impl PluginKernelDispatchTable {
+  pub fn fromKernelCount(kernelCount: usize) -> PluginKernelDispatchTable {
+    return PluginKernelDispatchTable {
+      kernelCount: kernelCount,
+      targetGateCount: kernelCount,
+      fallbackCount: kernelCount,
+      deterministicOrder: true,
+      staleHandlesRejected: true,
+      noDomainBranches: true,
+    }
+  }
+
+  pub fn accepted(self: PluginKernelDispatchTable) -> bool {
+    return self.kernelCount > 0
+      && self.kernelCount == self.targetGateCount
+      && self.kernelCount == self.fallbackCount
+      && self.deterministicOrder
+      && self.staleHandlesRejected
+      && self.noDomainBranches
+  }
+}

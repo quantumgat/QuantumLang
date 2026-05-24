@@ -1,0 +1,31 @@
+pub struct HandleGenerationFact {
+  handleId: u64,
+  generation: u64,
+  ownerSubsystem: string,
+  open: bool,
+}
+
+impl HandleGenerationFact {
+  pub fn init(handleId: u64, generation: u64, ownerSubsystem: string) -> HandleGenerationFact {
+    return HandleGenerationFact {
+      handleId: handleId,
+      generation: generation,
+      ownerSubsystem: ownerSubsystem,
+      open: true,
+    }
+  }
+
+  pub fn validates(self: HandleGenerationFact, generation: u64, ownerSubsystem: string) -> bool {
+    return self.open
+      && self.generation == generation
+      && self.ownerSubsystem == ownerSubsystem
+  }
+
+  pub fn handleId(self: HandleGenerationFact) -> u64 {
+    return self.handleId
+  }
+
+  pub fn ownerSubsystem(self: HandleGenerationFact) -> string {
+    return self.ownerSubsystem
+  }
+}

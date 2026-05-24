@@ -1,0 +1,89 @@
+pub enum MathKernelNativeLoweringKind {
+  DirectPrimitive
+  ExactRuntimeCall
+  DecimalRuntimeCall
+  LimbRuntimeCall
+  ComplexRuntimeCall
+  FieldRuntimeCall
+  SimdRuntimeDispatch
+  SafeFailure
+}
+
+pub enum MathNativeOperation {
+  CheckedAddU64
+  CheckedSubU64
+  CheckedMulU64
+  CheckedDivU64
+  DecimalRound
+  DecimalScaleCheck
+  LimbAdd
+  LimbSub
+  ComplexAbsSquared
+  ComplexDivide
+  FieldAdd
+  FieldMul
+  FieldPow
+  RationalNormalize
+  VectorDot
+  MatrixCell
+  SimdDispatch
+}
+
+pub struct MathKernelNativeLowering {
+  kind: MathKernelNativeLoweringKind,
+  operation: MathNativeOperation,
+  runtimeSymbol: string,
+  directInstructionPreferred: bool,
+  runtimeCallLinked: bool,
+  wrapperErased: bool,
+  boundsHoisted: bool,
+  targetFeatureChecked: bool,
+  sourceMappedDiagnostic: bool,
+  noFakeFallback: bool,
+  noCoredump: bool,
+}
+
+impl MathKernelNativeLowering {
+  pub fn checkedAddU64() -> MathKernelNativeLowering {
+    return MathKernelNativeLowering {
+      kind: MathKernelNativeLoweringKind.DirectPrimitive,
+      operation: MathNativeOperation.CheckedAddU64,
+      runtimeSymbol: "runtime.math.checkedInteger.addU64",
+      directInstructionPreferred: true,
+      runtimeCallLinked: false,
+      wrapperErased: true,
+      boundsHoisted: true,
+      targetFeatureChecked: true,
+      sourceMappedDiagnostic: true,
+      noFakeFallback: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn runtime(operation: MathNativeOperation, kind: MathKernelNativeLoweringKind, runtimeSymbol: string) -> MathKernelNativeLowering {
+    return MathKernelNativeLowering {
+      kind: kind,
+      operation: operation,
+      runtimeSymbol: runtimeSymbol,
+      directInstructionPreferred: false,
+      runtimeCallLinked: true,
+      wrapperErased: true,
+      boundsHoisted: true,
+      targetFeatureChecked: true,
+      sourceMappedDiagnostic: true,
+      noFakeFallback: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: MathKernelNativeLowering) -> bool {
+    return self.runtimeSymbol != ""
+      && self.wrapperErased
+      && self.boundsHoisted
+      && self.targetFeatureChecked
+      && self.sourceMappedDiagnostic
+      && self.noFakeFallback
+      && self.noCoredump
+      && (self.directInstructionPreferred || self.runtimeCallLinked)
+  }
+}

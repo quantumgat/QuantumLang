@@ -1,0 +1,32 @@
+pub enum BinaryEndian {
+  Little,
+  Big,
+}
+
+pub enum BinaryWidth {
+  W8,
+  W16,
+  W32,
+  W64,
+  W128,
+  W256,
+}
+
+pub fn binaryWidthBytes(width: BinaryWidth) -> usize {
+  if width == BinaryWidth.W8 {
+    return 1
+  }
+  if width == BinaryWidth.W16 {
+    return 2
+  }
+  if width == BinaryWidth.W32 {
+    return 4
+  }
+  if width == BinaryWidth.W64 {
+    return 8
+  }
+  if width == BinaryWidth.W128 {
+    return 16
+  }
+  return 32
+}

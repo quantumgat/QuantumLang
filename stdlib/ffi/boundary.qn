@@ -1,0 +1,27 @@
+pub struct FfiBoundary {
+  abi: string,
+  panicSafe: bool,
+  ownershipChecked: bool,
+  callbackUnregisterChecked: bool,
+  threadAffinityChecked: bool,
+}
+
+impl FfiBoundary {
+  pub fn init(abi: string, panicSafe: bool, ownershipChecked: bool) -> FfiBoundary {
+    return FfiBoundary {
+      abi: abi,
+      panicSafe: panicSafe,
+      ownershipChecked: ownershipChecked,
+      callbackUnregisterChecked: true,
+      threadAffinityChecked: true,
+    }
+  }
+
+  pub fn safeToExpose(self: FfiBoundary) -> bool {
+    return self.panicSafe && self.ownershipChecked && self.callbackUnregisterChecked && self.threadAffinityChecked
+  }
+
+  pub fn boundaryReady(self: FfiBoundary) -> bool {
+    return self.safeToExpose()
+  }
+}

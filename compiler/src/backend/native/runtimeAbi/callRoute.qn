@@ -1,0 +1,29 @@
+pub enum RuntimeCallRouteKind {
+  DirectNativeRoute
+  HiddenArchiveRoute
+  PlatformThunkRoute
+}
+
+pub struct RuntimeCallRoute {
+  symbol: string,
+  route: RuntimeCallRouteKind,
+  metadataPresent: bool,
+}
+
+pub fn runtimeCallRoute(symbol: string, route: RuntimeCallRouteKind, metadataPresent: bool) -> RuntimeCallRoute {
+  return RuntimeCallRoute { symbol: symbol, route: route, metadataPresent: metadataPresent }
+}
+
+impl RuntimeCallRoute {
+  pub fn symbolName(self: RuntimeCallRoute) -> string {
+    return self.symbol
+  }
+
+  pub fn routeKind(self: RuntimeCallRoute) -> RuntimeCallRouteKind {
+    return self.route
+  }
+
+  pub fn hasRouteMetadata(self: RuntimeCallRoute) -> bool {
+    return self.metadataPresent
+  }
+}

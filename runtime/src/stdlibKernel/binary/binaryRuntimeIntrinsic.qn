@@ -1,0 +1,98 @@
+pub enum BinaryRuntimeIntrinsicKind {
+  ReadFixedWidth,
+  WriteFixedWidth,
+  ReadBytes,
+  WriteBytes,
+  ReadVarU64,
+  WriteVarU64,
+  FinishWriter,
+  EncodePortable,
+  DecodePortable,
+  DecodeView,
+  EncodeInto,
+  EncodedSize,
+  RawNative,
+  BuildCodec,
+  CodecValidate,
+  CodecView,
+  CodecWrite,
+  CodecSize,
+  ProjectionView,
+  PredicateMatch,
+  ColumnBlockDecode,
+  StableKeyEncode,
+  DeltaEncode,
+  ReadBits,
+  Crc32,
+}
+
+pub struct BinaryRuntimeIntrinsic {
+  kind: BinaryRuntimeIntrinsicKind,
+  intrinsicName: string,
+  loweredByCompiler: bool,
+  runtimeDiagnosticFallback: bool,
+  noCoredump: bool,
+  allocationBytesOnHotPath: usize,
+  boundsChecked: bool,
+}
+
+pub fn binaryRuntimeIntrinsic(kind: BinaryRuntimeIntrinsicKind, intrinsicName: string) -> BinaryRuntimeIntrinsic {
+  return BinaryRuntimeIntrinsic {
+    kind: kind,
+    intrinsicName: intrinsicName,
+    loweredByCompiler: true,
+    runtimeDiagnosticFallback: true,
+    noCoredump: true,
+    allocationBytesOnHotPath: 0,
+    boundsChecked: true,
+  }
+}
+
+pub fn binaryRuntimeIntrinsicForName(intrinsicName: string) -> BinaryRuntimeIntrinsic {
+  match intrinsicName {
+    "binaryEncodePortable" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.EncodePortable, intrinsicName)
+    }
+    "binaryDecodePortable" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.DecodePortable, intrinsicName)
+    }
+    "binaryDecodeView" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.DecodeView, intrinsicName)
+    }
+    "binaryEncodeInto" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.EncodeInto, intrinsicName)
+    }
+    "binaryEncodedSize" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.EncodedSize, intrinsicName)
+    }
+    "binaryBuildCodec" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.BuildCodec, intrinsicName)
+    }
+    "binaryCodecValidate" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.CodecValidate, intrinsicName)
+    }
+    "binaryCodecView" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.CodecView, intrinsicName)
+    }
+    "binaryCodecWrite" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.CodecWrite, intrinsicName)
+    }
+    "binaryCodecSize" => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.CodecSize, intrinsicName)
+    }
+    _ => {
+      return binaryRuntimeIntrinsic(BinaryRuntimeIntrinsicKind.ReadFixedWidth, intrinsicName)
+    }
+  }
+}
+
+impl BinaryRuntimeIntrinsic {
+  pub fn accepted(self: BinaryRuntimeIntrinsic) -> bool {
+    return self.intrinsicName != ""
+      && self.loweredByCompiler
+      && self.runtimeDiagnosticFallback
+      && self.noCoredump
+      && self.allocationBytesOnHotPath == 0
+      && self.boundsChecked
+  }
+}

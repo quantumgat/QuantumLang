@@ -1,0 +1,13 @@
+pub struct Vector<T> {
+  len: usize,
+}
+
+impl<T> Vector<T> {
+  pub fn length(self: Vector<T>) -> usize {
+    return self.len
+  }
+
+  pub fn dot(self: Vector<T>, other: Vector<T>) -> T
+  pub fn norm(self: Vector<T>) -> f64
+  pub fn normalize(self: Vector<T>) -> Result<Vector<T>, string>
+}

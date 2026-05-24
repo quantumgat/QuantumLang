@@ -1,0 +1,47 @@
+pub struct Handshake {
+  path: string,
+  subprotocolCount: usize,
+  acceptedProtocol: string,
+  secure: bool,
+}
+
+impl Handshake {
+  pub fn init(path: string, subprotocolCount: usize) -> Handshake {
+    return Handshake {
+      path: path,
+      subprotocolCount: subprotocolCount,
+      acceptedProtocol: "",
+      secure: false,
+    }
+  }
+
+  pub fn acceptProtocol(self: Handshake, protocol: string) -> Handshake {
+    return Handshake {
+      path: self.path,
+      subprotocolCount: self.subprotocolCount,
+      acceptedProtocol: protocol,
+      secure: self.secure,
+    }
+  }
+
+  pub fn requireSecure(self: Handshake) -> Handshake {
+    return Handshake {
+      path: self.path,
+      subprotocolCount: self.subprotocolCount,
+      acceptedProtocol: self.acceptedProtocol,
+      secure: true,
+    }
+  }
+
+  pub fn path(self: Handshake) -> string {
+    return self.path
+  }
+
+  pub fn acceptedProtocol(self: Handshake) -> string {
+    return self.acceptedProtocol
+  }
+
+  pub fn valid(self: Handshake) -> bool {
+    return self.path != ""
+  }
+}

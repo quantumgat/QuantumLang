@@ -1,0 +1,82 @@
+pub enum HttpSourceMapKind {
+  Endpoint,
+  Extractor,
+  Capability,
+  HandlerThunk,
+  GeneratedRoute,
+}
+
+pub struct HttpSourceMapEntry {
+  id: string,
+  kind: HttpSourceMapKind,
+  sourceFile: string,
+  sourceLine: usize,
+  generatedName: string,
+}
+
+impl HttpSourceMapEntry {
+  pub fn init(id: string, kind: HttpSourceMapKind, sourceFile: string, sourceLine: usize, generatedName: string) -> HttpSourceMapEntry {
+    return HttpSourceMapEntry {
+      id: id,
+      kind: kind,
+      sourceFile: sourceFile,
+      sourceLine: sourceLine,
+      generatedName: generatedName,
+    }
+  }
+
+  pub fn endpoint(id: string, sourceFile: string, sourceLine: usize, generatedName: string) -> HttpSourceMapEntry {
+    return HttpSourceMapEntry.init(id, HttpSourceMapKind.Endpoint, sourceFile, sourceLine, generatedName)
+  }
+
+  pub fn handler(thunk: HandlerThunk, sourceFile: string, sourceLine: usize) -> HttpSourceMapEntry {
+    return HttpSourceMapEntry.init(
+      thunk.sourceMapId(),
+      HttpSourceMapKind.HandlerThunk,
+      sourceFile,
+      sourceLine,
+      thunk.handlerName()
+    )
+  }
+
+  pub fn resolved(self: HttpSourceMapEntry) -> bool {
+    return self.id != "" && self.sourceFile != "" && self.generatedName != ""
+  }
+}
+
+pub struct HttpSourceMap {
+  entries: Vec<HttpSourceMapEntry>,
+  resolvedCount: usize,
+}
+
+impl HttpSourceMap {
+  pub fn empty() -> HttpSourceMap {
+    return HttpSourceMap {
+      entries: [],
+      resolvedCount: 0,
+    }
+  }
+
+  pub fn add(self: HttpSourceMap, entry: HttpSourceMapEntry) -> HttpSourceMap {
+    return HttpSourceMap {
+      entries: self.entries.push(entry),
+      resolvedCount: self.resolvedCount + HttpSourceMap.countResolved(entry.resolved()),
+    }
+  }
+
+  pub fn countResolved(resolved: bool) -> usize {
+    if resolved {
+      return 1
+    }
+    return 0
+  }
+
+  pub fn entryCount(self: HttpSourceMap) -> usize {
+    return self.entries.len()
+  }
+
+  pub fn allResolved(self: HttpSourceMap) -> bool {
+    return self.entries.len() == self.resolvedCount
+  }
+}
+

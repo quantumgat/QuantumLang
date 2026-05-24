@@ -1,0 +1,21 @@
+pub struct VarU64 {
+  value: u64,
+  bytes: usize,
+}
+
+impl VarU64 {
+  pub fn accepted(self: VarU64) -> bool {
+    return self.bytes > 0 && self.bytes <= 10
+  }
+}
+
+pub fn readVarU64(cursor: BinaryCursor) -> Result<(BinaryCursor, VarU64), BinaryError> {
+  return binaryReadVarU64(cursor)
+}
+
+pub fn writeVarU64(writer: BinaryWriter, value: u64) -> Result<BinaryWriter, BinaryError> {
+  return binaryWriteVarU64(writer, value)
+}
+
+fn binaryReadVarU64(cursor: BinaryCursor) -> Result<(BinaryCursor, VarU64), BinaryError>
+fn binaryWriteVarU64(writer: BinaryWriter, value: u64) -> Result<BinaryWriter, BinaryError>

@@ -1,0 +1,42 @@
+pub enum CancellationDiagnosticKind {
+  None
+  StaleToken
+  MissingCleanup
+  DetachedTokenTree
+  DeadlineRace
+  StaleWake
+}
+
+pub struct CancellationSafety {
+  nodeId: u64,
+  tokenTreeLinked: bool,
+  cleanupRegistered: bool,
+  staleWakeSuppressed: bool,
+  diagnostic: CancellationDiagnosticKind,
+}
+
+impl CancellationSafety {
+  pub fn init(
+    nodeId: u64,
+    tokenTreeLinked: bool,
+    cleanupRegistered: bool,
+    staleWakeSuppressed: bool,
+    diagnostic: CancellationDiagnosticKind,
+  ) -> CancellationSafety {
+    return CancellationSafety {
+      nodeId: nodeId,
+      tokenTreeLinked: tokenTreeLinked,
+      cleanupRegistered: cleanupRegistered,
+      staleWakeSuppressed: staleWakeSuppressed,
+      diagnostic: diagnostic,
+    }
+  }
+
+  pub fn accepted(self: CancellationSafety) -> bool {
+    return self.nodeId > 0
+      && self.tokenTreeLinked
+      && self.cleanupRegistered
+      && self.staleWakeSuppressed
+      && self.diagnostic == CancellationDiagnosticKind.None
+  }
+}

@@ -1,0 +1,12 @@
+pub struct RuntimeTlsProvider {
+  name: string,
+  rootStore: bool,
+  alpn: bool,
+  mtls: bool,
+}
+
+impl RuntimeTlsProvider {
+  pub fn accepted(self: RuntimeTlsProvider) -> bool {
+    return self.name != "" && self.rootStore
+  }
+}

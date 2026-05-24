@@ -1,0 +1,27 @@
+pub struct LexerDiagnostic {
+  code: u32,
+  file: u32,
+  start: usize,
+  end: usize,
+  message: string,
+}
+
+pub fn lexerError(code: u32, file: u32, start: usize, end: usize, message: string) -> LexerDiagnostic {
+  return LexerDiagnostic {
+    code: code,
+    file: file,
+    start: start,
+    end: end,
+    message: message,
+  }
+}
+
+impl LexerDiagnostic {
+  pub fn codeNumber(self: LexerDiagnostic) -> u32 {
+    return self.code
+  }
+
+  pub fn text(self: LexerDiagnostic) -> string {
+    return self.message
+  }
+}

@@ -1,0 +1,13 @@
+pub struct Permissions {
+  readonly: bool,
+  executable: bool,
+}
+
+pub fn permissions(path: PathBuf) -> FsResult<Permissions>
+pub fn setPermissions(path: PathBuf, permissions: Permissions) -> FsResult<Unit>
+
+impl Permissions {
+  pub fn canWrite(self: Permissions) -> bool {
+    return !self.readonly
+  }
+}

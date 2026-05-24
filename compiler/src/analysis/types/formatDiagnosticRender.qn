@@ -1,0 +1,59 @@
+pub enum FormatDiagnosticRenderKind {
+  Text
+  Json
+  Lsp
+}
+
+pub struct FormatDiagnosticRender {
+  kind: FormatDiagnosticRenderKind,
+  stableCode: string,
+  primarySpanKind: FormatDiagnosticSpanKind,
+  deterministic: bool,
+  preservesCode: bool,
+  preservesPrimarySpan: bool,
+  redactsSecretSnippet: bool,
+}
+
+pub fn formatDiagnosticRender(
+  kind: FormatDiagnosticRenderKind,
+  code: FormatDiagnosticCode,
+) -> FormatDiagnosticRender {
+  return FormatDiagnosticRender {
+    kind: kind,
+    stableCode: code.code(),
+    primarySpanKind: code.spanKindValue(),
+    deterministic: true,
+    preservesCode: true,
+    preservesPrimarySpan: true,
+    redactsSecretSnippet: code.isSecuritySensitive(),
+  }
+}
+
+pub fn formatDiagnosticTextRender(code: FormatDiagnosticCode) -> FormatDiagnosticRender {
+  return formatDiagnosticRender(FormatDiagnosticRenderKind.Text, code)
+}
+
+pub fn formatDiagnosticJsonRender(code: FormatDiagnosticCode) -> FormatDiagnosticRender {
+  return formatDiagnosticRender(FormatDiagnosticRenderKind.Json, code)
+}
+
+pub fn formatDiagnosticLspRender(code: FormatDiagnosticCode) -> FormatDiagnosticRender {
+  return formatDiagnosticRender(FormatDiagnosticRenderKind.Lsp, code)
+}
+
+impl FormatDiagnosticRender {
+  pub fn isStable(self: FormatDiagnosticRender) -> bool {
+    return self.deterministic && self.preservesCode && self.preservesPrimarySpan
+  }
+
+  pub fn isPrivacySafe(self: FormatDiagnosticRender) -> bool {
+    if self.primarySpanKind == FormatDiagnosticSpanKind.SecretValue {
+      return self.redactsSecretSnippet
+    }
+    return true
+  }
+
+  pub fn renderKind(self: FormatDiagnosticRender) -> FormatDiagnosticRenderKind {
+    return self.kind
+  }
+}

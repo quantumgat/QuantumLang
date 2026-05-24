@@ -1,0 +1,38 @@
+pub enum RuntimeWaitWakeStatus {
+  Woken,
+  TimedOut,
+  Cancelled,
+  NotEqual,
+  Unsupported,
+  StaleHandle,
+}
+
+pub struct RuntimeWaitWake {
+  token: WaitToken,
+  guardAware: bool,
+  cancellationSafe: bool,
+  staleHandleRejected: bool,
+  missedWakeDiagnostic: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl RuntimeWaitWake {
+  pub fn init(token: WaitToken) -> RuntimeWaitWake {
+    return RuntimeWaitWake {
+      token: token,
+      guardAware: true,
+      cancellationSafe: token.canCancel(),
+      staleHandleRejected: true,
+      missedWakeDiagnostic: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: RuntimeWaitWake) -> bool {
+    return self.guardAware
+      && self.cancellationSafe
+      && self.staleHandleRejected
+      && self.missedWakeDiagnostic
+      && self.noCoredumpDiagnostic
+  }
+}

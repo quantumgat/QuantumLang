@@ -1,0 +1,12 @@
+pub struct PortableSyncRuntime {
+  target: string,
+  mutexAvailable: bool,
+  waitAvailable: bool,
+  fallbackRequired: bool,
+}
+
+impl PortableSyncRuntime {
+  pub fn accepted(self: PortableSyncRuntime) -> bool {
+    return self.target != "" && (self.mutexAvailable || self.fallbackRequired)
+  }
+}

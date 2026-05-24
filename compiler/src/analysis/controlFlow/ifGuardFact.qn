@@ -1,0 +1,133 @@
+pub enum IfGuardFamily {
+  Condition
+  ElseChain
+  Expression
+  Pattern
+  Guard
+  RangeMembership
+  TypeNarrowing
+  QuestionFlow
+  AwaitQuestionFlow
+  StaticComptime
+  TargetFeature
+  Quantum
+}
+
+pub struct IfGuardFact {
+  family: IfGuardFamily,
+  formCount: usize,
+  narrowsType: bool,
+  hotPathSelected: bool,
+  diagnosticsReady: bool,
+  noCoredump: bool,
+}
+
+pub struct IfAnalysisInput {
+  node: u64,
+  family: IfGuardFamily,
+  conditionBool: bool,
+  branchTypesCompatible: bool,
+  patternValid: bool,
+  guardBool: bool,
+  targetOrQuantumProfileValid: bool,
+}
+
+pub struct IfAnalysisResult {
+  input: IfAnalysisInput,
+  fact: IfGuardFact,
+  diagnostic: IfDiagnosticKind,
+  hirReady: bool,
+}
+
+pub fn ifGuardFact(
+  family: IfGuardFamily,
+  formCount: usize,
+  narrowsType: bool,
+  hotPathSelected: bool,
+  diagnosticsReady: bool,
+  noCoredump: bool,
+) -> IfGuardFact {
+  return IfGuardFact {
+    family: family,
+    formCount: formCount,
+    narrowsType: narrowsType,
+    hotPathSelected: hotPathSelected,
+    diagnosticsReady: diagnosticsReady,
+    noCoredump: noCoredump,
+  }
+}
+
+pub fn ifAnalysisInput(
+  node: u64,
+  family: IfGuardFamily,
+  conditionBool: bool,
+  branchTypesCompatible: bool,
+  patternValid: bool,
+  guardBool: bool,
+  targetOrQuantumProfileValid: bool,
+) -> IfAnalysisInput {
+  return IfAnalysisInput {
+    node: node,
+    family: family,
+    conditionBool: conditionBool,
+    branchTypesCompatible: branchTypesCompatible,
+    patternValid: patternValid,
+    guardBool: guardBool,
+    targetOrQuantumProfileValid: targetOrQuantumProfileValid,
+  }
+}
+
+pub fn analyzeIf(input: IfAnalysisInput) -> IfAnalysisResult {
+  let mut diagnostic = IfDiagnosticKind.NonBoolCondition
+  if input.conditionBool && !input.branchTypesCompatible {
+    diagnostic = IfDiagnosticKind.BranchTypeMismatch
+  }
+  if input.conditionBool && input.branchTypesCompatible && !input.patternValid {
+    diagnostic = IfDiagnosticKind.InvalidIfLetPattern
+  }
+  if input.conditionBool && input.branchTypesCompatible && input.patternValid && !input.guardBool {
+    diagnostic = IfDiagnosticKind.GuardRequiresBool
+  }
+  if input.conditionBool
+    && input.branchTypesCompatible
+    && input.patternValid
+    && input.guardBool
+    && !input.targetOrQuantumProfileValid {
+    diagnostic = IfDiagnosticKind.TargetFeatureUnknown
+  }
+  let valid = input.conditionBool
+    && input.branchTypesCompatible
+    && input.patternValid
+    && input.guardBool
+    && input.targetOrQuantumProfileValid
+  let fact = ifGuardFact(input.family, 13, input.patternValid, valid, true, true)
+  return IfAnalysisResult {
+    input: input,
+    fact: fact,
+    diagnostic: diagnostic,
+    hirReady: valid,
+  }
+}
+
+impl IfGuardFact {
+  pub fn complete(self: IfGuardFact) -> bool {
+    return self.formCount >= 13
+      && self.hotPathSelected
+      && self.diagnosticsReady
+      && self.noCoredump
+  }
+}
+
+impl IfAnalysisResult {
+  pub fn executableReady(self: IfAnalysisResult) -> bool {
+    return self.input.node > 0
+      && self.fact.complete()
+      && self.hirReady
+  }
+
+  pub fn safeFailureReady(self: IfAnalysisResult) -> bool {
+    return self.input.node > 0
+      && self.fact.diagnosticsReady
+      && !self.hirReady
+  }
+}

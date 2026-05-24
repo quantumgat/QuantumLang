@@ -1,0 +1,27 @@
+pub struct TraceContext {
+  traceId: string,
+  spanId: string,
+  sampled: bool,
+}
+
+impl TraceContext {
+  pub fn init(traceId: string, spanId: string, sampled: bool) -> TraceContext {
+    return TraceContext {
+      traceId: traceId,
+      spanId: spanId,
+      sampled: sampled,
+    }
+  }
+
+  pub fn traceId(self: TraceContext) -> string {
+    return self.traceId
+  }
+
+  pub fn spanId(self: TraceContext) -> string {
+    return self.spanId
+  }
+
+  pub fn sampled(self: TraceContext) -> bool {
+    return self.sampled
+  }
+}

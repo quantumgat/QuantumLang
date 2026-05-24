@@ -1,0 +1,40 @@
+pub struct FfiLibrary {
+  name: string,
+  loaded: bool,
+  capabilityChecked: bool,
+}
+
+impl FfiLibrary {
+  pub fn init(name: string) -> FfiLibrary {
+    return FfiLibrary {
+      name: name,
+      loaded: name != "",
+      capabilityChecked: true,
+    }
+  }
+
+  pub fn open(name: string) -> Result<FfiLibrary, FfiError> {
+    if name == "" {
+      return Err(FfiError.init(FfiErrorKind.LibraryNotFound, "QLFFI0001"))
+    }
+    return Ok(FfiLibrary.init(name))
+  }
+
+  pub fn name(self: FfiLibrary) -> string {
+    return self.name
+  }
+
+  pub fn accepted(self: FfiLibrary) -> bool {
+    return self.name != "" && self.loaded && self.capabilityChecked
+  }
+
+  pub fn symbol(self: FfiLibrary, name: string) -> Result<FfiSymbol, FfiError> {
+    if self.accepted() == false {
+      return Err(FfiError.init(FfiErrorKind.LibraryNotFound, "QLFFI0001"))
+    }
+    if name == "" {
+      return Err(FfiError.init(FfiErrorKind.SymbolNotFound, "QLFFI0002"))
+    }
+    return Ok(FfiSymbol.init(name))
+  }
+}

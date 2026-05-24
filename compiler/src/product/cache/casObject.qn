@@ -1,0 +1,15 @@
+pub struct CasObject {
+  pathExt: string,
+  hashBits: usize,
+  contentAddressed: bool,
+  executable: bool,
+}
+
+pub fn casObject() -> CasObject {
+  return CasObject {
+    pathExt: ".qco",
+    hashBits: 256,
+    contentAddressed: true,
+    executable: false,
+  }
+}

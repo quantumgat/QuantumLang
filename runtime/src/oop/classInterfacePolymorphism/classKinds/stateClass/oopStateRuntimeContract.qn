@@ -1,0 +1,39 @@
+pub struct OopStateRuntimeContract {
+  lifecycleTableRuntime: bool,
+  dependencyOrderRuntime: bool,
+  scopedStateRuntime: bool,
+  startupShutdownRuntime: bool,
+  reconnectRuntime: bool,
+  healthCheckRuntime: bool,
+  testOverrideIsolationRuntime: bool,
+  staleStateDiagnostics: bool,
+  noRequestLoopReflection: bool,
+}
+
+pub fn oopStateRuntimeContract() -> OopStateRuntimeContract {
+  return OopStateRuntimeContract {
+    lifecycleTableRuntime: true,
+    dependencyOrderRuntime: true,
+    scopedStateRuntime: true,
+    startupShutdownRuntime: true,
+    reconnectRuntime: true,
+    healthCheckRuntime: true,
+    testOverrideIsolationRuntime: true,
+    staleStateDiagnostics: true,
+    noRequestLoopReflection: true,
+  }
+}
+
+impl OopStateRuntimeContract {
+  pub fn complete(self: OopStateRuntimeContract) -> bool {
+    return self.lifecycleTableRuntime
+      && self.dependencyOrderRuntime
+      && self.scopedStateRuntime
+      && self.startupShutdownRuntime
+      && self.reconnectRuntime
+      && self.healthCheckRuntime
+      && self.testOverrideIsolationRuntime
+      && self.staleStateDiagnostics
+      && self.noRequestLoopReflection
+  }
+}

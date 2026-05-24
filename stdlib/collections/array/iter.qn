@@ -1,0 +1,48 @@
+/**
+  Direct-index iterator over a fixed Array snapshot.
+
+  effects: pure
+  complexity: O(1) to create and advance
+  allocation: none
+  stability: public since 0.1
+*/
+pub struct ArrayIter<T, N> {
+  array: Array<T, N>,
+  index: usize,
+  len: usize,
+  generation: usize,
+}
+
+impl<T, N> ArrayIter<T, N> {
+  pub fn fromArray(array: Array<T, N>) -> ArrayIter<T, N> {
+    return ArrayIter<T, N> {
+      array: array,
+      index: 0,
+      len: array.len,
+      generation: array.generation,
+    }
+  }
+
+  pub fn isEmpty(self: ArrayIter<T, N>) -> bool {
+    return self.index >= self.len
+  }
+
+  pub fn next(self: ArrayIter<T, N>) -> Option<T> {
+    if self.isEmpty() {
+      return None
+    }
+    return Some(self.array.storage.items[self.index])
+  }
+
+  pub fn advance(self: ArrayIter<T, N>) -> ArrayIter<T, N> {
+    if self.isEmpty() {
+      return self
+    }
+    return ArrayIter<T, N> {
+      array: self.array,
+      index: self.index + 1,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}

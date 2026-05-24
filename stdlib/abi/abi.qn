@@ -1,0 +1,10 @@
+pub struct RuntimeSymbol {
+  name: string,
+}
+
+pub struct EffectSet {
+  mask: u64,
+}
+
+pub fn symbol(name: string) -> RuntimeSymbol
+pub fn effects(mask: u64) -> EffectSet

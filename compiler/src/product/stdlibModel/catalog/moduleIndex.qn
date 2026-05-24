@@ -1,0 +1,13 @@
+pub struct StdlibModuleIndex {
+  root: string,
+  domainCount: usize,
+  sourceOwned: bool,
+}
+
+impl StdlibModuleIndex {
+  pub fn accepted(self: StdlibModuleIndex) -> bool {
+    return self.root == "qtlc/qtlang/stdlib"
+      && self.domainCount > 0
+      && self.sourceOwned
+  }
+}

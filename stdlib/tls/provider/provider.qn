@@ -1,0 +1,12 @@
+pub struct TlsProvider {
+  name: string,
+  supportsAlpn: bool,
+  supportsMtls: bool,
+  verified: bool,
+}
+
+impl TlsProvider {
+  pub fn accepted(self: TlsProvider) -> bool {
+    return self.name != "" && self.verified
+  }
+}

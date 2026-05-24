@@ -1,0 +1,51 @@
+pub enum DispatchProofTier {
+  Direct
+  StaticGeneric
+  Sealed
+  Cached
+  Dynamic
+}
+
+pub enum DispatchProofObligation {
+  DirectCall
+  StaticMonomorphization
+  SealedSetProof
+  CachedLookupProof
+  Oop001DiagnosticOrException
+}
+
+pub struct DispatchTierProofMapping {
+  callId: u64,
+  tier: DispatchProofTier,
+  obligation: DispatchProofObligation,
+  hotPath: bool,
+  proofSatisfied: bool,
+}
+
+pub fn dispatchTierProofMapping(
+  callId: u64,
+  tier: DispatchProofTier,
+  obligation: DispatchProofObligation,
+  hotPath: bool,
+  proofSatisfied: bool
+) -> DispatchTierProofMapping {
+  return DispatchTierProofMapping {
+    callId: callId,
+    tier: tier,
+    obligation: obligation,
+    hotPath: hotPath,
+    proofSatisfied: proofSatisfied,
+  }
+}
+
+impl DispatchTierProofMapping {
+  pub fn requiresHotDiagnostic(self: DispatchTierProofMapping) -> bool {
+    return self.hotPath &&
+      self.tier == DispatchProofTier.Dynamic &&
+      !self.proofSatisfied
+  }
+
+  pub fn passed(self: DispatchTierProofMapping) -> bool {
+    return self.callId > 0 && (self.proofSatisfied || self.requiresHotDiagnostic())
+  }
+}

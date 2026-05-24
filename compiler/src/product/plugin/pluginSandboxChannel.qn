@@ -1,0 +1,41 @@
+pub enum PluginSandboxChannelKind {
+  JsonRpcLike,
+  Disabled,
+}
+
+pub struct PluginSandboxChannel {
+  kind: PluginSandboxChannelKind,
+  protocol: string,
+  requestReplyOnly: bool,
+  boundedMessages: bool,
+  sourceMappedDiagnostics: bool,
+  typedFailures: bool,
+  deterministicOrder: bool,
+  noSharedMemory: bool,
+}
+
+impl PluginSandboxChannel {
+  pub fn control() -> PluginSandboxChannel {
+    return PluginSandboxChannel {
+      kind: PluginSandboxChannelKind.JsonRpcLike,
+      protocol: "qtlc-plugin-control-v1",
+      requestReplyOnly: true,
+      boundedMessages: true,
+      sourceMappedDiagnostics: true,
+      typedFailures: true,
+      deterministicOrder: true,
+      noSharedMemory: true,
+    }
+  }
+
+  pub fn accepted(self: PluginSandboxChannel) -> bool {
+    return self.kind == PluginSandboxChannelKind.JsonRpcLike
+      && self.protocol == "qtlc-plugin-control-v1"
+      && self.requestReplyOnly
+      && self.boundedMessages
+      && self.sourceMappedDiagnostics
+      && self.typedFailures
+      && self.deterministicOrder
+      && self.noSharedMemory
+  }
+}

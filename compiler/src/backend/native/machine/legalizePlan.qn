@@ -1,0 +1,33 @@
+pub enum LegalizeAction {
+  KeepMachineOp
+  ExpandMachineOp
+  RejectUnsupportedOp
+}
+
+pub struct LegalizePlan {
+  operation: string,
+  action: LegalizeAction,
+  targetSupported: bool,
+}
+
+pub fn legalizePlan(operation: string, action: LegalizeAction, targetSupported: bool) -> LegalizePlan {
+  return LegalizePlan {
+    operation: operation,
+    action: action,
+    targetSupported: targetSupported,
+  }
+}
+
+impl LegalizePlan {
+  pub fn opName(self: LegalizePlan) -> string {
+    return self.operation
+  }
+
+  pub fn legalizeAction(self: LegalizePlan) -> LegalizeAction {
+    return self.action
+  }
+
+  pub fn isTargetSupported(self: LegalizePlan) -> bool {
+    return self.targetSupported
+  }
+}

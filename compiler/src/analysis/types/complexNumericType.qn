@@ -1,0 +1,58 @@
+import analysis.types::{BuiltinPrimitiveTypeId}
+
+pub enum ComplexNumericAbi {
+  PairOfFloat
+  RuntimeHelper
+  UnsupportedTarget
+}
+
+pub struct ComplexNumericType {
+  typeId: BuiltinPrimitiveTypeId,
+  spelling: string,
+  componentWidth: usize,
+  totalWidth: usize,
+  abi: ComplexNumericAbi,
+  quantumAmplitudeReady: bool,
+}
+
+pub fn complexNumericType(
+  typeId: BuiltinPrimitiveTypeId,
+  spelling: string,
+  componentWidth: usize,
+  abi: ComplexNumericAbi
+) -> ComplexNumericType {
+  return ComplexNumericType {
+    typeId: typeId,
+    spelling: spelling,
+    componentWidth: componentWidth,
+    totalWidth: componentWidth * 2,
+    abi: abi,
+    quantumAmplitudeReady: true,
+  }
+}
+
+impl ComplexNumericType {
+  pub fn sourceSpelling(self: ComplexNumericType) -> string {
+    return self.spelling
+  }
+
+  pub fn realComponentWidth(self: ComplexNumericType) -> usize {
+    return self.componentWidth
+  }
+
+  pub fn width(self: ComplexNumericType) -> usize {
+    return self.totalWidth
+  }
+
+  pub fn abiPolicy(self: ComplexNumericType) -> ComplexNumericAbi {
+    return self.abi
+  }
+
+  pub fn canModelQuantumAmplitude(self: ComplexNumericType) -> bool {
+    return self.quantumAmplitudeReady
+  }
+}
+
+pub fn requiredComplexNumericTypeCount() -> usize {
+  return 3
+}

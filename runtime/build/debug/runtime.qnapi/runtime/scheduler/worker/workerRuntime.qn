@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum SchedulerWorkerState {
+  Ready
+  Running
+  Parked
+  Retired
+  Starved
+}
+pub struct SchedulerWorkerRuntime {
+  workerId: u64
+  localQueueDepth: usize
+  state: SchedulerWorkerState
+  completedTasks: usize
+  stealSuccesses: usize
+  stealFailures: usize
+}

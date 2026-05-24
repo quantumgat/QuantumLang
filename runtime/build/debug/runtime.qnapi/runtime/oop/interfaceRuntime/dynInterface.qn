@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct DynInterface {
+  dataPtr: u64
+  interfaceTablePtr: u64
+  interfaceTypeId: u64
+}
+pub extern "qnpkg" {
+  pub fn dynInterface(dataPtr: u64, interfaceTablePtr: u64, interfaceTypeId: u64) -> DynInterface
+}

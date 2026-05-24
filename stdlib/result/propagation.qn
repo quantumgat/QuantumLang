@@ -1,0 +1,80 @@
+pub struct ResultQuestionPolicy {
+  requiresResultReturn: bool,
+  propagatesErr: bool,
+  unwrapsOk: bool,
+  typedConversionOnly: bool,
+  preservesCauseChain: bool,
+  noPanic: bool,
+}
+
+pub struct AwaitQuestionPolicy {
+  awaitsBeforeQuestion: bool,
+  cancellationSafe: bool,
+  typedErrorOnly: bool,
+  preservesTaskContext: bool,
+  noPanic: bool,
+}
+
+impl ResultQuestionPolicy {
+  /**
+    Defines `?` for `Result<T, E>`.
+
+    example:
+      let user = loadUser()?
+
+    effects: early return on Err
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn standard() -> ResultQuestionPolicy {
+    return ResultQuestionPolicy {
+      requiresResultReturn: true,
+      propagatesErr: true,
+      unwrapsOk: true,
+      typedConversionOnly: true,
+      preservesCauseChain: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn accepted(self: ResultQuestionPolicy) -> bool {
+    return self.requiresResultReturn
+      && self.propagatesErr
+      && self.unwrapsOk
+      && self.typedConversionOnly
+      && self.preservesCauseChain
+      && self.noPanic
+  }
+}
+
+impl AwaitQuestionPolicy {
+  /**
+    Defines `await?` for async fallible work.
+
+    example:
+      let packet = fetchPacket().await?
+
+    effects: awaits, then early returns on Err
+    complexity: O(1) after task completion
+    allocation: none in the propagation path
+    stability: public since 0.1
+  */
+  pub fn standard() -> AwaitQuestionPolicy {
+    return AwaitQuestionPolicy {
+      awaitsBeforeQuestion: true,
+      cancellationSafe: true,
+      typedErrorOnly: true,
+      preservesTaskContext: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn accepted(self: AwaitQuestionPolicy) -> bool {
+    return self.awaitsBeforeQuestion
+      && self.cancellationSafe
+      && self.typedErrorOnly
+      && self.preservesTaskContext
+      && self.noPanic
+  }
+}

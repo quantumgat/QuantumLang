@@ -1,0 +1,63 @@
+pub enum OsHandleState {
+  Open
+  Closed
+}
+
+pub struct OsHandle {
+  raw: u64,
+  generation: usize,
+  owner: string,
+  state: OsHandleState,
+  owned: bool,
+}
+
+impl OsHandle {
+  /**
+    Creates an opaque OS handle value after runtime validation.
+
+    example:
+      let handle = OsHandle.open(raw, "fs", true)
+      let checked = handle.validate(1, "fs")?
+
+    effects: pure metadata
+    complexity: O(1)
+    allocation: none
+    safety: raw handle is opaque; validation checks generation and subsystem
+    stability: public since 0.1
+  */
+  pub fn open(raw: u64, owner: string, owned: bool) -> OsHandle {
+    return OsHandle {
+      raw: raw,
+      generation: 1,
+      owner: owner,
+      state: OsHandleState.Open,
+      owned: owned,
+    }
+  }
+
+  pub fn validate(self: OsHandle, generation: usize, owner: string) -> Result<OsHandle, OsError> {
+    if self.state != OsHandleState.Open {
+      return Err(OsError.init(OsErrorKind.ClosedHandle, "QLOS0004"))
+    }
+    if self.generation != generation {
+      return Err(OsError.init(OsErrorKind.WrongGeneration, "QLOS0005"))
+    }
+    if self.owner != owner {
+      return Err(OsError.init(OsErrorKind.WrongSubsystem, "QLOS0006"))
+    }
+    return Ok(self)
+  }
+
+  pub fn close(self: OsHandle) -> Result<OsHandle, OsError> {
+    if self.state == OsHandleState.Closed {
+      return Err(OsError.init(OsErrorKind.ClosedHandle, "QLOS0004"))
+    }
+    return Ok(OsHandle {
+      raw: self.raw,
+      generation: self.generation + 1,
+      owner: self.owner,
+      state: OsHandleState.Closed,
+      owned: false,
+    })
+  }
+}

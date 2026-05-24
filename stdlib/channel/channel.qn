@@ -1,0 +1,24 @@
+pub fn channel<T>() -> (Sender<T>, Receiver<T>)
+pub fn bounded<T>(capacity: usize) -> BoundedChannel<T>
+pub fn unbounded<T>() -> UnboundedChannel<T>
+pub fn oneshot<T>() -> (OneshotSender<T>, OneshotReceiver<T>)
+pub fn broadcast<T>(capacity: usize) -> BroadcastChannel<T>
+pub fn watch<T>(initial: T) -> WatchChannel<T>
+pub fn mpsc<T>(capacity: usize) -> MpscChannel<T>
+pub fn mpmc<T>(capacity: usize) -> MpmcChannel<T>
+pub fn select<T>() -> Select<T>
+
+pub use core.channel.Backpressure
+pub use core.channel.ChannelError
+pub use core.channel.Receiver
+pub use core.channel.Sender
+pub use bounded.boundedChannel.BoundedChannel
+pub use unbounded.unboundedChannel.UnboundedChannel
+pub use oneshot.oneshot.OneshotReceiver
+pub use oneshot.oneshot.OneshotSender
+pub use broadcast.broadcastChannel.BroadcastChannel
+pub use watch.watchChannel.WatchChannel
+pub use channelSelect.Select
+pub use channelSelect.SelectFairness
+pub use mpsc.mpscChannel.MpscChannel
+pub use mpmc.mpmcChannel.MpmcChannel

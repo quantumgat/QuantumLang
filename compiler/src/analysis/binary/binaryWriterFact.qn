@@ -1,0 +1,17 @@
+pub struct BinaryWriterFact {
+  node: u64,
+  borrowedBuffer: bool,
+  noAllocation: bool,
+  pointerLoweringAccepted: bool,
+  overflowDiagnosticAccepted: bool,
+}
+
+impl BinaryWriterFact {
+  pub fn accepted(self: BinaryWriterFact) -> bool {
+    return self.node > 0
+      && self.borrowedBuffer
+      && self.noAllocation
+      && self.pointerLoweringAccepted
+      && self.overflowDiagnosticAccepted
+  }
+}

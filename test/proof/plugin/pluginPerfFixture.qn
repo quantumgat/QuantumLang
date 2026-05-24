@@ -1,0 +1,27 @@
+pub struct PluginPerfFixture {
+  perfFixture: string,
+  measuredBenchmarkRequired: bool,
+  fallbackBenchmarkRequired: bool,
+  reportOwnedByTest: bool,
+  noProductProofNoise: bool,
+}
+
+impl PluginPerfFixture {
+  pub fn generic() -> PluginPerfFixture {
+    return PluginPerfFixture {
+      perfFixture: "qtlc/tests/fixtures/plugin/generic_capability_pack/test/perf/benchmark.qn",
+      measuredBenchmarkRequired: true,
+      fallbackBenchmarkRequired: true,
+      reportOwnedByTest: true,
+      noProductProofNoise: true,
+    }
+  }
+
+  pub fn accepted(self: PluginPerfFixture) -> bool {
+    return self.perfFixture != ""
+      && self.measuredBenchmarkRequired
+      && self.fallbackBenchmarkRequired
+      && self.reportOwnedByTest
+      && self.noProductProofNoise
+  }
+}

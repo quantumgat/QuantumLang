@@ -1,0 +1,12 @@
+pub struct AndroidLinkPlan {
+  target: string,
+  ndkRequired: bool,
+  elfRequired: bool,
+  mobileSandboxAware: bool,
+}
+
+impl AndroidLinkPlan {
+  pub fn accepted(self: AndroidLinkPlan) -> bool {
+    return self.target != "" && self.ndkRequired && self.mobileSandboxAware
+  }
+}

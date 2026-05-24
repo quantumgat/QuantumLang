@@ -1,0 +1,23 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub abstract class Allocator {
+  accountingEnabled: bool
+  pressureAware: bool
+  hiddenNativeSubstrate: bool
+  running: bool
+  nextAllocationId: u64
+  pub init() {}
+  pub fn start(self: &mut Allocator) -> bool
+  pub fn shutdown(self: &mut Allocator) -> bool
+  pub fn drop(self: &mut Allocator) -> bool
+  pub fn tracksPressure(self: &Allocator) -> bool
+  pub fn reserveId(self: &mut Allocator) -> u64
+  pub fn allocateRecord(
+    self: &mut Allocator,
+    domain: RuntimeAllocatorDomain,
+    bytes: usize,
+    pressure: MemoryPressure,
+  ) -> Result<AllocationRecord, RuntimeMemoryError>
+  pub fn denyForPressure(self: &Allocator, domain: RuntimeAllocatorDomain, bytes: usize, pressure: MemoryPressure) -> bool
+  pub fn failurePolicy(self: &Allocator, kind: RuntimeAllocatorFailureKind) -> RuntimeAllocatorFailurePolicy
+  pub fn checkFree(self: &Allocator, record: AllocationRecord, domain: RuntimeAllocatorDomain) -> Result<AllocationRecord, RuntimeMemoryError>
+}

@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeSocketRegistry {
+  openCount: usize
+  maxOpen: usize
+  generationChecked: bool
+  staleHandleDiagnostics: bool
+  doubleCloseSafe: bool
+}

@@ -1,0 +1,15 @@
+pub struct RuntimeProfile {
+  name: string,
+  deterministic: bool,
+  sourceMapped: bool,
+}
+
+pub fn runtimeProfile(name: string) -> RuntimeProfile {
+  return RuntimeProfile { name: name, deterministic: true, sourceMapped: true }
+}
+
+impl RuntimeProfile {
+  pub fn canSelect(self: RuntimeProfile) -> bool {
+    return self.deterministic && self.sourceMapped
+  }
+}

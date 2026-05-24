@@ -1,0 +1,37 @@
+pub enum NativeValueKind {
+  ImmediateValue
+  RegisterValue
+  StackValue
+  MemoryValue
+  SymbolValue
+}
+
+pub struct NativeValue {
+  id: u64,
+  typeId: u64,
+  kind: NativeValueKind,
+  mutableValue: bool,
+}
+
+pub fn nativeValue(id: u64, typeId: u64, kind: NativeValueKind, mutableValue: bool) -> NativeValue {
+  return NativeValue { id: id, typeId: typeId, kind: kind, mutableValue: mutableValue }
+}
+
+impl NativeValue {
+  pub fn valueId(self: NativeValue) -> u64 {
+    return self.id
+  }
+
+  pub fn resolvedType(self: NativeValue) -> u64 {
+    return self.typeId
+  }
+
+  pub fn valueKind(self: NativeValue) -> NativeValueKind {
+    return self.kind
+  }
+
+  pub fn isMutable(self: NativeValue) -> bool {
+    return self.mutableValue
+  }
+}
+

@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimePort {
+  portName: string
+  subsystemName: string
+  publicPort: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimePort(portName: string, subsystemName: string) -> RuntimePort
+}

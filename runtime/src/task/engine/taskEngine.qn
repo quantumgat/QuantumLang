@@ -1,0 +1,18 @@
+pub struct RuntimeTaskEngine {
+  taskCount: usize,
+  scopeCount: usize,
+  groupCount: usize,
+  orphanRejections: usize,
+  schedulerAdmissionReady: bool,
+}
+
+impl RuntimeTaskEngine {
+  pub fn structuredReady(self: RuntimeTaskEngine) -> bool {
+    return self.schedulerAdmissionReady
+      && self.orphanRejections == 0
+  }
+
+  pub fn hasScopes(self: RuntimeTaskEngine) -> bool {
+    return self.scopeCount > 0
+  }
+}

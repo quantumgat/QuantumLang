@@ -1,0 +1,33 @@
+pub struct NativeProof {
+  pureNative: bool,
+  objectWritten: bool,
+  linked: bool,
+  generatedSourceFallback: bool,
+}
+
+pub fn nativeProof(pureNative: bool, objectWritten: bool, linked: bool, generatedSourceFallback: bool) -> NativeProof {
+  return NativeProof {
+    pureNative: pureNative,
+    objectWritten: objectWritten,
+    linked: linked,
+    generatedSourceFallback: generatedSourceFallback,
+  }
+}
+
+impl NativeProof {
+  pub fn isPureNative(self: NativeProof) -> bool {
+    return self.pureNative
+  }
+
+  pub fn wroteObject(self: NativeProof) -> bool {
+    return self.objectWritten
+  }
+
+  pub fn linkedOutput(self: NativeProof) -> bool {
+    return self.linked
+  }
+
+  pub fn passed(self: NativeProof) -> bool {
+    return self.pureNative && self.objectWritten && !self.generatedSourceFallback
+  }
+}

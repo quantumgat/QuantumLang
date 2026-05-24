@@ -1,0 +1,289 @@
+/**
+  Aliasing contract for foreign memory imported through FFI.
+
+  example:
+    let policy = ForeignAliasPolicy.Unique
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: safe value tag
+  stability: public since 0.1
+*/
+pub enum ForeignAliasPolicy {
+  Unique,
+  SharedReadOnly,
+  SharedMutableRejected,
+}
+
+/**
+  Lifetime token proving a foreign allocation or handle is still live.
+
+  example:
+    let token = ForeignLifetimeToken(42, 1, true)
+
+  effects: pure metadata
+  complexity: O(1)
+  allocation: none
+  safety: accepted only while active and generation checked
+  stability: public since 0.1
+*/
+pub struct ForeignLifetimeToken {
+  tokenId: u64,
+  generation: u64,
+  active: bool,
+}
+
+/**
+  Deleter registered for foreign-owned memory.
+
+  example:
+    let deleter = ForeignDeleter("free_user", "foreign", true)
+
+  effects: pure metadata
+  complexity: O(1)
+  allocation: none
+  safety: owned foreign memory must have a registered deleter
+  stability: public since 0.1
+*/
+pub struct ForeignDeleter {
+  symbol: string,
+  allocatorDomain: string,
+  registered: bool,
+}
+
+/**
+  Borrowed or owned foreign slice.
+
+  example:
+    let users = ForeignSlice<User>(address, count, 16, token, ForeignAliasPolicy.SharedReadOnly)
+
+  effects: references foreign memory
+  complexity: O(1)
+  allocation: none
+  safety: requires lifetime token, element width, and non-rejected alias policy
+  stability: public since 0.1
+*/
+pub struct ForeignSlice<T> {
+  address: usize,
+  len: usize,
+  elementBytes: usize,
+  lifetime: ForeignLifetimeToken,
+  aliasPolicy: ForeignAliasPolicy,
+}
+
+/**
+  Foreign UTF-8 string view.
+
+  example:
+    let name = ForeignString(address, bytes, true, true, token)
+
+  effects: references foreign memory
+  complexity: O(1)
+  allocation: none
+  safety: requires live token and UTF-8 validation
+  stability: public since 0.1
+*/
+pub struct ForeignString {
+  address: usize,
+  bytes: usize,
+  utf8: bool,
+  nulTerminated: bool,
+  lifetime: ForeignLifetimeToken,
+}
+
+/**
+  Foreign arena ownership contract.
+
+  example:
+    let arena = ForeignArena(9, "foreign", deleter, token)
+
+  effects: references foreign allocator domain
+  complexity: O(1)
+  allocation: none
+  safety: requires allocator domain, deleter, and lifetime token
+  stability: public since 0.1
+*/
+pub struct ForeignArena {
+  arenaId: u64,
+  allocatorDomain: string,
+  deleter: ForeignDeleter,
+  lifetime: ForeignLifetimeToken,
+}
+
+/**
+  Thread-affine foreign handle.
+
+  example:
+    let handle = ThreadAffineHandle(7, ownerThread, currentThread, token)
+
+  effects: references a foreign handle
+  complexity: O(1)
+  allocation: none
+  safety: accepted only on the owner thread while lifetime is active
+  stability: public since 0.1
+*/
+pub struct ThreadAffineHandle {
+  handleId: u64,
+  ownerThread: u64,
+  currentThread: u64,
+  lifetime: ForeignLifetimeToken,
+}
+
+/**
+  Callback registration with explicit unregister token and panic boundary.
+
+  example:
+    let callback = CallbackRegistration(3, 99, 123, true, token)
+
+  effects: registers a foreign callback contract
+  complexity: O(1)
+  allocation: none
+  safety: requires unregister token and no-unwind panic boundary
+  stability: public since 0.1
+*/
+pub struct CallbackRegistration {
+  callbackId: u64,
+  signatureId: u64,
+  unregisterToken: u64,
+  panicBoundary: bool,
+  lifetime: ForeignLifetimeToken,
+}
+
+/**
+  Panic/unwind boundary policy for FFI calls.
+
+  example:
+    let boundary = FfiPanicBoundary(true, true, true)
+
+  effects: pure metadata
+  complexity: O(1)
+  allocation: none
+  safety: accepted only when unwind is blocked and cleanup/status mapping exist
+  stability: public since 0.1
+*/
+pub struct FfiPanicBoundary {
+  noUnwind: bool,
+  statusMapping: bool,
+  cleanupBeforeReturn: bool,
+}
+
+impl ForeignLifetimeToken {
+  pub fn init(tokenId: u64, generation: u64, active: bool) -> ForeignLifetimeToken {
+    return ForeignLifetimeToken {
+      tokenId: tokenId,
+      generation: generation,
+      active: active,
+    }
+  }
+
+  pub fn accepted(self: ForeignLifetimeToken) -> bool {
+    return self.tokenId > 0 && self.generation > 0 && self.active
+  }
+}
+
+impl ForeignDeleter {
+  pub fn init(symbol: string, allocatorDomain: string, registered: bool) -> ForeignDeleter {
+    return ForeignDeleter {
+      symbol: symbol,
+      allocatorDomain: allocatorDomain,
+      registered: registered,
+    }
+  }
+
+  pub fn accepted(self: ForeignDeleter) -> bool {
+    return self.symbol != "" && self.allocatorDomain != "" && self.registered
+  }
+}
+
+impl<T> ForeignSlice<T> {
+  pub fn init(address: usize, len: usize, elementBytes: usize, lifetime: ForeignLifetimeToken, aliasPolicy: ForeignAliasPolicy) -> ForeignSlice<T> {
+    return ForeignSlice<T> {
+      address: address,
+      len: len,
+      elementBytes: elementBytes,
+      lifetime: lifetime,
+      aliasPolicy: aliasPolicy,
+    }
+  }
+
+  pub fn accepted(self: ForeignSlice<T>) -> bool {
+    return self.address > 0 && self.elementBytes > 0 && self.lifetime.accepted() && self.aliasPolicy != ForeignAliasPolicy.SharedMutableRejected
+  }
+}
+
+impl ForeignString {
+  pub fn init(address: usize, bytes: usize, utf8: bool, nulTerminated: bool, lifetime: ForeignLifetimeToken) -> ForeignString {
+    return ForeignString {
+      address: address,
+      bytes: bytes,
+      utf8: utf8,
+      nulTerminated: nulTerminated,
+      lifetime: lifetime,
+    }
+  }
+
+  pub fn accepted(self: ForeignString) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.utf8 && self.nulTerminated && self.lifetime.accepted()
+  }
+}
+
+impl ForeignArena {
+  pub fn init(arenaId: u64, allocatorDomain: string, deleter: ForeignDeleter, lifetime: ForeignLifetimeToken) -> ForeignArena {
+    return ForeignArena {
+      arenaId: arenaId,
+      allocatorDomain: allocatorDomain,
+      deleter: deleter,
+      lifetime: lifetime,
+    }
+  }
+
+  pub fn accepted(self: ForeignArena) -> bool {
+    return self.arenaId > 0 && self.allocatorDomain != "" && self.deleter.accepted() && self.lifetime.accepted()
+  }
+}
+
+impl ThreadAffineHandle {
+  pub fn init(handleId: u64, ownerThread: u64, currentThread: u64, lifetime: ForeignLifetimeToken) -> ThreadAffineHandle {
+    return ThreadAffineHandle {
+      handleId: handleId,
+      ownerThread: ownerThread,
+      currentThread: currentThread,
+      lifetime: lifetime,
+    }
+  }
+
+  pub fn accepted(self: ThreadAffineHandle) -> bool {
+    return self.handleId > 0 && self.ownerThread > 0 && self.ownerThread == self.currentThread && self.lifetime.accepted()
+  }
+}
+
+impl CallbackRegistration {
+  pub fn init(callbackId: u64, signatureId: u64, unregisterToken: u64, panicBoundary: bool, lifetime: ForeignLifetimeToken) -> CallbackRegistration {
+    return CallbackRegistration {
+      callbackId: callbackId,
+      signatureId: signatureId,
+      unregisterToken: unregisterToken,
+      panicBoundary: panicBoundary,
+      lifetime: lifetime,
+    }
+  }
+
+  pub fn accepted(self: CallbackRegistration) -> bool {
+    return self.callbackId > 0 && self.signatureId > 0 && self.unregisterToken > 0 && self.panicBoundary && self.lifetime.accepted()
+  }
+}
+
+impl FfiPanicBoundary {
+  pub fn init(noUnwind: bool, statusMapping: bool, cleanupBeforeReturn: bool) -> FfiPanicBoundary {
+    return FfiPanicBoundary {
+      noUnwind: noUnwind,
+      statusMapping: statusMapping,
+      cleanupBeforeReturn: cleanupBeforeReturn,
+    }
+  }
+
+  pub fn accepted(self: FfiPanicBoundary) -> bool {
+    return self.noUnwind && self.statusMapping && self.cleanupBeforeReturn
+  }
+}

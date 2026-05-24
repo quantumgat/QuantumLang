@@ -1,0 +1,63 @@
+pub enum OopFixtureExecutionStatus {
+  Proven
+  SourceContractOnly
+  RuntimeDeferred
+  PackageDeferred
+  BackendDeferred
+  Missing
+}
+
+pub struct OopFixtureExecutionParityFact {
+  familyId: string,
+  positiveFixtureCount: usize,
+  negativeDiagnosticCount: usize,
+  dumpSurfaceCount: usize,
+  explainSurfaceCount: usize,
+  sourceFactBound: bool,
+  backendProofBound: bool,
+  runtimeExecutionBound: bool,
+  packageDeferralDiagnosticBound: bool,
+  fullAstExecutionBound: bool,
+  status: OopFixtureExecutionStatus,
+}
+
+pub fn oopFixtureExecutionParityFact(
+  familyId: string,
+  positiveFixtureCount: usize,
+  negativeDiagnosticCount: usize,
+  dumpSurfaceCount: usize,
+  explainSurfaceCount: usize,
+  sourceFactBound: bool,
+  backendProofBound: bool,
+  runtimeExecutionBound: bool,
+  packageDeferralDiagnosticBound: bool,
+  fullAstExecutionBound: bool,
+  status: OopFixtureExecutionStatus,
+) -> OopFixtureExecutionParityFact {
+  return OopFixtureExecutionParityFact {
+    familyId: familyId,
+    positiveFixtureCount: positiveFixtureCount,
+    negativeDiagnosticCount: negativeDiagnosticCount,
+    dumpSurfaceCount: dumpSurfaceCount,
+    explainSurfaceCount: explainSurfaceCount,
+    sourceFactBound: sourceFactBound,
+    backendProofBound: backendProofBound,
+    runtimeExecutionBound: runtimeExecutionBound,
+    packageDeferralDiagnosticBound: packageDeferralDiagnosticBound,
+    fullAstExecutionBound: fullAstExecutionBound,
+    status: status,
+  }
+}
+
+impl OopFixtureExecutionParityFact {
+  pub fn bootstrapFixtureCovered(self: OopFixtureExecutionParityFact) -> bool {
+    return self.positiveFixtureCount > 0
+      && self.negativeDiagnosticCount > 0
+      && self.dumpSurfaceCount > 0
+  }
+
+  pub fn blocksCompletion(self: OopFixtureExecutionParityFact) -> bool {
+    return self.status != OopFixtureExecutionStatus.Proven
+      && self.packageDeferralDiagnosticBound == false
+  }
+}

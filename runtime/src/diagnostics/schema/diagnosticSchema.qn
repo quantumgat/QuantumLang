@@ -1,0 +1,15 @@
+pub struct DiagnosticSchema {
+  name: string,
+  version: u32,
+  jsonCompatible: bool,
+}
+
+pub fn diagnosticSchema(name: string, version: u32) -> DiagnosticSchema {
+  return DiagnosticSchema { name: name, version: version, jsonCompatible: true }
+}
+
+impl DiagnosticSchema {
+  pub fn canRenderJson(self: DiagnosticSchema) -> bool {
+    return self.jsonCompatible
+  }
+}

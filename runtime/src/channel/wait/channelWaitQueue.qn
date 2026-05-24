@@ -1,0 +1,26 @@
+pub struct RuntimeChannelWaitQueue {
+  channelId: u64,
+  waiterCount: usize,
+  cancellationLinked: bool,
+  lostWakePrevented: bool,
+}
+
+impl RuntimeChannelWaitQueue {
+  pub fn init(
+    channelId: u64,
+    waiterCount: usize,
+    cancellationLinked: bool,
+    lostWakePrevented: bool,
+  ) -> RuntimeChannelWaitQueue {
+    return RuntimeChannelWaitQueue {
+      channelId: channelId,
+      waiterCount: waiterCount,
+      cancellationLinked: cancellationLinked,
+      lostWakePrevented: lostWakePrevented,
+    }
+  }
+
+  pub fn safe(self: RuntimeChannelWaitQueue) -> bool {
+    return self.channelId > 0 && self.cancellationLinked && self.lostWakePrevented
+  }
+}

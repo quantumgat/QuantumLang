@@ -1,0 +1,11 @@
+pub struct StdlibSnippetSurface {
+  label: string,
+  body: string,
+  domainName: string,
+}
+
+impl StdlibSnippetSurface {
+  pub fn accepted(self: StdlibSnippetSurface) -> bool {
+    return self.label != "" && self.body != "" && self.domainName != ""
+  }
+}

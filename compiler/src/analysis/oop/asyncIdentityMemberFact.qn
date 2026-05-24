@@ -1,0 +1,42 @@
+pub enum ClassIdentityModel {
+  Value
+  Domain
+  Box
+  Arc
+  Pin
+  Handle
+  AddressRejected
+}
+
+pub struct AsyncIdentityMemberFact {
+  methodId: u64,
+  ownerTypeId: u64,
+  identityModel: ClassIdentityModel,
+  awaitPointCount: usize,
+  receiverLifetimeStable: bool,
+  hiddenAllocationRejected: bool,
+}
+
+pub fn asyncIdentityMemberFact(
+  methodId: u64,
+  ownerTypeId: u64,
+  identityModel: ClassIdentityModel,
+  awaitPointCount: usize,
+  receiverLifetimeStable: bool,
+  hiddenAllocationRejected: bool,
+) -> AsyncIdentityMemberFact {
+  return AsyncIdentityMemberFact {
+    methodId: methodId,
+    ownerTypeId: ownerTypeId,
+    identityModel: identityModel,
+    awaitPointCount: awaitPointCount,
+    receiverLifetimeStable: receiverLifetimeStable,
+    hiddenAllocationRejected: hiddenAllocationRejected,
+  }
+}
+
+impl AsyncIdentityMemberFact {
+  pub fn accepted(self: AsyncIdentityMemberFact) -> bool {
+    return self.receiverLifetimeStable && self.hiddenAllocationRejected == false
+  }
+}

@@ -1,0 +1,6 @@
+[module]
+name = "collections.hash"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "hash"

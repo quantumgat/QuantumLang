@@ -1,0 +1,87 @@
+pub struct ObjectId {
+  bytes: BinaryView,
+}
+
+impl ObjectId {
+  /**
+    Creates a fresh BSON ObjectId.
+
+    example:
+      let id = ObjectId()?
+
+    effects: asks the BSON ObjectId kernel for a monotonic unique id
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn init() -> Result<ObjectId, BsonError> {
+    return ObjectId.new()
+  }
+
+  /**
+    Parses a 24-character ObjectId hex string.
+
+    example:
+      let id = ObjectId("64f1c2d930a91f2a4d58e621")?
+
+    effects: validates hex shape
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn init(hex: string) -> Result<ObjectId, BsonError> {
+    return ObjectId.fromHex(hex)
+  }
+
+  /**
+    Creates an ObjectId from exactly 12 BSON bytes.
+
+    example:
+      let id = ObjectId.fromBytes(bytes)?
+
+    effects: validates length only
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn fromBytes(bytes: BinaryView) -> Result<ObjectId, BsonError> {
+    if bytes.len() != 12 {
+      return Err(BsonError.invalidObjectId("$"))
+    }
+    return Ok(ObjectId { bytes: bytes })
+  }
+
+  pub fn new() -> Result<ObjectId, BsonError> {
+    return bsonNewObjectId()
+  }
+
+  pub fn fromHex(hex: string) -> Result<ObjectId, BsonError> {
+    return bsonObjectIdFromHex(hex)
+  }
+
+  pub fn isValid(hex: string) -> bool {
+    return bsonObjectIdIsValid(hex)
+  }
+
+  pub fn bytes(self: ObjectId) -> BinaryView {
+    return self.bytes
+  }
+
+  pub fn hex(self: ObjectId) -> string {
+    return bsonObjectIdHex(self)
+  }
+
+  pub fn toString(self: ObjectId) -> string {
+    return self.hex()
+  }
+
+  pub fn timestamp(self: ObjectId) -> i64 {
+    return bsonObjectIdTimestamp(self)
+  }
+}
+
+fn bsonNewObjectId() -> Result<ObjectId, BsonError>
+fn bsonObjectIdFromHex(hex: string) -> Result<ObjectId, BsonError>
+fn bsonObjectIdIsValid(hex: string) -> bool
+fn bsonObjectIdHex(id: ObjectId) -> string
+fn bsonObjectIdTimestamp(id: ObjectId) -> i64

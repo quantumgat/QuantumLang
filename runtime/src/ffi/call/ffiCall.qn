@@ -1,0 +1,22 @@
+pub enum FfiCallAbi {
+  CAbi
+  SystemAbi
+  RuntimeAbi
+}
+
+pub struct FfiCall {
+  symbol: string,
+  abi: FfiCallAbi,
+  effectChecked: bool,
+  blockingGateRequired: bool,
+}
+
+pub fn ffiCall(symbol: string, abi: FfiCallAbi) -> FfiCall {
+  return FfiCall { symbol: symbol, abi: abi, effectChecked: true, blockingGateRequired: true }
+}
+
+impl FfiCall {
+  pub fn isCapabilitySafe(self: FfiCall) -> bool {
+    return self.effectChecked && self.blockingGateRequired
+  }
+}

@@ -1,0 +1,18 @@
+pub struct ExitStatus {
+  code: i32,
+  signal: Option<ProcessSignal>,
+}
+
+impl ExitStatus {
+  pub fn success(self: ExitStatus) -> bool {
+    return self.code == 0 && self.signal == None
+  }
+
+  pub fn failed(self: ExitStatus) -> bool {
+    return !self.success()
+  }
+
+  pub fn codeValue(self: ExitStatus) -> i32 {
+    return self.code
+  }
+}

@@ -1,0 +1,201 @@
+pub enum LogElisionDecisionKind {
+  EraseDisabled
+  KeepEnabled
+  FoldStaticLevel
+  GuardDynamicLevel
+  RejectHotAllocation
+}
+
+pub enum LogFieldCaptureKind {
+  InlinePrimitive
+  InlineStringView
+  InlineErrorCode
+  InlineDiagnosticCode
+  BorrowedRedactedText
+  DeferredColdPath
+}
+
+pub struct LogElisionDecision {
+  kind: LogElisionDecisionKind,
+  sourceRange: SourceRange,
+  levelKnownAtCompileTime: bool,
+  disabledAtCompileTime: bool,
+  recordConstructed: bool,
+  messageFormatted: bool,
+  fieldCaptureExecuted: bool,
+  sinkCalled: bool,
+  allocationFree: bool,
+}
+
+impl LogElisionDecision {
+  pub fn disabled(file: u32, start: usize, end: usize) -> LogElisionDecision {
+    return LogElisionDecision {
+      kind: LogElisionDecisionKind.EraseDisabled,
+      sourceRange: SourceRange.init(file, start, end),
+      levelKnownAtCompileTime: true,
+      disabledAtCompileTime: true,
+      recordConstructed: false,
+      messageFormatted: false,
+      fieldCaptureExecuted: false,
+      sinkCalled: false,
+      allocationFree: true,
+    }
+  }
+
+  pub fn enabled(file: u32, start: usize, end: usize) -> LogElisionDecision {
+    return LogElisionDecision {
+      kind: LogElisionDecisionKind.KeepEnabled,
+      sourceRange: SourceRange.init(file, start, end),
+      levelKnownAtCompileTime: true,
+      disabledAtCompileTime: false,
+      recordConstructed: true,
+      messageFormatted: true,
+      fieldCaptureExecuted: true,
+      sinkCalled: true,
+      allocationFree: true,
+    }
+  }
+
+  pub fn erased(self: LogElisionDecision) -> bool {
+    if self.kind != LogElisionDecisionKind.EraseDisabled {
+      return false
+    }
+    return self.sourceRange.exact()
+      && self.levelKnownAtCompileTime
+      && self.disabledAtCompileTime
+      && self.recordConstructed == false
+      && self.messageFormatted == false
+      && self.fieldCaptureExecuted == false
+      && self.sinkCalled == false
+      && self.allocationFree
+  }
+
+  pub fn keptHot(self: LogElisionDecision) -> bool {
+    if self.kind != LogElisionDecisionKind.KeepEnabled {
+      return false
+    }
+    return self.sourceRange.exact()
+      && self.recordConstructed
+      && self.fieldCaptureExecuted
+      && self.sinkCalled
+      && self.allocationFree
+  }
+}
+
+pub struct LogFieldCaptureLowering {
+  kind: LogFieldCaptureKind,
+  keyStable: bool,
+  valueTyped: bool,
+  inlineStorage: bool,
+  borrowsWithoutCopy: bool,
+  redactedBeforeSink: bool,
+  allocationFree: bool,
+}
+
+impl LogFieldCaptureLowering {
+  pub fn inlinePrimitive() -> LogFieldCaptureLowering {
+    return LogFieldCaptureLowering {
+      kind: LogFieldCaptureKind.InlinePrimitive,
+      keyStable: true,
+      valueTyped: true,
+      inlineStorage: true,
+      borrowsWithoutCopy: true,
+      redactedBeforeSink: true,
+      allocationFree: true,
+    }
+  }
+
+  pub fn accepted(self: LogFieldCaptureLowering) -> bool {
+    return self.keyStable
+      && self.valueTyped
+      && self.inlineStorage
+      && self.borrowsWithoutCopy
+      && self.redactedBeforeSink
+      && self.allocationFree
+  }
+}
+
+pub struct LogHotPathDiagnostic {
+  diagnostic: Diagnostic,
+  machine: MachineDiagnostic,
+  fixIt: FixIt,
+  allocationDetected: bool,
+  recordBuiltForDisabledLog: bool,
+  redacted: bool,
+}
+
+impl LogHotPathDiagnostic {
+  pub fn allocationForbidden(file: u32, start: usize, end: usize) -> LogHotPathDiagnostic {
+    let range = SourceRange.init(file, start, end)
+    let diagnostic = Diagnostic.model(
+      diagnosticCode("QLLOG", 1001),
+      DiagnosticCategory.Log,
+      DiagnosticSeverity.Error,
+      range,
+      "hot log path cannot allocate"
+    )
+    return LogHotPathDiagnostic {
+      diagnostic: diagnostic,
+      machine: MachineDiagnostic.fromDiagnostic(diagnostic),
+      fixIt: FixIt.init(range, "capture a typed field or move formatting to a cold path", FixItSafety.Safe),
+      allocationDetected: true,
+      recordBuiltForDisabledLog: false,
+      redacted: true,
+    }
+  }
+
+  pub fn reportable(self: LogHotPathDiagnostic) -> bool {
+    return self.diagnostic.complete()
+      && self.machine.safe()
+      && self.fixIt.applicable()
+      && self.allocationDetected
+      && self.recordBuiltForDisabledLog == false
+      && self.redacted
+  }
+}
+
+pub struct LogElisionLowering {
+  disabledDecision: LogElisionDecision,
+  enabledDecision: LogElisionDecision,
+  fieldCapture: LogFieldCaptureLowering,
+  hotPathDiagnostic: LogHotPathDiagnostic,
+  staticLevelFilterFolded: bool,
+  dynamicLevelGuardCheap: bool,
+  disabledLogNoCode: bool,
+  enabledLogCheapFieldCapture: bool,
+  noMessageFormattingWhenDisabled: bool,
+  noSinkDispatchWhenDisabled: bool,
+  noAllocationWhenDisabled: bool,
+}
+
+impl LogElisionLowering {
+  pub fn standard(file: u32) -> LogElisionLowering {
+    return LogElisionLowering {
+      disabledDecision: LogElisionDecision.disabled(file, 1, 2),
+      enabledDecision: LogElisionDecision.enabled(file, 3, 4),
+      fieldCapture: LogFieldCaptureLowering.inlinePrimitive(),
+      hotPathDiagnostic: LogHotPathDiagnostic.allocationForbidden(file, 5, 6),
+      staticLevelFilterFolded: true,
+      dynamicLevelGuardCheap: true,
+      disabledLogNoCode: true,
+      enabledLogCheapFieldCapture: true,
+      noMessageFormattingWhenDisabled: true,
+      noSinkDispatchWhenDisabled: true,
+      noAllocationWhenDisabled: true,
+    }
+  }
+
+  pub fn complete(self: LogElisionLowering) -> bool {
+    return self.disabledDecision.erased()
+      && self.enabledDecision.keptHot()
+      && self.fieldCapture.accepted()
+      && self.hotPathDiagnostic.reportable()
+      && self.staticLevelFilterFolded
+      && self.dynamicLevelGuardCheap
+      && self.disabledLogNoCode
+      && self.enabledLogCheapFieldCapture
+      && self.noMessageFormattingWhenDisabled
+      && self.noSinkDispatchWhenDisabled
+      && self.noAllocationWhenDisabled
+  }
+}

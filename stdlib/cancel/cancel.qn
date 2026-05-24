@@ -1,0 +1,13 @@
+pub enum CancelError {
+  Cancelled
+  StaleToken
+  ScopeClosed
+}
+
+pub fn token() -> CancelToken
+pub fn scope() -> CancelScope
+pub fn cancel(token: CancelToken) -> Result<Unit, CancelError>
+pub fn isCancelled(token: CancelToken) -> bool
+
+pub use token.cancelToken.CancelToken
+pub use scope.cancelScope.CancelScope

@@ -1,0 +1,19 @@
+pub struct ResourceClassKindPolicyFact {
+  ownerId: u64,
+  ownershipBound: bool,
+  closeShutdownBound: bool,
+  shutdownBeforeDropBound: bool,
+  doubleFreeRejected: bool,
+  noCoredumpFailureBound: bool,
+}
+
+impl ResourceClassKindPolicyFact {
+  pub fn complete(self: ResourceClassKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.ownershipBound
+      && self.closeShutdownBound
+      && self.shutdownBeforeDropBound
+      && self.doubleFreeRejected
+      && self.noCoredumpFailureBound
+  }
+}

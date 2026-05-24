@@ -1,0 +1,29 @@
+pub struct VtableSlotCallLowering {
+  callId: u64,
+  tableSymbolId: u64,
+  methodId: u64,
+  slot: usize,
+  functionPtrLoaded: bool,
+  indirectCall: bool,
+  abiChecked: bool,
+  methodOrderingProven: bool,
+}
+
+pub fn vtableSlotCallLowering(callId: u64, tableSymbolId: u64, methodId: u64, slot: usize, functionPtrLoaded: bool, indirectCall: bool, abiChecked: bool, methodOrderingProven: bool) -> VtableSlotCallLowering {
+  return VtableSlotCallLowering {
+    callId: callId,
+    tableSymbolId: tableSymbolId,
+    methodId: methodId,
+    slot: slot,
+    functionPtrLoaded: functionPtrLoaded,
+    indirectCall: indirectCall,
+    abiChecked: abiChecked,
+    methodOrderingProven: methodOrderingProven,
+  }
+}
+
+impl VtableSlotCallLowering {
+  pub fn canEmit(self: VtableSlotCallLowering) -> bool {
+    return self.callId > 0 && self.tableSymbolId > 0 && self.methodId > 0 && self.functionPtrLoaded && self.indirectCall && self.abiChecked && self.methodOrderingProven
+  }
+}

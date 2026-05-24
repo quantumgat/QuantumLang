@@ -1,0 +1,42 @@
+pub struct ArrayLowering {
+  fixedCapacityTracked: bool,
+  contiguousStorageBacked: bool,
+  directIndexLoadLowered: bool,
+  directIndexStoreLowered: bool,
+  boundsProofRequired: bool,
+  sliceViewZeroCopy: bool,
+  iteratorLoweredToIndexCursor: bool,
+  builderLoweredToContiguousInit: bool,
+  literalTargetLowered: bool,
+  noGrowthOnSet: bool,
+}
+
+pub fn arrayLowering() -> ArrayLowering {
+  return ArrayLowering {
+    fixedCapacityTracked: true,
+    contiguousStorageBacked: true,
+    directIndexLoadLowered: true,
+    directIndexStoreLowered: true,
+    boundsProofRequired: true,
+    sliceViewZeroCopy: true,
+    iteratorLoweredToIndexCursor: true,
+    builderLoweredToContiguousInit: true,
+    literalTargetLowered: true,
+    noGrowthOnSet: true,
+  }
+}
+
+impl ArrayLowering {
+  pub fn hotPathReady(self: ArrayLowering) -> bool {
+    return self.fixedCapacityTracked
+      && self.contiguousStorageBacked
+      && self.directIndexLoadLowered
+      && self.directIndexStoreLowered
+      && self.boundsProofRequired
+      && self.sliceViewZeroCopy
+      && self.iteratorLoweredToIndexCursor
+      && self.builderLoweredToContiguousInit
+      && self.literalTargetLowered
+      && self.noGrowthOnSet
+  }
+}

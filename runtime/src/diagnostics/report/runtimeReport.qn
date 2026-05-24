@@ -1,0 +1,45 @@
+pub struct RuntimeReport {
+  eventCount: usize,
+  snapshotCount: usize,
+  schemaName: string,
+  incidentId: DeterministicIncidentId,
+  replay: ReplayArtifact,
+  privacy: ReportPrivacyPolicy,
+  dependsOnCompiler: bool,
+  emergencyBuffered: bool,
+  fatalBoundaryIncluded: bool,
+  recoverableFailuresIncluded: bool,
+  redacted: bool,
+  noCoredump: bool,
+}
+
+pub fn runtimeReport(eventCount: usize, snapshotCount: usize) -> RuntimeReport {
+  return RuntimeReport {
+    eventCount: eventCount,
+    snapshotCount: snapshotCount,
+    schemaName: "qtreport-json",
+    incidentId: DeterministicIncidentId.derive(1, 1, 1),
+    replay: replayArtifact(".qtreplay"),
+    privacy: reportPrivacyPolicy(),
+    dependsOnCompiler: false,
+    emergencyBuffered: true,
+    fatalBoundaryIncluded: true,
+    recoverableFailuresIncluded: true,
+    redacted: true,
+    noCoredump: true,
+  }
+}
+
+impl RuntimeReport {
+  pub fn isRuntimeOwned(self: RuntimeReport) -> bool {
+    return self.dependsOnCompiler == false
+      && self.incidentId.safe()
+      && self.replay.canReplayToTest()
+      && self.privacy.safe()
+      && self.emergencyBuffered
+      && self.fatalBoundaryIncluded
+      && self.recoverableFailuresIncluded
+      && self.redacted
+      && self.noCoredump
+  }
+}

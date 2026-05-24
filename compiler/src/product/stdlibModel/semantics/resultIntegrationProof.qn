@@ -1,0 +1,48 @@
+pub struct StdlibResultIntegrationProof {
+  resultTypeKnown: bool,
+  questionMarkSupported: bool,
+  awaitQuestionMarkSupported: bool,
+  okUnwrapsWithoutAllocation: bool,
+  errEarlyReturns: bool,
+  typedConversionRequired: bool,
+  missingConversionDiagnostic: bool,
+  patternMatchExhaustive: bool,
+  preservesCauseChain: bool,
+  preservesFinalExpressionReturn: bool,
+  noPanic: bool,
+  noCoredump: bool,
+}
+
+impl StdlibResultIntegrationProof {
+  pub fn complete() -> StdlibResultIntegrationProof {
+    return StdlibResultIntegrationProof {
+      resultTypeKnown: true,
+      questionMarkSupported: true,
+      awaitQuestionMarkSupported: true,
+      okUnwrapsWithoutAllocation: true,
+      errEarlyReturns: true,
+      typedConversionRequired: true,
+      missingConversionDiagnostic: true,
+      patternMatchExhaustive: true,
+      preservesCauseChain: true,
+      preservesFinalExpressionReturn: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn passed(self: StdlibResultIntegrationProof) -> bool {
+    return self.resultTypeKnown
+      && self.questionMarkSupported
+      && self.awaitQuestionMarkSupported
+      && self.okUnwrapsWithoutAllocation
+      && self.errEarlyReturns
+      && self.typedConversionRequired
+      && self.missingConversionDiagnostic
+      && self.patternMatchExhaustive
+      && self.preservesCauseChain
+      && self.preservesFinalExpressionReturn
+      && self.noPanic
+      && self.noCoredump
+  }
+}

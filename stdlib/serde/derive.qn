@@ -1,0 +1,67 @@
+pub enum DeriveKind {
+  Serialize
+  Deserialize
+  JsonCodec
+}
+
+pub enum DeriveEligibility {
+  Supported
+  UnsupportedResourceField
+  UnsupportedQuantumField
+  UnsupportedFunctionField
+  AmbiguousFieldPolicy
+}
+
+pub struct JsonCodecDerive {
+  typeName: string,
+  kind: DeriveKind,
+  format: SerdeFormat,
+  fieldCount: usize,
+  policy: SerdePolicy,
+  eligibility: DeriveEligibility,
+  metadataOwned: bool,
+  generatedSerialize: bool,
+  generatedDeserialize: bool,
+  noReflection: bool,
+  noDynamicTree: bool,
+  pathDiagnostics: bool,
+  precisionSafe: bool,
+  unsupportedTypeRejected: bool,
+  fieldPolicyChecked: bool,
+}
+
+impl JsonCodecDerive {
+  pub fn forType(typeName: string, kind: DeriveKind, fieldCount: usize) -> JsonCodecDerive {
+    return JsonCodecDerive {
+      typeName: typeName,
+      kind: kind,
+      format: SerdeFormat.Json,
+      fieldCount: fieldCount,
+      policy: SerdePolicy.jsonDefault(),
+      eligibility: DeriveEligibility.Supported,
+      metadataOwned: true,
+      generatedSerialize: kind == DeriveKind.Serialize || kind == DeriveKind.JsonCodec,
+      generatedDeserialize: kind == DeriveKind.Deserialize || kind == DeriveKind.JsonCodec,
+      noReflection: true,
+      noDynamicTree: true,
+      pathDiagnostics: true,
+      precisionSafe: true,
+      unsupportedTypeRejected: true,
+      fieldPolicyChecked: true,
+    }
+  }
+
+  pub fn accepted(self: JsonCodecDerive) -> bool {
+    return self.typeName != ""
+      && self.format == SerdeFormat.Json
+      && self.eligibility == DeriveEligibility.Supported
+      && self.metadataOwned
+      && self.noReflection
+      && self.noDynamicTree
+      && self.pathDiagnostics
+      && self.precisionSafe
+      && self.unsupportedTypeRejected
+      && self.fieldPolicyChecked
+      && (self.generatedSerialize || self.generatedDeserialize)
+  }
+}

@@ -1,0 +1,19 @@
+pub struct CachedDispatch {
+  callSiteId: u64,
+  methodPtr: u64,
+  resolvedBeforeLoop: bool,
+}
+
+pub fn cachedDispatch(callSiteId: u64, methodPtr: u64, resolvedBeforeLoop: bool) -> CachedDispatch {
+  return CachedDispatch {
+    callSiteId: callSiteId,
+    methodPtr: methodPtr,
+    resolvedBeforeLoop: resolvedBeforeLoop,
+  }
+}
+
+impl CachedDispatch {
+  pub fn isHotPathSafe(self: CachedDispatch) -> bool {
+    return self.methodPtr > 0 && self.resolvedBeforeLoop
+  }
+}

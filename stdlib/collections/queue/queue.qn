@@ -1,0 +1,264 @@
+pub struct Queue<T> {
+  items: Vec<T>,
+  head: usize,
+  tail: usize,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<T> Queue<T> {
+  pub fn init() -> Queue<T> {
+    return Queue<T> {
+      items: Vec<T>.empty(),
+      head: 0,
+      tail: 0,
+      len: 0,
+      capacity: 0,
+      generation: 0,
+    }
+  }
+
+  pub fn empty() -> Queue<T> {
+    return Queue<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Queue<T> requires(alloc) {
+    return Queue<T> {
+      items: Vec<T>.withCapacity(capacity),
+      head: 0,
+      tail: 0,
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn fromVec(items: Vec<T>) -> Queue<T> {
+    return Queue<T> {
+      items: items,
+      head: 0,
+      tail: items.len,
+      len: items.len,
+      capacity: items.capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> QueueBuilder<T> {
+    return QueueBuilder<T> { capacity: 0 }
+  }
+
+  pub fn len(self: Queue<T>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Queue<T>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Queue<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn physicalIndex(self: Queue<T>, logicalIndex: usize) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (self.head + logicalIndex) % self.capacity
+  }
+
+  pub fn push(self: Queue<T>, value: T) -> Queue<T> requires(alloc) {
+    let queue = self.ensureCapacityForPush()
+    let items = queue.writeTail(value)
+    return Queue<T> {
+      items: items,
+      head: queue.head,
+      tail: queue.nextTail(),
+      len: queue.len + 1,
+      capacity: queue.capacity,
+      generation: queue.generation + 1,
+    }
+  }
+
+  pub fn pushBack(self: Queue<T>, value: T) -> Queue<T> requires(alloc) {
+    return self.push(value)
+  }
+
+  pub fn pop(self: Queue<T>) -> (Queue<T>, Option<T>) {
+    if self.len == 0 {
+      return (self, None)
+    }
+    let value = self.items[self.head]
+    return (
+      Queue<T> {
+        items: self.items,
+        head: self.nextHead(),
+        tail: self.tail,
+        len: self.len - 1,
+        capacity: self.capacity,
+        generation: self.generation + 1,
+      },
+      Some(value)
+    )
+  }
+
+  pub fn popFront(self: Queue<T>) -> (Queue<T>, Option<T>) {
+    return self.pop()
+  }
+
+  pub fn peek(self: Queue<T>) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    return Some(self.items[self.head])
+  }
+
+  pub fn peekFront(self: Queue<T>) -> Option<T> {
+    return self.peek()
+  }
+
+  pub fn back(self: Queue<T>) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    return Some(self.items[self.physicalIndex(self.len - 1)])
+  }
+
+  pub fn clear(self: Queue<T>) -> Queue<T> requires(alloc) {
+    return Queue<T>.withCapacity(self.capacity).withGeneration(self.generation + 1)
+  }
+
+  pub fn iter(self: Queue<T>) -> QueueIter<T> {
+    return QueueIter<T> {
+      queue: self,
+      index: 0,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+
+  pub fn forEach(self: Queue<T>, action: fn(T) -> ()) -> () {
+    let mut index: usize = 0
+    while index < self.len {
+      action(self.items[self.physicalIndex(index)])
+      index = index + 1
+    }
+  }
+
+  pub fn find(self: Queue<T>, predicate: fn(T) -> bool) -> Option<T> {
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self.items[self.physicalIndex(index)]
+      if predicate(value) {
+        return Some(value)
+      }
+      index = index + 1
+    }
+    return None
+  }
+
+  pub fn countWhere(self: Queue<T>, predicate: fn(T) -> bool) -> usize {
+    let mut count: usize = 0
+    let mut index: usize = 0
+    while index < self.len {
+      if predicate(self.items[self.physicalIndex(index)]) {
+        count = count + 1
+      }
+      index = index + 1
+    }
+    return count
+  }
+
+  pub fn any(self: Queue<T>, predicate: fn(T) -> bool) -> bool {
+    let mut index: usize = 0
+    while index < self.len {
+      if predicate(self.items[self.physicalIndex(index)]) {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn all(self: Queue<T>, predicate: fn(T) -> bool) -> bool {
+    let mut index: usize = 0
+    while index < self.len {
+      if predicate(self.items[self.physicalIndex(index)]) == false {
+        return false
+      }
+      index = index + 1
+    }
+    return true
+  }
+
+  pub fn fold<U>(self: Queue<T>, initial: U, reducer: fn(U, T) -> U) -> U {
+    let mut total = initial
+    let mut index: usize = 0
+    while index < self.len {
+      total = reducer(total, self.items[self.physicalIndex(index)])
+      index = index + 1
+    }
+    return total
+  }
+
+  pub fn ensureCapacityForPush(self: Queue<T>) -> Queue<T> requires(alloc) {
+    if self.len < self.capacity {
+      return self
+    }
+    let nextCapacity = self.nextCapacity()
+    let mut items = Vec<T>.withCapacity(nextCapacity)
+    let mut index: usize = 0
+    while index < self.len {
+      items = items.push(self.items[self.physicalIndex(index)])
+      index = index + 1
+    }
+    return Queue<T> {
+      items: items,
+      head: 0,
+      tail: self.len,
+      len: self.len,
+      capacity: nextCapacity,
+      generation: self.generation,
+    }
+  }
+
+  pub fn writeTail(self: Queue<T>, value: T) -> Vec<T> requires(alloc) {
+    if self.tail >= self.items.len {
+      return self.items.push(value)
+    }
+    return self.items.set(self.tail, value)
+  }
+
+  pub fn nextCapacity(self: Queue<T>) -> usize {
+    if self.capacity == 0 {
+      return 16
+    }
+    return self.capacity * 2
+  }
+
+  pub fn nextHead(self: Queue<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (self.head + 1) % self.capacity
+  }
+
+  pub fn nextTail(self: Queue<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (self.tail + 1) % self.capacity
+  }
+
+  pub fn withGeneration(self: Queue<T>, generation: usize) -> Queue<T> {
+    return Queue<T> {
+      items: self.items,
+      head: self.head,
+      tail: self.tail,
+      len: self.len,
+      capacity: self.capacity,
+      generation: generation,
+    }
+  }
+}

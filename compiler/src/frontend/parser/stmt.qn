@@ -1,0 +1,18 @@
+pub struct StmtParse {
+  parsedStatements: usize,
+  errors: usize,
+}
+
+pub fn stmtParse(parsedStatements: usize, errors: usize) -> StmtParse {
+  return StmtParse { parsedStatements: parsedStatements, errors: errors }
+}
+
+impl StmtParse {
+  pub fn statementCount(self: StmtParse) -> usize {
+    return self.parsedStatements
+  }
+
+  pub fn errorCount(self: StmtParse) -> usize {
+    return self.errors
+  }
+}

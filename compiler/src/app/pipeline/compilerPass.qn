@@ -1,0 +1,5 @@
+pub interface CompilerPass {
+  pub fn name(self: &CompilerPass) -> string
+  pub fn phase(self: &CompilerPass) -> CompilePhase
+  pub fn run(self: &mut CompilerPass) -> bool
+}

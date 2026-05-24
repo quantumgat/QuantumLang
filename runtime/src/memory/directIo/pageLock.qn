@@ -1,0 +1,21 @@
+pub struct RuntimePageLock {
+  address: usize,
+  bytes: usize,
+  locked: bool,
+  releaseOnCancel: bool,
+}
+
+impl RuntimePageLock {
+  pub fn init(address: usize, bytes: usize, locked: bool, releaseOnCancel: bool) -> RuntimePageLock {
+    return RuntimePageLock {
+      address: address,
+      bytes: bytes,
+      locked: locked,
+      releaseOnCancel: releaseOnCancel,
+    }
+  }
+
+  pub fn accepted(self: RuntimePageLock) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.locked && self.releaseOnCancel
+  }
+}

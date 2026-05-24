@@ -1,0 +1,48 @@
+pub struct LinkedListLowering {
+  nodeIndexBacked: bool,
+  headTailDirect: bool,
+  pushFrontLoweredToNodeAllocAndHeadLink: bool,
+  pushBackLoweredToNodeAllocAndTailLink: bool,
+  popFrontLoweredToHeadUnlink: bool,
+  popBackLoweredToTailUnlink: bool,
+  iteratorLoweredToNodeCursor: bool,
+  toVecLoweredToCursorCopy: bool,
+  appendLoweredToCursorPushBack: bool,
+  tombstoneRemovalTracked: bool,
+  callableLoopsInlined: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn linkedListLowering() -> LinkedListLowering {
+  return LinkedListLowering {
+    nodeIndexBacked: true,
+    headTailDirect: true,
+    pushFrontLoweredToNodeAllocAndHeadLink: true,
+    pushBackLoweredToNodeAllocAndTailLink: true,
+    popFrontLoweredToHeadUnlink: true,
+    popBackLoweredToTailUnlink: true,
+    iteratorLoweredToNodeCursor: true,
+    toVecLoweredToCursorCopy: true,
+    appendLoweredToCursorPushBack: true,
+    tombstoneRemovalTracked: true,
+    callableLoopsInlined: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl LinkedListLowering {
+  pub fn hotPathReady(self: LinkedListLowering) -> bool {
+    return self.nodeIndexBacked
+      && self.headTailDirect
+      && self.pushFrontLoweredToNodeAllocAndHeadLink
+      && self.pushBackLoweredToNodeAllocAndTailLink
+      && self.popFrontLoweredToHeadUnlink
+      && self.popBackLoweredToTailUnlink
+      && self.iteratorLoweredToNodeCursor
+      && self.toVecLoweredToCursorCopy
+      && self.appendLoweredToCursorPushBack
+      && self.tombstoneRemovalTracked
+      && self.callableLoopsInlined
+      && self.boundsProofRequired
+  }
+}

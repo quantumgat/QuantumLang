@@ -1,0 +1,11 @@
+pub struct StdlibModExportAudit {
+  modulePath: string,
+  exportsOnly: bool,
+  implementationMoved: bool,
+}
+
+impl StdlibModExportAudit {
+  pub fn accepted(self: StdlibModExportAudit) -> bool {
+    return self.modulePath != "" && self.exportsOnly && self.implementationMoved
+  }
+}

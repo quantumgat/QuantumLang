@@ -1,0 +1,33 @@
+pub struct ReportPrivacyPolicy {
+  redactSecrets: bool,
+  redactPaths: bool,
+  redactEnv: bool,
+  redactCommandArgs: bool,
+  stableIdsOnly: bool,
+  rawPointersForbidden: bool,
+  productionSafe: bool,
+}
+
+pub fn reportPrivacyPolicy() -> ReportPrivacyPolicy {
+  return ReportPrivacyPolicy {
+    redactSecrets: true,
+    redactPaths: true,
+    redactEnv: true,
+    redactCommandArgs: true,
+    stableIdsOnly: true,
+    rawPointersForbidden: true,
+    productionSafe: true,
+  }
+}
+
+impl ReportPrivacyPolicy {
+  pub fn safe(self: ReportPrivacyPolicy) -> bool {
+    return self.redactSecrets
+      && self.redactPaths
+      && self.redactEnv
+      && self.redactCommandArgs
+      && self.stableIdsOnly
+      && self.rawPointersForbidden
+      && self.productionSafe
+  }
+}

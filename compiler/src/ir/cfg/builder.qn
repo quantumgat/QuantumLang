@@ -1,0 +1,15 @@
+pub struct CfgBuilderPlan {
+  sourceNode: u64,
+  blockCount: usize,
+  edgeCount: usize,
+}
+
+pub fn cfgBuilderPlan(sourceNode: u64, blockCount: usize, edgeCount: usize) -> CfgBuilderPlan {
+  return CfgBuilderPlan { sourceNode: sourceNode, blockCount: blockCount, edgeCount: edgeCount }
+}
+
+impl CfgBuilderPlan {
+  pub fn hasControlFlow(self: CfgBuilderPlan) -> bool {
+    return self.blockCount > 0 && self.edgeCount > 0
+  }
+}

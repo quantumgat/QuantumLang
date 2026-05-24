@@ -1,0 +1,23 @@
+pub struct WhileLetOptionNativeProof {
+  parserMirror: bool,
+  astMirror: bool,
+  typeBindingMirror: bool,
+  hirMirror: bool,
+  mirMirror: bool,
+  nativeLowering: NativeWhileLoopLowering,
+  unsupportedPatternDiagnostic: bool,
+  bootstrapExecutableCovered: bool,
+}
+
+impl WhileLetOptionNativeProof {
+  pub fn complete(self: WhileLetOptionNativeProof) -> bool {
+    return self.parserMirror
+      && self.astMirror
+      && self.typeBindingMirror
+      && self.hirMirror
+      && self.mirMirror
+      && self.nativeLowering.whileLetOptionDirect()
+      && self.unsupportedPatternDiagnostic
+      && self.bootstrapExecutableCovered
+  }
+}

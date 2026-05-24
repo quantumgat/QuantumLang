@@ -1,0 +1,6 @@
+[module]
+name = "interface"
+visibility = "internal"
+owner = "qtlc"
+role = "oop-class-interface-polymorphism-class-kind"
+root = "mod.qn"

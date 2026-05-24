@@ -1,0 +1,21 @@
+pub struct ProofExplanation {
+  rule: string,
+  reason: string,
+  range: SourceRange,
+  userVisible: bool,
+}
+
+impl ProofExplanation {
+  pub fn init(rule: string, reason: string, range: SourceRange) -> ProofExplanation {
+    return ProofExplanation {
+      rule: rule,
+      reason: reason,
+      range: range,
+      userVisible: true,
+    }
+  }
+
+  pub fn publishable(self: ProofExplanation) -> bool {
+    return self.rule != "" && self.reason != "" && self.range.exact() && self.userVisible
+  }
+}

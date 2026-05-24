@@ -1,0 +1,37 @@
+pub enum EffectKind {
+  Pure
+  Alloc
+  Io
+  Blocking
+  Panic
+  Unsafe
+  Quantum
+}
+
+pub struct EffectFact {
+  node: u64,
+  kind: EffectKind,
+  capability: string,
+}
+
+pub fn effectFact(node: u64, kind: EffectKind, capability: string) -> EffectFact {
+  return EffectFact { node: node, kind: kind, capability: capability }
+}
+
+impl EffectFact {
+  pub fn nodeId(self: EffectFact) -> u64 {
+    return self.node
+  }
+
+  pub fn effectKind(self: EffectFact) -> EffectKind {
+    return self.kind
+  }
+
+  pub fn requiredCapability(self: EffectFact) -> string {
+    return self.capability
+  }
+
+  pub fn isPure(self: EffectFact) -> bool {
+    return self.kind == EffectKind.Pure
+  }
+}

@@ -1,0 +1,42 @@
+pub enum InterpolationParseDiagnostic {
+  None
+  UnclosedInterpolation
+  UnmatchedClosingBrace
+  EmptyExpression
+  InvalidFormatSpecifier
+  InvalidPrecision
+  InvalidZeroPadding
+}
+
+pub struct InterpolatedStringParse {
+  segmentCount: usize,
+  expressionCount: usize,
+  escapedBraceCount: usize,
+  diagnostic: InterpolationParseDiagnostic,
+}
+
+pub fn interpolatedStringParse(
+  segmentCount: usize,
+  expressionCount: usize,
+  escapedBraceCount: usize,
+  diagnostic: InterpolationParseDiagnostic,
+) -> InterpolatedStringParse {
+  return InterpolatedStringParse {
+    segmentCount: segmentCount,
+    expressionCount: expressionCount,
+    escapedBraceCount: escapedBraceCount,
+    diagnostic: diagnostic,
+  }
+}
+
+impl InterpolatedStringParse {
+  pub fn acceptsInterpolation(self: InterpolatedStringParse) -> bool {
+    return self.diagnostic == InterpolationParseDiagnostic.None
+      && self.segmentCount > 0
+  }
+
+  pub fn preservesEscapedBraces(self: InterpolatedStringParse) -> bool {
+    return self.escapedBraceCount > 0
+      || self.diagnostic == InterpolationParseDiagnostic.None
+  }
+}

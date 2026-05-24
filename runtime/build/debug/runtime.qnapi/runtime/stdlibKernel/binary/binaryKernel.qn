@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct BinaryKernel {
+  cursorNoAllocation: bool
+  writerBorrowedBuffer: bool
+  writerChainNoAllocation: bool
+  cursorLinearState: bool
+  fixedWidthI8ToI256: bool
+  endianChecked: bool
+  diagnosticsNoCoredump: bool
+}

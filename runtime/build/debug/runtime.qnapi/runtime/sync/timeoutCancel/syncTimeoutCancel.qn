@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeSyncTimeoutCancel {
+  waitToken: WaitToken
+  deadlineMillis: u64
+  cancellationTokenId: u64
+  cleanupRegistered: bool
+}

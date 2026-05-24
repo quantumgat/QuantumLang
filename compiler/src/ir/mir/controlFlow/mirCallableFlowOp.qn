@@ -1,0 +1,26 @@
+pub enum MirCallableFlowOpKind {
+  DirectInlineCall
+  EnvironmentLoadCall
+  AsyncCallablePoll
+  CallableObjectCall
+  MethodReferenceCall
+}
+
+pub struct MirCallableFlowOp {
+  instruction: u64,
+  kind: MirCallableFlowOpKind,
+  allocationFree: bool,
+  callInlined: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirCallableFlowOp {
+  pub fn hotLowerable(self: MirCallableFlowOp) -> bool {
+    return self.instruction > 0
+      && self.allocationFree
+      && self.callInlined
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

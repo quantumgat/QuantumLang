@@ -1,0 +1,189 @@
+/**
+  Access mode for direct I/O requests.
+
+  example:
+    let mode = DirectIoAccess.ReadWrite
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: safe value tag
+  stability: public since 0.1
+*/
+pub enum DirectIoAccess {
+  Read,
+  Write,
+  ReadWrite,
+}
+
+/**
+  Direct I/O alignment requirements for address, offset, and length.
+
+  example:
+    let alignment = DirectIoAlignment(4096, 4096, 4096)
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: accepted only when every required alignment is non-zero
+  stability: public since 0.1
+*/
+pub struct DirectIoAlignment {
+  addressAlignment: usize,
+  offsetAlignment: usize,
+  lengthAlignment: usize,
+}
+
+/**
+  Buffer shape accepted for direct I/O.
+
+  example:
+    let buffer = PinnedIoBuffer<User>(addr, bytes, true, true, true)
+
+  effects: pure metadata
+  complexity: O(1)
+  allocation: none
+  safety: requires aligned, pinned, and page-locked memory
+  stability: public since 0.1
+*/
+pub struct PinnedIoBuffer<T> {
+  address: usize,
+  bytes: usize,
+  aligned: bool,
+  pinned: bool,
+  pageLocked: bool,
+}
+
+/**
+  Page-lock lease for I/O memory.
+
+  example:
+    let lock = PageLock(addr, bytes, true, true)
+
+  effects: runtime page-lock metadata
+  complexity: O(1)
+  allocation: none
+  safety: cancellation must release the lock
+  stability: public since 0.1
+*/
+pub struct PageLock {
+  address: usize,
+  bytes: usize,
+  locked: bool,
+  releaseOnCancel: bool,
+}
+
+/**
+  Direct I/O request with cancellation-safe cleanup.
+
+  example:
+    let request = DirectIoRequest(buffer, DirectIoAccess.Read, 0, bytes, true)
+
+  effects: describes a direct I/O operation
+  complexity: O(1)
+  allocation: none
+  safety: requires an accepted pinned buffer and cleanup on cancellation
+  stability: public since 0.1
+*/
+pub struct DirectIoRequest<T> {
+  buffer: PinnedIoBuffer<T>,
+  access: DirectIoAccess,
+  fileOffset: u64,
+  bytes: usize,
+  cancellationCleanup: bool,
+}
+
+/**
+  Direct I/O completion preserving partial progress and cleanup state.
+
+  example:
+    let done = DirectIoCompletion(4096, 2048, true, true)
+
+  effects: pure result metadata
+  complexity: O(1)
+  allocation: none
+  safety: partial errors must keep completed byte count
+  stability: public since 0.1
+*/
+pub struct DirectIoCompletion {
+  requestedBytes: usize,
+  completedBytes: usize,
+  partialErrorPreserved: bool,
+  cleanupComplete: bool,
+}
+
+impl DirectIoAlignment {
+  pub fn init(addressAlignment: usize, offsetAlignment: usize, lengthAlignment: usize) -> DirectIoAlignment {
+    return DirectIoAlignment {
+      addressAlignment: addressAlignment,
+      offsetAlignment: offsetAlignment,
+      lengthAlignment: lengthAlignment,
+    }
+  }
+
+  pub fn accepted(self: DirectIoAlignment) -> bool {
+    return self.addressAlignment > 0 && self.offsetAlignment > 0 && self.lengthAlignment > 0
+  }
+}
+
+impl<T> PinnedIoBuffer<T> {
+  pub fn init(address: usize, bytes: usize, aligned: bool, pinned: bool, pageLocked: bool) -> PinnedIoBuffer<T> {
+    return PinnedIoBuffer<T> {
+      address: address,
+      bytes: bytes,
+      aligned: aligned,
+      pinned: pinned,
+      pageLocked: pageLocked,
+    }
+  }
+
+  pub fn accepted(self: PinnedIoBuffer<T>) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.aligned && self.pinned && self.pageLocked
+  }
+}
+
+impl PageLock {
+  pub fn init(address: usize, bytes: usize, locked: bool, releaseOnCancel: bool) -> PageLock {
+    return PageLock {
+      address: address,
+      bytes: bytes,
+      locked: locked,
+      releaseOnCancel: releaseOnCancel,
+    }
+  }
+
+  pub fn accepted(self: PageLock) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.locked && self.releaseOnCancel
+  }
+}
+
+impl<T> DirectIoRequest<T> {
+  pub fn init(buffer: PinnedIoBuffer<T>, access: DirectIoAccess, fileOffset: u64, bytes: usize, cancellationCleanup: bool) -> DirectIoRequest<T> {
+    return DirectIoRequest<T> {
+      buffer: buffer,
+      access: access,
+      fileOffset: fileOffset,
+      bytes: bytes,
+      cancellationCleanup: cancellationCleanup,
+    }
+  }
+
+  pub fn accepted(self: DirectIoRequest<T>) -> bool {
+    return self.buffer.accepted() && self.bytes > 0 && self.cancellationCleanup
+  }
+}
+
+impl DirectIoCompletion {
+  pub fn init(requestedBytes: usize, completedBytes: usize, partialErrorPreserved: bool, cleanupComplete: bool) -> DirectIoCompletion {
+    return DirectIoCompletion {
+      requestedBytes: requestedBytes,
+      completedBytes: completedBytes,
+      partialErrorPreserved: partialErrorPreserved,
+      cleanupComplete: cleanupComplete,
+    }
+  }
+
+  pub fn accepted(self: DirectIoCompletion) -> bool {
+    return self.completedBytes <= self.requestedBytes && self.partialErrorPreserved && self.cleanupComplete
+  }
+}

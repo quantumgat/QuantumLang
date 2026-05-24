@@ -1,0 +1,97 @@
+pub struct JsonEncodePlan {
+  directWriter: bool,
+  exactSizeWhenPossible: bool,
+  generatedPerType: bool,
+  exactNumbers: bool,
+  rejectNonFiniteNumbers: bool,
+  deterministicObjectOrder: bool,
+  escapeStrings: bool,
+}
+
+pub struct JsonWriter {
+  bytesWritten: usize,
+  pretty: bool,
+  valid: bool,
+}
+
+impl JsonEncodePlan {
+  pub fn default() -> JsonEncodePlan {
+    return JsonEncodePlan {
+      directWriter: true,
+      exactSizeWhenPossible: true,
+      generatedPerType: true,
+      exactNumbers: true,
+      rejectNonFiniteNumbers: true,
+      deterministicObjectOrder: true,
+      escapeStrings: true,
+    }
+  }
+
+  pub fn pretty() -> JsonEncodePlan {
+    return JsonEncodePlan {
+      directWriter: true,
+      exactSizeWhenPossible: true,
+      generatedPerType: true,
+      exactNumbers: true,
+      rejectNonFiniteNumbers: true,
+      deterministicObjectOrder: true,
+      escapeStrings: true,
+    }
+  }
+
+  pub fn hotPathReady(self: JsonEncodePlan) -> bool {
+    return self.directWriter
+      && self.generatedPerType
+      && self.exactNumbers
+      && self.rejectNonFiniteNumbers
+      && self.escapeStrings
+  }
+}
+
+impl JsonWriter {
+  pub fn init() -> JsonWriter {
+    return JsonWriter {
+      bytesWritten: 0,
+      pretty: false,
+      valid: true,
+    }
+  }
+
+  pub fn pretty() -> JsonWriter {
+    return JsonWriter {
+      bytesWritten: 0,
+      pretty: true,
+      valid: true,
+    }
+  }
+
+  pub fn writeValue(self: JsonWriter, value: JsonValue) -> Result<JsonWriter, JsonError> {
+    return jsonWriteValueKernel(self, value, JsonEncodePlan.default())
+  }
+
+  pub fn finish(self: JsonWriter) -> Result<Bytes, JsonError> {
+    return jsonFinishWriterKernel(self)
+  }
+}
+
+pub fn encodeValue(value: JsonValue) -> Result<Bytes, JsonError> {
+  let writer = JsonWriter.init().writeValue(value)?
+  return writer.finish()
+}
+
+pub fn encodeValue(value: JsonValue, plan: JsonEncodePlan) -> Result<Bytes, JsonError> {
+  let writer = jsonWriteValueKernel(JsonWriter.init(), value, plan)?
+  return writer.finish()
+}
+
+pub fn writeValue(writer: JsonWriter, value: JsonValue) -> Result<JsonWriter, JsonError> {
+  return jsonWriteValueKernel(writer, value, JsonEncodePlan.default())
+}
+
+pub fn sizeValue(value: JsonValue) -> Result<usize, JsonError> {
+  return jsonMeasureValueKernel(value, JsonEncodePlan.default())
+}
+
+fn jsonWriteValueKernel(writer: JsonWriter, value: JsonValue, plan: JsonEncodePlan) -> Result<JsonWriter, JsonError>
+fn jsonFinishWriterKernel(writer: JsonWriter) -> Result<Bytes, JsonError>
+fn jsonMeasureValueKernel(value: JsonValue, plan: JsonEncodePlan) -> Result<usize, JsonError>

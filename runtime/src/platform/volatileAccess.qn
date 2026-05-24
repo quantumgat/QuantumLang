@@ -1,0 +1,21 @@
+pub struct RuntimeVolatileAccess {
+  ordered: bool,
+  widthBytes: usize,
+  targetCapable: bool,
+  unsafeCapabilityChecked: bool,
+}
+
+impl RuntimeVolatileAccess {
+  pub fn init(ordered: bool, widthBytes: usize, targetCapable: bool, unsafeCapabilityChecked: bool) -> RuntimeVolatileAccess {
+    return RuntimeVolatileAccess {
+      ordered: ordered,
+      widthBytes: widthBytes,
+      targetCapable: targetCapable,
+      unsafeCapabilityChecked: unsafeCapabilityChecked,
+    }
+  }
+
+  pub fn accepted(self: RuntimeVolatileAccess) -> bool {
+    return self.ordered && self.widthBytes > 0 && self.targetCapable && self.unsafeCapabilityChecked
+  }
+}

@@ -1,0 +1,23 @@
+pub struct AbiCall {
+  symbolName: string,
+  requiresCapability: bool,
+  blocking: bool,
+  allocates: bool,
+  returnsHandle: bool,
+}
+
+pub fn abiCall(symbolName: string) -> AbiCall {
+  return AbiCall {
+    symbolName: symbolName,
+    requiresCapability: false,
+    blocking: false,
+    allocates: false,
+    returnsHandle: false,
+  }
+}
+
+impl AbiCall {
+  pub fn isRuntimePure(self) -> bool {
+    return self.blocking == false && self.allocates == false
+  }
+}

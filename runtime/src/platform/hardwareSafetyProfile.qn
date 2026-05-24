@@ -1,0 +1,37 @@
+pub struct HardwareSafetyProfile {
+  cheriCapability: bool,
+  armMemoryTagging: bool,
+  armPointerAuthentication: bool,
+  x86MemoryProtectionKey: bool,
+  wasmBounds: bool,
+  softwareFallbackInstrumentation: bool,
+}
+
+impl HardwareSafetyProfile {
+  pub fn init(
+    cheriCapability: bool,
+    armMemoryTagging: bool,
+    armPointerAuthentication: bool,
+    x86MemoryProtectionKey: bool,
+    wasmBounds: bool,
+    softwareFallbackInstrumentation: bool,
+  ) -> HardwareSafetyProfile {
+    return HardwareSafetyProfile {
+      cheriCapability: cheriCapability,
+      armMemoryTagging: armMemoryTagging,
+      armPointerAuthentication: armPointerAuthentication,
+      x86MemoryProtectionKey: x86MemoryProtectionKey,
+      wasmBounds: wasmBounds,
+      softwareFallbackInstrumentation: softwareFallbackInstrumentation,
+    }
+  }
+
+  pub fn hasHardwareOrFallback(self: HardwareSafetyProfile) -> bool {
+    return self.cheriCapability ||
+      self.armMemoryTagging ||
+      self.armPointerAuthentication ||
+      self.x86MemoryProtectionKey ||
+      self.wasmBounds ||
+      self.softwareFallbackInstrumentation
+  }
+}

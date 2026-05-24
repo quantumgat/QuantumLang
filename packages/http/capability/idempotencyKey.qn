@@ -1,0 +1,21 @@
+pub struct IdempotencyKey {
+  value: string,
+  replay: bool,
+}
+
+impl IdempotencyKey {
+  pub fn init(value: string, replay: bool) -> IdempotencyKey {
+    return IdempotencyKey {
+      value: value,
+      replay: replay,
+    }
+  }
+
+  pub fn value(self: IdempotencyKey) -> string {
+    return self.value
+  }
+
+  pub fn replay(self: IdempotencyKey) -> bool {
+    return self.replay
+  }
+}

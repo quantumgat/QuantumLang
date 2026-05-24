@@ -1,0 +1,63 @@
+pub struct BsonMongoAllTypesRoundTripProof {
+  encodeFixture: string,
+  decodeFixture: string,
+  mongoModeOnly: bool,
+  canonicalWideIntegerStrings: bool,
+  canonicalHugeFloatStrings: bool,
+  bigNumberStringCarriers: bool,
+  complexDocumentCarriers: bool,
+  binaryCarrier: bool,
+  objectIdCarrier: bool,
+  dateTimeCarrier: bool,
+  decimal128Carrier: bool,
+  nestedDocumentCarrier: bool,
+  arrayCarrier: bool,
+  optionNullCarrier: bool,
+  resultDocumentCarrier: bool,
+  toBsonFromBsonPolicy: bool,
+  generatedExecutableRequired: bool,
+}
+
+impl BsonMongoAllTypesRoundTripProof {
+  pub fn required() -> BsonMongoAllTypesRoundTripProof {
+    return BsonMongoAllTypesRoundTripProof {
+      encodeFixture: "qtlc/tests/fixtures/bson_encode_full_type_parity_ok.qn",
+      decodeFixture: "qtlc/tests/fixtures/bson_typed_materialization_all_types_ok.qn",
+      mongoModeOnly: true,
+      canonicalWideIntegerStrings: true,
+      canonicalHugeFloatStrings: true,
+      bigNumberStringCarriers: true,
+      complexDocumentCarriers: true,
+      binaryCarrier: true,
+      objectIdCarrier: true,
+      dateTimeCarrier: true,
+      decimal128Carrier: true,
+      nestedDocumentCarrier: true,
+      arrayCarrier: true,
+      optionNullCarrier: true,
+      resultDocumentCarrier: true,
+      toBsonFromBsonPolicy: true,
+      generatedExecutableRequired: true,
+    }
+  }
+
+  pub fn accepted(self: BsonMongoAllTypesRoundTripProof) -> bool {
+    return self.encodeFixture == "qtlc/tests/fixtures/bson_encode_full_type_parity_ok.qn"
+      && self.decodeFixture == "qtlc/tests/fixtures/bson_typed_materialization_all_types_ok.qn"
+      && self.mongoModeOnly
+      && self.canonicalWideIntegerStrings
+      && self.canonicalHugeFloatStrings
+      && self.bigNumberStringCarriers
+      && self.complexDocumentCarriers
+      && self.binaryCarrier
+      && self.objectIdCarrier
+      && self.dateTimeCarrier
+      && self.decimal128Carrier
+      && self.nestedDocumentCarrier
+      && self.arrayCarrier
+      && self.optionNullCarrier
+      && self.resultDocumentCarrier
+      && self.toBsonFromBsonPolicy
+      && self.generatedExecutableRequired
+  }
+}

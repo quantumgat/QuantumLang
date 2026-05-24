@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum TryResultSafeFailureKind {
+  InvalidCarrier
+  ReturnTypeMismatch
+  MissingConversion
+  AsyncViolation
+}
+pub struct TryResultSafeFailure {
+  kind: TryResultSafeFailureKind
+  sourceRangeReady: bool
+  fixitReady: bool
+  noCoredump: bool
+  recoverable: bool
+}

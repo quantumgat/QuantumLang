@@ -1,0 +1,221 @@
+pub enum AstMatchPatternKind {
+  Wildcard
+  Binding
+  Literal
+  MultiLiteral
+  Range
+  OpenRange
+  Bool
+  EnumVariant
+  EnumPayload
+  OptionSome
+  OptionNone
+  ResultOk
+  ResultErr
+  UnionType
+  AnyType
+  QAnyType
+  Tuple
+  StructFull
+  StructPartial
+  Nested
+  RestFields
+  Guard
+  MultiGuard
+  ListEmpty
+  ListFixed
+  ListHeadTail
+  ListPrefix
+  StringLiteral
+  StringPrefixSuffix
+  BinaryPrefix
+  AsyncResult
+  ChannelReceive
+  ActorMessage
+}
+
+pub struct AstMatchPattern {
+  node: AstNode,
+  kind: AstMatchPatternKind,
+  bindingCount: usize,
+  nestedDepth: usize,
+  guardPresent: bool,
+  executableCovered: bool,
+  directHotPath: bool,
+}
+
+pub enum AstMatchArmBodyKind {
+  Expression
+  StatementBlock
+  FinalExpressionReturn
+  MultiStatement
+}
+
+pub struct AstMatchArm {
+  node: AstNode,
+  pattern: AstMatchPattern,
+  bodyNode: AstNode,
+  guardNode: AstNode,
+  bodyKind: AstMatchArmBodyKind,
+  defaultArm: bool,
+  sourceRangeReady: bool,
+}
+
+pub struct AstMatchExpr {
+  node: AstNode,
+  scrutineeNode: AstNode,
+  firstArm: AstMatchArm,
+  armCount: usize,
+  patternCount: usize,
+  guardCount: usize,
+  defaultArmPresent: bool,
+  expressionForm: bool,
+  sourceRangeReady: bool,
+}
+
+pub fn astMatchPattern(
+  node: AstNode,
+  kind: AstMatchPatternKind,
+  bindingCount: usize,
+  nestedDepth: usize,
+  guardPresent: bool,
+  executableCovered: bool,
+  directHotPath: bool,
+) -> AstMatchPattern {
+  return AstMatchPattern {
+    node: node,
+    kind: kind,
+    bindingCount: bindingCount,
+    nestedDepth: nestedDepth,
+    guardPresent: guardPresent,
+    executableCovered: executableCovered,
+    directHotPath: directHotPath,
+  }
+}
+
+pub fn astMatchArm(
+  node: AstNode,
+  pattern: AstMatchPattern,
+  bodyNode: AstNode,
+  guardNode: AstNode,
+  bodyKind: AstMatchArmBodyKind,
+  defaultArm: bool,
+  sourceRangeReady: bool,
+) -> AstMatchArm {
+  return AstMatchArm {
+    node: node,
+    pattern: pattern,
+    bodyNode: bodyNode,
+    guardNode: guardNode,
+    bodyKind: bodyKind,
+    defaultArm: defaultArm,
+    sourceRangeReady: sourceRangeReady,
+  }
+}
+
+pub fn astMatchExpr(
+  node: AstNode,
+  scrutineeNode: AstNode,
+  firstArm: AstMatchArm,
+  armCount: usize,
+  patternCount: usize,
+  guardCount: usize,
+  defaultArmPresent: bool,
+  expressionForm: bool,
+  sourceRangeReady: bool,
+) -> AstMatchExpr {
+  return AstMatchExpr {
+    node: node,
+    scrutineeNode: scrutineeNode,
+    firstArm: firstArm,
+    armCount: armCount,
+    patternCount: patternCount,
+    guardCount: guardCount,
+    defaultArmPresent: defaultArmPresent,
+    expressionForm: expressionForm,
+    sourceRangeReady: sourceRangeReady,
+  }
+}
+
+pub fn buildAstMatchExpr(
+  node: AstNode,
+  scrutineeNode: AstNode,
+  firstArm: AstMatchArm,
+  armCount: usize,
+  patternCount: usize,
+  guardCount: usize,
+  defaultArmPresent: bool,
+  expressionForm: bool,
+) -> AstMatchExpr {
+  return astMatchExpr(
+    node,
+    scrutineeNode,
+    firstArm,
+    armCount,
+    patternCount,
+    guardCount,
+    defaultArmPresent,
+    expressionForm,
+    node.nodeId() > 0 && scrutineeNode.nodeId() > 0 && firstArm.complete()
+  )
+}
+
+impl AstMatchPattern {
+  pub fn bindsValues(self: AstMatchPattern) -> bool {
+    return self.bindingCount > 0
+  }
+
+  pub fn advanced(self: AstMatchPattern) -> bool {
+    return self.nestedDepth > 1 || self.guardPresent
+  }
+
+  pub fn executableHotPathReady(self: AstMatchPattern) -> bool {
+    return self.executableCovered
+      && self.directHotPath
+      && self.bindingCount >= 0
+  }
+}
+
+impl AstMatchArm {
+  pub fn complete(self: AstMatchArm) -> bool {
+    return self.node.nodeId() > 0
+      && self.pattern.executableHotPathReady()
+      && self.bodyNode.nodeId() > 0
+      && self.sourceRangeReady
+  }
+
+  pub fn guarded(self: AstMatchArm) -> bool {
+    return self.guardNode.nodeId() > 0
+  }
+}
+
+impl AstMatchExpr {
+  pub fn nodeId(self: AstMatchExpr) -> u64 {
+    return self.node.nodeId()
+  }
+
+  pub fn armTotal(self: AstMatchExpr) -> usize {
+    return self.armCount
+  }
+
+  pub fn firstArmComplete(self: AstMatchExpr) -> bool {
+    return self.firstArm.complete()
+  }
+
+  pub fn complete(self: AstMatchExpr) -> bool {
+    return self.node.nodeId() > 0
+      && self.scrutineeNode.nodeId() > 0
+      && self.firstArm.complete()
+      && self.armCount > 0
+      && self.patternCount >= self.armCount
+      && self.sourceRangeReady
+  }
+
+  pub fn exhaustiveCandidate(self: AstMatchExpr) -> bool {
+    return self.defaultArmPresent || self.armCount > 1
+  }
+
+  pub fn executableSourceMapped(self: AstMatchExpr) -> bool {
+    return self.complete() && self.firstArm.sourceRangeReady
+  }
+}

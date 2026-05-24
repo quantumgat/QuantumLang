@@ -1,0 +1,19 @@
+pub struct SealedClassKindPolicyFact {
+  ownerId: u64,
+  permittedSubtypeSetBound: bool,
+  externalSubtypeRejected: bool,
+  exhaustiveMatchBound: bool,
+  dispatchSetClosed: bool,
+  sourceMapBound: bool,
+}
+
+impl SealedClassKindPolicyFact {
+  pub fn complete(self: SealedClassKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.permittedSubtypeSetBound
+      && self.externalSubtypeRejected
+      && self.exhaustiveMatchBound
+      && self.dispatchSetClosed
+      && self.sourceMapBound
+  }
+}

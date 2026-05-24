@@ -1,0 +1,37 @@
+pub struct PointerE2eExecutionFact {
+  fixture: string,
+  positiveExecutableCovered: bool,
+  negativeDiagnosticsCovered: bool,
+  nativeLoweringCovered: bool,
+  runtimeTraceCovered: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl PointerE2eExecutionFact {
+  pub fn init(
+    fixture: string,
+    positiveExecutableCovered: bool,
+    negativeDiagnosticsCovered: bool,
+    nativeLoweringCovered: bool,
+    runtimeTraceCovered: bool,
+    noCoredumpDiagnostic: bool,
+  ) -> PointerE2eExecutionFact {
+    return PointerE2eExecutionFact {
+      fixture: fixture,
+      positiveExecutableCovered: positiveExecutableCovered,
+      negativeDiagnosticsCovered: negativeDiagnosticsCovered,
+      nativeLoweringCovered: nativeLoweringCovered,
+      runtimeTraceCovered: runtimeTraceCovered,
+      noCoredumpDiagnostic: noCoredumpDiagnostic,
+    }
+  }
+
+  pub fn accepted(self: PointerE2eExecutionFact) -> bool {
+    return self.fixture != ""
+      && self.positiveExecutableCovered
+      && self.negativeDiagnosticsCovered
+      && self.nativeLoweringCovered
+      && self.runtimeTraceCovered
+      && self.noCoredumpDiagnostic
+  }
+}

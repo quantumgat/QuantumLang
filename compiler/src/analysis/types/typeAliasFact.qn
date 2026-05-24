@@ -1,0 +1,60 @@
+pub enum TypeAliasResolutionKind {
+  Direct
+  Generic
+  HttpContext
+  TraitAliasHandledByTraitModel
+}
+
+pub struct TypeAliasFact {
+  aliasSymbol: u64,
+  targetSymbol: u64,
+  kind: TypeAliasResolutionKind,
+  genericParameterCount: usize,
+  targetArgumentCount: usize,
+  recursive: bool,
+  resolved: bool,
+  erasesAtRuntime: bool,
+}
+
+pub fn typeAliasFact(
+  aliasSymbol: u64,
+  targetSymbol: u64,
+  kind: TypeAliasResolutionKind,
+  genericParameterCount: usize,
+  targetArgumentCount: usize,
+  recursive: bool,
+  resolved: bool,
+  erasesAtRuntime: bool,
+) -> TypeAliasFact {
+  return TypeAliasFact {
+    aliasSymbol: aliasSymbol,
+    targetSymbol: targetSymbol,
+    kind: kind,
+    genericParameterCount: genericParameterCount,
+    targetArgumentCount: targetArgumentCount,
+    recursive: recursive,
+    resolved: resolved,
+    erasesAtRuntime: erasesAtRuntime,
+  }
+}
+
+impl TypeAliasFact {
+  pub fn accepted(self: TypeAliasFact) -> bool {
+    return self.aliasSymbol > 0
+      && self.targetSymbol > 0
+      && self.resolved
+      && !self.recursive
+      && self.erasesAtRuntime
+  }
+
+  pub fn generic(self: TypeAliasFact) -> bool {
+    return self.kind == TypeAliasResolutionKind.Generic
+      || self.genericParameterCount > 0
+  }
+
+  pub fn httpContextAlias(self: TypeAliasFact) -> bool {
+    return self.kind == TypeAliasResolutionKind.HttpContext
+      && self.targetArgumentCount > 0
+      && self.erasesAtRuntime
+  }
+}

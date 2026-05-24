@@ -1,0 +1,19 @@
+pub struct DirectIoCancellationFact {
+  cleanupRegistered: bool,
+  pageLockReleased: bool,
+  bufferUnpinned: bool,
+}
+
+impl DirectIoCancellationFact {
+  pub fn init(cleanupRegistered: bool, pageLockReleased: bool, bufferUnpinned: bool) -> DirectIoCancellationFact {
+    return DirectIoCancellationFact {
+      cleanupRegistered: cleanupRegistered,
+      pageLockReleased: pageLockReleased,
+      bufferUnpinned: bufferUnpinned,
+    }
+  }
+
+  pub fn accepted(self: DirectIoCancellationFact) -> bool {
+    return self.cleanupRegistered && self.pageLockReleased && self.bufferUnpinned
+  }
+}

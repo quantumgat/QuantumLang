@@ -1,0 +1,48 @@
+pub enum HirMathKernelHandoffKind {
+  ExactNumeric
+  Decimal
+  BigInt
+  BigUint
+  Complex
+  Simd
+  Field
+}
+
+pub struct HirMathKernelHandoff {
+  kind: HirMathKernelHandoffKind,
+  sourceSymbol: string,
+  canonicalSymbol: string,
+  stdlibSymbolResolved: bool,
+  primitiveOperatorResolved: bool,
+  extensionMethodErased: bool,
+  runtimeKernelResolved: bool,
+  diagnosticAttached: bool,
+  mirReady: bool,
+}
+
+impl HirMathKernelHandoff {
+  pub fn resolved(kind: HirMathKernelHandoffKind, sourceSymbol: string, canonicalSymbol: string) -> HirMathKernelHandoff {
+    return HirMathKernelHandoff {
+      kind: kind,
+      sourceSymbol: sourceSymbol,
+      canonicalSymbol: canonicalSymbol,
+      stdlibSymbolResolved: true,
+      primitiveOperatorResolved: true,
+      extensionMethodErased: true,
+      runtimeKernelResolved: true,
+      diagnosticAttached: true,
+      mirReady: true,
+    }
+  }
+
+  pub fn accepted(self: HirMathKernelHandoff) -> bool {
+    return self.sourceSymbol != ""
+      && self.canonicalSymbol != ""
+      && self.stdlibSymbolResolved
+      && self.primitiveOperatorResolved
+      && self.extensionMethodErased
+      && self.runtimeKernelResolved
+      && self.diagnosticAttached
+      && self.mirReady
+  }
+}

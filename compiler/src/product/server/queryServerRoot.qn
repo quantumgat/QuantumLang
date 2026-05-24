@@ -1,0 +1,25 @@
+pub class QueryServer {
+  workspaceRoot: string,
+  ownsSession: bool,
+  routesQueries: bool,
+  ownsTypeChecking: bool,
+  running: bool,
+
+  pub init(workspaceRoot: string) {
+    self.workspaceRoot = workspaceRoot
+    self.ownsSession = true
+    self.routesQueries = true
+    self.ownsTypeChecking = false
+    self.running = false
+  }
+
+  pub fn start(self: &mut QueryServer) -> bool {
+    self.running = true
+    return self.running
+  }
+
+  pub fn shutdown(self: &mut QueryServer) -> bool {
+    self.running = false
+    return self.running == false
+  }
+}

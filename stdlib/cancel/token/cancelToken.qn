@@ -1,0 +1,19 @@
+pub struct CancelToken {
+  id: u64,
+  parentId: u64,
+  cancelled: bool,
+}
+
+impl CancelToken {
+  pub fn child(self: CancelToken) -> CancelToken
+
+  pub fn cancel(self: CancelToken) -> Result<Unit, CancelError>
+
+  pub fn isCancelled(self: CancelToken) -> bool {
+    return self.cancelled
+  }
+
+  pub fn parent(self: CancelToken) -> u64 {
+    return self.parentId
+  }
+}

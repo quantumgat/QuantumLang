@@ -1,0 +1,26 @@
+pub enum ControlFlowDiagnosticKind {
+  InvalidLabel
+  BreakValueMismatch
+  ContinueOutsideLoop
+  BreakOutsideLoop
+  UnreachableStatement
+  NonExhaustiveMatch
+  InvalidMatchGuard
+  InvalidParallelReduction
+  DomainLoopGateMissing
+  QuantumControlProfileUnsupported
+}
+
+pub struct ControlFlowDiagnostic {
+  kind: ControlFlowDiagnosticKind,
+  node: u64,
+  exactSourceRange: bool,
+  fixitAvailable: bool,
+  safeFailure: bool,
+}
+
+impl ControlFlowDiagnostic {
+  pub fn reportable(self: ControlFlowDiagnostic) -> bool {
+    return self.node > 0 && self.exactSourceRange && self.safeFailure
+  }
+}

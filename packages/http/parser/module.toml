@@ -1,0 +1,6 @@
+[module]
+name = "http.parser"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-parser"

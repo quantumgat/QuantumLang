@@ -1,0 +1,29 @@
+pub enum StmtKind {
+  Missing
+  LetStmt
+  AssignStmt
+  ExprStmt
+  FinalExprStmt
+  ReturnStmt
+  LoopStmt
+  IfStmt
+}
+
+pub struct Stmt {
+  node: AstNode,
+  kind: StmtKind,
+}
+
+pub fn stmt(node: AstNode, kind: StmtKind) -> Stmt {
+  return Stmt { node: node, kind: kind }
+}
+
+impl Stmt {
+  pub fn ast(self: Stmt) -> AstNode {
+    return self.node
+  }
+
+  pub fn stmtKind(self: Stmt) -> StmtKind {
+    return self.kind
+  }
+}

@@ -1,0 +1,24 @@
+pub enum LiteralRangeSyntaxFamily {
+  CollectionLiteral
+  EmptyLiteral
+  MapRecordLiteral
+  TupleLiteral
+  RangeLiteral
+  TypedLiteral
+  UnionInference
+}
+
+pub struct LiteralRangeSyntaxParse {
+  family: LiteralRangeSyntaxFamily,
+  sourceRangeReady: bool,
+  typeHintAllowed: bool,
+  recoveryReady: bool,
+}
+
+impl LiteralRangeSyntaxParse {
+  pub fn complete(self: LiteralRangeSyntaxParse) -> bool {
+    return self.sourceRangeReady
+      && self.typeHintAllowed
+      && self.recoveryReady
+  }
+}

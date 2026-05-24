@@ -1,0 +1,35 @@
+pub enum QAnyHandleKind {
+  Qubit
+  Result
+  QFunc
+  ProviderValue
+}
+
+pub struct QAnyHandle {
+  id: u64,
+  kind: QAnyHandleKind,
+  providerId: u64,
+  generation: u64,
+  measured: bool,
+  released: bool,
+}
+
+pub fn qanyHandle(id: u64, kind: QAnyHandleKind, providerId: u64) -> QAnyHandle {
+  return QAnyHandle {
+    id: id,
+    kind: kind,
+    providerId: providerId,
+    generation: 1,
+    measured: false,
+    released: false,
+  }
+}
+
+impl QAnyHandle {
+  pub fn live(self: QAnyHandle) -> bool {
+    return self.id > 0
+      && self.providerId > 0
+      && self.generation > 0
+      && self.released == false
+  }
+}

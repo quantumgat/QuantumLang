@@ -1,0 +1,33 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopEnginePortSet {
+  memoryPortBound: bool
+  ffiPortBound: bool
+  observerBound: bool
+  snapshotBound: bool
+}
+pub extern "qnpkg" {
+  pub fn oopEnginePortSet(
+  memoryPortBound: bool,
+  ffiPortBound: bool,
+  observerBound: bool,
+  snapshotBound: bool,
+) -> OopEnginePortSet
+}
+pub struct OopEngineContract {
+  abiVersion: u32
+  typeMetadataBound: bool
+  registryBound: bool
+  dispatchBound: bool
+  downcastBound: bool
+  ports: OopEnginePortSet
+}
+pub extern "qnpkg" {
+  pub fn oopEngineContract(
+  abiVersion: u32,
+  typeMetadataBound: bool,
+  registryBound: bool,
+  dispatchBound: bool,
+  downcastBound: bool,
+  ports: OopEnginePortSet,
+) -> OopEngineContract
+}

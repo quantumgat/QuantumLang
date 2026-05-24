@@ -1,0 +1,35 @@
+pub enum PluginRuntimePolicy {
+  Optional,
+  Required,
+  Forbidden,
+}
+
+pub struct PluginRuntimeAbi {
+  abi: string,
+  supportedAbi: string,
+  noUnwindAcrossBoundary: bool,
+  typedFailureRequired: bool,
+  noCoredumpRequired: bool,
+  allocatorBoundaryRequired: bool,
+}
+
+impl PluginRuntimeAbi {
+  pub fn v1() -> PluginRuntimeAbi {
+    return PluginRuntimeAbi {
+      abi: "qtlc-plugin-runtime-abi-v1",
+      supportedAbi: "qtlc-plugin-runtime-abi-v1",
+      noUnwindAcrossBoundary: true,
+      typedFailureRequired: true,
+      noCoredumpRequired: true,
+      allocatorBoundaryRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginRuntimeAbi) -> bool {
+    return self.abi == self.supportedAbi
+      && self.noUnwindAcrossBoundary
+      && self.typedFailureRequired
+      && self.noCoredumpRequired
+      && self.allocatorBoundaryRequired
+  }
+}

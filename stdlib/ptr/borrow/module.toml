@@ -1,0 +1,6 @@
+[module]
+name = "ptr.borrow"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "borrowed-pointer"

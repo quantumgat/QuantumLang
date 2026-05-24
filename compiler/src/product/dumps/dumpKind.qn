@@ -1,0 +1,8 @@
+pub enum DumpKind {
+  FrontendDump
+  AnalysisDump
+  IrDump
+  BackendDump
+  RuntimeDump
+  PackageDump
+}

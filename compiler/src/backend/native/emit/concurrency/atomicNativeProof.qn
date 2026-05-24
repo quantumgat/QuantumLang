@@ -1,0 +1,35 @@
+pub struct AtomicNativeProof {
+  order: AtomicOrderLowering,
+  fence: AtomicFenceLowering,
+  compareExchange: AtomicCompareExchangeLowering,
+  waitWake: AtomicWaitWakeLowering,
+  lockFreeOrDiagnostic: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl AtomicNativeProof {
+  pub fn init(
+    order: AtomicOrderLowering,
+    fence: AtomicFenceLowering,
+    compareExchange: AtomicCompareExchangeLowering,
+    waitWake: AtomicWaitWakeLowering,
+  ) -> AtomicNativeProof {
+    return AtomicNativeProof {
+      order: order,
+      fence: fence,
+      compareExchange: compareExchange,
+      waitWake: waitWake,
+      lockFreeOrDiagnostic: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: AtomicNativeProof) -> bool {
+    return self.order.accepted()
+      && self.fence.accepted()
+      && self.compareExchange.accepted()
+      && self.waitWake.accepted()
+      && self.lockFreeOrDiagnostic
+      && self.noCoredumpDiagnostic
+  }
+}

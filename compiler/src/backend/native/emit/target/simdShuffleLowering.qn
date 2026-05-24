@@ -1,0 +1,19 @@
+pub struct SimdShuffleLowering {
+  emitsShuffle: bool,
+  validatesIndices: bool,
+  preservesLaneCount: bool,
+}
+
+impl SimdShuffleLowering {
+  pub fn init(emitsShuffle: bool, validatesIndices: bool, preservesLaneCount: bool) -> SimdShuffleLowering {
+    return SimdShuffleLowering {
+      emitsShuffle: emitsShuffle,
+      validatesIndices: validatesIndices,
+      preservesLaneCount: preservesLaneCount,
+    }
+  }
+
+  pub fn accepted(self: SimdShuffleLowering) -> bool {
+    return self.emitsShuffle && self.validatesIndices && self.preservesLaneCount
+  }
+}

@@ -1,0 +1,19 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum HttpSourceMapKind {
+  Endpoint,
+  Extractor,
+  Capability,
+  HandlerThunk,
+  GeneratedRoute,
+}
+pub struct HttpSourceMapEntry {
+  id: string
+  kind: HttpSourceMapKind
+  sourceFile: string
+  sourceLine: usize
+  generatedName: string
+}
+pub struct HttpSourceMap {
+  entries: Vec<HttpSourceMapEntry>
+  resolvedCount: usize
+}

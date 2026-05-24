@@ -1,0 +1,35 @@
+pub enum SchedulerIncidentKind {
+  QueuePressure
+  WakeStorm
+  Starvation
+  BlockingBoundaryViolation
+  StaleHandle
+  PollBudgetOverrun
+}
+
+pub struct SchedulerIncident {
+  kind: SchedulerIncidentKind,
+  diagnosticCode: string,
+  subject: string,
+  noAllocationRequired: bool,
+}
+
+impl SchedulerIncident {
+  pub fn init(
+    kind: SchedulerIncidentKind,
+    diagnosticCode: string,
+    subject: string,
+    noAllocationRequired: bool,
+  ) -> SchedulerIncident {
+    return SchedulerIncident {
+      kind: kind,
+      diagnosticCode: diagnosticCode,
+      subject: subject,
+      noAllocationRequired: noAllocationRequired,
+    }
+  }
+
+  pub fn reportable(self: SchedulerIncident) -> bool {
+    return self.diagnosticCode != "" && self.subject != "" && self.noAllocationRequired
+  }
+}

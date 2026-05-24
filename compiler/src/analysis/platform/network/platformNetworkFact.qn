@@ -1,0 +1,12 @@
+pub struct PlatformNetworkFact {
+  target: string,
+  available: bool,
+  permissionRequired: bool,
+  diagnosticRequired: bool,
+}
+
+impl PlatformNetworkFact {
+  pub fn accepted(self: PlatformNetworkFact) -> bool {
+    return self.target != "" && (self.available || self.diagnosticRequired)
+  }
+}

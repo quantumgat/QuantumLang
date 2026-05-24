@@ -1,0 +1,21 @@
+pub struct RuntimeServiceReadiness {
+  serviceId: u64,
+  ready: bool,
+  dependencyCount: usize,
+  degraded: bool,
+}
+
+impl RuntimeServiceReadiness {
+  pub fn init(serviceId: u64, ready: bool, dependencyCount: usize, degraded: bool) -> RuntimeServiceReadiness {
+    return RuntimeServiceReadiness {
+      serviceId: serviceId,
+      ready: ready,
+      dependencyCount: dependencyCount,
+      degraded: degraded,
+    }
+  }
+
+  pub fn canServe(self: RuntimeServiceReadiness) -> bool {
+    return self.serviceId > 0 && self.ready && self.degraded == false
+  }
+}

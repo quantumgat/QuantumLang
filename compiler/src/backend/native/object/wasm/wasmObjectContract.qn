@@ -1,0 +1,12 @@
+pub struct WasmObjectContract {
+  target: string,
+  moduleSectionsSupported: bool,
+  importTableRequired: bool,
+  linearMemoryRequired: bool,
+}
+
+impl WasmObjectContract {
+  pub fn accepted(self: WasmObjectContract) -> bool {
+    return self.target != "" && self.moduleSectionsSupported && self.linearMemoryRequired
+  }
+}

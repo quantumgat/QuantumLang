@@ -1,0 +1,21 @@
+pub struct VolatileAccessFact {
+  ordered: bool,
+  widthBytes: usize,
+  targetCapable: bool,
+  unsafeCapabilityChecked: bool,
+}
+
+impl VolatileAccessFact {
+  pub fn init(ordered: bool, widthBytes: usize, targetCapable: bool, unsafeCapabilityChecked: bool) -> VolatileAccessFact {
+    return VolatileAccessFact {
+      ordered: ordered,
+      widthBytes: widthBytes,
+      targetCapable: targetCapable,
+      unsafeCapabilityChecked: unsafeCapabilityChecked,
+    }
+  }
+
+  pub fn accepted(self: VolatileAccessFact) -> bool {
+    return self.ordered && self.widthBytes > 0 && self.targetCapable && self.unsafeCapabilityChecked
+  }
+}

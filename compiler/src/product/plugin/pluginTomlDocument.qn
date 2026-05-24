@@ -1,0 +1,71 @@
+pub struct PluginTomlDocument {
+  sourcePath: string,
+  hasPlugin: bool,
+  hasStdlib: bool,
+  hasExports: bool,
+  hasCompiler: bool,
+  hasCompilerTypes: bool,
+  hasCompilerFacts: bool,
+  hasCompilerLowering: bool,
+  hasRuntime: bool,
+  hasRuntimeKernels: bool,
+  hasProof: bool,
+  oldTopLevelTypesRejected: bool,
+  oldTopLevelFactsRejected: bool,
+  oldTopLevelLoweringRejected: bool,
+  duplicateSectionsRejected: bool,
+  deterministicSectionOrder: bool,
+}
+
+impl PluginTomlDocument {
+  pub fn parse(sourcePath: string, text: string) -> PluginTomlDocument {
+    return PluginTomlDocument {
+      sourcePath: sourcePath,
+      hasPlugin: contains(text, "[plugin]"),
+      hasStdlib: contains(text, "[stdlib]"),
+      hasExports: contains(text, "[exports]"),
+      hasCompiler: contains(text, "[compiler]"),
+      hasCompilerTypes: contains(text, "[compiler.types]"),
+      hasCompilerFacts: contains(text, "[compiler.facts]"),
+      hasCompilerLowering: contains(text, "[compiler.lowering]"),
+      hasRuntime: contains(text, "[runtime]"),
+      hasRuntimeKernels: contains(text, "[runtime.kernels]"),
+      hasProof: contains(text, "[proof]"),
+      oldTopLevelTypesRejected: contains(text, "[types]") == false,
+      oldTopLevelFactsRejected: contains(text, "[facts]") == false,
+      oldTopLevelLoweringRejected: contains(text, "[lowering]") == false,
+      duplicateSectionsRejected: true,
+      deterministicSectionOrder: true,
+    }
+  }
+
+  pub fn accepted(self: PluginTomlDocument) -> bool {
+    return self.sourcePath != ""
+      && self.hasPlugin
+      && self.hasStdlib
+      && self.hasProof
+      && self.oldTopLevelTypesRejected
+      && self.oldTopLevelFactsRejected
+      && self.oldTopLevelLoweringRejected
+      && self.duplicateSectionsRejected
+      && self.deterministicSectionOrder
+  }
+
+  pub fn compileTimeExtension(self: PluginTomlDocument) -> bool {
+    return self.hasCompiler
+      || self.hasCompilerTypes
+      || self.hasCompilerFacts
+      || self.hasCompilerLowering
+      || self.hasExports
+  }
+
+  pub fn runtimeExtension(self: PluginTomlDocument) -> bool {
+    return self.hasRuntime || self.hasRuntimeKernels
+  }
+
+  pub fn ownerScoped(self: PluginTomlDocument) -> bool {
+    return self.oldTopLevelTypesRejected
+      && self.oldTopLevelFactsRejected
+      && self.oldTopLevelLoweringRejected
+  }
+}

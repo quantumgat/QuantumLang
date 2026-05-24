@@ -1,0 +1,23 @@
+pub struct BinaryCodecTypeCoverageFact {
+  primitiveCoverage: bool,
+  floatCoverage: bool,
+  charStringBytesCoverage: bool,
+  vecArrayTupleCoverage: bool,
+  optionResultCoverage: bool,
+  nestedStructCoverage: bool,
+  stableMapSetCoverage: bool,
+  unsafeLiveResourceRejection: bool,
+}
+
+impl BinaryCodecTypeCoverageFact {
+  pub fn accepted(self: BinaryCodecTypeCoverageFact) -> bool {
+    return self.primitiveCoverage
+      && self.floatCoverage
+      && self.charStringBytesCoverage
+      && self.vecArrayTupleCoverage
+      && self.optionResultCoverage
+      && self.nestedStructCoverage
+      && self.stableMapSetCoverage
+      && self.unsafeLiveResourceRejection
+  }
+}

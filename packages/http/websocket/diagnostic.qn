@@ -1,0 +1,49 @@
+pub enum WebSocketDiagnosticKind {
+  Closed,
+  FrameTooLarge,
+  InvalidCloseCode,
+  InvalidHandshake,
+  ProtocolError,
+}
+
+pub struct WebSocketDiagnostic {
+  kind: WebSocketDiagnosticKind,
+  message: string,
+}
+
+impl WebSocketDiagnostic {
+  pub fn init(kind: WebSocketDiagnosticKind, message: string) -> WebSocketDiagnostic {
+    return WebSocketDiagnostic {
+      kind: kind,
+      message: message,
+    }
+  }
+
+  pub fn closed() -> WebSocketDiagnostic {
+    return WebSocketDiagnostic.init(WebSocketDiagnosticKind.Closed, "websocket is closed")
+  }
+
+  pub fn frameTooLarge(limit: usize) -> WebSocketDiagnostic {
+    return WebSocketDiagnostic.init(WebSocketDiagnosticKind.FrameTooLarge, "websocket frame exceeded policy limit")
+  }
+
+  pub fn invalidCloseCode() -> WebSocketDiagnostic {
+    return WebSocketDiagnostic.init(WebSocketDiagnosticKind.InvalidCloseCode, "invalid websocket close code")
+  }
+
+  pub fn invalidHandshake() -> WebSocketDiagnostic {
+    return WebSocketDiagnostic.init(WebSocketDiagnosticKind.InvalidHandshake, "invalid websocket handshake")
+  }
+
+  pub fn protocolError(message: string) -> WebSocketDiagnostic {
+    return WebSocketDiagnostic.init(WebSocketDiagnosticKind.ProtocolError, message)
+  }
+
+  pub fn kind(self: WebSocketDiagnostic) -> WebSocketDiagnosticKind {
+    return self.kind
+  }
+
+  pub fn message(self: WebSocketDiagnostic) -> string {
+    return self.message
+  }
+}

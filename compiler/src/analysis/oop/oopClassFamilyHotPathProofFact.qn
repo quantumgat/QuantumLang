@@ -1,0 +1,56 @@
+pub struct OopClassFamilyHotPathProofFact {
+  directCalls: usize,
+  staticGenericCalls: usize,
+  sealedDispatches: usize,
+  cachedDispatches: usize,
+  boundaryDynamicCalls: usize,
+  hotDynamicCalls: usize,
+  oop001Diagnostics: usize,
+  backendProofRows: usize,
+  runtimeDispatchPlanBound: bool,
+  httpRequestPathBlocked: bool,
+}
+
+pub fn oopClassFamilyHotPathProofFact(
+  directCalls: usize,
+  staticGenericCalls: usize,
+  sealedDispatches: usize,
+  cachedDispatches: usize,
+  boundaryDynamicCalls: usize,
+  hotDynamicCalls: usize,
+  oop001Diagnostics: usize,
+  backendProofRows: usize,
+  runtimeDispatchPlanBound: bool,
+  httpRequestPathBlocked: bool,
+) -> OopClassFamilyHotPathProofFact {
+  return OopClassFamilyHotPathProofFact {
+    directCalls: directCalls,
+    staticGenericCalls: staticGenericCalls,
+    sealedDispatches: sealedDispatches,
+    cachedDispatches: cachedDispatches,
+    boundaryDynamicCalls: boundaryDynamicCalls,
+    hotDynamicCalls: hotDynamicCalls,
+    oop001Diagnostics: oop001Diagnostics,
+    backendProofRows: backendProofRows,
+    runtimeDispatchPlanBound: runtimeDispatchPlanBound,
+    httpRequestPathBlocked: httpRequestPathBlocked,
+  }
+}
+
+impl OopClassFamilyHotPathProofFact {
+  pub fn resolvedHotCalls(self: OopClassFamilyHotPathProofFact) -> usize {
+    return self.directCalls
+      + self.staticGenericCalls
+      + self.sealedDispatches
+      + self.cachedDispatches
+  }
+
+  pub fn complete(self: OopClassFamilyHotPathProofFact) -> bool {
+    return self.resolvedHotCalls() > 0
+      && self.hotDynamicCalls == 0
+      && self.backendProofRows >= self.resolvedHotCalls() + self.boundaryDynamicCalls
+      && self.oop001Diagnostics == 0
+      && self.runtimeDispatchPlanBound
+      && self.httpRequestPathBlocked
+  }
+}

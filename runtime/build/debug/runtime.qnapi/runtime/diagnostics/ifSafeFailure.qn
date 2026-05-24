@@ -1,0 +1,33 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum IfSafeFailureKind {
+  NonBoolCondition
+  BranchTypeMismatch
+  InvalidPattern
+  GuardViolation
+  RangeTypeMismatch
+  TypeTestViolation
+  QuestionFlowViolation
+  AwaitQuestionViolation
+  StaticIfViolation
+  TargetFeatureViolation
+  QuantumProfileViolation
+}
+pub struct IfSafeFailure {
+  kind: IfSafeFailureKind
+  sourceRangeReady: bool
+  fixitReady: bool
+  noCoredump: bool
+  recoverable: bool
+}
+pub extern "qnpkg" {
+  pub fn ifSafeFailure(
+  kind: IfSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+) -> IfSafeFailure
+}
+pub extern "qnpkg" {
+  pub fn ifDefaultSafeFailure(kind: IfSafeFailureKind) -> IfSafeFailure
+}

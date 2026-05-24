@@ -1,0 +1,51 @@
+pub struct RingBufferKernel {
+  circularBufferBacked: bool,
+  headTailDirect: bool,
+  moduloIndexLowered: bool,
+  pushBackUsesTailStore: bool,
+  pushFrontUsesHeadDecAndStore: bool,
+  popFrontUsesHeadLoadAndHeadInc: bool,
+  popBackUsesTailDecAndLoad: bool,
+  overwriteOldestPolicyStable: bool,
+  rejectFullPolicyStable: bool,
+  peekUsesDirectLoad: bool,
+  iteratorRingCursorStable: bool,
+  toVecUsesLinearizedCopy: bool,
+  callableLoopsInlineable: bool,
+}
+
+impl RingBufferKernel {
+  pub fn standard() -> RingBufferKernel {
+    return RingBufferKernel {
+      circularBufferBacked: true,
+      headTailDirect: true,
+      moduloIndexLowered: true,
+      pushBackUsesTailStore: true,
+      pushFrontUsesHeadDecAndStore: true,
+      popFrontUsesHeadLoadAndHeadInc: true,
+      popBackUsesTailDecAndLoad: true,
+      overwriteOldestPolicyStable: true,
+      rejectFullPolicyStable: true,
+      peekUsesDirectLoad: true,
+      iteratorRingCursorStable: true,
+      toVecUsesLinearizedCopy: true,
+      callableLoopsInlineable: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: RingBufferKernel) -> bool {
+    return self.circularBufferBacked
+      && self.headTailDirect
+      && self.moduloIndexLowered
+      && self.pushBackUsesTailStore
+      && self.pushFrontUsesHeadDecAndStore
+      && self.popFrontUsesHeadLoadAndHeadInc
+      && self.popBackUsesTailDecAndLoad
+      && self.overwriteOldestPolicyStable
+      && self.rejectFullPolicyStable
+      && self.peekUsesDirectLoad
+      && self.iteratorRingCursorStable
+      && self.toVecUsesLinearizedCopy
+      && self.callableLoopsInlineable
+  }
+}

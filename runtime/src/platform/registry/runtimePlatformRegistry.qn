@@ -1,0 +1,11 @@
+pub struct RuntimePlatformRegistry {
+  targetCount: usize,
+  defaultTarget: string,
+  rejectsUnknownTargets: bool,
+}
+
+impl RuntimePlatformRegistry {
+  pub fn accepted(self: RuntimePlatformRegistry) -> bool {
+    return self.targetCount > 0 && self.defaultTarget != "" && self.rejectsUnknownTargets
+  }
+}

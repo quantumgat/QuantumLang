@@ -1,0 +1,45 @@
+[plugin]
+name = "plugin-template-capability"
+version = "0.1.0"
+schema = 1
+edition = "2026"
+kind = "capability-pack"
+
+[stdlib]
+root = "stdlib"
+include = ["**/*.qn"]
+public_roots = ["std.pluginTemplate"]
+docs = "docs"
+examples = "examples"
+
+[compiler]
+types = ["TemplateValue<T>"]
+facts = ["pluginTemplate.capability"]
+hooks = ["intrinsic-lowering", "target-specialize"]
+lowering = ["hir", "mir", "native"]
+diagnostics = ["pluginTemplate"]
+fallback = "required"
+source_maps = "required"
+
+[runtime]
+abi = "qtlc-plugin-runtime-v1"
+kernels = ["pluginTemplate.kernel"]
+typed_failure = "required"
+no_coredump = "required"
+target_gate = "required"
+lifecycle = "required"
+
+[exports]
+modules = ["std.pluginTemplate"]
+intrinsics = ["pluginTemplate.run"]
+diagnostics = ["pluginTemplate"]
+
+[proof]
+positive_tests = "required"
+negative_tests = "required"
+fallback_tests = "required"
+perf_tests = "required"
+source_maps = "required"
+typed_failure = "required"
+no_coredump = "required"
+

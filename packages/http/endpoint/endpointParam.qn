@@ -1,0 +1,76 @@
+pub enum EndpointParamSource {
+  Path,
+  Query,
+  Body,
+  Header,
+  Capability,
+  Context,
+  Request,
+  Response,
+}
+
+pub struct EndpointParam {
+  name: string,
+  typeName: string,
+  source: EndpointParamSource,
+  required: bool,
+}
+
+impl EndpointParam {
+  pub fn init(name: string, typeName: string, source: EndpointParamSource, required: bool) -> EndpointParam {
+    return EndpointParam {
+      name: name,
+      typeName: typeName,
+      source: source,
+      required: required,
+    }
+  }
+
+  pub fn path(name: string, typeName: string) -> EndpointParam {
+    return EndpointParam.init(name, typeName, EndpointParamSource.Path, true)
+  }
+
+  pub fn query(name: string, typeName: string) -> EndpointParam {
+    return EndpointParam.init(name, typeName, EndpointParamSource.Query, false)
+  }
+
+  pub fn body(name: string, typeName: string) -> EndpointParam {
+    return EndpointParam.init(name, typeName, EndpointParamSource.Body, true)
+  }
+
+  pub fn capability(name: string, typeName: string) -> EndpointParam {
+    return EndpointParam.init(name, typeName, EndpointParamSource.Capability, true)
+  }
+
+  pub fn context(name: string, typeName: string) -> EndpointParam {
+    return EndpointParam.init(name, typeName, EndpointParamSource.Context, true)
+  }
+
+  pub fn request(name: string) -> EndpointParam {
+    return EndpointParam.init(name, "HttpRequest", EndpointParamSource.Request, true)
+  }
+
+  pub fn httpCtx(name: string) -> EndpointParam {
+    return EndpointParam.init(name, "HttpCtx", EndpointParamSource.Context, true)
+  }
+
+  pub fn response(name: string) -> EndpointParam {
+    return EndpointParam.init(name, "HttpResponse", EndpointParamSource.Response, true)
+  }
+
+  pub fn name(self: EndpointParam) -> string {
+    return self.name
+  }
+
+  pub fn typeName(self: EndpointParam) -> string {
+    return self.typeName
+  }
+
+  pub fn source(self: EndpointParam) -> EndpointParamSource {
+    return self.source
+  }
+
+  pub fn required(self: EndpointParam) -> bool {
+    return self.required
+  }
+}

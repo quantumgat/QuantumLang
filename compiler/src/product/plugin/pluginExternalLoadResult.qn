@@ -1,0 +1,36 @@
+pub struct PluginExternalLoadResult {
+  request: PluginExternalLoadRequest,
+  compilerLoad: PluginLoadResult,
+  releaseGate: PluginReleaseGate,
+  sourceMapBridge: PluginSourceMapBridge,
+  diagnosticBridge: PluginDiagnosticBridge,
+  processIsolated: bool,
+  typedFailureOnly: bool,
+  noCoredump: bool,
+}
+
+impl PluginExternalLoadResult {
+  pub fn fromRequest(request: PluginExternalLoadRequest, publicRoot: string) -> PluginExternalLoadResult {
+    return PluginExternalLoadResult {
+      request: request,
+      compilerLoad: PluginLoadResult.fromParseResult(request.parseResult),
+      releaseGate: PluginReleaseGate.fromManifest(request.parseResult.manifest, publicRoot),
+      sourceMapBridge: PluginSourceMapBridge.fromManifest(request.parseResult.manifest),
+      diagnosticBridge: PluginDiagnosticBridge.fromManifest(request.parseResult.manifest),
+      processIsolated: true,
+      typedFailureOnly: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: PluginExternalLoadResult) -> bool {
+    return self.request.accepted()
+      && self.compilerLoad.accepted()
+      && self.releaseGate.accepted()
+      && self.sourceMapBridge.accepted()
+      && self.diagnosticBridge.accepted()
+      && self.processIsolated
+      && self.typedFailureOnly
+      && self.noCoredump
+  }
+}

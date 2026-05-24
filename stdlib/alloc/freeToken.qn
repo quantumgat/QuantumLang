@@ -1,0 +1,34 @@
+pub struct FreeToken {
+  allocation: AllocationId,
+  consumed: bool,
+}
+
+impl FreeToken {
+  pub fn init(allocation: AllocationId) -> FreeToken {
+    return FreeToken {
+      allocation: allocation,
+      consumed: false,
+    }
+  }
+
+  pub fn allocation(self: FreeToken) -> AllocationId {
+    return self.allocation
+  }
+
+  pub fn consumed(self: FreeToken) -> bool {
+    return self.consumed
+  }
+
+  pub fn consume(self: FreeToken, domain: AllocDomain) -> Result<FreeToken, AllocError> {
+    if self.consumed {
+      return Err(AllocError.init(AllocErrorKind.DoubleFree, true))
+    }
+    if self.allocation.sameDomain(domain) == false {
+      return Err(AllocError.init(AllocErrorKind.WrongDomain, true))
+    }
+    return Ok(FreeToken {
+      allocation: self.allocation,
+      consumed: true,
+    })
+  }
+}

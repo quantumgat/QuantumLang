@@ -1,0 +1,23 @@
+pub enum AlgorithmFlowHotPathProofKind {
+  VecDirectLoop
+  IteratorCursorFusion
+  StreamPollFusion
+  BinaryCursorDecodeFusion
+  CallableInlineProof
+  NoGeneratedFallback
+}
+
+pub struct AlgorithmFlowHotPathProof {
+  kind: AlgorithmFlowHotPathProofKind,
+  lowering: NativeAlgorithmPipelineLowering,
+  fixture: string,
+  negativeFixtureCaptured: bool,
+}
+
+impl AlgorithmFlowHotPathProof {
+  pub fn complete(self: AlgorithmFlowHotPathProof) -> bool {
+    return self.fixture != ""
+      && self.lowering.complete()
+      && self.negativeFixtureCaptured
+  }
+}

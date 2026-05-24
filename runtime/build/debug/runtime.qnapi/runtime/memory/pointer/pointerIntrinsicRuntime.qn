@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimePointerIntrinsicAccess {
+  intrinsic: string
+  bytes: usize
+  count: usize
+  mutable: bool
+  accessAccepted: bool
+  diagnosticCode: string
+}
+pub extern "qnpkg" {
+  pub fn runtimePtrReadIntrinsic(intrinsic: string, bytes: usize, count: usize) -> RuntimePointerIntrinsicAccess
+}
+pub extern "qnpkg" {
+  pub fn runtimePtrWriteIntrinsic(intrinsic: string, bytes: usize, count: usize) -> RuntimePointerIntrinsicAccess
+}

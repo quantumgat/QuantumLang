@@ -1,0 +1,3 @@
+pub fn copy(from: PathBuf, to: PathBuf) -> FsResult<u64>
+pub fn copy(from: PathBuf, to: PathBuf, options: CopyOptions) -> FsResult<u64>
+pub fn moveFile(from: PathBuf, to: PathBuf) -> FsResult<Unit>

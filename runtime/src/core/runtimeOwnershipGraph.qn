@@ -1,0 +1,27 @@
+pub struct RuntimeOwnershipGraph {
+  pub runtimeOwnsScheduler: bool,
+  pub runtimeOwnsAllocator: bool,
+  pub runtimeOwnsQirBridge: bool,
+  pub schedulerOwnsWorkerPool: bool,
+  pub qirBridgeOwnsProviderDispatch: bool,
+}
+
+pub fn runtimeOwnershipGraph() -> RuntimeOwnershipGraph {
+  return RuntimeOwnershipGraph {
+    runtimeOwnsScheduler: true,
+    runtimeOwnsAllocator: true,
+    runtimeOwnsQirBridge: true,
+    schedulerOwnsWorkerPool: true,
+    qirBridgeOwnsProviderDispatch: true,
+  }
+}
+
+impl RuntimeOwnershipGraph {
+  pub fn isComplete(self) -> bool {
+    return self.runtimeOwnsScheduler &&
+      self.runtimeOwnsAllocator &&
+      self.runtimeOwnsQirBridge &&
+      self.schedulerOwnsWorkerPool &&
+      self.qirBridgeOwnsProviderDispatch
+  }
+}

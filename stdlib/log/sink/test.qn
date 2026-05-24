@@ -1,0 +1,19 @@
+pub struct TestLogSink {
+  captureRecords: bool,
+  deterministicOrder: bool,
+  redactsBeforeWrite: bool,
+}
+
+impl TestLogSink {
+  pub fn capture() -> TestLogSink {
+    return TestLogSink {
+      captureRecords: true,
+      deterministicOrder: true,
+      redactsBeforeWrite: true,
+    }
+  }
+
+  pub fn safe(self: TestLogSink) -> bool {
+    return self.captureRecords && self.deterministicOrder && self.redactsBeforeWrite
+  }
+}

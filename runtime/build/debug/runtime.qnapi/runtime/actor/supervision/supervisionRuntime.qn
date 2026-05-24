@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeRestartPolicy {
+  Never
+  OnFailure
+  Always
+}
+pub struct RuntimeSupervisorTree {
+  rootActor: ActorId
+  childCount: usize
+  restartPolicy: RuntimeRestartPolicy
+  maxRestarts: usize
+}

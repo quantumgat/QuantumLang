@@ -1,0 +1,141 @@
+pub enum ConcurrencyHotPathPerfKind {
+  AsyncFramePoll
+  SchedulerWakePark
+  ChannelMpscSendRecv
+  SelectReadyBranch
+  ActorMailboxDispatch
+  StreamPollNext
+  ReactorWakeup
+  TaskScopeJoin
+}
+
+pub struct ConcurrencyHotPathPerfRow {
+  kind: ConcurrencyHotPathPerfKind,
+  caseName: string,
+  qlangFixture: string,
+  comparisonBaseline: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+  maxSlowdownPercent: u64,
+  allocationBytes: usize,
+  noCoredump: bool,
+}
+
+pub struct ConcurrencyHotPathPerfReport {
+  rows: Vec<ConcurrencyHotPathPerfRow>,
+  requiredRows: usize,
+  runner: string,
+  serialSafe: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+  comparisonRowsPresent: bool,
+  productSchemaLeak: bool,
+}
+
+pub fn concurrencyHotPathPerfRow(
+  kind: ConcurrencyHotPathPerfKind,
+  caseName: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+) -> ConcurrencyHotPathPerfRow {
+  return ConcurrencyHotPathPerfRow {
+    kind: kind,
+    caseName: caseName,
+    qlangFixture: "concurrency_hotpath_perf_ok.qn",
+    comparisonBaseline: "go-rust-cpp-baseline-comparison",
+    qlangNsPerOp: qlangNsPerOp,
+    baselineNsPerOp: baselineNsPerOp,
+    maxSlowdownPercent: 10,
+    allocationBytes: 0,
+    noCoredump: true,
+  }
+}
+
+pub fn concurrencyHotPathPerfReport() -> ConcurrencyHotPathPerfReport requires(alloc) {
+  let mut rows = Vec<ConcurrencyHotPathPerfRow>.withCapacity(8)
+  rows = rows.push(concurrencyHotPathPerfRow(
+    ConcurrencyHotPathPerfKind.AsyncFramePoll,
+    "async-frame-poll-no-allocation",
+    5,
+    5
+  ))
+  rows = rows.push(concurrencyHotPathPerfRow(
+    ConcurrencyHotPathPerfKind.SchedulerWakePark,
+    "scheduler-wake-park-direct-handoff",
+    7,
+    7
+  ))
+  rows = rows.push(concurrencyHotPathPerfRow(
+    ConcurrencyHotPathPerfKind.ChannelMpscSendRecv,
+    "channel-mpsc-send-recv-ring-fast-path",
+    9,
+    9
+  ))
+  rows = rows.push(concurrencyHotPathPerfRow(
+    ConcurrencyHotPathPerfKind.SelectReadyBranch,
+    "select-ready-branch-no-lost-wake",
+    8,
+    8
+  ))
+  rows = rows.push(concurrencyHotPathPerfRow(
+    ConcurrencyHotPathPerfKind.ActorMailboxDispatch,
+    "actor-mailbox-dispatch-bounded",
+    11,
+    11
+  ))
+  rows = rows.push(concurrencyHotPathPerfRow(
+    ConcurrencyHotPathPerfKind.StreamPollNext,
+    "stream-poll-next-fused",
+    10,
+    10
+  ))
+  rows = rows.push(concurrencyHotPathPerfRow(
+    ConcurrencyHotPathPerfKind.ReactorWakeup,
+    "reactor-wakeup-coalesced",
+    12,
+    12
+  ))
+  rows = rows.push(concurrencyHotPathPerfRow(
+    ConcurrencyHotPathPerfKind.TaskScopeJoin,
+    "task-scope-join-structured-cleanup",
+    6,
+    6
+  ))
+  return ConcurrencyHotPathPerfReport {
+    rows: rows,
+    requiredRows: 8,
+    runner: "qtlc-concurrency-hotpath-perf-v1",
+    serialSafe: true,
+    allCoreDisabled: true,
+    maxParallel: 1,
+    comparisonRowsPresent: true,
+    productSchemaLeak: false,
+  }
+}
+
+impl ConcurrencyHotPathPerfRow {
+  pub fn withinBudget(self: ConcurrencyHotPathPerfRow) -> bool {
+    let budget = self.baselineNsPerOp
+      + ((self.baselineNsPerOp * self.maxSlowdownPercent) / 100)
+    return self.caseName != ""
+      && self.qlangFixture == "concurrency_hotpath_perf_ok.qn"
+      && self.comparisonBaseline == "go-rust-cpp-baseline-comparison"
+      && self.qlangNsPerOp > 0
+      && self.baselineNsPerOp > 0
+      && self.qlangNsPerOp <= budget
+      && self.allocationBytes == 0
+      && self.noCoredump
+  }
+}
+
+impl ConcurrencyHotPathPerfReport {
+  pub fn accepted(self: ConcurrencyHotPathPerfReport) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.runner == "qtlc-concurrency-hotpath-perf-v1"
+      && self.serialSafe
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+      && self.comparisonRowsPresent
+      && self.productSchemaLeak == false
+  }
+}

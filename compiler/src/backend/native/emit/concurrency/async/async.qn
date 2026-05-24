@@ -1,0 +1,29 @@
+pub use frameLowering.NativeAsyncFrameLowering
+pub use frameLowering.NativeAsyncFrameLoweringKind
+
+pub enum NativeAsyncLoweringKind {
+  DirectStateMachine
+  RuntimeTaskCall
+  AwaitFastPath
+  AwaitQuestionFastPath
+  DiagnosticOnly
+}
+
+pub struct NativeAsyncLowering {
+  instruction: u64,
+  kind: NativeAsyncLoweringKind,
+  frameErasedWhenPossible: bool,
+  cleanupPreserved: bool,
+  noGeneratedFallback: bool,
+  sourceMapReady: bool,
+}
+
+impl NativeAsyncLowering {
+  pub fn hotPathReady(self: NativeAsyncLowering) -> bool {
+    return self.instruction > 0
+      && self.kind != NativeAsyncLoweringKind.DiagnosticOnly
+      && self.cleanupPreserved
+      && self.noGeneratedFallback
+      && self.sourceMapReady
+  }
+}

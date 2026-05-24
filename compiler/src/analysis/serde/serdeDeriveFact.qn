@@ -1,0 +1,30 @@
+pub struct SerdeDeriveFact {
+  typeName: string,
+  deriveName: string,
+  metadataOwned: bool,
+  fieldMetadataOwned: bool,
+  generatedSerialize: bool,
+  generatedDeserialize: bool,
+  noRuntimeReflection: bool,
+  noDynamicJsonTree: bool,
+  deterministicFieldOrder: bool,
+  exactNumberPolicy: bool,
+  unsupportedTypeRejected: bool,
+  sourceMappedDiagnostic: bool,
+}
+
+impl SerdeDeriveFact {
+  pub fn accepted(self: SerdeDeriveFact) -> bool {
+    return self.typeName != ""
+      && self.deriveName != ""
+      && self.metadataOwned
+      && self.fieldMetadataOwned
+      && (self.generatedSerialize || self.generatedDeserialize)
+      && self.noRuntimeReflection
+      && self.noDynamicJsonTree
+      && self.deterministicFieldOrder
+      && self.exactNumberPolicy
+      && self.unsupportedTypeRejected
+      && self.sourceMappedDiagnostic
+  }
+}

@@ -1,0 +1,11 @@
+pub struct ManuallyDrop<T> {
+  value: T,
+}
+
+impl<T> ManuallyDrop<T> {
+  pub fn init(value: T) -> ManuallyDrop<T> {
+    ManuallyDrop<T> {
+      value: value,
+    }
+  }
+}

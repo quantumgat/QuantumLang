@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeDumpRequest {
+  dumpName: string
+  structuredFacts: bool
+  presentationOnly: bool
+  redacted: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeDumpRequest(dumpName: string) -> RuntimeDumpRequest
+}

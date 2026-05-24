@@ -1,0 +1,61 @@
+pub struct ArenaHandle {
+  arenaId: u64,
+  regionId: u64,
+  generation: u64,
+  resetEpoch: u64,
+  released: bool,
+}
+
+impl ArenaHandle {
+  pub fn init(arenaId: u64, regionId: u64) -> ArenaHandle {
+    return ArenaHandle {
+      arenaId: arenaId,
+      regionId: regionId,
+      generation: 1,
+      resetEpoch: 0,
+      released: false,
+    }
+  }
+
+  pub fn validate(self: ArenaHandle, regionId: u64, generation: u64, resetEpoch: u64) -> Result<ArenaHandle, ArenaRuntimeError> {
+    if self.released {
+      return Err(ArenaRuntimeError.Released)
+    }
+    if self.regionId != regionId {
+      return Err(ArenaRuntimeError.WrongRegion)
+    }
+    if self.generation != generation {
+      return Err(ArenaRuntimeError.WrongGeneration)
+    }
+    if self.resetEpoch != resetEpoch {
+      return Err(ArenaRuntimeError.UseAfterReset)
+    }
+    return Ok(self)
+  }
+
+  pub fn reset(self: ArenaHandle) -> Result<ArenaHandle, ArenaRuntimeError> {
+    if self.released {
+      return Err(ArenaRuntimeError.Released)
+    }
+    return Ok(ArenaHandle {
+      arenaId: self.arenaId,
+      regionId: self.regionId,
+      generation: self.generation + 1,
+      resetEpoch: self.resetEpoch + 1,
+      released: false,
+    })
+  }
+
+  pub fn release(self: ArenaHandle) -> Result<ArenaHandle, ArenaRuntimeError> {
+    if self.released {
+      return Err(ArenaRuntimeError.DoubleRelease)
+    }
+    return Ok(ArenaHandle {
+      arenaId: self.arenaId,
+      regionId: self.regionId,
+      generation: self.generation,
+      resetEpoch: self.resetEpoch,
+      released: true,
+    })
+  }
+}

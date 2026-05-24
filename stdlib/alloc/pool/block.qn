@@ -1,0 +1,29 @@
+pub struct MemoryBlock {
+  layout: Layout,
+  domain: AllocDomain,
+  allocation: AllocationId,
+  free: bool,
+}
+
+impl MemoryBlock {
+  pub fn init(layout: Layout, domain: AllocDomain, allocation: AllocationId) -> MemoryBlock {
+    return MemoryBlock {
+      layout: layout,
+      domain: domain,
+      allocation: allocation,
+      free: true,
+    }
+  }
+
+  pub fn layout(self: MemoryBlock) -> Layout {
+    return self.layout
+  }
+
+  pub fn domain(self: MemoryBlock) -> AllocDomain {
+    return self.domain
+  }
+
+  pub fn available(self: MemoryBlock) -> bool {
+    return self.free
+  }
+}

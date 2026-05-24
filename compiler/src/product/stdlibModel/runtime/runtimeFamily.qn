@@ -1,0 +1,15 @@
+pub struct RuntimeFamily {
+  familyName: string,
+  publicFacadeCallsRuntime: bool,
+  privateBridgeRequired: bool,
+  hardcodedCompilerList: bool,
+}
+
+impl RuntimeFamily {
+  pub fn accepted(self: RuntimeFamily) -> bool {
+    return self.familyName != ""
+      && self.publicFacadeCallsRuntime == false
+      && self.privateBridgeRequired
+      && self.hardcodedCompilerList == false
+  }
+}

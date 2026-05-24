@@ -1,0 +1,15 @@
+pub struct BackendDump {
+  nativeRows: usize,
+  qirRows: usize,
+  proofRows: usize,
+}
+
+pub fn backendDump(nativeRows: usize, qirRows: usize, proofRows: usize) -> BackendDump {
+  return BackendDump { nativeRows: nativeRows, qirRows: qirRows, proofRows: proofRows }
+}
+
+impl BackendDump {
+  pub fn rowCount(self: BackendDump) -> usize {
+    return self.nativeRows + self.qirRows + self.proofRows
+  }
+}

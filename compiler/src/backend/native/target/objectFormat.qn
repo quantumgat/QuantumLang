@@ -1,0 +1,34 @@
+pub enum NativeObjectFormat {
+  ElfFormat
+  MachOFormat
+  CoffFormat
+  UnsupportedObjectFormat
+}
+
+pub struct ObjectFormatFact {
+  format: NativeObjectFormat,
+  deterministicWriter: bool,
+  supported: bool,
+}
+
+pub fn objectFormatFact(format: NativeObjectFormat, deterministicWriter: bool, supported: bool) -> ObjectFormatFact {
+  return ObjectFormatFact {
+    format: format,
+    deterministicWriter: deterministicWriter,
+    supported: supported,
+  }
+}
+
+impl ObjectFormatFact {
+  pub fn objectFormat(self: ObjectFormatFact) -> NativeObjectFormat {
+    return self.format
+  }
+
+  pub fn writesDeterministically(self: ObjectFormatFact) -> bool {
+    return self.deterministicWriter
+  }
+
+  pub fn isSupported(self: ObjectFormatFact) -> bool {
+    return self.supported
+  }
+}

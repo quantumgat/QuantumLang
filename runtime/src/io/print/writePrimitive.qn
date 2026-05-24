@@ -1,0 +1,82 @@
+pub enum RuntimePrintWriteKind {
+  Stdout,
+  Stderr,
+  Target,
+  Emergency,
+}
+
+pub struct RuntimePrintWrite {
+  kind: RuntimePrintWriteKind,
+  target: RuntimePrintTarget,
+  request: IoRequest,
+  result: IoResult,
+  partial: PartialWrite,
+  directLiteralEligible: bool,
+  retryOnInterrupted: bool,
+  preservesOrder: bool,
+  returnsResult: bool,
+  noPanic: bool,
+  noCoredump: bool,
+}
+
+impl RuntimePrintWrite {
+  pub fn stdout(byteCount: usize) -> RuntimePrintWrite {
+    return RuntimePrintWrite {
+      kind: RuntimePrintWriteKind.Stdout,
+      target: RuntimePrintTarget.stdout(),
+      request: ioRequest(IoRequestKind.WriteRequest, 1, byteCount, true),
+      result: ioResult(true, byteCount, 0),
+      partial: PartialWrite.complete(byteCount),
+      directLiteralEligible: true,
+      retryOnInterrupted: true,
+      preservesOrder: true,
+      returnsResult: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn stderr(byteCount: usize) -> RuntimePrintWrite {
+    return RuntimePrintWrite {
+      kind: RuntimePrintWriteKind.Stderr,
+      target: RuntimePrintTarget.stderr(),
+      request: ioRequest(IoRequestKind.WriteRequest, 2, byteCount, true),
+      result: ioResult(true, byteCount, 0),
+      partial: PartialWrite.complete(byteCount),
+      directLiteralEligible: true,
+      retryOnInterrupted: true,
+      preservesOrder: true,
+      returnsResult: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn partial(target: RuntimePrintTarget, requestedBytes: usize, writtenBytes: usize) -> RuntimePrintWrite {
+    return RuntimePrintWrite {
+      kind: RuntimePrintWriteKind.Target,
+      target: target,
+      request: ioRequest(IoRequestKind.WriteRequest, target.handleId, requestedBytes, true),
+      result: ioResult(false, writtenBytes, 1),
+      partial: PartialWrite.pending(requestedBytes, writtenBytes),
+      directLiteralEligible: false,
+      retryOnInterrupted: true,
+      preservesOrder: true,
+      returnsResult: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimePrintWrite) -> bool {
+    return self.target.safe()
+      && self.request.safe()
+      && self.result.safeFailure()
+      && self.partial.safe()
+      && self.retryOnInterrupted
+      && self.preservesOrder
+      && self.returnsResult
+      && self.noPanic
+      && self.noCoredump
+  }
+}

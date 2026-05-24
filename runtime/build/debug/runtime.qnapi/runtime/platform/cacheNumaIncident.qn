@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum CacheNumaIncidentKind {
+  FalseSharingRisk,
+  MissingCachePadding,
+  UnsupportedPrefetch,
+  RemoteNumaAccess,
+  PagePlacementRejected,
+}
+pub struct CacheNumaIncident {
+  kind: CacheNumaIncidentKind
+  recoverable: bool
+}

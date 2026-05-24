@@ -1,0 +1,17 @@
+pub enum TypeConstraintKind {
+  Equality
+  Assignable
+  TraitBound
+  LifetimeOutlives
+}
+
+pub struct TypeConstraint {
+  leftType: u64,
+  rightType: u64,
+  kind: TypeConstraintKind,
+  satisfied: bool,
+}
+
+pub fn typeConstraint(leftType: u64, rightType: u64, kind: TypeConstraintKind, satisfied: bool) -> TypeConstraint {
+  return TypeConstraint { leftType: leftType, rightType: rightType, kind: kind, satisfied: satisfied }
+}

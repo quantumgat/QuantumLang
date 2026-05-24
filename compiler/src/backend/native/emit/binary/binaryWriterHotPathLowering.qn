@@ -1,0 +1,21 @@
+pub struct BinaryWriterHotPathLowering {
+  chainedCallsErased: bool,
+  explicitStepsErased: bool,
+  directPointerStores: bool,
+  byteSwapLowered: bool,
+  boundsCheckHoisted: bool,
+  resultBranchNoAllocation: bool,
+  runtimeFallbackRejected: bool,
+}
+
+impl BinaryWriterHotPathLowering {
+  pub fn hotPath(self: BinaryWriterHotPathLowering) -> bool {
+    return self.chainedCallsErased
+      && self.explicitStepsErased
+      && self.directPointerStores
+      && self.byteSwapLowered
+      && self.boundsCheckHoisted
+      && self.resultBranchNoAllocation
+      && self.runtimeFallbackRejected
+  }
+}

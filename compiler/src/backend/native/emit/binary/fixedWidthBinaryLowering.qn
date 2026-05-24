@@ -1,0 +1,18 @@
+pub struct FixedWidthBinaryLowering {
+  widthBits: usize,
+  loadStoreLowered: bool,
+  byteSwapLowered: bool,
+  wideCarrierLowered: bool,
+  runtimeFallbackRejected: bool,
+}
+
+impl FixedWidthBinaryLowering {
+  pub fn accepted(self: FixedWidthBinaryLowering) -> bool {
+    return self.widthBits > 0
+      && self.widthBits <= 256
+      && self.loadStoreLowered
+      && self.byteSwapLowered
+      && self.wideCarrierLowered
+      && self.runtimeFallbackRejected
+  }
+}

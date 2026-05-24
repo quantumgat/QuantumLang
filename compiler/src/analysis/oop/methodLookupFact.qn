@@ -1,0 +1,44 @@
+pub enum MethodLookupKind {
+  Direct
+  Override
+  InterfaceRequirement
+  PropertyAccessor
+  AssociatedItem
+}
+
+pub struct MethodLookupFact {
+  receiverTypeId: u64,
+  methodId: u64,
+  kind: MethodLookupKind,
+  overloadCount: usize,
+  defaultArgumentCount: usize,
+  resolvedStatically: bool,
+}
+
+pub fn methodLookupFact(
+  receiverTypeId: u64,
+  methodId: u64,
+  kind: MethodLookupKind,
+  overloadCount: usize,
+  defaultArgumentCount: usize,
+  resolvedStatically: bool,
+) -> MethodLookupFact {
+  return MethodLookupFact {
+    receiverTypeId: receiverTypeId,
+    methodId: methodId,
+    kind: kind,
+    overloadCount: overloadCount,
+    defaultArgumentCount: defaultArgumentCount,
+    resolvedStatically: resolvedStatically,
+  }
+}
+
+impl MethodLookupFact {
+  pub fn isHotPathSafe(self: MethodLookupFact) -> bool {
+    return self.resolvedStatically || self.kind == MethodLookupKind.Direct
+  }
+
+  pub fn hasOverloadSurface(self: MethodLookupFact) -> bool {
+    return self.overloadCount > 1 || self.defaultArgumentCount > 0
+  }
+}

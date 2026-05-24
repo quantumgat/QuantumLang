@@ -1,0 +1,10 @@
+[module]
+name = "object"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-object-sections-symbols-relocations-debug"
+
+[dependencies]
+allowed = ["backend/native/machine", "backend/native/debug"]
+forbidden = ["analysis", "runtime", "backend/c", "backend/llvm"]

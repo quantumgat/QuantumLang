@@ -1,0 +1,27 @@
+pub struct BinaryCodecTypeCoverageLowering {
+  fixedIntegersDirect: bool,
+  pointerSizedPortableWidth: bool,
+  floatsUseIeeeBits: bool,
+  boolDecodeRejectsInvalidByte: bool,
+  charDecodeRejectsInvalidScalar: bool,
+  stringsUtf8Validated: bool,
+  bytesBulkCopied: bool,
+  containersInlined: bool,
+  nestedStructsInlined: bool,
+  stableCollectionsDeterministic: bool,
+}
+
+impl BinaryCodecTypeCoverageLowering {
+  pub fn hotPath(self: BinaryCodecTypeCoverageLowering) -> bool {
+    return self.fixedIntegersDirect
+      && self.pointerSizedPortableWidth
+      && self.floatsUseIeeeBits
+      && self.boolDecodeRejectsInvalidByte
+      && self.charDecodeRejectsInvalidScalar
+      && self.stringsUtf8Validated
+      && self.bytesBulkCopied
+      && self.containersInlined
+      && self.nestedStructsInlined
+      && self.stableCollectionsDeterministic
+  }
+}

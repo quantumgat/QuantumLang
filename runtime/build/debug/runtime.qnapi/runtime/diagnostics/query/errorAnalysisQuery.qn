@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeErrorAnalysisQuery {
+  subsystem: string
+  correlationId: string
+  includeSourceRanges: bool
+  includeRecovery: bool
+  redactedOnly: bool
+}

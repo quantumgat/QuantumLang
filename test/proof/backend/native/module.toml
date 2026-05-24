@@ -1,0 +1,16 @@
+[module]
+name = "nativeProof"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-release-proof-evidence"
+
+[submodules]
+binary = "binary/mod.qn"
+collections = "collections/mod.qn"
+controlFlow = "controlFlow/mod.qn"
+oop = "oop/mod.qn"
+parallel = "parallel/mod.qn"
+ptr = "ptr/mod.qn"
+release = "release/mod.qn"
+target = "target/mod.qn"

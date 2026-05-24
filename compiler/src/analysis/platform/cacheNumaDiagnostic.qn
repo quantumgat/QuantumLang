@@ -1,0 +1,19 @@
+pub struct CacheNumaDiagnostic {
+  code: string,
+  hasRange: bool,
+  blocksPerformanceHazard: bool,
+}
+
+impl CacheNumaDiagnostic {
+  pub fn init(code: string, hasRange: bool, blocksPerformanceHazard: bool) -> CacheNumaDiagnostic {
+    return CacheNumaDiagnostic {
+      code: code,
+      hasRange: hasRange,
+      blocksPerformanceHazard: blocksPerformanceHazard,
+    }
+  }
+
+  pub fn reportable(self: CacheNumaDiagnostic) -> bool {
+    return self.code != "" && self.hasRange && self.blocksPerformanceHazard
+  }
+}

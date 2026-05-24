@@ -1,0 +1,21 @@
+pub struct RuntimeDirectIoCompletion {
+  requestedBytes: usize,
+  completedBytes: usize,
+  partialErrorPreserved: bool,
+  cleanupComplete: bool,
+}
+
+impl RuntimeDirectIoCompletion {
+  pub fn init(requestedBytes: usize, completedBytes: usize, partialErrorPreserved: bool, cleanupComplete: bool) -> RuntimeDirectIoCompletion {
+    return RuntimeDirectIoCompletion {
+      requestedBytes: requestedBytes,
+      completedBytes: completedBytes,
+      partialErrorPreserved: partialErrorPreserved,
+      cleanupComplete: cleanupComplete,
+    }
+  }
+
+  pub fn accepted(self: RuntimeDirectIoCompletion) -> bool {
+    return self.completedBytes <= self.requestedBytes && self.partialErrorPreserved && self.cleanupComplete
+  }
+}

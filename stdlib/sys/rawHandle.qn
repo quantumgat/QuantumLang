@@ -1,0 +1,40 @@
+pub enum RawHandleAccess {
+  Borrowed
+  Owned
+  Duplicated
+}
+
+pub struct RawHandle {
+  handle: OsHandle,
+  capability: OsCapability,
+  access: RawHandleAccess,
+}
+
+pub fn rawHandle(handle: OsHandle, capability: OsCapability) -> Result<RawHandle, OsError>
+pub fn borrowedRaw(handle: OsHandle, capability: OsCapability) -> Result<RawHandle, OsError>
+pub fn ownedRaw(handle: OsHandle, capability: OsCapability) -> Result<RawHandle, OsError>
+pub fn stdinRaw() -> Result<RawHandle, OsError>
+pub fn stdoutRaw() -> Result<RawHandle, OsError>
+pub fn stderrRaw() -> Result<RawHandle, OsError>
+
+impl RawHandle {
+  pub fn safe(self: RawHandle) -> bool {
+    return self.handle.state == OsHandleState.Open && self.capability.allowed
+  }
+
+  pub fn borrowed(self: RawHandle) -> bool {
+    return self.access == RawHandleAccess.Borrowed
+  }
+
+  pub fn owned(self: RawHandle) -> bool {
+    return self.access == RawHandleAccess.Owned
+  }
+
+  pub fn require(self: RawHandle) -> Result<RawHandle, OsError> {
+    self.capability.require()?
+    if self.safe() {
+      return Ok(self)
+    }
+    return Err(OsError.init(OsErrorKind.InvalidHandle, "QLOS0003"))
+  }
+}

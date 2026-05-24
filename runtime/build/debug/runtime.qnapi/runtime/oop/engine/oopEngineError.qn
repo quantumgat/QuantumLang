@@ -1,0 +1,20 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum OopEngineErrorKind {
+  None
+  StaleHandle
+  AbiMismatch
+  AllocationPolicyViolation
+  DispatchUnavailable
+  DowncastFailed
+  ReflectionColdPathViolation
+  FfiBoundaryViolation
+  InterfaceLifetimeViolation
+}
+pub struct OopEngineError {
+  kind: OopEngineErrorKind
+  diagnosticCode: string
+  reportable: bool
+}
+pub extern "qnpkg" {
+  pub fn oopEngineError(kind: OopEngineErrorKind, diagnosticCode: string) -> OopEngineError
+}

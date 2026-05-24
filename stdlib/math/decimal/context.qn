@@ -1,0 +1,78 @@
+pub struct DecimalContext {
+  precision: i32,
+  scale: i32,
+  rounding: DecimalRounding,
+  traps: bool,
+}
+
+impl DecimalContext {
+  pub fn default() -> DecimalContext {
+    return DecimalContext {
+      precision: 38,
+      scale: 18,
+      rounding: DecimalRounding.HalfEven,
+      traps: true,
+    }
+  }
+
+  pub fn standard() -> DecimalContext {
+    return DecimalContext {
+      precision: 38,
+      scale: 18,
+      rounding: DecimalRounding.HalfEven,
+      traps: true,
+    }
+  }
+
+  pub fn withPrecision(precision: i32) -> DecimalContext {
+    return DecimalContext {
+      precision: precision,
+      scale: 18,
+      rounding: DecimalRounding.HalfEven,
+      traps: true,
+    }
+  }
+
+  pub fn withScale(scale: i32) -> DecimalContext {
+    return DecimalContext {
+      precision: 38,
+      scale: scale,
+      rounding: DecimalRounding.HalfEven,
+      traps: true,
+    }
+  }
+
+  pub fn money(scale: i32, rounding: DecimalRounding) -> DecimalContext {
+    return DecimalContext {
+      precision: 38,
+      scale: scale,
+      rounding: rounding,
+      traps: true,
+    }
+  }
+
+  pub fn noTraps(self: DecimalContext) -> DecimalContext {
+    return DecimalContext {
+      precision: self.precision,
+      scale: self.scale,
+      rounding: self.rounding,
+      traps: false,
+    }
+  }
+
+  pub fn precisionOf(self: DecimalContext) -> i32 {
+    return self.precision
+  }
+
+  pub fn scaleOf(self: DecimalContext) -> i32 {
+    return self.scale
+  }
+
+  pub fn roundingOf(self: DecimalContext) -> DecimalRounding {
+    return self.rounding
+  }
+
+  pub fn trapsEnabled(self: DecimalContext) -> bool {
+    return self.traps
+  }
+}

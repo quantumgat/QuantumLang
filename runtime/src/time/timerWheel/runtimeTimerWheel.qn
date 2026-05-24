@@ -1,0 +1,21 @@
+pub struct RuntimeTimerWheel {
+  slotCount: usize,
+  tickNanos: u64,
+  activeTimers: usize,
+  cancellationLinked: bool,
+}
+
+impl RuntimeTimerWheel {
+  pub fn init(slotCount: usize, tickNanos: u64, activeTimers: usize, cancellationLinked: bool) -> RuntimeTimerWheel {
+    return RuntimeTimerWheel {
+      slotCount: slotCount,
+      tickNanos: tickNanos,
+      activeTimers: activeTimers,
+      cancellationLinked: cancellationLinked,
+    }
+  }
+
+  pub fn hotPathReady(self: RuntimeTimerWheel) -> bool {
+    return self.slotCount > 0 && self.tickNanos > 0 && self.cancellationLinked
+  }
+}

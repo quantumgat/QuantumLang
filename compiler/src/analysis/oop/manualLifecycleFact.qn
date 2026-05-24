@@ -1,0 +1,49 @@
+pub enum ManualLifecycleKind {
+  ManualDrop
+  Forget
+  AsyncCleanup
+  DestructorPanicPolicy
+  LifecycleDiagnostic
+}
+
+pub struct ManualLifecycleFact {
+  factId: u64,
+  subjectId: u64,
+  kind: ManualLifecycleKind,
+  ownershipValid: bool,
+  unsafePermitRequired: bool,
+  cancellationSafe: bool,
+  diagnosticBound: bool,
+}
+
+pub fn manualLifecycleFact(
+  factId: u64,
+  subjectId: u64,
+  kind: ManualLifecycleKind,
+  ownershipValid: bool,
+  unsafePermitRequired: bool,
+  cancellationSafe: bool,
+  diagnosticBound: bool,
+) -> ManualLifecycleFact {
+  return ManualLifecycleFact {
+    factId: factId,
+    subjectId: subjectId,
+    kind: kind,
+    ownershipValid: ownershipValid,
+    unsafePermitRequired: unsafePermitRequired,
+    cancellationSafe: cancellationSafe,
+    diagnosticBound: diagnosticBound,
+  }
+}
+
+impl ManualLifecycleFact {
+  pub fn accepted(self: ManualLifecycleFact) -> bool {
+    return self.ownershipValid && (self.diagnosticBound == false)
+  }
+
+  pub fn requiresExplicitProof(self: ManualLifecycleFact) -> bool {
+    return self.unsafePermitRequired
+      || self.kind == ManualLifecycleKind.AsyncCleanup
+      || self.kind == ManualLifecycleKind.DestructorPanicPolicy
+  }
+}

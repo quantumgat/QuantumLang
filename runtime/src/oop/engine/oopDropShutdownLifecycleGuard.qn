@@ -1,0 +1,25 @@
+pub struct OopDropShutdownLifecycleGuard {
+  objectId: u64,
+  ownerTypeName: string,
+  generation: u64,
+  active: bool,
+  shutdownCompleted: bool,
+  dropped: bool,
+  shutdownBeforeDropSatisfied: bool,
+  doubleDropDiagnosticBound: bool,
+  useAfterDropDiagnosticBound: bool,
+  noCoredumpFailure: bool,
+}
+
+impl OopDropShutdownLifecycleGuard {
+  pub fn accepted(self: OopDropShutdownLifecycleGuard) -> bool {
+    return self.objectId > 0
+      && self.ownerTypeName != ""
+      && self.generation > 0
+      && self.shutdownBeforeDropSatisfied
+      && self.doubleDropDiagnosticBound
+      && self.useAfterDropDiagnosticBound
+      && self.noCoredumpFailure
+      && (self.dropped == false || (self.active == false && self.shutdownCompleted))
+  }
+}

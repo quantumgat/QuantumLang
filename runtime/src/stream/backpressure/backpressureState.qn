@@ -1,0 +1,19 @@
+pub struct BackpressureState {
+  bufferedBytes: usize,
+  highWatermark: usize,
+  paused: bool,
+}
+
+pub fn backpressureState(bufferedBytes: usize, highWatermark: usize) -> BackpressureState {
+  return BackpressureState {
+    bufferedBytes: bufferedBytes,
+    highWatermark: highWatermark,
+    paused: bufferedBytes >= highWatermark,
+  }
+}
+
+impl BackpressureState {
+  pub fn canAccept(self: BackpressureState) -> bool {
+    return self.paused == false
+  }
+}

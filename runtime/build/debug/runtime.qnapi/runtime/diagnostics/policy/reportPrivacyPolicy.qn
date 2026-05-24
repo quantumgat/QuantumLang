@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ReportPrivacyPolicy {
+  redactSecrets: bool
+  redactPaths: bool
+  redactEnv: bool
+  redactCommandArgs: bool
+  stableIdsOnly: bool
+  rawPointersForbidden: bool
+  productionSafe: bool
+}
+pub extern "qnpkg" {
+  pub fn reportPrivacyPolicy() -> ReportPrivacyPolicy
+}

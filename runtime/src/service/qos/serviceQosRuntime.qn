@@ -1,0 +1,21 @@
+pub struct RuntimeServiceQos {
+  serviceId: u64,
+  priority: usize,
+  backpressureReady: bool,
+  overloadProtected: bool,
+}
+
+impl RuntimeServiceQos {
+  pub fn init(serviceId: u64, priority: usize, backpressureReady: bool, overloadProtected: bool) -> RuntimeServiceQos {
+    return RuntimeServiceQos {
+      serviceId: serviceId,
+      priority: priority,
+      backpressureReady: backpressureReady,
+      overloadProtected: overloadProtected,
+    }
+  }
+
+  pub fn safe(self: RuntimeServiceQos) -> bool {
+    return self.serviceId > 0 && self.backpressureReady && self.overloadProtected
+  }
+}

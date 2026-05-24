@@ -1,0 +1,12 @@
+pub struct MacosLinkPlan {
+  target: string,
+  machoRequired: bool,
+  appleLdSupported: bool,
+  codesignAware: bool,
+}
+
+impl MacosLinkPlan {
+  pub fn accepted(self: MacosLinkPlan) -> bool {
+    return self.target != "" && self.machoRequired && self.appleLdSupported
+  }
+}

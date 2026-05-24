@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PluginLoadedKernel {
+  library: PluginDynamicLibrary
+  signature: PluginKernelSignature
+  targetGate: PluginKernelTargetGate
+  boundary: PluginKernelBoundary
+  lifecycle: PluginKernelLifecycle
+  generation: u64
+  handleChecked: bool
+}

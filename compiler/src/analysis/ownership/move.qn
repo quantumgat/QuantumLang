@@ -1,0 +1,15 @@
+pub struct MoveFact {
+  sourceSymbol: u64,
+  targetSymbol: u64,
+  consumed: bool,
+}
+
+pub fn moveFact(sourceSymbol: u64, targetSymbol: u64, consumed: bool) -> MoveFact {
+  return MoveFact { sourceSymbol: sourceSymbol, targetSymbol: targetSymbol, consumed: consumed }
+}
+
+impl MoveFact {
+  pub fn sourceConsumed(self: MoveFact) -> bool {
+    return self.consumed
+  }
+}

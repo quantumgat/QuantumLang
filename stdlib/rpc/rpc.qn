@@ -1,0 +1,6 @@
+pub struct RpcClient {
+  endpoint: string,
+}
+
+pub fn client(endpoint: string) -> RpcClient
+pub fn endpoint(client: RpcClient) -> string

@@ -1,0 +1,33 @@
+pub enum CancellationCleanupKind {
+  TaskFrame
+  TimerEntry
+  ChannelWaiter
+  ReactorRegistration
+}
+
+pub struct CancellationCleanup {
+  tokenId: u64,
+  kind: CancellationCleanupKind,
+  cleanupEdges: usize,
+  noAllocationRequired: bool,
+}
+
+impl CancellationCleanup {
+  pub fn init(
+    tokenId: u64,
+    kind: CancellationCleanupKind,
+    cleanupEdges: usize,
+    noAllocationRequired: bool,
+  ) -> CancellationCleanup {
+    return CancellationCleanup {
+      tokenId: tokenId,
+      kind: kind,
+      cleanupEdges: cleanupEdges,
+      noAllocationRequired: noAllocationRequired,
+    }
+  }
+
+  pub fn safe(self: CancellationCleanup) -> bool {
+    return self.tokenId > 0 && self.cleanupEdges > 0 && self.noAllocationRequired
+  }
+}

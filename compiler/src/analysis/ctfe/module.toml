@@ -1,0 +1,7 @@
+[module]
+name = "ctfe"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "compile-time-evaluation-analysis"
+

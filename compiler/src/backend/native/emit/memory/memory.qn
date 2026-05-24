@@ -1,0 +1,35 @@
+pub use allocatorLowering.AllocatorLowering
+pub use allocatorDomainLowering.AllocatorDomainLowering
+pub use boundsEliminationLowering.BoundsEliminationLowering
+pub use directIoCompletionLowering.DirectIoCompletionLowering
+pub use directIoLowering.DirectIoLowering
+pub use directMemoryLowering.DirectMemoryLowering
+pub use directMemoryLowering.DirectMemoryOpKind
+pub use ffiCallbackLowering.FfiCallbackLowering
+pub use ffiThreadAffinityLowering.FfiThreadAffinityLowering
+pub use foreignMemoryLowering.ForeignMemoryLowering
+pub use mmapViewLowering.MmapViewLowering
+pub use pageLockLowering.PageLockLowering
+pub use pointerAccessLowering.PointerAccessLowering
+pub use pointerIntrinsicLowering.PointerIntrinsicLowering
+pub use pointerMirNativeLowering.PointerMirNativeLowering
+pub use layoutLowering.LayoutLowering
+pub use memoryLoweringProof.MemoryLoweringProof
+pub use relativePointerLowering.RelativePointerLowering
+pub use revocationLowering.RevocationLowering
+pub use sharedMemorySyncLowering.SharedMemorySyncLowering
+pub use smartPointerLowering.SmartPointerLowering
+pub use smartPointerRuntimeLowering.SmartPointerRuntimeLowering
+pub use zeroCopyViewLowering.ZeroCopyViewLowering
+
+pub struct MemoryEmitPlan {
+  directLoadStore: bool,
+  allocatorDomainChecked: bool,
+  zeroCopyEligible: bool,
+}
+
+impl MemoryEmitPlan {
+  pub fn ready(self: MemoryEmitPlan) -> bool {
+    return self.directLoadStore && self.allocatorDomainChecked
+  }
+}

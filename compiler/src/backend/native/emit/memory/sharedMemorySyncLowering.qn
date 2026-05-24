@@ -1,0 +1,19 @@
+pub struct SharedMemorySyncLowering {
+  emitsFlush: bool,
+  emitsSync: bool,
+  preservesPartialError: bool,
+}
+
+impl SharedMemorySyncLowering {
+  pub fn init(emitsFlush: bool, emitsSync: bool, preservesPartialError: bool) -> SharedMemorySyncLowering {
+    return SharedMemorySyncLowering {
+      emitsFlush: emitsFlush,
+      emitsSync: emitsSync,
+      preservesPartialError: preservesPartialError,
+    }
+  }
+
+  pub fn accepted(self: SharedMemorySyncLowering) -> bool {
+    return self.emitsFlush && self.emitsSync && self.preservesPartialError
+  }
+}

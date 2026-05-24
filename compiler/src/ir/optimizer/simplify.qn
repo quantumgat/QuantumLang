@@ -1,0 +1,13 @@
+pub struct SimplifyPlan {
+  targetLayer: string,
+  foldCount: usize,
+  removesDeadBlocks: bool,
+}
+
+pub fn simplifyPlan(targetLayer: string, foldCount: usize, removesDeadBlocks: bool) -> SimplifyPlan {
+  return SimplifyPlan {
+    targetLayer: targetLayer,
+    foldCount: foldCount,
+    removesDeadBlocks: removesDeadBlocks,
+  }
+}

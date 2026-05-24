@@ -1,0 +1,11 @@
+pub struct StdlibBuiltinBridge {
+  symbolName: string,
+  builtinName: string,
+  compilerOwned: bool,
+}
+
+impl StdlibBuiltinBridge {
+  pub fn accepted(self: StdlibBuiltinBridge) -> bool {
+    return self.symbolName != "" && self.builtinName != "" && self.compilerOwned
+  }
+}

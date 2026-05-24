@@ -1,0 +1,220 @@
+pub enum RuntimeIncidentKind {
+  Panic,
+  MemoryError,
+  TaskFailure,
+  AsyncCancellation,
+  OsFailure,
+  FatalRuntimeBoundary,
+}
+
+pub struct RuntimeIncidentSource {
+  subsystem: string,
+  sourceFile: string,
+  functionName: string,
+  line: u32,
+  column: u32,
+  sourceMapped: bool,
+  redacted: bool,
+}
+
+pub struct RuntimeIncidentContext {
+  taskId: u64,
+  threadId: u64,
+  actorId: u64,
+  cancellationId: u64,
+  traceId: u64,
+  spanId: u64,
+  asyncBoundary: bool,
+  taskContextPreserved: bool,
+}
+
+pub struct RuntimeIncident {
+  incidentId: u64,
+  kind: RuntimeIncidentKind,
+  code: string,
+  category: string,
+  source: RuntimeIncidentSource,
+  context: RuntimeIncidentContext,
+  memoryReport: MemoryIncident,
+  osReport: OsIoIncident,
+  recoverable: bool,
+  fatalBoundary: bool,
+  panicCaptured: bool,
+  redacted: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeIncidentSource {
+  pub fn runtime(subsystem: string, functionName: string) -> RuntimeIncidentSource {
+    return RuntimeIncidentSource {
+      subsystem: subsystem,
+      sourceFile: "",
+      functionName: functionName,
+      line: 0,
+      column: 0,
+      sourceMapped: true,
+      redacted: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeIncidentSource) -> bool {
+    return self.subsystem != ""
+      && self.functionName != ""
+      && self.sourceMapped
+      && self.redacted
+  }
+}
+
+impl RuntimeIncidentContext {
+  pub fn task(taskId: u64, threadId: u64) -> RuntimeIncidentContext {
+    return RuntimeIncidentContext {
+      taskId: taskId,
+      threadId: threadId,
+      actorId: 0,
+      cancellationId: 0,
+      traceId: 0,
+      spanId: 0,
+      asyncBoundary: false,
+      taskContextPreserved: true,
+    }
+  }
+
+  pub fn cancellation(taskId: u64, threadId: u64, cancellationId: u64) -> RuntimeIncidentContext {
+    return RuntimeIncidentContext {
+      taskId: taskId,
+      threadId: threadId,
+      actorId: 0,
+      cancellationId: cancellationId,
+      traceId: 0,
+      spanId: 0,
+      asyncBoundary: true,
+      taskContextPreserved: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeIncidentContext) -> bool {
+    return self.threadId > 0 && self.taskContextPreserved
+  }
+}
+
+impl RuntimeIncident {
+  pub fn panic(incidentId: u64, code: string, source: RuntimeIncidentSource, context: RuntimeIncidentContext) -> RuntimeIncident {
+    return RuntimeIncident {
+      incidentId: incidentId,
+      kind: RuntimeIncidentKind.Panic,
+      code: code,
+      category: "panic",
+      source: source,
+      context: context,
+      memoryReport: MemoryIncident.init(incidentId, MemoryIncidentKind.OutOfMemory, 0, 0),
+      osReport: OsIoIncident.mapped(OsIoIncidentKind.PlatformMapped, "runtime", 0, "QRT0000"),
+      recoverable: true,
+      fatalBoundary: false,
+      panicCaptured: true,
+      redacted: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn memory(incidentId: u64, code: string, source: RuntimeIncidentSource, context: RuntimeIncidentContext, memoryReport: MemoryIncident) -> RuntimeIncident {
+    return RuntimeIncident {
+      incidentId: incidentId,
+      kind: RuntimeIncidentKind.MemoryError,
+      code: code,
+      category: "memory",
+      source: source,
+      context: context,
+      memoryReport: memoryReport.redactedForReport(),
+      osReport: OsIoIncident.mapped(OsIoIncidentKind.PlatformMapped, "runtime", 0, "QRT0000"),
+      recoverable: memoryReport.recoverable,
+      fatalBoundary: false,
+      panicCaptured: false,
+      redacted: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn taskFailure(incidentId: u64, code: string, source: RuntimeIncidentSource, context: RuntimeIncidentContext) -> RuntimeIncident {
+    return RuntimeIncident {
+      incidentId: incidentId,
+      kind: RuntimeIncidentKind.TaskFailure,
+      code: code,
+      category: "task",
+      source: source,
+      context: context,
+      memoryReport: MemoryIncident.init(incidentId, MemoryIncidentKind.OutOfMemory, 0, 0),
+      osReport: OsIoIncident.mapped(OsIoIncidentKind.PlatformMapped, "runtime", 0, "QRT0000"),
+      recoverable: true,
+      fatalBoundary: false,
+      panicCaptured: false,
+      redacted: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn asyncCancellation(incidentId: u64, code: string, source: RuntimeIncidentSource, context: RuntimeIncidentContext) -> RuntimeIncident {
+    return RuntimeIncident {
+      incidentId: incidentId,
+      kind: RuntimeIncidentKind.AsyncCancellation,
+      code: code,
+      category: "async",
+      source: source,
+      context: context,
+      memoryReport: MemoryIncident.init(incidentId, MemoryIncidentKind.OutOfMemory, 0, 0),
+      osReport: OsIoIncident.mapped(OsIoIncidentKind.Cancelled, "runtime", 0, "QIO0004"),
+      recoverable: true,
+      fatalBoundary: false,
+      panicCaptured: false,
+      redacted: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn osFailure(incidentId: u64, code: string, source: RuntimeIncidentSource, context: RuntimeIncidentContext, osReport: OsIoIncident) -> RuntimeIncident {
+    return RuntimeIncident {
+      incidentId: incidentId,
+      kind: RuntimeIncidentKind.OsFailure,
+      code: code,
+      category: "os",
+      source: source,
+      context: context,
+      memoryReport: MemoryIncident.init(incidentId, MemoryIncidentKind.OutOfMemory, 0, 0),
+      osReport: osReport,
+      recoverable: osReport.retryable,
+      fatalBoundary: false,
+      panicCaptured: false,
+      redacted: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn fatalBoundary(incidentId: u64, code: string, source: RuntimeIncidentSource, context: RuntimeIncidentContext) -> RuntimeIncident {
+    return RuntimeIncident {
+      incidentId: incidentId,
+      kind: RuntimeIncidentKind.FatalRuntimeBoundary,
+      code: code,
+      category: "fatal",
+      source: source,
+      context: context,
+      memoryReport: MemoryIncident.init(incidentId, MemoryIncidentKind.OutOfMemory, 0, 0),
+      osReport: OsIoIncident.mapped(OsIoIncidentKind.PlatformMapped, "runtime", 0, "QRTF0001"),
+      recoverable: false,
+      fatalBoundary: true,
+      panicCaptured: true,
+      redacted: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeIncident) -> bool {
+    return self.incidentId > 0
+      && self.code != ""
+      && self.category != ""
+      && self.source.safe()
+      && self.context.safe()
+      && self.memoryReport.productionSafe()
+      && self.osReport.safe()
+      && self.redacted
+      && self.noCoredump
+  }
+}

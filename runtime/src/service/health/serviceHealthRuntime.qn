@@ -1,0 +1,21 @@
+pub struct RuntimeServiceHealth {
+  serviceId: u64,
+  healthy: bool,
+  failureCount: usize,
+  diagnosticReady: bool,
+}
+
+impl RuntimeServiceHealth {
+  pub fn init(serviceId: u64, healthy: bool, failureCount: usize, diagnosticReady: bool) -> RuntimeServiceHealth {
+    return RuntimeServiceHealth {
+      serviceId: serviceId,
+      healthy: healthy,
+      failureCount: failureCount,
+      diagnosticReady: diagnosticReady,
+    }
+  }
+
+  pub fn reportable(self: RuntimeServiceHealth) -> bool {
+    return self.serviceId > 0 && self.diagnosticReady
+  }
+}

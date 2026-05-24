@@ -1,0 +1,22 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeNetReactorShard {
+  shard: usize
+  backend: RuntimeNetPlatformBackend
+  registeredSockets: usize
+  pendingWakeups: usize
+  cancellationSafe: bool
+}
+pub struct RuntimeNetWake {
+  socket: RuntimeSocketHandle
+  readable: bool
+  writable: bool
+  cancelled: bool
+  deadlineExpired: bool
+}
+pub struct RuntimeNetReactor {
+  shardCount: usize
+  deterministicTestBackend: bool
+  perCoreSharding: bool
+  crashlessFailure: bool
+  cancellationCleanup: bool
+}

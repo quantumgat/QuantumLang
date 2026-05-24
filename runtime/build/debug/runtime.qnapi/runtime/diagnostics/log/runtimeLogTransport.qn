@@ -1,0 +1,19 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeLogTransportKind {
+  Direct,
+  BoundedQueue,
+  ObserverFanout,
+  EmergencyIncident,
+}
+pub struct RuntimeLogTransport {
+  kind: RuntimeLogTransportKind
+  queueCapacity: usize
+  queuedEvents: usize
+  sequence: u64
+  preservesOrder: bool
+  bounded: bool
+  observerFanout: bool
+  incidentFallback: bool
+  redactsBeforeEnqueue: bool
+  noCoredump: bool
+}

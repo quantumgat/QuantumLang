@@ -1,0 +1,21 @@
+pub struct HardwareBoundsFact {
+  node: u64,
+  boundsChecked: bool,
+  provenanceChecked: bool,
+  tagChecked: bool,
+}
+
+impl HardwareBoundsFact {
+  pub fn init(node: u64, boundsChecked: bool, provenanceChecked: bool, tagChecked: bool) -> HardwareBoundsFact {
+    return HardwareBoundsFact {
+      node: node,
+      boundsChecked: boundsChecked,
+      provenanceChecked: provenanceChecked,
+      tagChecked: tagChecked,
+    }
+  }
+
+  pub fn accepted(self: HardwareBoundsFact) -> bool {
+    return self.boundsChecked && self.provenanceChecked && self.tagChecked
+  }
+}

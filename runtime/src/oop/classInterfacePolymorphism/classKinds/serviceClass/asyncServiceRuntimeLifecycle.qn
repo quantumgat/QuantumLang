@@ -1,0 +1,25 @@
+pub struct AsyncServiceRuntimeLifecycle {
+  typeId: u64,
+  dependencyGraphRuntimeBound: bool,
+  startupRuntimeBound: bool,
+  readinessRuntimeBound: bool,
+  healthRuntimeBound: bool,
+  reconnectRetryRuntimeBound: bool,
+  cancellationSafeShutdownBound: bool,
+  typedFailureBound: bool,
+  noCoredumpFailureBound: bool,
+}
+
+impl AsyncServiceRuntimeLifecycle {
+  pub fn complete(self: AsyncServiceRuntimeLifecycle) -> bool {
+    return self.typeId > 0
+      && self.dependencyGraphRuntimeBound
+      && self.startupRuntimeBound
+      && self.readinessRuntimeBound
+      && self.healthRuntimeBound
+      && self.reconnectRetryRuntimeBound
+      && self.cancellationSafeShutdownBound
+      && self.typedFailureBound
+      && self.noCoredumpFailureBound
+  }
+}

@@ -1,0 +1,19 @@
+pub struct AtomicFenceFact {
+  node: u64,
+  ordering: AtomicOrdering,
+  targetSupported: bool,
+}
+
+impl AtomicFenceFact {
+  pub fn init(node: u64, ordering: AtomicOrdering, targetSupported: bool) -> AtomicFenceFact {
+    return AtomicFenceFact {
+      node: node,
+      ordering: ordering,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn accepted(self: AtomicFenceFact) -> bool {
+    return self.targetSupported && self.ordering != AtomicOrdering.Relaxed
+  }
+}

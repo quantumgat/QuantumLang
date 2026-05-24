@@ -1,0 +1,19 @@
+pub struct UnsupportedBackendFeature {
+  feature: string,
+  target: string,
+  diagnosticBeforeArtifact: bool,
+}
+
+pub fn unsupportedBackendFeature(feature: string, target: string) -> UnsupportedBackendFeature {
+  return UnsupportedBackendFeature {
+    feature: feature,
+    target: target,
+    diagnosticBeforeArtifact: true,
+  }
+}
+
+impl UnsupportedBackendFeature {
+  pub fn stopsBeforeArtifact(self: UnsupportedBackendFeature) -> bool {
+    return self.diagnosticBeforeArtifact
+  }
+}

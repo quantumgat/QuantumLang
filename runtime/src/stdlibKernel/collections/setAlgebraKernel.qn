@@ -1,0 +1,67 @@
+pub struct SetAlgebraKernel {
+  hashBacked: bool,
+  membershipFastPath: bool,
+  algebraFastPath: bool,
+  builderFastPath: bool,
+  iteratorSnapshotStable: bool,
+  directCursorLowered: bool,
+  cursorObjectErased: bool,
+  optionWrapErased: bool,
+  directBucketLoadLowered: bool,
+  predicateInlineReady: bool,
+  probeChecksMinimized: bool,
+  iteratorCursorLowered: bool,
+  toVecCursorLowered: bool,
+  lookupInsertRemoveRawProbe: bool,
+  growRehashRawBuckets: bool,
+  benchmarkProofRequired: bool,
+}
+
+impl SetAlgebraKernel {
+  pub fn init() -> SetAlgebraKernel {
+    return SetAlgebraKernel {
+      hashBacked: true,
+      membershipFastPath: true,
+      algebraFastPath: true,
+      builderFastPath: true,
+      iteratorSnapshotStable: true,
+      directCursorLowered: true,
+      cursorObjectErased: true,
+      optionWrapErased: true,
+      directBucketLoadLowered: true,
+      predicateInlineReady: true,
+      probeChecksMinimized: true,
+      iteratorCursorLowered: true,
+      toVecCursorLowered: true,
+      lookupInsertRemoveRawProbe: true,
+      growRehashRawBuckets: true,
+      benchmarkProofRequired: true,
+    }
+  }
+
+  pub fn canRunAlgebraFastPath(self: SetAlgebraKernel) -> bool {
+    return self.hashBacked
+      && self.membershipFastPath
+      && self.algebraFastPath
+      && self.iteratorSnapshotStable
+      && self.directCursorLowered
+      && self.cursorObjectErased
+      && self.optionWrapErased
+      && self.directBucketLoadLowered
+      && self.probeChecksMinimized
+      && self.iteratorCursorLowered
+      && self.toVecCursorLowered
+      && self.lookupInsertRemoveRawProbe
+  }
+
+  pub fn canRunBuilderFastPath(self: SetAlgebraKernel) -> bool {
+    return self.hashBacked && self.builderFastPath
+  }
+
+  pub fn canProveNativeHotPath(self: SetAlgebraKernel) -> bool {
+    return self.canRunAlgebraFastPath()
+      && self.predicateInlineReady
+      && self.growRehashRawBuckets
+      && self.benchmarkProofRequired
+  }
+}

@@ -1,0 +1,70 @@
+pub struct HttpAppDependencyAutowireProof {
+  endUserRegistersOnlyStateAndController: bool,
+  stateProvidersAvailableEverywhere: bool,
+  componentChainComplete: bool,
+  missingDependencyDiagnosed: bool,
+  appPlanExposesDependencyGraph: bool,
+}
+
+impl HttpAppDependencyAutowireProof {
+  pub fn init(
+    userPlan: AppPlan,
+    generatedGraph: AppDependencyGraph,
+    missingGraph: AppDependencyGraph,
+  ) -> HttpAppDependencyAutowireProof {
+    return HttpAppDependencyAutowireProof {
+      endUserRegistersOnlyStateAndController: userPlan.controllerCount() == 1
+        && userPlan.dependencyGraph().nodeCount() == 4,
+      stateProvidersAvailableEverywhere: generatedGraph.hasProvider<Database>()
+        && generatedGraph.hasProvider<SearchEngine>()
+        && generatedGraph.hasProvider<Cache>(),
+      componentChainComplete: generatedGraph.complete()
+        && generatedGraph.edgeCount() == 8,
+      missingDependencyDiagnosed: !missingGraph.complete()
+        && missingGraph.issueCount() == 1,
+      appPlanExposesDependencyGraph: userPlan.dependenciesComplete(),
+    }
+  }
+
+  pub fn complete(self: HttpAppDependencyAutowireProof) -> bool {
+    return self.endUserRegistersOnlyStateAndController
+      && self.stateProvidersAvailableEverywhere
+      && self.componentChainComplete
+      && self.missingDependencyDiagnosed
+      && self.appPlanExposesDependencyGraph
+  }
+}
+
+pub fn httpAppDependencyAutowireProof() -> HttpAppDependencyAutowireProof {
+  let userApp = App()
+    .state(Database())
+    .state(SearchEngine())
+    .state(Cache())
+    .controller<ProductApi>()
+
+  let generatedGraph = AppDependencyGraph
+    .empty()
+    .addState<Database>()
+    .addState<SearchEngine>()
+    .addState<Cache>()
+    .addController<ProductApi>()
+    .addGeneratedComponent<ProductObserver>()
+    .addGeneratedComponent<ProductWorkflow>()
+    .addGeneratedComponent<ProductService>()
+    .addGeneratedComponent<ProductRepo>()
+    .requireField<ProductApi, ProductObserver>()
+    .requireField<ProductObserver, ProductWorkflow>()
+    .requireField<ProductWorkflow, ProductService>()
+    .requireConstructor<ProductService, ProductRepo>()
+    .requireField<ProductRepo, Database>()
+    .requireField<ProductRepo, SearchEngine>()
+    .requireField<ProductRepo, Cache>()
+    .requireField<ProductService, Cache>()
+
+  let missingGraph = AppDependencyGraph
+    .empty()
+    .addController<ProductApi>()
+    .requireField<ProductApi, ProductObserver>()
+
+  return HttpAppDependencyAutowireProof.init(userApp.plan(8080), generatedGraph, missingGraph)
+}

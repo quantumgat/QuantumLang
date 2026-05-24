@@ -1,0 +1,48 @@
+pub enum ComplexAmplitudeKind {
+  GateParameter
+  MatrixElement
+  StateVectorElement
+  ProviderResult
+}
+
+pub struct ComplexAmplitudeFact {
+  node: u64,
+  typeId: u64,
+  kind: ComplexAmplitudeKind,
+  normalized: bool,
+  qirMappable: bool,
+}
+
+pub fn complexAmplitudeFact(
+  node: u64,
+  typeId: u64,
+  kind: ComplexAmplitudeKind,
+  normalized: bool,
+  qirMappable: bool
+) -> ComplexAmplitudeFact {
+  return ComplexAmplitudeFact {
+    node: node,
+    typeId: typeId,
+    kind: kind,
+    normalized: normalized,
+    qirMappable: qirMappable,
+  }
+}
+
+impl ComplexAmplitudeFact {
+  pub fn nodeId(self: ComplexAmplitudeFact) -> u64 {
+    return self.node
+  }
+
+  pub fn amplitudeKind(self: ComplexAmplitudeFact) -> ComplexAmplitudeKind {
+    return self.kind
+  }
+
+  pub fn isNormalized(self: ComplexAmplitudeFact) -> bool {
+    return self.normalized
+  }
+
+  pub fn canMapToQir(self: ComplexAmplitudeFact) -> bool {
+    return self.qirMappable
+  }
+}

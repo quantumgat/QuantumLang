@@ -1,0 +1,166 @@
+pub enum MirMatchOpKind {
+  JumpTable
+  BinarySearchTree
+  OrderedRangeTree
+  TagSwitch
+  TypeNarrowingCheck
+  FieldCheckChain
+  LengthShapeCheck
+  PerfectHashString
+  BinaryPrefixLoad
+  GuardBranch
+}
+
+pub struct MirMatchOp {
+  instruction: u64,
+  kind: MirMatchOpKind,
+  armCount: usize,
+  allocationFree: bool,
+  directBranchLowering: bool,
+  destructureChecksDirect: bool,
+  orPatternBranchesMerged: bool,
+  typeTestsDirect: bool,
+  guardBranchesDirect: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+pub struct MirMatchInput {
+  hir: HirMatchHandoff,
+  instruction: u64,
+  kind: MirMatchOpKind,
+  guardCount: usize,
+  branchTableEligible: bool,
+  destructureChecksRequired: bool,
+  orPatternMergeRequired: bool,
+  typeTestsRequired: bool,
+}
+
+pub struct MirMatchBuild {
+  op: MirMatchOp,
+  nativeSeedInstruction: u64,
+  readyForNative: bool,
+}
+
+pub fn mirMatchOp(
+  instruction: u64,
+  kind: MirMatchOpKind,
+  armCount: usize,
+  allocationFree: bool,
+  directBranchLowering: bool,
+  destructureChecksDirect: bool,
+  orPatternBranchesMerged: bool,
+  typeTestsDirect: bool,
+  guardBranchesDirect: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+) -> MirMatchOp {
+  return MirMatchOp {
+    instruction: instruction,
+    kind: kind,
+    armCount: armCount,
+    allocationFree: allocationFree,
+    directBranchLowering: directBranchLowering,
+    destructureChecksDirect: destructureChecksDirect,
+    orPatternBranchesMerged: orPatternBranchesMerged,
+    typeTestsDirect: typeTestsDirect,
+    guardBranchesDirect: guardBranchesDirect,
+    sourceMapReady: sourceMapReady,
+    safeFailureReady: safeFailureReady,
+  }
+}
+
+pub fn mirMatchInput(
+  hir: HirMatchHandoff,
+  instruction: u64,
+  kind: MirMatchOpKind,
+  guardCount: usize,
+  branchTableEligible: bool,
+  destructureChecksRequired: bool,
+  orPatternMergeRequired: bool,
+  typeTestsRequired: bool,
+) -> MirMatchInput {
+  return MirMatchInput {
+    hir: hir,
+    instruction: instruction,
+    kind: kind,
+    guardCount: guardCount,
+    branchTableEligible: branchTableEligible,
+    destructureChecksRequired: destructureChecksRequired,
+    orPatternMergeRequired: orPatternMergeRequired,
+    typeTestsRequired: typeTestsRequired,
+  }
+}
+
+pub fn buildMirMatch(input: MirMatchInput) -> MirMatchBuild {
+  let hirReady = input.hir.executableHotPathReady()
+  let directBranchLowering = hirReady && input.branchTableEligible
+  let destructureChecksDirect = !input.destructureChecksRequired || hirReady
+  let orPatternBranchesMerged = !input.orPatternMergeRequired || hirReady
+  let typeTestsDirect = !input.typeTestsRequired || hirReady
+  let guardBranchesDirect = input.guardCount == 0 || hirReady
+  let instruction = matchInstruction(input)
+
+  let op = mirMatchOp(
+    instruction,
+    input.kind,
+    input.hir.armTotal(),
+    true,
+    directBranchLowering,
+    destructureChecksDirect,
+    orPatternBranchesMerged,
+    typeTestsDirect,
+    guardBranchesDirect,
+    hirReady,
+    hirReady
+  )
+
+  return MirMatchBuild {
+    op: op,
+    nativeSeedInstruction: instruction + input.hir.armTotal() + input.guardCount + 1,
+    readyForNative: op.executableHotPathReady(),
+  }
+}
+
+pub fn matchInstruction(input: MirMatchInput) -> u64 {
+  if input.instruction > 0 {
+    return input.instruction
+  }
+
+  return input.hir.sourceNodeId() + 1
+}
+
+impl MirMatchOp {
+  pub fn instructionId(self: MirMatchOp) -> u64 {
+    return self.instruction
+  }
+
+  pub fn armTotal(self: MirMatchOp) -> usize {
+    return self.armCount
+  }
+
+  pub fn hotLowerable(self: MirMatchOp) -> bool {
+    return self.instruction > 0
+      && self.armCount > 0
+      && self.allocationFree
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+
+  pub fn executableHotPathReady(self: MirMatchOp) -> bool {
+    return self.hotLowerable()
+      && self.directBranchLowering
+      && self.destructureChecksDirect
+      && self.orPatternBranchesMerged
+      && self.typeTestsDirect
+      && self.guardBranchesDirect
+  }
+}
+
+impl MirMatchBuild {
+  pub fn complete(self: MirMatchBuild) -> bool {
+    return self.op.executableHotPathReady()
+      && self.nativeSeedInstruction > 0
+      && self.readyForNative
+  }
+}

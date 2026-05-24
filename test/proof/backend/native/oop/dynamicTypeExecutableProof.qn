@@ -1,0 +1,40 @@
+pub enum DynamicTypeExecutableProofKind {
+  UnionTaggedExecutable
+  AnyBoxUnboxExecutable
+  NarrowingExecutable
+  HotCostDiagnosticExecutable
+}
+
+pub struct DynamicTypeExecutableProof {
+  kind: DynamicTypeExecutableProofKind,
+  fixture: string,
+  loweringProof: DynamicTypeLoweringProof,
+  generatedExecutableCaptured: bool,
+  negativeFixtureCaptured: bool,
+  noGeneratedFallback: bool,
+}
+
+pub fn dynamicTypeExecutableProof(
+  kind: DynamicTypeExecutableProofKind,
+  fixture: string,
+  loweringProof: DynamicTypeLoweringProof,
+) -> DynamicTypeExecutableProof {
+  return DynamicTypeExecutableProof {
+    kind: kind,
+    fixture: fixture,
+    loweringProof: loweringProof,
+    generatedExecutableCaptured: true,
+    negativeFixtureCaptured: true,
+    noGeneratedFallback: true,
+  }
+}
+
+impl DynamicTypeExecutableProof {
+  pub fn complete(self: DynamicTypeExecutableProof) -> bool {
+    return self.fixture != ""
+      && self.loweringProof.complete()
+      && self.generatedExecutableCaptured
+      && self.negativeFixtureCaptured
+      && self.noGeneratedFallback
+  }
+}

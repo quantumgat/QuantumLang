@@ -1,0 +1,6 @@
+[module]
+name = "ptr.borrow.mutSlice"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "pointer-mutable-slice"

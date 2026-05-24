@@ -1,0 +1,15 @@
+pub struct PurityFact {
+  callable: u64,
+  pure: bool,
+  reasonCode: u32,
+}
+
+pub fn purityFact(callable: u64, pure: bool, reasonCode: u32) -> PurityFact {
+  return PurityFact { callable: callable, pure: pure, reasonCode: reasonCode }
+}
+
+impl PurityFact {
+  pub fn isPure(self: PurityFact) -> bool {
+    return self.pure
+  }
+}

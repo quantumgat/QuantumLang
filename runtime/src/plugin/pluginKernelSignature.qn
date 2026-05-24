@@ -1,0 +1,32 @@
+pub struct PluginKernelSignature {
+  symbol: string,
+  inputAbiHash: string,
+  outputAbiHash: string,
+  targetFeatureCount: usize,
+  typedFailure: PluginRuntimePolicy,
+  sourceMapped: bool,
+  deterministic: bool,
+}
+
+impl PluginKernelSignature {
+  pub fn declared(symbol: string, inputAbiHash: string, outputAbiHash: string, targetFeatureCount: usize) -> PluginKernelSignature {
+    return PluginKernelSignature {
+      symbol: symbol,
+      inputAbiHash: inputAbiHash,
+      outputAbiHash: outputAbiHash,
+      targetFeatureCount: targetFeatureCount,
+      typedFailure: PluginRuntimePolicy.Required,
+      sourceMapped: true,
+      deterministic: true,
+    }
+  }
+
+  pub fn accepted(self: PluginKernelSignature) -> bool {
+    return self.symbol != ""
+      && self.inputAbiHash != ""
+      && self.outputAbiHash != ""
+      && self.typedFailure == PluginRuntimePolicy.Required
+      && self.sourceMapped
+      && self.deterministic
+  }
+}

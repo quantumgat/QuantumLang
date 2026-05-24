@@ -1,0 +1,32 @@
+pub struct RuntimeLogDropPolicy {
+  reason: string,
+  droppedEvents: usize,
+  preservesNewestCritical: bool,
+  countsDrops: bool,
+  emitsIncidentWhenThresholdCrossed: bool,
+  redactedDropSummary: bool,
+  noAllocationSummary: bool,
+}
+
+impl RuntimeLogDropPolicy {
+  pub fn pressure(reason: string) -> RuntimeLogDropPolicy {
+    return RuntimeLogDropPolicy {
+      reason: reason,
+      droppedEvents: 0,
+      preservesNewestCritical: true,
+      countsDrops: true,
+      emitsIncidentWhenThresholdCrossed: true,
+      redactedDropSummary: true,
+      noAllocationSummary: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeLogDropPolicy) -> bool {
+    return self.reason != ""
+      && self.preservesNewestCritical
+      && self.countsDrops
+      && self.emitsIncidentWhenThresholdCrossed
+      && self.redactedDropSummary
+      && self.noAllocationSummary
+  }
+}

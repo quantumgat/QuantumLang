@@ -1,0 +1,30 @@
+pub struct PluginSourceMapBridge {
+  pluginName: string,
+  sourceRoot: string,
+  sourceMapsRequired: bool,
+  generatedRangesRejected: bool,
+  hostPathLeakRejected: bool,
+  diagnosticRangesRequired: bool,
+}
+
+impl PluginSourceMapBridge {
+  pub fn fromManifest(manifest: PluginManifest) -> PluginSourceMapBridge {
+    return PluginSourceMapBridge {
+      pluginName: manifest.name,
+      sourceRoot: manifest.stdlib.root,
+      sourceMapsRequired: manifest.compiler.sourceMaps == PluginPolicyRequirement.Required,
+      generatedRangesRejected: true,
+      hostPathLeakRejected: true,
+      diagnosticRangesRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginSourceMapBridge) -> bool {
+    return self.pluginName != ""
+      && self.sourceRoot != ""
+      && self.sourceMapsRequired
+      && self.generatedRangesRejected
+      && self.hostPathLeakRejected
+      && self.diagnosticRangesRequired
+  }
+}

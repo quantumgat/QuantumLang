@@ -1,0 +1,38 @@
+pub struct GraphBuilder<T> {
+  capacity: usize,
+  directed: bool,
+}
+
+impl<T> GraphBuilder<T> {
+  pub fn init() -> GraphBuilder<T> {
+    return GraphBuilder<T> {
+      capacity: 0,
+      directed: true,
+    }
+  }
+
+  pub fn capacity(self: GraphBuilder<T>, capacity: usize) -> GraphBuilder<T> {
+    return GraphBuilder<T> {
+      capacity: capacity,
+      directed: self.directed,
+    }
+  }
+
+  pub fn directed(self: GraphBuilder<T>) -> GraphBuilder<T> {
+    return GraphBuilder<T> {
+      capacity: self.capacity,
+      directed: true,
+    }
+  }
+
+  pub fn undirected(self: GraphBuilder<T>) -> GraphBuilder<T> {
+    return GraphBuilder<T> {
+      capacity: self.capacity,
+      directed: false,
+    }
+  }
+
+  pub fn build(self: GraphBuilder<T>) -> Graph<T> requires(alloc) {
+    return Graph<T>.withCapacity(self.capacity).withDirected(self.directed)
+  }
+}

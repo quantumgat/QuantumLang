@@ -1,0 +1,15 @@
+pub struct RuntimeFacadeHandle {
+  handleId: u64,
+  runtimeOwned: bool,
+  publicHandle: bool,
+}
+
+pub fn runtimeFacadeHandle(handleId: u64) -> RuntimeFacadeHandle {
+  return RuntimeFacadeHandle { handleId: handleId, runtimeOwned: true, publicHandle: false }
+}
+
+impl RuntimeFacadeHandle {
+  pub fn isInternal(self: RuntimeFacadeHandle) -> bool {
+    return self.runtimeOwned && self.publicHandle == false
+  }
+}

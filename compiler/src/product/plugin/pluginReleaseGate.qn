@@ -1,0 +1,29 @@
+pub struct PluginReleaseGate {
+  manifestValidation: PluginManifestValidation,
+  lockfileValidation: PluginLockfileValidation,
+  stdlibMount: PluginStdlibMountResult,
+  compilerLoad: PluginLoadResult,
+  runtimeRequired: bool,
+  releaseBlockedOnFailure: bool,
+}
+
+impl PluginReleaseGate {
+  pub fn fromManifest(manifest: PluginManifest, publicRoot: string) -> PluginReleaseGate {
+    return PluginReleaseGate {
+      manifestValidation: PluginManifestValidation.fromManifest(manifest),
+      lockfileValidation: PluginLockfileValidation.fromManifest(manifest),
+      stdlibMount: PluginStdlibMountResult.fromManifest(manifest, publicRoot),
+      compilerLoad: PluginLoadResult.fromManifest(manifest),
+      runtimeRequired: manifest.needsRuntime(),
+      releaseBlockedOnFailure: true,
+    }
+  }
+
+  pub fn accepted(self: PluginReleaseGate) -> bool {
+    return self.manifestValidation.accepted()
+      && self.lockfileValidation.accepted()
+      && self.stdlibMount.accepted()
+      && self.compilerLoad.accepted()
+      && self.releaseBlockedOnFailure
+  }
+}

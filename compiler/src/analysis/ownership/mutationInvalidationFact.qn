@@ -1,0 +1,21 @@
+pub struct MutationInvalidationFact {
+  sourceId: u64,
+  previousEpoch: u64,
+  nextEpoch: u64,
+  activeViewEpoch: u64,
+}
+
+impl MutationInvalidationFact {
+  pub fn init(sourceId: u64, previousEpoch: u64, nextEpoch: u64, activeViewEpoch: u64) -> MutationInvalidationFact {
+    return MutationInvalidationFact {
+      sourceId: sourceId,
+      previousEpoch: previousEpoch,
+      nextEpoch: nextEpoch,
+      activeViewEpoch: activeViewEpoch,
+    }
+  }
+
+  pub fn invalidatesView(self: MutationInvalidationFact) -> bool {
+    return self.nextEpoch != self.previousEpoch && self.activeViewEpoch == self.previousEpoch
+  }
+}

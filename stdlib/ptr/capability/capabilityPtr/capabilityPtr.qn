@@ -1,0 +1,48 @@
+/**
+  Pointer guarded by an explicit low-level capability.
+
+  example:
+    let value = capPtr.get()?
+
+  effects: reads capability metadata before access
+  complexity: O(1)
+  allocation: none
+  safety: compiler rejects access when the required target capability is absent
+  stability: public since 0.1
+*/
+pub struct CapabilityPtr<T> {
+  ptr: NonNull<T>,
+  capability: string,
+  readable: bool,
+  writable: bool,
+}
+
+impl<T> CapabilityPtr<T> {
+  pub fn fromPtr(ptr: NonNull<T>, capability: string, readable: bool, writable: bool) -> CapabilityPtr<T> requires(unsafe) {
+    return CapabilityPtr<T> {
+      ptr: ptr,
+      capability: capability,
+      readable: readable,
+      writable: writable,
+    }
+  }
+
+  pub fn get(self: CapabilityPtr<T>) -> Result<T, PtrError> {
+    if self.readable == false {
+      return Err(PtrError.CapabilityDenied)
+    }
+    return self.ptr.get()
+  }
+
+  pub fn set(self: CapabilityPtr<T>, value: T) -> Result<CapabilityPtr<T>, PtrError> {
+    if self.writable == false {
+      return Err(PtrError.CapabilityDenied)
+    }
+    self.ptr.set(value)?
+    return Ok(self)
+  }
+
+  pub fn accepted(self: CapabilityPtr<T>) -> bool {
+    return self.capability != "" && (self.readable || self.writable)
+  }
+}

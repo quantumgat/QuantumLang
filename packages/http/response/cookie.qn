@@ -1,0 +1,153 @@
+pub enum SameSite {
+  Lax,
+  Strict,
+  None,
+}
+
+pub struct HttpCookie {
+  name: string,
+  value: string,
+  domain: string,
+  path: string,
+  maxAgeSeconds: usize,
+  expiresAt: string,
+  secure: bool,
+  httpOnly: bool,
+  sameSite: SameSite,
+  signedValue: bool,
+  encryptedValue: bool,
+  partitioned: bool,
+}
+
+impl HttpCookie {
+  pub fn init(name: string, value: string) -> HttpCookie {
+    return HttpCookie {
+      name: name,
+      value: value,
+      domain: "",
+      path: "/",
+      maxAgeSeconds: 0,
+      expiresAt: "",
+      secure: true,
+      httpOnly: true,
+      sameSite: SameSite.Lax,
+      signedValue: false,
+      encryptedValue: false,
+      partitioned: false,
+    }
+  }
+
+  pub fn secure(name: string, value: string) -> HttpCookie {
+    return HttpCookie.init(name, value).secure().httpOnly().sameSite(SameSite.Lax)
+  }
+
+  pub fn session(name: string, value: string) -> HttpCookie {
+    return HttpCookie.secure(name, value)
+  }
+
+  pub fn path(self: HttpCookie, path: string) -> HttpCookie {
+    return HttpCookie {
+      name: self.name,
+      value: self.value,
+      domain: self.domain,
+      path: path,
+      maxAgeSeconds: self.maxAgeSeconds,
+      expiresAt: self.expiresAt,
+      secure: self.secure,
+      httpOnly: self.httpOnly,
+      sameSite: self.sameSite,
+      signedValue: self.signedValue,
+      encryptedValue: self.encryptedValue,
+      partitioned: self.partitioned,
+    }
+  }
+
+  pub fn domain(self: HttpCookie, domain: string) -> HttpCookie {
+    return httpCookieWithDomainSurface(self, domain)
+  }
+
+  pub fn maxAge(self: HttpCookie, seconds: usize) -> HttpCookie {
+    return httpCookieWithMaxAgeSurface(self, seconds)
+  }
+
+  pub fn maxAge(self: HttpCookie, duration: Duration) -> HttpCookie {
+    return httpCookieWithMaxAgeDurationSurface(self, duration)
+  }
+
+  pub fn expires(self: HttpCookie, timestamp: string) -> HttpCookie {
+    return httpCookieWithExpiresSurface(self, timestamp)
+  }
+
+  pub fn secure(self: HttpCookie) -> HttpCookie {
+    return httpCookieSecureSurface(self, true)
+  }
+
+  pub fn insecure(self: HttpCookie) -> HttpCookie {
+    return httpCookieSecureSurface(self, false)
+  }
+
+  pub fn httpOnly(self: HttpCookie) -> HttpCookie {
+    return httpCookieHttpOnlySurface(self, true)
+  }
+
+  pub fn readableByClient(self: HttpCookie) -> HttpCookie {
+    return httpCookieHttpOnlySurface(self, false)
+  }
+
+  pub fn sameSite(self: HttpCookie, sameSite: SameSite) -> HttpCookie {
+    return httpCookieSameSiteSurface(self, sameSite)
+  }
+
+  pub fn signed(self: HttpCookie) -> HttpCookie {
+    return httpCookieSignedSurface(self, true)
+  }
+
+  pub fn encrypted(self: HttpCookie) -> HttpCookie {
+    return httpCookieEncryptedSurface(self, true)
+  }
+
+  pub fn partitioned(self: HttpCookie) -> HttpCookie {
+    return httpCookiePartitionedSurface(self, true)
+  }
+
+  pub fn delete(name: string) -> HttpCookie {
+    return HttpCookie.init(name, "").maxAge(0).expires("Thu, 01 Jan 1970 00:00:00 GMT")
+  }
+
+  pub fn valid(self: HttpCookie) -> bool {
+    return self.name != "" && self.path != "" && (self.sameSite != SameSite.None || self.secure)
+  }
+
+  pub fn headerValue(self: HttpCookie) -> string {
+    return httpCookieHeaderSurface(self)
+  }
+}
+
+pub struct Cookie {
+}
+
+impl Cookie {
+  pub fn secure(name: string, value: string) -> HttpCookie {
+    return HttpCookie.secure(name, value)
+  }
+
+  pub fn session(name: string, value: string) -> HttpCookie {
+    return HttpCookie.session(name, value)
+  }
+
+  pub fn delete(name: string) -> HttpCookie {
+    return HttpCookie.delete(name)
+  }
+}
+
+fn httpCookieHeaderSurface(cookie: HttpCookie) -> string
+fn httpCookieWithDomainSurface(cookie: HttpCookie, domain: string) -> HttpCookie
+fn httpCookieWithMaxAgeSurface(cookie: HttpCookie, seconds: usize) -> HttpCookie
+fn httpCookieWithMaxAgeDurationSurface(cookie: HttpCookie, duration: Duration) -> HttpCookie
+fn httpCookieWithExpiresSurface(cookie: HttpCookie, timestamp: string) -> HttpCookie
+fn httpCookieSecureSurface(cookie: HttpCookie, secure: bool) -> HttpCookie
+fn httpCookieHttpOnlySurface(cookie: HttpCookie, httpOnly: bool) -> HttpCookie
+fn httpCookieSameSiteSurface(cookie: HttpCookie, sameSite: SameSite) -> HttpCookie
+fn httpCookieSignedSurface(cookie: HttpCookie, signedValue: bool) -> HttpCookie
+fn httpCookieEncryptedSurface(cookie: HttpCookie, encryptedValue: bool) -> HttpCookie
+fn httpCookiePartitionedSurface(cookie: HttpCookie, partitioned: bool) -> HttpCookie

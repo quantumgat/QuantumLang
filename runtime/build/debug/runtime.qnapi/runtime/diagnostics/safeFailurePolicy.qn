@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct SafeFailurePolicy {
+  safeCodeNeverCoredumps: bool
+  resultErrorPreferred: bool
+  panicCaptured: bool
+  oomReturnsDiagnostic: bool
+  ffiBoundaryCaptured: bool
+  stackOverflowReported: bool
+  sourceMapRequired: bool
+  redactionRequired: bool
+  emergencyReportBufferRequired: bool
+  fatalRecoverableSeparated: bool
+  coredumpDisabled: bool
+}
+pub extern "qnpkg" {
+  pub fn safeFailurePolicy() -> SafeFailurePolicy
+}

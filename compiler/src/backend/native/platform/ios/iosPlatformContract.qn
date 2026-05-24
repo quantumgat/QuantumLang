@@ -1,0 +1,12 @@
+pub struct IosPlatformContract {
+  target: string,
+  sandboxRequired: bool,
+  entitlementRequired: bool,
+  dynamicCodeForbidden: bool,
+}
+
+impl IosPlatformContract {
+  pub fn accepted(self: IosPlatformContract) -> bool {
+    return self.target != "" && self.sandboxRequired && self.entitlementRequired
+  }
+}

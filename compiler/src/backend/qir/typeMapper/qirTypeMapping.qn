@@ -1,0 +1,50 @@
+pub enum QirTypeClass {
+  Void
+  Integer
+  Float
+  ComplexPair
+  QubitHandle
+  ResultHandle
+  Callable
+  OpaquePointer
+  Unsupported
+}
+
+pub struct QirTypeMapping {
+  sourceTypeId: u64,
+  qirClass: QirTypeClass,
+  llvmSpelling: string,
+  profileChecked: bool,
+}
+
+pub fn qirTypeMapping(
+  sourceTypeId: u64,
+  qirClass: QirTypeClass,
+  llvmSpelling: string,
+  profileChecked: bool
+) -> QirTypeMapping {
+  return QirTypeMapping {
+    sourceTypeId: sourceTypeId,
+    qirClass: qirClass,
+    llvmSpelling: llvmSpelling,
+    profileChecked: profileChecked,
+  }
+}
+
+impl QirTypeMapping {
+  pub fn sourceType(self: QirTypeMapping) -> u64 {
+    return self.sourceTypeId
+  }
+
+  pub fn typeClass(self: QirTypeMapping) -> QirTypeClass {
+    return self.qirClass
+  }
+
+  pub fn llvmType(self: QirTypeMapping) -> string {
+    return self.llvmSpelling
+  }
+
+  pub fn canEmit(self: QirTypeMapping) -> bool {
+    return self.profileChecked && self.qirClass != QirTypeClass.Unsupported
+  }
+}

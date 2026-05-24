@@ -1,0 +1,27 @@
+pub struct AsyncOopMethodParserAstPolicyFact {
+  parserSyntaxBound: bool,
+  astDeclBound: bool,
+  classMethodsAllowed: bool,
+  interfaceMethodsAllowed: bool,
+  traitMethodsAllowed: bool,
+  serviceActorMethodsAllowed: bool,
+  illegalAsyncDropRejected: bool,
+  shutdownCloseCleanupRequired: bool,
+  sourceMapsRequired: bool,
+  diagnosticsRequired: bool,
+}
+
+impl AsyncOopMethodParserAstPolicyFact {
+  pub fn complete(self: AsyncOopMethodParserAstPolicyFact) -> bool {
+    return self.parserSyntaxBound
+      && self.astDeclBound
+      && self.classMethodsAllowed
+      && self.interfaceMethodsAllowed
+      && self.traitMethodsAllowed
+      && self.serviceActorMethodsAllowed
+      && self.illegalAsyncDropRejected
+      && self.shutdownCloseCleanupRequired
+      && self.sourceMapsRequired
+      && self.diagnosticsRequired
+  }
+}

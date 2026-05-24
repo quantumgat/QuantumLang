@@ -1,0 +1,16 @@
+pub struct RuntimePageAllocatorContract {
+  target: string,
+  pageSize: usize,
+  guardPagesSupported: bool,
+  executablePagesAllowed: bool,
+}
+
+impl RuntimePageAllocatorContract {
+  pub fn accepted(self: RuntimePageAllocatorContract) -> bool {
+    return self.target != "" && self.pageSize > 0
+  }
+
+  pub fn requiresExecPolicy(self: RuntimePageAllocatorContract) -> bool {
+    return self.executablePagesAllowed
+  }
+}

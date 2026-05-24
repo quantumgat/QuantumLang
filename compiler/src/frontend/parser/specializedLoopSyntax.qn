@@ -1,0 +1,26 @@
+pub enum SpecializedLoopSyntaxFamily {
+  AsyncLoop
+  ParallelReduce
+  DomainDataLoop
+  LowLevelLoop
+  QuantumLoop
+  ComptimeStaticLoop
+}
+
+pub struct SpecializedLoopSyntaxParse {
+  family: SpecializedLoopSyntaxFamily,
+  formCount: usize,
+  sourceRangeReady: bool,
+  recoveryReady: bool,
+  hotPathHintAllowed: bool,
+  profileGateReady: bool,
+}
+
+impl SpecializedLoopSyntaxParse {
+  pub fn complete(self: SpecializedLoopSyntaxParse) -> bool {
+    return self.formCount >= 22
+      && self.sourceRangeReady
+      && self.recoveryReady
+      && self.profileGateReady
+  }
+}

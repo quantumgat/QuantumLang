@@ -1,0 +1,8 @@
+pub enum PathStyle {
+  Posix
+  Windows
+  Url
+}
+
+pub fn nativeStyle() -> PathStyle
+pub fn separator(style: PathStyle) -> string

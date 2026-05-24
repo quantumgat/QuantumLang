@@ -1,0 +1,5 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub interface Network {
+  pub fn providerName(self: &Network) -> string
+  pub fn supportsTcp(self: &Network) -> bool
+}

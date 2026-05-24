@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct TerminalHandle {
+  handleId: u64
+  mode: TerminalMode
+}
+pub extern "qnpkg" {
+  pub fn terminalHandle(handleId: u64, mode: TerminalMode) -> TerminalHandle
+}

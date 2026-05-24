@@ -1,0 +1,19 @@
+pub struct ForeignDeleterFact {
+  deleterRegistered: bool,
+  allocatorDomainChecked: bool,
+  lifetimeTokenRequired: bool,
+}
+
+impl ForeignDeleterFact {
+  pub fn init(deleterRegistered: bool, allocatorDomainChecked: bool, lifetimeTokenRequired: bool) -> ForeignDeleterFact {
+    return ForeignDeleterFact {
+      deleterRegistered: deleterRegistered,
+      allocatorDomainChecked: allocatorDomainChecked,
+      lifetimeTokenRequired: lifetimeTokenRequired,
+    }
+  }
+
+  pub fn accepted(self: ForeignDeleterFact) -> bool {
+    return self.deleterRegistered && self.allocatorDomainChecked && self.lifetimeTokenRequired
+  }
+}

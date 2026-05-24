@@ -1,0 +1,51 @@
+pub struct GraphLowering {
+  adjacencyVecBacked: bool,
+  typedNodeIds: bool,
+  edgeAppendDirect: bool,
+  bfsLoweredToFrontierCursor: bool,
+  dfsLoweredToFrontierCursor: bool,
+  cursorErased: bool,
+  cursorUsesVisitedSet: bool,
+  neighborLoopDirectEdges: bool,
+  shortestPathLoweredToBfs: bool,
+  predecessorMapBacked: bool,
+  topologicalSortUsesIndegreeVec: bool,
+  callableTraversalInlineable: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn graphLowering() -> GraphLowering {
+  return GraphLowering {
+    adjacencyVecBacked: true,
+    typedNodeIds: true,
+    edgeAppendDirect: true,
+    bfsLoweredToFrontierCursor: true,
+    dfsLoweredToFrontierCursor: true,
+    cursorErased: true,
+    cursorUsesVisitedSet: true,
+    neighborLoopDirectEdges: true,
+    shortestPathLoweredToBfs: true,
+    predecessorMapBacked: true,
+    topologicalSortUsesIndegreeVec: true,
+    callableTraversalInlineable: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl GraphLowering {
+  pub fn hotPathReady(self: GraphLowering) -> bool {
+    return self.adjacencyVecBacked
+      && self.typedNodeIds
+      && self.edgeAppendDirect
+      && self.bfsLoweredToFrontierCursor
+      && self.dfsLoweredToFrontierCursor
+      && self.cursorErased
+      && self.cursorUsesVisitedSet
+      && self.neighborLoopDirectEdges
+      && self.shortestPathLoweredToBfs
+      && self.predecessorMapBacked
+      && self.topologicalSortUsesIndegreeVec
+      && self.callableTraversalInlineable
+      && self.boundsProofRequired
+  }
+}

@@ -1,0 +1,27 @@
+pub struct ArenaIter<T> {
+  arena: Arena<T>,
+  index: usize,
+  generation: usize,
+}
+
+impl<T> ArenaIter<T> {
+  pub fn next(self: ArenaIter<T>) -> Option<T> {
+    let mut index = self.index
+    while index < self.arena.slots.len {
+      let slot = self.arena.slots[index]
+      if slot.occupied && slot.generation == self.generation {
+        return slot.value
+      }
+      index = index + 1
+    }
+    return None
+  }
+
+  pub fn advance(self: ArenaIter<T>) -> ArenaIter<T> {
+    return ArenaIter<T> {
+      arena: self.arena,
+      index: self.index + 1,
+      generation: self.generation,
+    }
+  }
+}

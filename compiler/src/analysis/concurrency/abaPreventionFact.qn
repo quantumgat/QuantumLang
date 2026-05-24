@@ -1,0 +1,21 @@
+pub struct AbaPreventionFact {
+  node: u64,
+  versionedPointer: bool,
+  tagBitsAvailable: bool,
+  wrapProvenImpossible: bool,
+}
+
+impl AbaPreventionFact {
+  pub fn init(node: u64, versionedPointer: bool, tagBitsAvailable: bool, wrapProvenImpossible: bool) -> AbaPreventionFact {
+    return AbaPreventionFact {
+      node: node,
+      versionedPointer: versionedPointer,
+      tagBitsAvailable: tagBitsAvailable,
+      wrapProvenImpossible: wrapProvenImpossible,
+    }
+  }
+
+  pub fn accepted(self: AbaPreventionFact) -> bool {
+    return self.versionedPointer && self.tagBitsAvailable && self.wrapProvenImpossible
+  }
+}

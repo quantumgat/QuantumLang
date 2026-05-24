@@ -1,0 +1,33 @@
+pub struct TrieIter<V> {
+  trie: Trie<V>,
+  index: usize,
+  generation: usize,
+}
+
+impl<V> TrieIter<V> {
+  pub fn next(self: TrieIter<V>) -> Option<(string, V)> {
+    let mut index = self.index
+    while index < self.trie.nodes.len {
+      let node = self.trie.nodes[index]
+      if node.terminal {
+        match node.value {
+          Some(value) => {
+            return Some((node.key, value))
+          }
+          None => {
+          }
+        }
+      }
+      index = index + 1
+    }
+    return None
+  }
+
+  pub fn advance(self: TrieIter<V>) -> TrieIter<V> {
+    return TrieIter<V> {
+      trie: self.trie,
+      index: self.index + 1,
+      generation: self.generation,
+    }
+  }
+}

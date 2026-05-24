@@ -1,0 +1,25 @@
+pub struct TlsServer {
+  config: TlsConfig,
+  certificate: TlsCertificate,
+}
+
+impl TlsServer {
+  pub fn accepted(self: TlsServer) -> bool {
+    return self.config.safe() && self.certificate.pinned()
+  }
+
+  pub async fn accept(self: TlsServer, stream: TcpStream) -> NetResult<TlsStream> {
+    if !self.accepted() {
+      return Err(NetError {
+        kind: NetErrorKind.TlsFailure,
+        message: "tls server requires safe config and certificate",
+        retryable: false,
+      })
+    }
+    return Ok(TlsStream {
+      handle: stream.handle,
+      verified: true,
+      alpnSelected: "",
+    })
+  }
+}

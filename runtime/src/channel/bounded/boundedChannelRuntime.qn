@@ -1,0 +1,21 @@
+pub struct RuntimeBoundedChannel {
+  channelId: u64,
+  capacity: usize,
+  depth: usize,
+  closed: bool,
+}
+
+impl RuntimeBoundedChannel {
+  pub fn init(channelId: u64, capacity: usize, depth: usize, closed: bool) -> RuntimeBoundedChannel {
+    return RuntimeBoundedChannel {
+      channelId: channelId,
+      capacity: capacity,
+      depth: depth,
+      closed: closed,
+    }
+  }
+
+  pub fn canSend(self: RuntimeBoundedChannel) -> bool {
+    return self.closed == false && self.depth < self.capacity
+  }
+}

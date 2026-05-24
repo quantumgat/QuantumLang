@@ -1,0 +1,41 @@
+pub enum DynamicValueAbiKind {
+  UnionValue
+  AnyValue
+  QAnyValue
+}
+
+pub struct DynamicValueAbi {
+  kind: DynamicValueAbiKind,
+  tagBytes: usize,
+  payloadBytes: usize,
+  typeIdBytes: usize,
+  ownsPayload: bool,
+  quantumPayload: bool,
+  redactedDiagnostics: bool,
+}
+
+pub fn dynamicValueAbi(
+  kind: DynamicValueAbiKind,
+  tagBytes: usize,
+  payloadBytes: usize,
+) -> DynamicValueAbi {
+  return DynamicValueAbi {
+    kind: kind,
+    tagBytes: tagBytes,
+    payloadBytes: payloadBytes,
+    typeIdBytes: 8,
+    ownsPayload: kind != DynamicValueAbiKind.UnionValue,
+    quantumPayload: kind == DynamicValueAbiKind.QAnyValue,
+    redactedDiagnostics: true,
+  }
+}
+
+impl DynamicValueAbi {
+  pub fn safe(self: DynamicValueAbi) -> bool {
+    return self.tagBytes > 0
+      && self.payloadBytes > 0
+      && self.typeIdBytes > 0
+      && self.redactedDiagnostics
+      && (self.kind != DynamicValueAbiKind.QAnyValue || self.quantumPayload)
+  }
+}

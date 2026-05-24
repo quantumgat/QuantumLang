@@ -1,0 +1,15 @@
+pub struct ArenaBuilder<T> {
+  capacity: usize,
+}
+
+impl<T> ArenaBuilder<T> {
+  pub fn capacity(self: ArenaBuilder<T>, capacity: usize) -> ArenaBuilder<T> {
+    return ArenaBuilder<T> {
+      capacity: capacity,
+    }
+  }
+
+  pub fn build(self: ArenaBuilder<T>) -> Arena<T> requires(alloc) {
+    return Arena<T>.withCapacity(self.capacity)
+  }
+}

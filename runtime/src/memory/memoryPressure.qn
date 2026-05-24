@@ -1,0 +1,26 @@
+pub enum MemoryPressureLevel {
+  MemoryPressureLow
+  MemoryPressureModerate
+  MemoryPressureHigh
+  MemoryPressureCritical
+}
+
+pub struct MemoryPressure {
+  usedBytes: usize,
+  limitBytes: usize,
+  level: MemoryPressureLevel,
+}
+
+pub fn memoryPressure(usedBytes: usize, limitBytes: usize, level: MemoryPressureLevel) -> MemoryPressure {
+  return MemoryPressure { usedBytes: usedBytes, limitBytes: limitBytes, level: level }
+}
+
+impl MemoryPressure {
+  pub fn overLimit(self: MemoryPressure) -> bool {
+    return self.usedBytes > self.limitBytes
+  }
+
+  pub fn wouldExceed(self: MemoryPressure, requestedBytes: usize) -> bool {
+    return self.usedBytes + requestedBytes > self.limitBytes
+  }
+}

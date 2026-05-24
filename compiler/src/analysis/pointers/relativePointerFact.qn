@@ -1,0 +1,21 @@
+pub struct RelativePointerFact {
+  base: usize,
+  offset: isize,
+  boundsBytes: usize,
+  generationMatches: bool,
+}
+
+impl RelativePointerFact {
+  pub fn init(base: usize, offset: isize, boundsBytes: usize, generationMatches: bool) -> RelativePointerFact {
+    return RelativePointerFact {
+      base: base,
+      offset: offset,
+      boundsBytes: boundsBytes,
+      generationMatches: generationMatches,
+    }
+  }
+
+  pub fn accepted(self: RelativePointerFact) -> bool {
+    return self.base > 0 && self.boundsBytes > 0 && self.generationMatches
+  }
+}

@@ -1,0 +1,12 @@
+pub enum DecimalError {
+  InvalidSyntax
+  InvalidScale
+  DivisionByZero
+  Overflow
+  Underflow
+  Inexact
+  Rounded
+  Subnormal
+  ConversionFailed
+  UnsupportedOperation
+}

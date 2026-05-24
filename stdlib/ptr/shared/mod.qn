@@ -1,0 +1,5 @@
+pub mod sharedPtr
+pub mod weakPtr
+
+pub use sharedPtr.SharedPtr
+pub use weakPtr.WeakPtr

@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct FakeReactor {
+  eventCount: usize
+  deterministic: bool
+  publicRuntimeApi: bool
+}
+pub extern "qnpkg" {
+  pub fn fakeReactor(eventCount: usize) -> FakeReactor
+}

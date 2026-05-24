@@ -1,0 +1,13 @@
+pub struct ChannelId {
+  value: u64,
+}
+
+pub fn channelId(value: u64) -> ChannelId {
+  return ChannelId { value: value }
+}
+
+impl ChannelId {
+  pub fn raw(self: ChannelId) -> u64 {
+    return self.value
+  }
+}

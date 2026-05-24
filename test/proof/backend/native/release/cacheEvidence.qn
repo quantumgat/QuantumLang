@@ -1,0 +1,60 @@
+pub struct CacheEvidence {
+  actionIndexPath: string,
+  metadataPath: string,
+  objectPath: string,
+  archivePath: string,
+  executableCachePath: string,
+  hiddenActionIndex: bool,
+  hiddenMetadata: bool,
+  hiddenObject: bool,
+  hiddenArchive: bool,
+  hiddenExecutableCache: bool,
+}
+
+pub fn cacheEvidence(
+  actionIndexPath: string,
+  metadataPath: string,
+  objectPath: string,
+  archivePath: string,
+  executableCachePath: string,
+  hiddenActionIndex: bool,
+  hiddenMetadata: bool,
+  hiddenObject: bool,
+  hiddenArchive: bool,
+  hiddenExecutableCache: bool,
+) -> CacheEvidence {
+  return CacheEvidence {
+    actionIndexPath: actionIndexPath,
+    metadataPath: metadataPath,
+    objectPath: objectPath,
+    archivePath: archivePath,
+    executableCachePath: executableCachePath,
+    hiddenActionIndex: hiddenActionIndex,
+    hiddenMetadata: hiddenMetadata,
+    hiddenObject: hiddenObject,
+    hiddenArchive: hiddenArchive,
+    hiddenExecutableCache: hiddenExecutableCache,
+  }
+}
+
+impl CacheEvidence {
+  pub fn actionIndex(self: CacheEvidence) -> string {
+    return self.actionIndexPath
+  }
+
+  pub fn objectCache(self: CacheEvidence) -> string {
+    return self.objectPath
+  }
+
+  pub fn archiveCache(self: CacheEvidence) -> string {
+    return self.archivePath
+  }
+
+  pub fn executableCache(self: CacheEvidence) -> string {
+    return self.executableCachePath
+  }
+
+  pub fn isHidden(self: CacheEvidence) -> bool {
+    return self.hiddenActionIndex && self.hiddenMetadata && self.hiddenObject && self.hiddenArchive && self.hiddenExecutableCache
+  }
+}

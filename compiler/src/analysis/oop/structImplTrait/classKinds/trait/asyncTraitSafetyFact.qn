@@ -1,0 +1,31 @@
+pub struct AsyncTraitSafetyFact {
+  traitTypeId: u64,
+  asyncMethodObligationBound: bool,
+  implAsyncParityBound: bool,
+  staticDispatchStateMachineBound: bool,
+  objectSafetyRejectionBound: bool,
+  dynAdapterBoundaryExplicit: bool,
+  genericAssociatedFutureBound: bool,
+  hotPathDirectLoweringBound: bool,
+  sourceMapBound: bool,
+}
+
+impl AsyncTraitSafetyFact {
+  pub fn complete(self: AsyncTraitSafetyFact) -> bool {
+    return self.traitTypeId > 0
+      && self.asyncMethodObligationBound
+      && self.implAsyncParityBound
+      && self.staticDispatchStateMachineBound
+      && self.objectSafetyRejectionBound
+      && self.dynAdapterBoundaryExplicit
+      && self.genericAssociatedFutureBound
+      && self.hotPathDirectLoweringBound
+      && self.sourceMapBound
+  }
+
+  pub fn staticHotPathReady(self: AsyncTraitSafetyFact) -> bool {
+    return self.complete()
+      && self.staticDispatchStateMachineBound
+      && self.hotPathDirectLoweringBound
+  }
+}

@@ -1,0 +1,12 @@
+pub struct PortableIoRuntime {
+  target: string,
+  cancellation: bool,
+  diagnostics: bool,
+  zeroCopyOptional: bool,
+}
+
+impl PortableIoRuntime {
+  pub fn accepted(self: PortableIoRuntime) -> bool {
+    return self.target != "" && self.cancellation && self.diagnostics
+  }
+}

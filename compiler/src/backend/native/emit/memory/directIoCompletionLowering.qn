@@ -1,0 +1,19 @@
+pub struct DirectIoCompletionLowering {
+  preservesCompletedBytes: bool,
+  preservesPartialError: bool,
+  emitsCleanup: bool,
+}
+
+impl DirectIoCompletionLowering {
+  pub fn init(preservesCompletedBytes: bool, preservesPartialError: bool, emitsCleanup: bool) -> DirectIoCompletionLowering {
+    return DirectIoCompletionLowering {
+      preservesCompletedBytes: preservesCompletedBytes,
+      preservesPartialError: preservesPartialError,
+      emitsCleanup: emitsCleanup,
+    }
+  }
+
+  pub fn accepted(self: DirectIoCompletionLowering) -> bool {
+    return self.preservesCompletedBytes && self.preservesPartialError && self.emitsCleanup
+  }
+}

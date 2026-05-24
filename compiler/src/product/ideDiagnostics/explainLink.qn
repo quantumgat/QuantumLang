@@ -1,0 +1,37 @@
+pub struct IdeExplainLink {
+  diagnostic: Diagnostic,
+  report: ExplainReport,
+  command: string,
+  title: string,
+  stableCode: string,
+  sourceMapped: bool,
+  readOnly: bool,
+  redacted: bool,
+}
+
+pub fn ideExplainLink(diagnostic: Diagnostic) -> IdeExplainLink {
+  let stableCode = diagnostic.family()
+  return IdeExplainLink {
+    diagnostic: diagnostic,
+    report: explainReport("diagnostic", stableCode),
+    command: "qtlc explain diagnostic",
+    title: "Explain this diagnostic",
+    stableCode: stableCode,
+    sourceMapped: diagnostic.primaryRange.exact(),
+    readOnly: true,
+    redacted: diagnostic.redacted,
+  }
+}
+
+impl IdeExplainLink {
+  pub fn ready(self: IdeExplainLink) -> bool {
+    return self.diagnostic.complete()
+      && self.report.isReadOnly()
+      && self.command != ""
+      && self.title != ""
+      && self.stableCode != ""
+      && self.sourceMapped
+      && self.readOnly
+      && self.redacted
+  }
+}

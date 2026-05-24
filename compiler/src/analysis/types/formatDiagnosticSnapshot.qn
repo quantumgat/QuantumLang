@@ -1,0 +1,55 @@
+pub enum FormatDiagnosticSnapshotKind {
+  TextGolden
+  JsonGolden
+  LspGolden
+}
+
+pub struct FormatDiagnosticSnapshot {
+  kind: FormatDiagnosticSnapshotKind,
+  stableCode: string,
+  primarySpanKind: FormatDiagnosticSpanKind,
+  deterministic: bool,
+  exactCode: bool,
+  exactPrimarySpan: bool,
+  redactedSecretSnippet: bool,
+}
+
+pub fn formatDiagnosticSnapshot(
+  kind: FormatDiagnosticSnapshotKind,
+  code: FormatDiagnosticCode,
+) -> FormatDiagnosticSnapshot {
+  return FormatDiagnosticSnapshot {
+    kind: kind,
+    stableCode: code.code(),
+    primarySpanKind: code.spanKindValue(),
+    deterministic: true,
+    exactCode: true,
+    exactPrimarySpan: true,
+    redactedSecretSnippet: code.isSecuritySensitive(),
+  }
+}
+
+pub fn formatDiagnosticTextGolden(code: FormatDiagnosticCode) -> FormatDiagnosticSnapshot {
+  return formatDiagnosticSnapshot(FormatDiagnosticSnapshotKind.TextGolden, code)
+}
+
+pub fn formatDiagnosticJsonGolden(code: FormatDiagnosticCode) -> FormatDiagnosticSnapshot {
+  return formatDiagnosticSnapshot(FormatDiagnosticSnapshotKind.JsonGolden, code)
+}
+
+pub fn formatDiagnosticLspGolden(code: FormatDiagnosticCode) -> FormatDiagnosticSnapshot {
+  return formatDiagnosticSnapshot(FormatDiagnosticSnapshotKind.LspGolden, code)
+}
+
+impl FormatDiagnosticSnapshot {
+  pub fn isStableGolden(self: FormatDiagnosticSnapshot) -> bool {
+    return self.deterministic && self.exactCode && self.exactPrimarySpan
+  }
+
+  pub fn protectsSecretSnippet(self: FormatDiagnosticSnapshot) -> bool {
+    if self.primarySpanKind == FormatDiagnosticSpanKind.SecretValue {
+      return self.redactedSecretSnippet
+    }
+    return true
+  }
+}

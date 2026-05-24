@@ -1,0 +1,21 @@
+pub struct RuntimeCapabilityMatrix {
+  target: string,
+  filesystem: bool,
+  network: bool,
+  process: bool,
+  terminal: bool,
+  signal: bool,
+  threads: bool,
+  rawHandle: bool,
+  systemInfo: bool,
+}
+
+impl RuntimeCapabilityMatrix {
+  pub fn accepted(self: RuntimeCapabilityMatrix) -> bool {
+    return self.target != ""
+  }
+
+  pub fn sysReady(self: RuntimeCapabilityMatrix) -> bool {
+    return self.systemInfo && self.rawHandle
+  }
+}

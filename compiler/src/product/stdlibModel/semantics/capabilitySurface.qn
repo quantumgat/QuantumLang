@@ -1,0 +1,11 @@
+pub struct StdlibCapabilitySurface {
+  symbolName: string,
+  capability: string,
+  explicitRequired: bool,
+}
+
+impl StdlibCapabilitySurface {
+  pub fn accepted(self: StdlibCapabilitySurface) -> bool {
+    return self.symbolName != "" && self.capability != ""
+  }
+}

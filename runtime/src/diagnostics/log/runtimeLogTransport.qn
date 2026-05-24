@@ -1,0 +1,61 @@
+pub enum RuntimeLogTransportKind {
+  Direct,
+  BoundedQueue,
+  ObserverFanout,
+  EmergencyIncident,
+}
+
+pub struct RuntimeLogTransport {
+  kind: RuntimeLogTransportKind,
+  queueCapacity: usize,
+  queuedEvents: usize,
+  sequence: u64,
+  preservesOrder: bool,
+  bounded: bool,
+  observerFanout: bool,
+  incidentFallback: bool,
+  redactsBeforeEnqueue: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeLogTransport {
+  pub fn bounded(queueCapacity: usize) -> RuntimeLogTransport {
+    return RuntimeLogTransport {
+      kind: RuntimeLogTransportKind.BoundedQueue,
+      queueCapacity: queueCapacity,
+      queuedEvents: 0,
+      sequence: 0,
+      preservesOrder: true,
+      bounded: true,
+      observerFanout: true,
+      incidentFallback: true,
+      redactsBeforeEnqueue: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn emergency() -> RuntimeLogTransport {
+    return RuntimeLogTransport {
+      kind: RuntimeLogTransportKind.EmergencyIncident,
+      queueCapacity: 1,
+      queuedEvents: 0,
+      sequence: 0,
+      preservesOrder: true,
+      bounded: true,
+      observerFanout: false,
+      incidentFallback: true,
+      redactsBeforeEnqueue: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeLogTransport) -> bool {
+    return self.queueCapacity > 0
+      && self.queuedEvents <= self.queueCapacity
+      && self.preservesOrder
+      && self.bounded
+      && self.incidentFallback
+      && self.redactsBeforeEnqueue
+      && self.noCoredump
+  }
+}

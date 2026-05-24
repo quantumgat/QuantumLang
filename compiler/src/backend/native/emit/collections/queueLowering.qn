@@ -1,0 +1,45 @@
+pub struct QueueLowering {
+  ringBufferBacked: bool,
+  headTailDirect: bool,
+  moduloIndexLowered: bool,
+  pushLoweredToTailStore: bool,
+  popLoweredToHeadLoadAndHeadInc: bool,
+  peekLoweredToHeadLoad: bool,
+  growRepackLinearized: bool,
+  zeroCopyFromVec: bool,
+  iteratorLoweredToRingCursor: bool,
+  callableLoopsInlined: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn queueLowering() -> QueueLowering {
+  return QueueLowering {
+    ringBufferBacked: true,
+    headTailDirect: true,
+    moduloIndexLowered: true,
+    pushLoweredToTailStore: true,
+    popLoweredToHeadLoadAndHeadInc: true,
+    peekLoweredToHeadLoad: true,
+    growRepackLinearized: true,
+    zeroCopyFromVec: true,
+    iteratorLoweredToRingCursor: true,
+    callableLoopsInlined: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl QueueLowering {
+  pub fn hotPathReady(self: QueueLowering) -> bool {
+    return self.ringBufferBacked
+      && self.headTailDirect
+      && self.moduloIndexLowered
+      && self.pushLoweredToTailStore
+      && self.popLoweredToHeadLoadAndHeadInc
+      && self.peekLoweredToHeadLoad
+      && self.growRepackLinearized
+      && self.zeroCopyFromVec
+      && self.iteratorLoweredToRingCursor
+      && self.callableLoopsInlined
+      && self.boundsProofRequired
+  }
+}

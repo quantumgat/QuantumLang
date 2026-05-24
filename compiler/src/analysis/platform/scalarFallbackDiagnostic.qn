@@ -1,0 +1,21 @@
+pub struct ScalarFallbackDiagnostic {
+  code: string,
+  hasRange: bool,
+  simdRequired: bool,
+  fallbackAvailable: bool,
+}
+
+impl ScalarFallbackDiagnostic {
+  pub fn init(code: string, hasRange: bool, simdRequired: bool, fallbackAvailable: bool) -> ScalarFallbackDiagnostic {
+    return ScalarFallbackDiagnostic {
+      code: code,
+      hasRange: hasRange,
+      simdRequired: simdRequired,
+      fallbackAvailable: fallbackAvailable,
+    }
+  }
+
+  pub fn reportable(self: ScalarFallbackDiagnostic) -> bool {
+    return self.code != "" && self.hasRange && self.simdRequired && self.fallbackAvailable == false
+  }
+}

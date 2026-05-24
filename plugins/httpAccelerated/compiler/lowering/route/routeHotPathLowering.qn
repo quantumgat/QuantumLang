@@ -1,0 +1,27 @@
+pub struct HttpRouteHotPathLowering {
+  routeCount: usize,
+  staticTrie: bool,
+  dynamicSegments: bool,
+  sourceMapped: bool,
+  fallbackTable: bool,
+}
+
+impl HttpRouteHotPathLowering {
+  pub fn fromGraph(routes: RouteGraph, sourceMap: HttpSourceMap) -> HttpRouteHotPathLowering {
+    return HttpRouteHotPathLowering {
+      routeCount: routes.routeCount(),
+      staticTrie: routes.acceleratorReady(),
+      dynamicSegments: true,
+      sourceMapped: sourceMap.allResolved(),
+      fallbackTable: true,
+    }
+  }
+
+  pub fn accepted(self: HttpRouteHotPathLowering) -> bool {
+    return self.routeCount > 0
+      && self.staticTrie
+      && self.dynamicSegments
+      && self.sourceMapped
+      && self.fallbackTable
+  }
+}

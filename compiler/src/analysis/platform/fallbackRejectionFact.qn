@@ -1,0 +1,21 @@
+pub struct FallbackRejectionFact {
+  feature: string,
+  required: bool,
+  fallbackAvailable: bool,
+  generatedFallback: bool,
+}
+
+impl FallbackRejectionFact {
+  pub fn init(feature: string, required: bool, fallbackAvailable: bool, generatedFallback: bool) -> FallbackRejectionFact {
+    return FallbackRejectionFact {
+      feature: feature,
+      required: required,
+      fallbackAvailable: fallbackAvailable,
+      generatedFallback: generatedFallback,
+    }
+  }
+
+  pub fn mustReject(self: FallbackRejectionFact) -> bool {
+    return self.generatedFallback || (self.required && self.fallbackAvailable == false)
+  }
+}

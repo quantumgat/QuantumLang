@@ -1,0 +1,7 @@
+pub fn pluginTemplateKernel(input: TemplateKernelInput) -> Result<TemplateKernelOutput, PluginKernelFailure> {
+  if input.bytes == 0 {
+    return Err(PluginKernelFailure.BadInput)
+  }
+  return Ok(TemplateKernelOutput { bytes: input.bytes })
+}
+

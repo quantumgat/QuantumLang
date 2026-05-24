@@ -1,0 +1,12 @@
+pub struct ElfObjectContract {
+  target: string,
+  relocationsSupported: bool,
+  sectionsDeterministic: bool,
+  debugRecordsSupported: bool,
+}
+
+impl ElfObjectContract {
+  pub fn accepted(self: ElfObjectContract) -> bool {
+    return self.target != "" && self.relocationsSupported && self.sectionsDeterministic
+  }
+}

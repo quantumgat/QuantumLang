@@ -1,0 +1,36 @@
+pub enum MathRuntimeIncidentKind {
+  Overflow
+  DivideByZero
+  InvalidShift
+  InvalidScale
+  ResourceLimit
+  UnsupportedTargetFeature
+  ComplexDomain
+}
+
+pub struct MathSafeFailureKernel {
+  incidentKind: MathRuntimeIncidentKind,
+  sourceMapped: bool,
+  typedError: bool,
+  emergencyNoAllocation: bool,
+  noCoredump: bool,
+}
+
+impl MathSafeFailureKernel {
+  pub fn incident(incidentKind: MathRuntimeIncidentKind) -> MathSafeFailureKernel {
+    return MathSafeFailureKernel {
+      incidentKind: incidentKind,
+      sourceMapped: true,
+      typedError: true,
+      emergencyNoAllocation: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: MathSafeFailureKernel) -> bool {
+    return self.sourceMapped
+      && self.typedError
+      && self.emergencyNoAllocation
+      && self.noCoredump
+  }
+}

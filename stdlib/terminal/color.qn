@@ -1,0 +1,29 @@
+pub enum TerminalColorMode {
+  None
+  Ansi16
+  Ansi256
+  TrueColor
+}
+
+pub struct TerminalStyle {
+  foreground: Option<string>,
+  background: Option<string>,
+  bold: bool,
+  underline: bool,
+}
+
+pub fn colorMode(fd: i64) -> TerminalColorMode
+pub fn supportsColor(fd: i64) -> bool
+pub fn style() -> TerminalStyle
+
+impl TerminalStyle {
+  pub fn boldText(self: TerminalStyle) -> TerminalStyle {
+    self.bold = true
+    return self
+  }
+
+  pub fn underlined(self: TerminalStyle) -> TerminalStyle {
+    self.underline = true
+    return self
+  }
+}

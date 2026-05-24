@@ -1,0 +1,23 @@
+pub struct WhileAsyncPollTimeoutProof {
+  parserContract: bool,
+  astContract: bool,
+  analysisContract: bool,
+  hirContract: bool,
+  mirContract: bool,
+  nativeLowering: NativeWhileLoopLowering,
+  runtimeHandoffContract: bool,
+  negativeDiagnostics: bool,
+}
+
+impl WhileAsyncPollTimeoutProof {
+  pub fn complete(self: WhileAsyncPollTimeoutProof) -> bool {
+    return self.parserContract
+      && self.astContract
+      && self.analysisContract
+      && self.hirContract
+      && self.mirContract
+      && self.nativeLowering.asyncPollTimeoutDirect()
+      && self.runtimeHandoffContract
+      && self.negativeDiagnostics
+  }
+}

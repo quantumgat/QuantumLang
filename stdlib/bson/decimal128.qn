@@ -1,0 +1,13 @@
+pub struct BsonDecimal128 {
+  value: dec128,
+}
+
+impl BsonDecimal128 {
+  pub fn fromDecimal(value: dec128) -> BsonDecimal128 {
+    return BsonDecimal128 { value: value }
+  }
+
+  pub fn decimal(self: BsonDecimal128) -> dec128 {
+    return self.value
+  }
+}

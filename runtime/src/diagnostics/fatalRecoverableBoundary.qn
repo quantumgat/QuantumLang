@@ -1,0 +1,50 @@
+pub struct FatalRecoverableBoundary {
+  incident: RuntimeIncident,
+  recoverable: bool,
+  fatal: bool,
+  resultReturned: bool,
+  shutdownRequested: bool,
+  incidentEmittedBeforeShutdown: bool,
+  cleanupAttempted: bool,
+  noAbortForRecoverable: bool,
+  noCoredump: bool,
+}
+
+impl FatalRecoverableBoundary {
+  pub fn recoverable(incident: RuntimeIncident) -> FatalRecoverableBoundary {
+    return FatalRecoverableBoundary {
+      incident: incident,
+      recoverable: true,
+      fatal: false,
+      resultReturned: true,
+      shutdownRequested: false,
+      incidentEmittedBeforeShutdown: true,
+      cleanupAttempted: true,
+      noAbortForRecoverable: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn fatal(incident: RuntimeIncident) -> FatalRecoverableBoundary {
+    return FatalRecoverableBoundary {
+      incident: incident,
+      recoverable: false,
+      fatal: true,
+      resultReturned: false,
+      shutdownRequested: true,
+      incidentEmittedBeforeShutdown: true,
+      cleanupAttempted: true,
+      noAbortForRecoverable: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: FatalRecoverableBoundary) -> bool {
+    return self.incident.safe()
+      && self.recoverable != self.fatal
+      && self.incidentEmittedBeforeShutdown
+      && self.cleanupAttempted
+      && self.noAbortForRecoverable
+      && self.noCoredump
+  }
+}

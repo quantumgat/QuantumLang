@@ -1,0 +1,17 @@
+pub struct StackBuilder<T> {
+  capacity: usize,
+}
+
+impl<T> StackBuilder<T> {
+  pub fn init() -> StackBuilder<T> {
+    return StackBuilder<T> { capacity: 0 }
+  }
+
+  pub fn capacity(self: StackBuilder<T>, capacity: usize) -> StackBuilder<T> {
+    return StackBuilder<T> { capacity: capacity }
+  }
+
+  pub fn build(self: StackBuilder<T>) -> Stack<T> requires(alloc) {
+    return Stack<T>.withCapacity(self.capacity)
+  }
+}

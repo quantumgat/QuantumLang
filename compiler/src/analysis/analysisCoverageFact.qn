@@ -1,0 +1,33 @@
+pub struct AnalysisCoverageFact {
+  ownership: bool,
+  regions: bool,
+  pointers: bool,
+  unsafeObligations: bool,
+  atomics: bool,
+  layout: bool,
+  targetGates: bool,
+}
+
+impl AnalysisCoverageFact {
+  pub fn init() -> AnalysisCoverageFact {
+    return AnalysisCoverageFact {
+      ownership: true,
+      regions: true,
+      pointers: true,
+      unsafeObligations: true,
+      atomics: true,
+      layout: true,
+      targetGates: true,
+    }
+  }
+
+  pub fn complete(self: AnalysisCoverageFact) -> bool {
+    return self.ownership
+      && self.regions
+      && self.pointers
+      && self.unsafeObligations
+      && self.atomics
+      && self.layout
+      && self.targetGates
+  }
+}

@@ -1,0 +1,6 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpClientPool {
+  maxConnections: usize
+  idleConnections: usize
+  pendingRequests: usize
+}

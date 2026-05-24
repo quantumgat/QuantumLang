@@ -1,0 +1,6 @@
+[module]
+name = "os"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "os"

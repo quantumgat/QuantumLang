@@ -1,0 +1,6 @@
+[module]
+name = "http.request"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-request"

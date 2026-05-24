@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct IncidentRecord {
+  incidentId: u64
+  code: string
+  category: string
+  sourceSubsystem: string
+  taskId: u64
+  threadId: u64
+  crash: bool
+  fault: bool
+  redacted: bool
+  noCoredump: bool
+}
+pub extern "qnpkg" {
+  pub fn incidentRecord(incidentId: u64, crash: bool, fault: bool) -> IncidentRecord
+}

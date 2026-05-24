@@ -1,0 +1,122 @@
+pub enum PackagePluginCommandKind {
+  Create,
+  New,
+  Check,
+  Test,
+  Package,
+  Publish,
+}
+
+pub struct PackagePluginCommandRequest {
+  kind: PackagePluginCommandKind,
+  templateName: string,
+  packageName: string,
+  manifestPath: string,
+  pluginRoot: string,
+  sdkTemplateRoot: string,
+  requireProof: bool,
+  requireNoCoredump: bool,
+  requireGenericHooks: bool,
+}
+
+impl PackagePluginCommandRequest {
+  pub fn create(packageName: string, templateName: string, manifestPath: string, pluginRoot: string) -> PackagePluginCommandRequest {
+    return PackagePluginCommandRequest {
+      kind: PackagePluginCommandKind.Create,
+      templateName: templateName,
+      packageName: packageName,
+      manifestPath: manifestPath,
+      pluginRoot: pluginRoot,
+      sdkTemplateRoot: "qtlc/qtlang/pluginSdk/templates",
+      requireProof: true,
+      requireNoCoredump: true,
+      requireGenericHooks: true,
+    }
+  }
+
+  pub fn new(packageName: string, templateName: string, manifestPath: string, pluginRoot: string) -> PackagePluginCommandRequest {
+    return PackagePluginCommandRequest {
+      kind: PackagePluginCommandKind.New,
+      templateName: templateName,
+      packageName: packageName,
+      manifestPath: manifestPath,
+      pluginRoot: pluginRoot,
+      sdkTemplateRoot: "qtlc/qtlang/pluginSdk/templates",
+      requireProof: true,
+      requireNoCoredump: true,
+      requireGenericHooks: true,
+    }
+  }
+
+  pub fn check(packageName: string, manifestPath: string, pluginRoot: string) -> PackagePluginCommandRequest {
+    return PackagePluginCommandRequest {
+      kind: PackagePluginCommandKind.Check,
+      templateName: "",
+      packageName: packageName,
+      manifestPath: manifestPath,
+      pluginRoot: pluginRoot,
+      sdkTemplateRoot: "qtlc/qtlang/pluginSdk/templates",
+      requireProof: true,
+      requireNoCoredump: true,
+      requireGenericHooks: true,
+    }
+  }
+
+  pub fn test(packageName: string, manifestPath: string, pluginRoot: string) -> PackagePluginCommandRequest {
+    return PackagePluginCommandRequest {
+      kind: PackagePluginCommandKind.Test,
+      templateName: "",
+      packageName: packageName,
+      manifestPath: manifestPath,
+      pluginRoot: pluginRoot,
+      sdkTemplateRoot: "qtlc/qtlang/pluginSdk/templates",
+      requireProof: true,
+      requireNoCoredump: true,
+      requireGenericHooks: true,
+    }
+  }
+
+  pub fn package(packageName: string, manifestPath: string, pluginRoot: string) -> PackagePluginCommandRequest {
+    return PackagePluginCommandRequest {
+      kind: PackagePluginCommandKind.Package,
+      templateName: "",
+      packageName: packageName,
+      manifestPath: manifestPath,
+      pluginRoot: pluginRoot,
+      sdkTemplateRoot: "qtlc/qtlang/pluginSdk/templates",
+      requireProof: true,
+      requireNoCoredump: true,
+      requireGenericHooks: true,
+    }
+  }
+
+  pub fn publish(packageName: string, manifestPath: string, pluginRoot: string) -> PackagePluginCommandRequest {
+    return PackagePluginCommandRequest {
+      kind: PackagePluginCommandKind.Publish,
+      templateName: "",
+      packageName: packageName,
+      manifestPath: manifestPath,
+      pluginRoot: pluginRoot,
+      sdkTemplateRoot: "qtlc/qtlang/pluginSdk/templates",
+      requireProof: true,
+      requireNoCoredump: true,
+      requireGenericHooks: true,
+    }
+  }
+
+  pub fn usesSdkTemplates(self: PackagePluginCommandRequest) -> bool {
+    return self.sdkTemplateRoot == "qtlc/qtlang/pluginSdk/templates"
+      && self.requireProof
+      && self.requireNoCoredump
+      && self.requireGenericHooks
+      && (self.templateName == "stdlib"
+        || self.templateName == "compiler"
+        || self.templateName == "runtime"
+        || self.templateName == "capability"
+        || self.templateName == "framework"
+        || self.templateName == "capability-pack"
+        || self.templateName == "stdlib-only"
+        || self.templateName == "compiler-runtime"
+        || self.templateName == "")
+  }
+}

@@ -1,0 +1,34 @@
+pub enum RuntimeMemoryOrder {
+  Relaxed,
+  Acquire,
+  Release,
+  AcqRel,
+  SeqCst,
+}
+
+pub use runtimeAtomicError.RuntimeAtomicError
+pub use runtimeAtomicError.RuntimeAtomicErrorKind
+pub use runtimeAtomicCompareExchange.RuntimeAtomicCompareExchange
+pub use runtimeAtomicFence.RuntimeAtomicFence
+pub use runtimeAtomicPayload.RuntimeAtomicPayload
+pub use runtimeAtomicPayload.RuntimeAtomicPayloadKind
+pub use runtimeAtomicRef.RuntimeAtomicRef
+pub use runtimeAtomicTypeSupport.RuntimeAtomicTypeSupport
+pub use runtimeAtomicWait.RuntimeAtomicWaitRequest
+pub use runtimeAtomicWait.RuntimeAtomicWaitStatus
+pub use runtimeAtomicWake.RuntimeAtomicWake
+pub use runtimeMemoryOrderPolicy.RuntimeAtomicOperationKind
+pub use runtimeMemoryOrderPolicy.RuntimeMemoryOrderPolicy
+
+
+pub struct RuntimeAtomicCapability {
+  pointerWidthSupported: bool,
+  waitWakeSupported: bool,
+  reclamationRequired: bool,
+}
+
+impl RuntimeAtomicCapability {
+  pub fn usable(self: RuntimeAtomicCapability) -> bool {
+    return self.pointerWidthSupported
+  }
+}

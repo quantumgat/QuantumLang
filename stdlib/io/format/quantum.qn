@@ -1,0 +1,19 @@
+pub struct QuantumFormatPolicy {
+  qubitOpaqueId: bool,
+  qregSizeOnly: bool,
+  qresultPrintable: bool,
+  qfuncSignatureOnly: bool,
+  noStateLeak: bool,
+}
+
+impl QuantumFormatPolicy {
+  pub fn safe() -> QuantumFormatPolicy {
+    return QuantumFormatPolicy {
+      qubitOpaqueId: true,
+      qregSizeOnly: true,
+      qresultPrintable: true,
+      qfuncSignatureOnly: true,
+      noStateLeak: true,
+    }
+  }
+}

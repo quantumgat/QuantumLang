@@ -1,0 +1,18 @@
+pub struct FieldLayoutFact {
+  fieldName: string,
+  offset: usize,
+  size: usize,
+  alignment: usize,
+  paddingBefore: usize,
+}
+
+impl FieldLayoutFact {
+  pub fn valid(self: FieldLayoutFact) -> bool {
+    return self.alignment > 0
+      && self.offset % self.alignment == 0
+  }
+
+  pub fn endOffset(self: FieldLayoutFact) -> usize {
+    return self.offset + self.size
+  }
+}

@@ -1,0 +1,15 @@
+pub struct AnalysisDump {
+  typeRows: usize,
+  effectRows: usize,
+  ownershipRows: usize,
+}
+
+pub fn analysisDump(typeRows: usize, effectRows: usize, ownershipRows: usize) -> AnalysisDump {
+  return AnalysisDump { typeRows: typeRows, effectRows: effectRows, ownershipRows: ownershipRows }
+}
+
+impl AnalysisDump {
+  pub fn rowCount(self: AnalysisDump) -> usize {
+    return self.typeRows + self.effectRows + self.ownershipRows
+  }
+}

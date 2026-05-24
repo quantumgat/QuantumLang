@@ -1,0 +1,22 @@
+pub struct MirBinaryNamedEndianCodec {
+  instruction: u64,
+  enumValue: string,
+  directEndianConstant: bool,
+  optionObjectRemoved: bool,
+  lowercaseValueDiagnostic: bool,
+  invalidLabelDiagnostic: bool,
+  invalidValueDiagnostic: bool,
+}
+
+impl MirBinaryNamedEndianCodec {
+  pub fn hotPath(self: MirBinaryNamedEndianCodec) -> bool {
+    return self.instruction > 0
+      && (self.enumValue == "BinaryEndian.Big"
+        || self.enumValue == "BinaryEndian.Little")
+      && self.directEndianConstant
+      && self.optionObjectRemoved
+      && self.lowercaseValueDiagnostic
+      && self.invalidLabelDiagnostic
+      && self.invalidValueDiagnostic
+  }
+}

@@ -1,0 +1,19 @@
+pub struct HazardPointerLowering {
+  emitsProtect: bool,
+  emitsValidationLoad: bool,
+  preservesGeneration: bool,
+}
+
+impl HazardPointerLowering {
+  pub fn init(emitsProtect: bool, emitsValidationLoad: bool, preservesGeneration: bool) -> HazardPointerLowering {
+    return HazardPointerLowering {
+      emitsProtect: emitsProtect,
+      emitsValidationLoad: emitsValidationLoad,
+      preservesGeneration: preservesGeneration,
+    }
+  }
+
+  pub fn accepted(self: HazardPointerLowering) -> bool {
+    return self.emitsProtect && self.emitsValidationLoad && self.preservesGeneration
+  }
+}

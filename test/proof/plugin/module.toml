@@ -1,0 +1,11 @@
+[module]
+name = "pluginProof"
+visibility = "test"
+root = "mod.qn"
+owner = "test"
+role = "plugin-executable-fixture-proof"
+
+[tests]
+required = [
+  "qtlc_qtlang_plugin_executable_fixtures_gap_closure"
+]

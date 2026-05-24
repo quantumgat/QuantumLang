@@ -1,0 +1,31 @@
+pub enum TlsVerificationPolicy {
+  SystemRoots
+  PinnedCertificate
+  MutualTls
+  UnsafeDisabled
+}
+
+pub struct TlsConfig {
+  verification: TlsVerificationPolicy,
+  sni: string,
+  alpnCount: usize,
+  minVersion: string,
+  unsafeReason: string,
+}
+
+impl TlsConfig {
+  pub fn safe(self: TlsConfig) -> bool {
+    return self.verification != TlsVerificationPolicy.UnsafeDisabled
+  }
+
+  pub fn verificationRequired(self: TlsConfig) -> bool {
+    return self.safe() && self.sni != ""
+  }
+
+  pub fn unsafeDisabledExplained(self: TlsConfig) -> bool {
+    if self.verification != TlsVerificationPolicy.UnsafeDisabled {
+      return true
+    }
+    return self.unsafeReason != ""
+  }
+}

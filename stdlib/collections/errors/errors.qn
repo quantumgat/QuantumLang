@@ -1,0 +1,6 @@
+pub enum CollectionError {
+  Empty,
+  OutOfBounds,
+  CapacityExceeded,
+  InvalidKey,
+}

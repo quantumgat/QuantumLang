@@ -1,0 +1,7 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct Handshake {
+  path: string
+  subprotocolCount: usize
+  acceptedProtocol: string
+  secure: bool
+}

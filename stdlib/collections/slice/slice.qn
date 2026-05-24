@@ -1,0 +1,127 @@
+/**
+  Borrowed contiguous view over existing collection storage.
+
+  examples:
+    let view = Slice<User>.fromVec(users, 0, users.len)
+    let first = view.get(0)
+    let tail = view.subSlice(1, view.len() - 1)
+    let owned = view.toVec()
+
+  effects: pure for view creation and reads; allocation only for toVec
+  complexity: O(1) len/isEmpty/get/subSlice/iter, O(n) toVec
+  allocation: zero-copy view until materialized
+  stability: public since 0.1
+*/
+pub struct Slice<T> {
+  items: Vec<T>,
+  start: usize,
+  len: usize,
+  generation: usize,
+}
+
+pub struct SliceView<T> {
+  slice: Slice<T>,
+}
+
+impl<T> Slice<T> {
+  pub fn empty() -> Slice<T> {
+    return Slice<T> {
+      items: Vec<T>.empty(),
+      start: 0,
+      len: 0,
+      generation: 0,
+    }
+  }
+
+  pub fn fromVec(items: Vec<T>, start: usize, len: usize) -> Slice<T> {
+    return Slice<T> {
+      items: items,
+      start: start,
+      len: len,
+      generation: 0,
+    }
+  }
+
+  pub fn fromArray(items: Vec<T>, start: usize, len: usize) -> Slice<T> {
+    return Slice<T>.fromVec(items, start, len)
+  }
+
+  pub fn builder() -> SliceBuilder<T> {
+    return SliceBuilder<T>.init()
+  }
+
+  pub fn len(self: Slice<T>) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: Slice<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn end(self: Slice<T>) -> usize {
+    return self.start + self.len
+  }
+
+  pub fn get(self: Slice<T>, index: usize) -> Option<T> {
+    if index >= self.len {
+      return None
+    }
+    return Some(self.items[self.start + index])
+  }
+
+  pub fn at(self: Slice<T>, index: usize) -> Option<T> {
+    return self.get(index)
+  }
+
+  pub fn subSlice(self: Slice<T>, start: usize, len: usize) -> Slice<T> {
+    if start >= self.len {
+      return Slice<T>.fromVec(self.items, self.end(), 0)
+    }
+    let available = self.len - start
+    let visible = sliceMin(len, available)
+    return Slice<T>.fromVec(self.items, self.start + start, visible)
+  }
+
+  pub fn iter(self: Slice<T>) -> SliceIter<T> {
+    return SliceIter<T>.fromSlice(self)
+  }
+
+  pub fn toVec(self: Slice<T>) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.len {
+      result = result.push(self.items[self.start + index])
+      index = index + 1
+    }
+    return result
+  }
+
+  pub fn asView(self: Slice<T>) -> SliceView<T> {
+    return SliceView<T> { slice: self }
+  }
+}
+
+impl<T> SliceView<T> {
+  pub fn fromSlice(slice: Slice<T>) -> SliceView<T> {
+    return SliceView<T> { slice: slice }
+  }
+
+  pub fn len(self: SliceView<T>) -> usize {
+    return self.slice.len()
+  }
+
+  pub fn get(self: SliceView<T>, index: usize) -> Option<T> {
+    return self.slice.get(index)
+  }
+
+  pub fn toVec(self: SliceView<T>) -> Vec<T> requires(alloc) {
+    return self.slice.toVec()
+  }
+}
+
+fn sliceMin(left: usize, right: usize) -> usize {
+  if left < right {
+    return left
+  }
+  return right
+}

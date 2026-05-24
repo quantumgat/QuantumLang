@@ -1,0 +1,118 @@
+pub enum GraphTraversalKind {
+  BreadthFirst,
+  DepthFirst,
+}
+
+pub struct GraphTraversalCursor<T> {
+  graph: Graph<T>,
+  frontier: Vec<NodeId>,
+  visited: Set<NodeId>,
+  kind: GraphTraversalKind,
+  generation: usize,
+}
+
+impl<T> GraphTraversalCursor<T> {
+  pub fn fromStart(graph: Graph<T>, start: NodeId, kind: GraphTraversalKind) -> GraphTraversalCursor<T> requires(alloc) {
+    let mut frontier = Vec<NodeId>.empty()
+    if graph.hasNode(start) {
+      frontier = frontier.push(start)
+    }
+    return GraphTraversalCursor<T> {
+      graph: graph,
+      frontier: frontier,
+      visited: Set<NodeId>.withCapacity(graph.len),
+      kind: kind,
+      generation: graph.generation,
+    }.seekUnvisited()
+  }
+
+  pub fn hasNext(self: GraphTraversalCursor<T>) -> bool {
+    return self.frontier.len > 0
+  }
+
+  pub fn nodeUnchecked(self: GraphTraversalCursor<T>) -> NodeId {
+    match self.kind {
+      GraphTraversalKind.BreadthFirst => {
+        return self.frontier[0]
+      }
+      GraphTraversalKind.DepthFirst => {
+        return self.frontier[self.frontier.len - 1]
+      }
+    }
+  }
+
+  pub fn valueUnchecked(self: GraphTraversalCursor<T>) -> T {
+    return graphOptionPayloadUnchecked(self.graph.nodeValue(self.nodeUnchecked()), "Graph traversal cursor missing value")
+  }
+
+  pub fn next(self: GraphTraversalCursor<T>) -> GraphTraversalCursor<T> requires(alloc) {
+    let current = self.nodeUnchecked()
+    let frontier = self.popFrontier().appendNeighbors(current)
+    return GraphTraversalCursor<T> {
+      graph: self.graph,
+      frontier: frontier,
+      visited: self.visited.insert(current),
+      kind: self.kind,
+      generation: self.generation,
+    }.seekUnvisited()
+  }
+
+  pub fn seekUnvisited(self: GraphTraversalCursor<T>) -> GraphTraversalCursor<T> requires(alloc) {
+    let mut cursor = self
+    while cursor.frontier.len > 0 && cursor.visited.contains(cursor.nodeUnchecked()) {
+      cursor = cursor.popFrontier()
+    }
+    return cursor
+  }
+
+  pub fn popFrontier(self: GraphTraversalCursor<T>) -> GraphTraversalCursor<T> requires(alloc) {
+    match self.kind {
+      GraphTraversalKind.BreadthFirst => {
+        return GraphTraversalCursor<T> {
+          graph: self.graph,
+          frontier: self.frontier.removeAt(0),
+          visited: self.visited,
+          kind: self.kind,
+          generation: self.generation,
+        }
+      }
+      GraphTraversalKind.DepthFirst => {
+        return GraphTraversalCursor<T> {
+          graph: self.graph,
+          frontier: self.frontier.removeAt(self.frontier.len - 1),
+          visited: self.visited,
+          kind: self.kind,
+          generation: self.generation,
+        }
+      }
+    }
+  }
+
+  pub fn appendNeighbors(self: GraphTraversalCursor<T>, node: NodeId) -> Vec<NodeId> requires(alloc) {
+    let mut frontier = self.frontier
+    if !self.graph.hasNode(node) {
+      return frontier
+    }
+    let edges = self.graph.nodes[node.value].edges
+    let mut index: usize = 0
+    while index < edges.len {
+      let next = edges[index].to
+      if !self.visited.contains(next) {
+        frontier = frontier.push(next)
+      }
+      index = index + 1
+    }
+    return frontier
+  }
+}
+
+fn graphOptionPayloadUnchecked<T>(value: Option<T>, message: string) -> T {
+  match value {
+    Some(payload) => {
+      return payload
+    }
+    None => {
+      return panic(message)
+    }
+  }
+}

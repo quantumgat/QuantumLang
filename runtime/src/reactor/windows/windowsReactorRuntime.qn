@@ -1,0 +1,19 @@
+pub struct WindowsReactorRuntime {
+  iocpReady: bool,
+  waitHandleReady: bool,
+  timerQueueReady: bool,
+}
+
+impl WindowsReactorRuntime {
+  pub fn init(iocpReady: bool, waitHandleReady: bool, timerQueueReady: bool) -> WindowsReactorRuntime {
+    return WindowsReactorRuntime {
+      iocpReady: iocpReady,
+      waitHandleReady: waitHandleReady,
+      timerQueueReady: timerQueueReady,
+    }
+  }
+
+  pub fn ready(self: WindowsReactorRuntime) -> bool {
+    return self.iocpReady && self.waitHandleReady && self.timerQueueReady
+  }
+}

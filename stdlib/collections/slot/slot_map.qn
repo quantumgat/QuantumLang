@@ -1,0 +1,199 @@
+pub struct SlotMapKey<K> {
+  key: K,
+  generation: usize,
+}
+
+pub struct SlotMapEntry<V> {
+  value: V,
+  generation: usize,
+}
+
+pub struct SlotMap<K, V> {
+  entries: Map<K, SlotMapEntry<V>>,
+  len: usize,
+  capacity: usize,
+  nextGeneration: usize,
+  generation: usize,
+}
+
+impl<K> SlotMapKey<K> {
+  pub fn new(key: K, generation: usize) -> SlotMapKey<K> {
+    return SlotMapKey<K> {
+      key: key,
+      generation: generation,
+    }
+  }
+}
+
+impl<V> SlotMapEntry<V> {
+  pub fn init(value: V, generation: usize) -> SlotMapEntry<V> {
+    return SlotMapEntry<V> {
+      value: value,
+      generation: generation,
+    }
+  }
+}
+
+impl<K, V> SlotMap<K, V> {
+  pub fn init() -> SlotMap<K, V> requires(alloc) {
+    return SlotMap<K, V>.withCapacity(16)
+  }
+
+  pub fn empty() -> SlotMap<K, V> requires(alloc) {
+    return SlotMap<K, V>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> SlotMap<K, V> requires(alloc) {
+    return SlotMap<K, V> {
+      entries: Map<K, SlotMapEntry<V>>.withCapacity(capacity),
+      len: 0,
+      capacity: capacity,
+      nextGeneration: 1,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> SlotMapBuilder<K, V> {
+    return SlotMapBuilder<K, V> { capacity: 16 }
+  }
+
+  pub fn len(self: SlotMap<K, V>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: SlotMap<K, V>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: SlotMap<K, V>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn insert(self: SlotMap<K, V>, key: K, value: V) -> SlotMap<K, V> requires(alloc) {
+    return self.insertKey(key, value).0
+  }
+
+  pub fn insertKey(self: SlotMap<K, V>, key: K, value: V) -> (SlotMap<K, V>, SlotMapKey<K>) requires(alloc) {
+    let generation = self.nextGeneration
+    let existed = self.entries.containsKey(key)
+    let entries = self.entries.put(key, SlotMapEntry<V>.init(value, generation))
+    let mut nextLen = self.len
+    if existed == false {
+      nextLen = self.len + 1
+    }
+    return (
+      SlotMap<K, V> {
+        entries: entries,
+        len: nextLen,
+        capacity: entries.capacity,
+        nextGeneration: self.nextGeneration + 1,
+        generation: self.generation + 1,
+      },
+      SlotMapKey<K>.new(key, generation)
+    )
+  }
+
+  pub fn get(self: SlotMap<K, V>, key: K) -> Option<V> {
+    let found = self.entries.get(key)
+    match found {
+      Some(entry) => {
+        return Some(entry.value)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn getSlot(self: SlotMap<K, V>, slot: SlotMapKey<K>) -> Option<V> {
+    let found = self.entries.get(slot.key)
+    match found {
+      Some(entry) => {
+        if entry.generation == slot.generation {
+          return Some(entry.value)
+        }
+        return None
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn containsKey(self: SlotMap<K, V>, key: K) -> bool {
+    return self.entries.containsKey(key)
+  }
+
+  pub fn containsSlot(self: SlotMap<K, V>, slot: SlotMapKey<K>) -> bool {
+    let found = self.entries.get(slot.key)
+    match found {
+      Some(entry) => {
+        return entry.generation == slot.generation
+      }
+      None => {
+        return false
+      }
+    }
+  }
+
+  pub fn remove(self: SlotMap<K, V>, key: K) -> (SlotMap<K, V>, Option<V>) requires(alloc) {
+    let removed = self.entries.remove(key)
+    let entries = removed.0
+    match removed.1 {
+      Some(entry) => {
+        return (
+          SlotMap<K, V> {
+            entries: entries,
+            len: self.len - 1,
+            capacity: entries.capacity,
+            nextGeneration: self.nextGeneration + 1,
+            generation: self.generation + 1,
+          },
+          Some(entry.value)
+        )
+      }
+      None => {
+        return (self, None)
+      }
+    }
+  }
+
+  pub fn clear(self: SlotMap<K, V>) -> SlotMap<K, V> requires(alloc) {
+    return SlotMap<K, V>.withCapacity(self.capacity).withGeneration(self.generation + 1)
+  }
+
+  pub fn iter(self: SlotMap<K, V>) -> SlotMapIter<K, V> {
+    return SlotMapIter<K, V> {
+      map: self,
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  pub fn toVec(self: SlotMap<K, V>) -> Vec<V> requires(alloc) {
+    let mut result = Vec<V>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.len {
+      let entry = self.entries.entryAt(index)
+      match entry {
+        Some(pair) => {
+          result = result.push(pair.1.value)
+        }
+        None => {
+        }
+      }
+      index = index + 1
+    }
+    return result
+  }
+
+  pub fn withGeneration(self: SlotMap<K, V>, generation: usize) -> SlotMap<K, V> {
+    return SlotMap<K, V> {
+      entries: self.entries,
+      len: self.len,
+      capacity: self.capacity,
+      nextGeneration: self.nextGeneration,
+      generation: generation,
+    }
+  }
+}

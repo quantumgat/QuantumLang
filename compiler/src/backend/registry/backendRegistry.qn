@@ -1,0 +1,20 @@
+pub class BackendRegistry {
+  backendCount: usize,
+  sealedInternalBackends: bool,
+  dynamicPluginBoundary: bool,
+
+  pub init() {
+    self.backendCount = 2
+    self.sealedInternalBackends = true
+    self.dynamicPluginBoundary = true
+  }
+
+  pub fn registerBuiltins(self: &mut BackendRegistry) -> usize {
+    self.backendCount = 2
+    return self.backendCount
+  }
+
+  pub fn hasPluginBoundary(self: &BackendRegistry) -> bool {
+    return self.sealedInternalBackends && self.dynamicPluginBoundary
+  }
+}

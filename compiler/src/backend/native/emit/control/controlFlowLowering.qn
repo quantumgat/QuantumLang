@@ -1,0 +1,25 @@
+pub enum NativeControlFlowLoweringKind {
+  Branch
+  Loop
+  MatchSwitch
+  CleanupEdge
+  ParallelSplitJoin
+  QuantumControlBridge
+}
+
+pub struct NativeControlFlowLowering {
+  kind: NativeControlFlowLoweringKind,
+  mirOp: MirControlFlowOp,
+  directBranch: bool,
+  sourceMapReady: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeControlFlowLowering {
+  pub fn complete(self: NativeControlFlowLowering) -> bool {
+    return self.mirOp.lowerable()
+      && self.directBranch
+      && self.sourceMapReady
+      && self.noGeneratedFallback
+  }
+}

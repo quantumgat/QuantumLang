@@ -1,0 +1,21 @@
+pub struct TargetVariantMatrix {
+  variant: TargetVariantId,
+  triple: string,
+  tier: TargetSupportTier,
+  nativeSupported: bool,
+  runtimeSupported: bool,
+  pointerLoweringSupported: bool,
+}
+
+impl TargetVariantMatrix {
+  pub fn accepted(self: TargetVariantMatrix) -> bool {
+    return self.variant != TargetVariantId.UnknownVariant
+      && self.triple != ""
+      && self.tier != TargetSupportTier.Unsupported
+  }
+
+  pub fn canLowerPointers(self: TargetVariantMatrix) -> bool {
+    return self.pointerLoweringSupported
+      && (self.nativeSupported || self.runtimeSupported)
+  }
+}

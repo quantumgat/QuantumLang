@@ -1,0 +1,53 @@
+/**
+  Shared owning pointer with runtime control block and weak references.
+
+  example:
+    let shared = SharedPtr<User>.new(user)
+    let weak = shared.downgrade()
+
+  effects: allocation on construction, atomic refcount changes on clone/drop
+  complexity: O(1)
+  allocation: control block plus value allocation
+  safety: runtime prevents use after final strong release; compiler lowers hot borrows directly
+  stability: public since 0.1
+*/
+pub struct SharedPtr<T> {
+  ptr: NonNull<T>,
+  controlBlock: u64,
+  generation: u64,
+}
+
+impl<T> SharedPtr<T> {
+  pub fn init(value: T) -> SharedPtr<T> requires(alloc) {
+    return ptrRuntimeShared<T>(value)
+  }
+
+  pub fn new(value: T) -> SharedPtr<T> requires(alloc) {
+    return SharedPtr<T>(value)
+  }
+
+  pub fn clone(self: SharedPtr<T>) -> SharedPtr<T> {
+    return ptrRuntimeSharedClone<T>(self)
+  }
+
+  pub fn borrow(self: SharedPtr<T>) -> Ref<T> {
+    return Ref<T>.fromPtr(self.ptr, self.generation)
+  }
+
+  pub fn downgrade(self: SharedPtr<T>) -> WeakPtr<T> {
+    return ptrRuntimeWeak<T>(self)
+  }
+
+  pub fn strongCount(self: SharedPtr<T>) -> usize {
+    return ptrRuntimeStrongCount<T>(self.controlBlock)
+  }
+
+  pub fn accepted(self: SharedPtr<T>) -> bool {
+    return self.controlBlock > 0 && self.generation > 0
+  }
+}
+
+fn ptrRuntimeShared<T>(value: T) -> SharedPtr<T> requires(alloc)
+fn ptrRuntimeSharedClone<T>(ptr: SharedPtr<T>) -> SharedPtr<T>
+fn ptrRuntimeWeak<T>(ptr: SharedPtr<T>) -> WeakPtr<T>
+fn ptrRuntimeStrongCount<T>(controlBlock: u64) -> usize

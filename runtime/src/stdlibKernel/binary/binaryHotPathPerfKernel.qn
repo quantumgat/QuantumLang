@@ -1,0 +1,30 @@
+pub struct BinaryHotPathPerfKernel {
+  diagnosticsNoCoredump: bool,
+  allocationCounters: bool,
+  boundsIncidentCounters: bool,
+  codecPlanCache: bool,
+  validationTokenChecks: bool,
+  perfSamplesSerialSafe: bool,
+}
+
+impl BinaryHotPathPerfKernel {
+  pub fn standard() -> BinaryHotPathPerfKernel {
+    return BinaryHotPathPerfKernel {
+      diagnosticsNoCoredump: true,
+      allocationCounters: true,
+      boundsIncidentCounters: true,
+      codecPlanCache: true,
+      validationTokenChecks: true,
+      perfSamplesSerialSafe: true,
+    }
+  }
+
+  pub fn accepted(self: BinaryHotPathPerfKernel) -> bool {
+    return self.diagnosticsNoCoredump
+      && self.allocationCounters
+      && self.boundsIncidentCounters
+      && self.codecPlanCache
+      && self.validationTokenChecks
+      && self.perfSamplesSerialSafe
+  }
+}

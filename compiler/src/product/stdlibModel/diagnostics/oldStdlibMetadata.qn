@@ -1,0 +1,11 @@
+pub struct OldStdlibMetadataDiagnostic {
+  path: string,
+  code: string,
+  rejected: bool,
+}
+
+impl OldStdlibMetadataDiagnostic {
+  pub fn accepted(self: OldStdlibMetadataDiagnostic) -> bool {
+    return self.path != "" && self.code != "" && self.rejected
+  }
+}

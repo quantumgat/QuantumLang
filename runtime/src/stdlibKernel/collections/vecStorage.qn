@@ -1,0 +1,30 @@
+pub struct VecStoragePlan {
+  contiguous: bool,
+  lenTracked: bool,
+  capacityTracked: bool,
+  generationTracked: bool,
+  preallocatedPush: bool,
+}
+
+impl VecStoragePlan {
+  pub fn standard() -> VecStoragePlan {
+    return VecStoragePlan {
+      contiguous: true,
+      lenTracked: true,
+      capacityTracked: true,
+      generationTracked: true,
+      preallocatedPush: true,
+    }
+  }
+
+  pub fn canUseDirectIndex(self: VecStoragePlan) -> bool {
+    return self.contiguous
+      && self.lenTracked
+      && self.capacityTracked
+      && self.generationTracked
+  }
+
+  pub fn canPushWithoutRealloc(self: VecStoragePlan, len: usize, capacity: usize) -> bool {
+    return self.preallocatedPush && len < capacity
+  }
+}

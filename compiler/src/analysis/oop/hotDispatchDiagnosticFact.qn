@@ -1,0 +1,30 @@
+pub struct HotDispatchDiagnosticFact {
+  callId: u64,
+  functionId: u64,
+  tier: DispatchTier,
+  inHotContract: bool,
+  proofException: bool,
+}
+
+pub fn hotDispatchDiagnosticFact(callId: u64, functionId: u64, tier: DispatchTier, inHotContract: bool, proofException: bool) -> HotDispatchDiagnosticFact {
+  return HotDispatchDiagnosticFact {
+    callId: callId,
+    functionId: functionId,
+    tier: tier,
+    inHotContract: inHotContract,
+    proofException: proofException,
+  }
+}
+
+impl HotDispatchDiagnosticFact {
+  pub fn diagnosticCode(self: HotDispatchDiagnosticFact) -> string {
+    if self.requiresOop001() {
+      return "performance[OOP001]"
+    }
+    return ""
+  }
+
+  pub fn requiresOop001(self: HotDispatchDiagnosticFact) -> bool {
+    return self.inHotContract && self.tier == DispatchTier.Tier4Dynamic && !self.proofException
+  }
+}

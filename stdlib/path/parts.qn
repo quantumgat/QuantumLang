@@ -1,0 +1,29 @@
+pub struct PathParts {
+  root: string,
+  segments: Vec<string>,
+  absolute: bool,
+  style: PathStyle,
+}
+
+pub struct PathComponent {
+  text: string,
+  normal: bool,
+  parent: bool,
+  current: bool,
+}
+
+impl PathParts {
+  pub fn hasRoot(self: PathParts) -> bool {
+    return self.root != ""
+  }
+
+  pub fn isAbsolute(self: PathParts) -> bool {
+    return self.absolute
+  }
+}
+
+impl PathComponent {
+  pub fn safe(self: PathComponent) -> bool {
+    return self.text != "" && !self.parent
+  }
+}

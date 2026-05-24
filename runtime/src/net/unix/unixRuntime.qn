@@ -1,0 +1,12 @@
+pub struct RuntimeUnixSocketContract {
+  stream: bool,
+  listener: bool,
+  datagram: bool,
+  platformGated: bool,
+}
+
+impl RuntimeUnixSocketContract {
+  pub fn accepted(self: RuntimeUnixSocketContract) -> bool {
+    return self.platformGated && (self.stream || self.listener || self.datagram)
+  }
+}

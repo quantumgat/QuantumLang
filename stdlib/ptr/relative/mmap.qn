@@ -1,0 +1,115 @@
+pub enum MmapAccess {
+  ReadOnly,
+  ReadWrite,
+  Shared,
+}
+
+pub struct RelativePtr<T> {
+  base: usize,
+  offset: isize,
+  generation: u64,
+}
+
+pub struct OffsetPtr<T> {
+  offset: isize,
+  boundsBytes: usize,
+}
+
+pub struct MappedMemory<T> {
+  base: usize,
+  bytes: usize,
+  access: MmapAccess,
+  generation: u64,
+  revoked: bool,
+}
+
+pub struct SharedMemoryView<T> {
+  mapping: MappedMemory<T>,
+  leaseActive: bool,
+  synchronized: bool,
+}
+
+pub struct FlushSync {
+  flushed: bool,
+  synced: bool,
+}
+
+impl<T> RelativePtr<T> {
+  pub fn init(base: usize, offset: isize, generation: u64) -> RelativePtr<T> {
+    return RelativePtr<T> {
+      base: base,
+      offset: offset,
+      generation: generation,
+    }
+  }
+
+  pub fn accepted(self: RelativePtr<T>) -> bool {
+    return self.base > 0 && self.generation > 0
+  }
+}
+
+impl<T> OffsetPtr<T> {
+  pub fn init(offset: isize, boundsBytes: usize) -> OffsetPtr<T> {
+    return OffsetPtr<T> {
+      offset: offset,
+      boundsBytes: boundsBytes,
+    }
+  }
+
+  pub fn inBounds(self: OffsetPtr<T>) -> bool {
+    return self.boundsBytes > 0
+  }
+}
+
+impl<T> MappedMemory<T> {
+  pub fn init(base: usize, bytes: usize, access: MmapAccess, generation: u64) -> MappedMemory<T> {
+    return MappedMemory<T> {
+      base: base,
+      bytes: bytes,
+      access: access,
+      generation: generation,
+      revoked: false,
+    }
+  }
+
+  pub fn revoke(self: MappedMemory<T>) -> MappedMemory<T> {
+    return MappedMemory<T> {
+      base: self.base,
+      bytes: self.bytes,
+      access: self.access,
+      generation: self.generation + 1,
+      revoked: true,
+    }
+  }
+
+  pub fn accepted(self: MappedMemory<T>) -> bool {
+    return self.base > 0 && self.bytes > 0 && self.revoked == false
+  }
+}
+
+impl<T> SharedMemoryView<T> {
+  pub fn init(mapping: MappedMemory<T>, leaseActive: bool, synchronized: bool) -> SharedMemoryView<T> {
+    return SharedMemoryView<T> {
+      mapping: mapping,
+      leaseActive: leaseActive,
+      synchronized: synchronized,
+    }
+  }
+
+  pub fn accepted(self: SharedMemoryView<T>) -> bool {
+    return self.mapping.accepted() && self.leaseActive && self.synchronized
+  }
+}
+
+impl FlushSync {
+  pub fn init(flushed: bool, synced: bool) -> FlushSync {
+    return FlushSync {
+      flushed: flushed,
+      synced: synced,
+    }
+  }
+
+  pub fn accepted(self: FlushSync) -> bool {
+    return self.flushed && self.synced
+  }
+}

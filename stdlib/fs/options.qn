@@ -1,0 +1,29 @@
+pub enum FsOpenMode {
+  Read
+  Write
+  Append
+  ReadWrite
+}
+
+pub struct ReadOptions {
+  maxBytes: usize,
+  streaming: bool,
+  encoding: string,
+}
+
+pub struct WriteOptions {
+  atomic: bool,
+  createParents: bool,
+  fsync: bool,
+}
+
+pub struct CopyOptions {
+  overwrite: bool,
+  preserveMetadata: bool,
+  followSymlinks: bool,
+}
+
+pub struct RemoveOptions {
+  recursive: bool,
+  missingOk: bool,
+}

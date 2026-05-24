@@ -1,0 +1,35 @@
+pub struct ArenaRuntimeStats {
+  capacityBytes: usize,
+  usedBytes: usize,
+  allocationCount: usize,
+  resetEpoch: u64,
+}
+
+impl ArenaRuntimeStats {
+  pub fn init(capacityBytes: usize) -> ArenaRuntimeStats {
+    return ArenaRuntimeStats {
+      capacityBytes: capacityBytes,
+      usedBytes: 0,
+      allocationCount: 0,
+      resetEpoch: 0,
+    }
+  }
+
+  pub fn withAllocation(self: ArenaRuntimeStats, bytes: usize) -> ArenaRuntimeStats {
+    return ArenaRuntimeStats {
+      capacityBytes: self.capacityBytes,
+      usedBytes: self.usedBytes + bytes,
+      allocationCount: self.allocationCount + 1,
+      resetEpoch: self.resetEpoch,
+    }
+  }
+
+  pub fn reset(self: ArenaRuntimeStats) -> ArenaRuntimeStats {
+    return ArenaRuntimeStats {
+      capacityBytes: self.capacityBytes,
+      usedBytes: 0,
+      allocationCount: 0,
+      resetEpoch: self.resetEpoch + 1,
+    }
+  }
+}

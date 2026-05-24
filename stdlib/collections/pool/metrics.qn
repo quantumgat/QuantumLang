@@ -1,0 +1,39 @@
+pub struct PoolStats {
+  len: usize,
+  capacity: usize,
+  freeCount: usize,
+  slotCount: usize,
+  generation: usize,
+}
+
+impl<T> Pool<T> {
+  pub fn freeCount(self: Pool<T>) -> usize {
+    let mut count: usize = 0
+    let mut cursor = self.freeHead
+    while cursor != None {
+      match cursor {
+        Some(index) => {
+          count = count + 1
+          cursor = self.slots[index].nextFree
+        }
+        None => {
+        }
+      }
+    }
+    return count
+  }
+
+  pub fn slotCount(self: Pool<T>) -> usize {
+    return self.slots.len
+  }
+
+  pub fn stats(self: Pool<T>) -> PoolStats {
+    return PoolStats {
+      len: self.len,
+      capacity: self.capacity,
+      freeCount: self.freeCount(),
+      slotCount: self.slots.len,
+      generation: self.generation,
+    }
+  }
+}

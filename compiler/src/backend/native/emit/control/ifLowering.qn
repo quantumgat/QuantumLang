@@ -1,0 +1,97 @@
+pub enum NativeIfLoweringKind {
+  DirectBranch
+  ElseChain
+  PhiValue
+  PatternPayload
+  GuardedBranch
+  RangeCompare
+  TypeTagNarrow
+  QuestionFastExit
+  AwaitQuestionStatePoll
+  StaticDeadBranchElision
+  TargetFeatureDispatch
+  QirProfileBranch
+}
+
+pub struct NativeIfLowering {
+  kind: NativeIfLoweringKind,
+  mirIf: MirIfOp,
+  noHeapAllocation: bool,
+  directBranches: bool,
+  noGeneratedFallback: bool,
+}
+
+pub struct NativeIfInput {
+  kind: NativeIfLoweringKind,
+  mirIf: MirIfOp,
+  emitsConditionalJump: bool,
+  emitsMergeJump: bool,
+  emitsPhiMove: bool,
+  qirOwned: bool,
+}
+
+pub struct NativeIfBuild {
+  input: NativeIfInput,
+  lowering: NativeIfLowering,
+  executableEvidenceReady: bool,
+}
+
+pub fn nativeIfLowering(
+  kind: NativeIfLoweringKind,
+  mirIf: MirIfOp,
+  noHeapAllocation: bool,
+  directBranches: bool,
+  noGeneratedFallback: bool,
+) -> NativeIfLowering {
+  return NativeIfLowering {
+    kind: kind,
+    mirIf: mirIf,
+    noHeapAllocation: noHeapAllocation,
+    directBranches: directBranches,
+    noGeneratedFallback: noGeneratedFallback,
+  }
+}
+
+pub fn nativeIfInput(
+  kind: NativeIfLoweringKind,
+  mirIf: MirIfOp,
+  emitsConditionalJump: bool,
+  emitsMergeJump: bool,
+  emitsPhiMove: bool,
+  qirOwned: bool,
+) -> NativeIfInput {
+  return NativeIfInput {
+    kind: kind,
+    mirIf: mirIf,
+    emitsConditionalJump: emitsConditionalJump,
+    emitsMergeJump: emitsMergeJump,
+    emitsPhiMove: emitsPhiMove,
+    qirOwned: qirOwned,
+  }
+}
+
+pub fn emitIf(input: NativeIfInput) -> NativeIfBuild {
+  let direct = input.emitsConditionalJump && (input.emitsMergeJump || input.qirOwned)
+  let lowering = nativeIfLowering(input.kind, input.mirIf, true, direct, true)
+  return NativeIfBuild {
+    input: input,
+    lowering: lowering,
+    executableEvidenceReady: direct && input.mirIf.hotLowerable(),
+  }
+}
+
+impl NativeIfLowering {
+  pub fn complete(self: NativeIfLowering) -> bool {
+    return self.mirIf.hotLowerable()
+      && self.noHeapAllocation
+      && self.directBranches
+      && self.noGeneratedFallback
+  }
+}
+
+impl NativeIfBuild {
+  pub fn complete(self: NativeIfBuild) -> bool {
+    return self.lowering.complete()
+      && self.executableEvidenceReady
+  }
+}

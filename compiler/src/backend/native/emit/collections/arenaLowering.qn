@@ -1,0 +1,45 @@
+pub struct ArenaLowering {
+  regionBacked: bool,
+  typedHandleBacked: bool,
+  resetGenerationTracked: bool,
+  allocLoweredToAppendSlot: bool,
+  getLoweredToIndexGenerationCheck: bool,
+  sliceLoweredToStartLenGeneration: bool,
+  iteratorLoweredToOccupiedSlotCursor: bool,
+  bytesAccountingLowered: bool,
+  staleHandleRejectedOnHotPath: bool,
+  zeroCopyHandleReturn: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn arenaLowering() -> ArenaLowering {
+  return ArenaLowering {
+    regionBacked: true,
+    typedHandleBacked: true,
+    resetGenerationTracked: true,
+    allocLoweredToAppendSlot: true,
+    getLoweredToIndexGenerationCheck: true,
+    sliceLoweredToStartLenGeneration: true,
+    iteratorLoweredToOccupiedSlotCursor: true,
+    bytesAccountingLowered: true,
+    staleHandleRejectedOnHotPath: true,
+    zeroCopyHandleReturn: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl ArenaLowering {
+  pub fn hotPathReady(self: ArenaLowering) -> bool {
+    return self.regionBacked
+      && self.typedHandleBacked
+      && self.resetGenerationTracked
+      && self.allocLoweredToAppendSlot
+      && self.getLoweredToIndexGenerationCheck
+      && self.sliceLoweredToStartLenGeneration
+      && self.iteratorLoweredToOccupiedSlotCursor
+      && self.bytesAccountingLowered
+      && self.staleHandleRejectedOnHotPath
+      && self.zeroCopyHandleReturn
+      && self.boundsProofRequired
+  }
+}

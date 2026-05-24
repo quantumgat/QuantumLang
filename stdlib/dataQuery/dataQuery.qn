@@ -1,0 +1,10 @@
+pub struct DataQuery {
+  text: string,
+}
+
+pub struct DataRow {
+  index: usize,
+}
+
+pub fn query(text: string) -> DataQuery
+pub fn limit(query: DataQuery, rows: usize) -> DataQuery

@@ -1,0 +1,14 @@
+pub struct Event {
+  signaled: bool,
+  manualReset: bool,
+}
+
+impl Event {
+  pub fn wait(self: Event) -> Result<Unit, SyncError>
+
+  pub fn waitUntil(self: Event, deadline: Deadline) -> Result<Unit, SyncError>
+
+  pub fn signal(self: Event) -> Result<Unit, SyncError>
+
+  pub fn reset(self: Event) -> Result<Unit, SyncError>
+}

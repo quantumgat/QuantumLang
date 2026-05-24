@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct SliceKernel {
+  borrowedViewStable: bool
+  startLenTracked: bool
+  directIndexLoadStable: bool
+  subSliceUsesOffsetLen: bool
+  toVecUsesTightCopyLoop: bool
+  iteratorIndexCursorStable: bool
+  boundsProofRequired: bool
+  zeroCopyViewCreation: bool
+  arrayViewCompatible: bool
+  noOwnershipTransferOnView: bool
+}

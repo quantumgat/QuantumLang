@@ -1,0 +1,15 @@
+pub struct BytesKernel {
+  boundsChecked: bool,
+  zeroCopyAware: bool,
+  publicApiOwnedByStdlib: bool,
+}
+
+impl BytesKernel {
+  pub fn standard() -> BytesKernel {
+    return BytesKernel { boundsChecked: true, zeroCopyAware: true, publicApiOwnedByStdlib: true }
+  }
+
+  pub fn canRun(self: BytesKernel) -> bool {
+    return self.boundsChecked && self.zeroCopyAware && self.publicApiOwnedByStdlib
+  }
+}

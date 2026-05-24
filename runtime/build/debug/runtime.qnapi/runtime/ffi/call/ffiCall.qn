@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum FfiCallAbi {
+  CAbi
+  SystemAbi
+  RuntimeAbi
+}
+pub struct FfiCall {
+  symbol: string
+  abi: FfiCallAbi
+  effectChecked: bool
+  blockingGateRequired: bool
+}
+pub extern "qnpkg" {
+  pub fn ffiCall(symbol: string, abi: FfiCallAbi) -> FfiCall
+}

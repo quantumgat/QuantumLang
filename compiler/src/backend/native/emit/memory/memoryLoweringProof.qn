@@ -1,0 +1,35 @@
+pub struct MemoryLoweringProof {
+  directMemory: DirectMemoryLowering,
+  bounds: BoundsEliminationLowering,
+  layout: LayoutLowering,
+  allocatorDomain: AllocatorDomainLowering,
+  noRuntimeWrapper: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl MemoryLoweringProof {
+  pub fn init(
+    directMemory: DirectMemoryLowering,
+    bounds: BoundsEliminationLowering,
+    layout: LayoutLowering,
+    allocatorDomain: AllocatorDomainLowering,
+  ) -> MemoryLoweringProof {
+    return MemoryLoweringProof {
+      directMemory: directMemory,
+      bounds: bounds,
+      layout: layout,
+      allocatorDomain: allocatorDomain,
+      noRuntimeWrapper: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn hotPath(self: MemoryLoweringProof) -> bool {
+    return self.directMemory.hotPath()
+      && self.bounds.accepted()
+      && self.layout.nativeReady()
+      && self.allocatorDomain.accepted()
+      && self.noRuntimeWrapper
+      && self.noCoredumpDiagnostic
+  }
+}

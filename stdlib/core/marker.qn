@@ -1,0 +1,55 @@
+/**
+  Value can be moved across task or thread boundaries.
+
+  example:
+    fn spawnWork<T>(value: T) where T: Send
+
+  effects: compile-time trait only
+  complexity: O(1)
+  allocation: none
+  stability: public since 0.1
+*/
+pub auto trait Send {
+}
+
+/**
+  Shared references can be accessed safely across task or thread boundaries.
+
+  example:
+    fn shareWork<T>(value: &T) where T: Sync
+
+  effects: compile-time trait only
+  complexity: O(1)
+  allocation: none
+  stability: public since 0.1
+*/
+pub auto trait Sync {
+}
+
+/**
+  Type has a compiler-approved stable memory layout.
+
+  example:
+    fn writeWire<T>(value: T) where T: StableLayout
+
+  effects: compile-time trait only
+  complexity: O(1)
+  allocation: none
+  stability: public since 0.1
+*/
+pub marker trait StableLayout {
+}
+
+/**
+  Type has no implicit padding in its portable layout.
+
+  example:
+    fn viewWire<T>(bytes: BinaryView) where T: NoPadding
+
+  effects: compile-time trait only
+  complexity: O(1)
+  allocation: none
+  stability: public since 0.1
+*/
+pub marker trait NoPadding {
+}

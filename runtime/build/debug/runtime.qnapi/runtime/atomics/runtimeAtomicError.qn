@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeAtomicErrorKind {
+  UnsupportedPayload,
+  UnsupportedTarget,
+  LockFreeRequired,
+  InvalidReference,
+  InvalidOrdering,
+}
+pub struct RuntimeAtomicError {
+  kind: RuntimeAtomicErrorKind
+  recoverable: bool
+}

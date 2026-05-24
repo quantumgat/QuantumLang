@@ -1,0 +1,30 @@
+pub enum RuntimeSymbolKind {
+  MemorySymbol
+  SchedulerSymbol
+  PanicSymbol
+  IoSymbol
+}
+
+pub struct RuntimeSymbol {
+  name: string,
+  kind: RuntimeSymbolKind,
+  stableAbi: bool,
+}
+
+pub fn runtimeSymbol(name: string, kind: RuntimeSymbolKind, stableAbi: bool) -> RuntimeSymbol {
+  return RuntimeSymbol { name: name, kind: kind, stableAbi: stableAbi }
+}
+
+impl RuntimeSymbol {
+  pub fn symbolName(self: RuntimeSymbol) -> string {
+    return self.name
+  }
+
+  pub fn symbolKind(self: RuntimeSymbol) -> RuntimeSymbolKind {
+    return self.kind
+  }
+
+  pub fn isStableAbi(self: RuntimeSymbol) -> bool {
+    return self.stableAbi
+  }
+}

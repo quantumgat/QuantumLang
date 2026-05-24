@@ -1,0 +1,39 @@
+pub struct BorrowLease {
+  range: BorrowRange,
+  generation: u64,
+  mutationEpoch: u64,
+  active: bool,
+}
+
+impl BorrowLease {
+  pub fn init(range: BorrowRange, generation: u64, mutationEpoch: u64) -> BorrowLease {
+    return BorrowLease {
+      range: range,
+      generation: generation,
+      mutationEpoch: mutationEpoch,
+      active: true,
+    }
+  }
+
+  pub fn validate(self: BorrowLease, generation: u64, mutationEpoch: u64) -> Result<BorrowLease, BorrowRuntimeError> {
+    if self.active == false {
+      return Err(BorrowRuntimeError.DanglingView)
+    }
+    if self.generation != generation {
+      return Err(BorrowRuntimeError.DanglingView)
+    }
+    if self.mutationEpoch != mutationEpoch {
+      return Err(BorrowRuntimeError.ReadAfterMutation)
+    }
+    return Ok(self)
+  }
+
+  pub fn revoke(self: BorrowLease) -> BorrowLease {
+    return BorrowLease {
+      range: self.range,
+      generation: self.generation,
+      mutationEpoch: self.mutationEpoch,
+      active: false,
+    }
+  }
+}

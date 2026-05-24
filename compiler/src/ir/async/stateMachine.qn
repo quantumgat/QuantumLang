@@ -1,0 +1,30 @@
+pub struct AsyncStateMachine {
+  bodyId: u64,
+  stateCount: usize,
+  transitionCount: usize,
+  sourceMapCount: usize,
+  preservesCleanup: bool,
+  runtimeCallsReady: bool,
+}
+
+pub fn asyncStateMachine(bodyId: u64, stateCount: usize, preservesCleanup: bool) -> AsyncStateMachine {
+  return AsyncStateMachine {
+    bodyId: bodyId,
+    stateCount: stateCount,
+    transitionCount: stateCount,
+    sourceMapCount: stateCount,
+    preservesCleanup: preservesCleanup,
+    runtimeCallsReady: true,
+  }
+}
+
+impl AsyncStateMachine {
+  pub fn valid(self: AsyncStateMachine) -> bool {
+    return self.bodyId > 0
+      && self.stateCount > 0
+      && self.transitionCount >= self.stateCount
+      && self.sourceMapCount >= self.stateCount
+      && self.preservesCleanup
+      && self.runtimeCallsReady
+  }
+}

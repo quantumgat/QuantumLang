@@ -1,0 +1,21 @@
+pub struct SymbolId {
+  value: u64,
+}
+
+pub fn symbolId(value: u64) -> SymbolId {
+  return SymbolId { value: value }
+}
+
+pub fn invalidSymbolId() -> SymbolId {
+  return SymbolId { value: 0 }
+}
+
+impl SymbolId {
+  pub fn raw(self: SymbolId) -> u64 {
+    return self.value
+  }
+
+  pub fn isValid(self: SymbolId) -> bool {
+    return self.value != 0
+  }
+}

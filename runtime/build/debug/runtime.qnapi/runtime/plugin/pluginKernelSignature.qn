@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PluginKernelSignature {
+  symbol: string
+  inputAbiHash: string
+  outputAbiHash: string
+  targetFeatureCount: usize
+  typedFailure: PluginRuntimePolicy
+  sourceMapped: bool
+  deterministic: bool
+}

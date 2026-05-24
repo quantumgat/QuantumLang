@@ -1,0 +1,36 @@
+pub enum OwnershipState {
+  Unknown
+  Owned
+  Borrowed
+  MutBorrowed
+  Moved
+  Shared
+}
+
+pub struct OwnershipFact {
+  node: u64,
+  symbol: u64,
+  state: OwnershipState,
+}
+
+pub fn ownershipFact(node: u64, symbol: u64, state: OwnershipState) -> OwnershipFact {
+  return OwnershipFact { node: node, symbol: symbol, state: state }
+}
+
+impl OwnershipFact {
+  pub fn nodeId(self: OwnershipFact) -> u64 {
+    return self.node
+  }
+
+  pub fn symbolId(self: OwnershipFact) -> u64 {
+    return self.symbol
+  }
+
+  pub fn ownershipState(self: OwnershipFact) -> OwnershipState {
+    return self.state
+  }
+
+  pub fn isMoved(self: OwnershipFact) -> bool {
+    return self.state == OwnershipState.Moved
+  }
+}

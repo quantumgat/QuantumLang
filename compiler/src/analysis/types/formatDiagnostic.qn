@@ -1,0 +1,52 @@
+pub enum FormatDiagnosticKind {
+  InvalidFormatSpecifier
+  InvalidPrecision
+  InvalidZeroPadding
+  UnsupportedDisplay
+  UnsupportedDebug
+  UnknownField
+  SecretRequiresRedaction
+  MissingArgument
+  ExtraArgument
+  UnsupportedFormatTrait
+  DebugRejected
+  AllocationForbidden
+}
+
+pub struct FormatDiagnostic {
+  node: u64,
+  kind: FormatDiagnosticKind,
+  stableCode: string,
+  sourceMapped: bool,
+  privacySafe: bool,
+}
+
+pub fn formatDiagnostic(
+  node: u64,
+  kind: FormatDiagnosticKind,
+  stableCode: string,
+  sourceMapped: bool,
+  privacySafe: bool,
+) -> FormatDiagnostic {
+  return FormatDiagnostic {
+    node: node,
+    kind: kind,
+    stableCode: stableCode,
+    sourceMapped: sourceMapped,
+    privacySafe: privacySafe,
+  }
+}
+
+impl FormatDiagnostic {
+  pub fn isCompileTime(self: FormatDiagnostic) -> bool {
+    return self.sourceMapped && self.stableCode != ""
+  }
+
+  pub fn isPrivacySafe(self: FormatDiagnostic) -> bool {
+    return self.privacySafe
+  }
+
+  pub fn diagnosticKind(self: FormatDiagnostic) -> FormatDiagnosticKind {
+    return self.kind
+  }
+}

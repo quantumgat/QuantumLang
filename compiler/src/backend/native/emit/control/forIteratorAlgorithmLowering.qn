@@ -1,0 +1,35 @@
+pub enum NativeForIteratorAlgorithmLoweringKind {
+  FusedMapFilter
+  FusedFilterMap
+  DirectCountSum
+  DirectAnyAllFind
+  FusedZipEnumerate
+  FusedChainTakeSkipUnique
+}
+
+pub struct NativeForIteratorAlgorithmLowering {
+  kind: NativeForIteratorAlgorithmLoweringKind,
+  mir: MirForIteratorAlgorithmOp,
+  algorithmPipeline: NativeAlgorithmPipelineLowering,
+  emitsCursorLoop: bool,
+  emitsInlineCallback: bool,
+  emitsTerminalAccumulator: bool,
+  emitsEarlyExitBranch: bool,
+  emitsSourceMap: bool,
+  rejectsMaterializingFallback: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeForIteratorAlgorithmLowering {
+  pub fn complete(self: NativeForIteratorAlgorithmLowering) -> bool {
+    return self.mir.complete()
+      && self.algorithmPipeline.complete()
+      && self.emitsCursorLoop
+      && self.emitsInlineCallback
+      && self.emitsTerminalAccumulator
+      && self.emitsEarlyExitBranch
+      && self.emitsSourceMap
+      && self.rejectsMaterializingFallback
+      && self.noGeneratedFallback
+  }
+}

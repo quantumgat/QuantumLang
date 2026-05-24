@@ -1,0 +1,36 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeSignalAction {
+  Default
+  Ignore
+  Handler
+  Shutdown
+  Reload
+}
+pub struct RuntimeSignal {
+  number: i32
+  portable: bool
+}
+pub struct RuntimeSignalSet {
+  count: usize
+  portableOnly: bool
+  boundedWait: bool
+}
+pub struct RuntimeSignalSubscription {
+  signal: RuntimeSignal
+  action: RuntimeSignalAction
+  restoreRequired: bool
+  installed: bool
+}
+pub struct RuntimeShutdownSignal {
+  signal: RuntimeSignal
+  cancellationWake: bool
+  graceful: bool
+}
+pub struct RuntimeSignalRegistry {
+  installed: usize
+  maxHandlers: usize
+  wakeSafe: bool
+  noCoredump: bool
+  subscriptionRestore: bool
+  shutdownWake: bool
+}

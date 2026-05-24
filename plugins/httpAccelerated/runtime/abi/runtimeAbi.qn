@@ -1,0 +1,27 @@
+pub struct HttpAcceleratedRuntimeAbi {
+  name: string,
+  version: string,
+  typedFailure: bool,
+  allocatorBoundary: bool,
+  noCoredump: bool,
+}
+
+impl HttpAcceleratedRuntimeAbi {
+  pub fn v1() -> HttpAcceleratedRuntimeAbi {
+    return HttpAcceleratedRuntimeAbi {
+      name: "qtlc-plugin-runtime-v1",
+      version: "0.1.0",
+      typedFailure: true,
+      allocatorBoundary: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedRuntimeAbi) -> bool {
+    return self.name == "qtlc-plugin-runtime-v1"
+      && self.version != ""
+      && self.typedFailure
+      && self.allocatorBoundary
+      && self.noCoredump
+  }
+}

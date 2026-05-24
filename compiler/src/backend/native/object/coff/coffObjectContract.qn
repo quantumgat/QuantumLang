@@ -1,0 +1,12 @@
+pub struct CoffObjectContract {
+  target: string,
+  unwindInfoSupported: bool,
+  importLibraryAware: bool,
+  deterministicWriter: bool,
+}
+
+impl CoffObjectContract {
+  pub fn accepted(self: CoffObjectContract) -> bool {
+    return self.target != "" && self.unwindInfoSupported && self.deterministicWriter
+  }
+}

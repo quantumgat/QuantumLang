@@ -1,0 +1,269 @@
+pub struct BinaryCursor {
+  view: BinaryView,
+  offset: usize,
+}
+
+impl BinaryCursor {
+  pub fn fromView(view: BinaryView) -> BinaryCursor {
+    return BinaryCursor { view: view, offset: 0 }
+  }
+
+  pub fn position(self: BinaryCursor) -> usize {
+    return self.offset
+  }
+
+  pub fn require(self: BinaryCursor, bytes: usize) -> Result<BinaryCursor, BinaryError> {
+    if self.offset + bytes > self.view.len {
+      return Err(BinaryError.init(BinaryErrorKind.Eof, self.offset, "binary cursor out of bytes"))
+    }
+    return Ok(self)
+  }
+
+  pub fn align(self: BinaryCursor, alignment: usize) -> Result<BinaryCursor, BinaryError> {
+    if alignment == 0 || alignment == 3 {
+      return Err(BinaryError.init(BinaryErrorKind.InvalidAlignment, self.offset, "invalid binary alignment"))
+    }
+    if self.offset % alignment != 0 {
+      return Err(BinaryError.init(BinaryErrorKind.Alignment, self.offset, "binary cursor alignment rejected"))
+    }
+    return Ok(self)
+  }
+
+  pub fn advance(self: BinaryCursor, bytes: usize) -> BinaryCursor {
+    return BinaryCursor { view: self.view, offset: self.offset + bytes }
+  }
+
+  pub fn readU8(self: BinaryCursor) -> Result<(BinaryCursor, u8), BinaryError> {
+    let checked = self.require(1)?
+    return Ok((checked.advance(1), binaryReadU8(checked)))
+  }
+
+  pub fn readI8(self: BinaryCursor) -> Result<(BinaryCursor, i8), BinaryError> {
+    let checked = self.require(1)?
+    return Ok((checked.advance(1), binaryReadI8(checked)))
+  }
+
+  pub fn readU16(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, u16), BinaryError> {
+    let checked = self.require(2)?
+    return Ok((checked.advance(2), binaryReadU16(checked, endian)))
+  }
+
+  pub fn readI16(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, i16), BinaryError> {
+    let checked = self.require(2)?
+    return Ok((checked.advance(2), binaryReadI16(checked, endian)))
+  }
+
+  pub fn readU32(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, u32), BinaryError> {
+    let checked = self.require(4)?
+    return Ok((checked.advance(4), binaryReadU32(checked, endian)))
+  }
+
+  pub fn readI32(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, i32), BinaryError> {
+    let checked = self.require(4)?
+    return Ok((checked.advance(4), binaryReadI32(checked, endian)))
+  }
+
+  pub fn readU64(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, u64), BinaryError> {
+    let checked = self.require(8)?
+    return Ok((checked.advance(8), binaryReadU64(checked, endian)))
+  }
+
+  pub fn readI64(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, i64), BinaryError> {
+    let checked = self.require(8)?
+    return Ok((checked.advance(8), binaryReadI64(checked, endian)))
+  }
+
+  pub fn readU128(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, u128), BinaryError> {
+    let checked = self.require(16)?
+    return Ok((checked.advance(16), binaryReadU128(checked, endian)))
+  }
+
+  pub fn readI128(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, i128), BinaryError> {
+    let checked = self.require(16)?
+    return Ok((checked.advance(16), binaryReadI128(checked, endian)))
+  }
+
+  pub fn readU256(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, u256), BinaryError> {
+    let checked = self.require(32)?
+    return Ok((checked.advance(32), binaryReadU256(checked, endian)))
+  }
+
+  pub fn readI256(self: BinaryCursor, endian: BinaryEndian) -> Result<(BinaryCursor, i256), BinaryError> {
+    let checked = self.require(32)?
+    return Ok((checked.advance(32), binaryReadI256(checked, endian)))
+  }
+
+  pub fn readBytes(self: BinaryCursor, count: usize) -> Result<(BinaryCursor, BinaryView), BinaryError> {
+    let checked = self.require(count)?
+    return Ok((checked.advance(count), binaryReadBytes(checked, count)))
+  }
+
+  /**
+    Reads one unsigned byte and advances the linear cursor state.
+
+    example:
+      let age = cursor.u8()?
+
+    effects: advances the compiler-tracked cursor by one byte
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn u8(self: BinaryCursor) -> Result<u8, BinaryError> {
+    let checked = self.require(1)?
+    return Ok(binaryCursorTakeU8(checked))
+  }
+
+  pub fn i8(self: BinaryCursor) -> Result<i8, BinaryError> {
+    let checked = self.require(1)?
+    return Ok(binaryCursorTakeI8(checked))
+  }
+
+  pub fn u16le(self: BinaryCursor) -> Result<u16, BinaryError> {
+    let checked = self.require(2)?
+    return Ok(binaryCursorTakeU16(checked, BinaryEndian.Little))
+  }
+
+  pub fn u16be(self: BinaryCursor) -> Result<u16, BinaryError> {
+    let checked = self.require(2)?
+    return Ok(binaryCursorTakeU16(checked, BinaryEndian.Big))
+  }
+
+  pub fn i16le(self: BinaryCursor) -> Result<i16, BinaryError> {
+    let checked = self.require(2)?
+    return Ok(binaryCursorTakeI16(checked, BinaryEndian.Little))
+  }
+
+  pub fn i16be(self: BinaryCursor) -> Result<i16, BinaryError> {
+    let checked = self.require(2)?
+    return Ok(binaryCursorTakeI16(checked, BinaryEndian.Big))
+  }
+
+  pub fn u32le(self: BinaryCursor) -> Result<u32, BinaryError> {
+    let checked = self.require(4)?
+    return Ok(binaryCursorTakeU32(checked, BinaryEndian.Little))
+  }
+
+  pub fn u32be(self: BinaryCursor) -> Result<u32, BinaryError> {
+    let checked = self.require(4)?
+    return Ok(binaryCursorTakeU32(checked, BinaryEndian.Big))
+  }
+
+  pub fn i32le(self: BinaryCursor) -> Result<i32, BinaryError> {
+    let checked = self.require(4)?
+    return Ok(binaryCursorTakeI32(checked, BinaryEndian.Little))
+  }
+
+  pub fn i32be(self: BinaryCursor) -> Result<i32, BinaryError> {
+    let checked = self.require(4)?
+    return Ok(binaryCursorTakeI32(checked, BinaryEndian.Big))
+  }
+
+  /**
+    Reads a little-endian unsigned 64-bit value and advances the linear cursor state.
+
+    example:
+      let id = cursor.u64le()?
+
+    effects: advances the compiler-tracked cursor by eight bytes
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn u64le(self: BinaryCursor) -> Result<u64, BinaryError> {
+    let checked = self.require(8)?
+    return Ok(binaryCursorTakeU64(checked, BinaryEndian.Little))
+  }
+
+  pub fn u64be(self: BinaryCursor) -> Result<u64, BinaryError> {
+    let checked = self.require(8)?
+    return Ok(binaryCursorTakeU64(checked, BinaryEndian.Big))
+  }
+
+  pub fn i64le(self: BinaryCursor) -> Result<i64, BinaryError> {
+    let checked = self.require(8)?
+    return Ok(binaryCursorTakeI64(checked, BinaryEndian.Little))
+  }
+
+  pub fn i64be(self: BinaryCursor) -> Result<i64, BinaryError> {
+    let checked = self.require(8)?
+    return Ok(binaryCursorTakeI64(checked, BinaryEndian.Big))
+  }
+
+  pub fn u128le(self: BinaryCursor) -> Result<u128, BinaryError> {
+    let checked = self.require(16)?
+    return Ok(binaryCursorTakeU128(checked, BinaryEndian.Little))
+  }
+
+  pub fn u128be(self: BinaryCursor) -> Result<u128, BinaryError> {
+    let checked = self.require(16)?
+    return Ok(binaryCursorTakeU128(checked, BinaryEndian.Big))
+  }
+
+  pub fn i128le(self: BinaryCursor) -> Result<i128, BinaryError> {
+    let checked = self.require(16)?
+    return Ok(binaryCursorTakeI128(checked, BinaryEndian.Little))
+  }
+
+  pub fn i128be(self: BinaryCursor) -> Result<i128, BinaryError> {
+    let checked = self.require(16)?
+    return Ok(binaryCursorTakeI128(checked, BinaryEndian.Big))
+  }
+
+  pub fn u256le(self: BinaryCursor) -> Result<u256, BinaryError> {
+    let checked = self.require(32)?
+    return Ok(binaryCursorTakeU256(checked, BinaryEndian.Little))
+  }
+
+  pub fn u256be(self: BinaryCursor) -> Result<u256, BinaryError> {
+    let checked = self.require(32)?
+    return Ok(binaryCursorTakeU256(checked, BinaryEndian.Big))
+  }
+
+  pub fn i256le(self: BinaryCursor) -> Result<i256, BinaryError> {
+    let checked = self.require(32)?
+    return Ok(binaryCursorTakeI256(checked, BinaryEndian.Little))
+  }
+
+  pub fn i256be(self: BinaryCursor) -> Result<i256, BinaryError> {
+    let checked = self.require(32)?
+    return Ok(binaryCursorTakeI256(checked, BinaryEndian.Big))
+  }
+
+  pub fn bytes(self: BinaryCursor, count: usize) -> Result<BinaryView, BinaryError> {
+    let checked = self.require(count)?
+    return Ok(binaryCursorTakeBytes(checked, count))
+  }
+
+  pub fn varU64(self: BinaryCursor) -> Result<VarU64, BinaryError> {
+    return binaryCursorTakeVarU64(self)
+  }
+}
+
+fn binaryReadU8(cursor: BinaryCursor) -> u8
+fn binaryReadI8(cursor: BinaryCursor) -> i8
+fn binaryReadU16(cursor: BinaryCursor, endian: BinaryEndian) -> u16
+fn binaryReadI16(cursor: BinaryCursor, endian: BinaryEndian) -> i16
+fn binaryReadU32(cursor: BinaryCursor, endian: BinaryEndian) -> u32
+fn binaryReadI32(cursor: BinaryCursor, endian: BinaryEndian) -> i32
+fn binaryReadU64(cursor: BinaryCursor, endian: BinaryEndian) -> u64
+fn binaryReadI64(cursor: BinaryCursor, endian: BinaryEndian) -> i64
+fn binaryReadU128(cursor: BinaryCursor, endian: BinaryEndian) -> u128
+fn binaryReadI128(cursor: BinaryCursor, endian: BinaryEndian) -> i128
+fn binaryReadU256(cursor: BinaryCursor, endian: BinaryEndian) -> u256
+fn binaryReadI256(cursor: BinaryCursor, endian: BinaryEndian) -> i256
+fn binaryReadBytes(cursor: BinaryCursor, count: usize) -> BinaryView
+fn binaryCursorTakeU8(cursor: BinaryCursor) -> u8
+fn binaryCursorTakeI8(cursor: BinaryCursor) -> i8
+fn binaryCursorTakeU16(cursor: BinaryCursor, endian: BinaryEndian) -> u16
+fn binaryCursorTakeI16(cursor: BinaryCursor, endian: BinaryEndian) -> i16
+fn binaryCursorTakeU32(cursor: BinaryCursor, endian: BinaryEndian) -> u32
+fn binaryCursorTakeI32(cursor: BinaryCursor, endian: BinaryEndian) -> i32
+fn binaryCursorTakeU64(cursor: BinaryCursor, endian: BinaryEndian) -> u64
+fn binaryCursorTakeI64(cursor: BinaryCursor, endian: BinaryEndian) -> i64
+fn binaryCursorTakeU128(cursor: BinaryCursor, endian: BinaryEndian) -> u128
+fn binaryCursorTakeI128(cursor: BinaryCursor, endian: BinaryEndian) -> i128
+fn binaryCursorTakeU256(cursor: BinaryCursor, endian: BinaryEndian) -> u256
+fn binaryCursorTakeI256(cursor: BinaryCursor, endian: BinaryEndian) -> i256
+fn binaryCursorTakeBytes(cursor: BinaryCursor, count: usize) -> BinaryView
+fn binaryCursorTakeVarU64(cursor: BinaryCursor) -> Result<VarU64, BinaryError>

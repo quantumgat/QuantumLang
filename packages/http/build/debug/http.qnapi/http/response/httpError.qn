@@ -1,0 +1,17 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpError {
+  status: HttpStatus
+  kind: ErrorKind
+  code: string
+  message: string
+  coreError: Error
+}
+pub extern "qnpkg" {
+  pub fn HttpError(kind: ErrorKind, code: string, message: string) -> HttpError
+}
+pub extern "qnpkg" {
+  pub fn badRequest(code: string, message: string) -> HttpError
+}
+pub extern "qnpkg" {
+  pub fn notFound(code: string, message: string) -> HttpError
+}

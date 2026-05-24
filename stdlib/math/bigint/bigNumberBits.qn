@@ -1,0 +1,29 @@
+pub trait BigNumberBits<T> {
+  pub fn bitAnd(self: T, right: T) -> T
+  pub fn bitOr(self: T, right: T) -> T
+  pub fn bitXor(self: T, right: T) -> T
+  pub fn bitNot(self: T, width: usize) -> T
+  pub fn shiftLeft(self: T, amount: usize) -> T
+  pub fn shiftRight(self: T, amount: usize) -> T
+  pub fn checkedShiftLeft(self: T, amount: isize) -> Result<T, BigNumberError>
+  pub fn checkedShiftRight(self: T, amount: isize) -> Result<T, BigNumberError>
+  pub fn bitLength(self: T) -> usize
+  pub fn bitCount(self: T) -> usize
+  pub fn leadingZeros(self: T) -> usize
+  pub fn trailingZeros(self: T) -> usize
+}
+
+extend<T: BigNumberBits<T>> T {
+  pub fn bitAnd(self: T, right: T) -> T
+  pub fn bitOr(self: T, right: T) -> T
+  pub fn bitXor(self: T, right: T) -> T
+  pub fn bitNot(self: T, width: usize) -> T
+  pub fn shiftLeft(self: T, amount: usize) -> T
+  pub fn shiftRight(self: T, amount: usize) -> T
+  pub fn checkedShiftLeft(self: T, amount: isize) -> Result<T, BigNumberError>
+  pub fn checkedShiftRight(self: T, amount: isize) -> Result<T, BigNumberError>
+  pub fn bitLength(self: T) -> usize
+  pub fn bitCount(self: T) -> usize
+  pub fn leadingZeros(self: T) -> usize
+  pub fn trailingZeros(self: T) -> usize
+}

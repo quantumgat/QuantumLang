@@ -1,0 +1,12 @@
+pub struct TargetTripleSpec {
+  arch: string,
+  vendor: string,
+  os: string,
+  environment: string,
+}
+
+impl TargetTripleSpec {
+  pub fn accepted(self: TargetTripleSpec) -> bool {
+    return self.arch != "" && self.os != "" && self.environment != ""
+  }
+}

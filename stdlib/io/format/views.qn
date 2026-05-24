@@ -1,0 +1,26 @@
+pub enum FormatRadix {
+  Decimal,
+  Hex,
+  Binary,
+  Octal,
+}
+
+pub struct FormatView {
+  mode: FormatMode,
+  precision: usize,
+  groupBits: bool,
+  redactsSecrets: bool,
+}
+
+pub fn hex<T>(value: T) -> Result<string, FormatError>
+pub fn bin<T>(value: T) -> Result<string, FormatError>
+pub fn oct<T>(value: T) -> Result<string, FormatError>
+pub fn bits<T>(value: T) -> Result<string, FormatError>
+pub fn fixed<T>(value: T, precision: usize) -> Result<string, FormatError>
+pub fn scientific<T>(value: T) -> Result<string, FormatError>
+
+impl FormatView {
+  pub fn safe(self: FormatView) -> bool {
+    return self.redactsSecrets
+  }
+}

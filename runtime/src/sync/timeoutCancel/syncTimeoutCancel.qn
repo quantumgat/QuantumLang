@@ -1,0 +1,29 @@
+pub struct RuntimeSyncTimeoutCancel {
+  waitToken: WaitToken,
+  deadlineMillis: u64,
+  cancellationTokenId: u64,
+  cleanupRegistered: bool,
+}
+
+impl RuntimeSyncTimeoutCancel {
+  pub fn init(
+    waitToken: WaitToken,
+    deadlineMillis: u64,
+    cancellationTokenId: u64,
+    cleanupRegistered: bool,
+  ) -> RuntimeSyncTimeoutCancel {
+    return RuntimeSyncTimeoutCancel {
+      waitToken: waitToken,
+      deadlineMillis: deadlineMillis,
+      cancellationTokenId: cancellationTokenId,
+      cleanupRegistered: cleanupRegistered,
+    }
+  }
+
+  pub fn safe(self: RuntimeSyncTimeoutCancel) -> bool {
+    return self.waitToken.canCancel()
+      && self.deadlineMillis > 0
+      && self.cancellationTokenId > 0
+      && self.cleanupRegistered
+  }
+}

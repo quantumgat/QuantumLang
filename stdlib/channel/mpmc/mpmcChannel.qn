@@ -1,0 +1,15 @@
+pub struct MpmcChannel<T> {
+  senderCount: usize,
+  receiverCount: usize,
+  bounded: bool,
+}
+
+impl MpmcChannel<T> {
+  pub fn cloneSender(self: MpmcChannel<T>) -> Result<Sender<T>, ChannelError>
+
+  pub fn cloneReceiver(self: MpmcChannel<T>) -> Result<Receiver<T>, ChannelError>
+
+  pub fn multiConsumer(self: MpmcChannel<T>) -> bool {
+    return self.receiverCount > 1
+  }
+}

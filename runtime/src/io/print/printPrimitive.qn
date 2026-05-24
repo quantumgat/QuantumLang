@@ -1,0 +1,80 @@
+pub struct RuntimePrintPrimitive {
+  stream: RuntimePrintStream,
+  target: RuntimePrintTarget,
+  write: RuntimePrintWrite,
+  flush: RuntimePrintFlushPrimitive,
+  terminalCapability: RuntimeTerminalCapability,
+  emergencyOutput: RuntimeEmergencyOutput,
+  buffer: OutputBuffer,
+  hotPath: RuntimePrintHotPath,
+  preservesPartialWrite: bool,
+  supportsVariadicValues: bool,
+  supportsSepEnd: bool,
+  supportsFlush: bool,
+  supportsTargetSelection: bool,
+  cancellationSafeCleanup: bool,
+  noPanic: bool,
+  noCoredump: bool,
+}
+
+impl RuntimePrintPrimitive {
+  pub fn stdout() -> RuntimePrintPrimitive {
+    return RuntimePrintPrimitive {
+      stream: RuntimePrintStream.Stdout,
+      target: RuntimePrintTarget.stdout(),
+      write: RuntimePrintWrite.stdout(0),
+      flush: RuntimePrintFlushPrimitive.manual(RuntimePrintTarget.stdout(), 0),
+      terminalCapability: RuntimeTerminalCapability.unknown(RuntimePrintTarget.stdout()),
+      emergencyOutput: RuntimeEmergencyOutput.stderr(4096),
+      buffer: OutputBuffer.direct(),
+      hotPath: RuntimePrintHotPath.standard(),
+      preservesPartialWrite: true,
+      supportsVariadicValues: true,
+      supportsSepEnd: true,
+      supportsFlush: true,
+      supportsTargetSelection: true,
+      cancellationSafeCleanup: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn stderr() -> RuntimePrintPrimitive {
+    return RuntimePrintPrimitive {
+      stream: RuntimePrintStream.Stderr,
+      target: RuntimePrintTarget.stderr(),
+      write: RuntimePrintWrite.stderr(0),
+      flush: RuntimePrintFlushPrimitive.manual(RuntimePrintTarget.stderr(), 0),
+      terminalCapability: RuntimeTerminalCapability.unknown(RuntimePrintTarget.stderr()),
+      emergencyOutput: RuntimeEmergencyOutput.stderr(4096),
+      buffer: OutputBuffer.direct(),
+      hotPath: RuntimePrintHotPath.standard(),
+      preservesPartialWrite: true,
+      supportsVariadicValues: true,
+      supportsSepEnd: true,
+      supportsFlush: true,
+      supportsTargetSelection: true,
+      cancellationSafeCleanup: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimePrintPrimitive) -> bool {
+    return self.preservesPartialWrite
+      && self.supportsVariadicValues
+      && self.supportsSepEnd
+      && self.supportsFlush
+      && self.supportsTargetSelection
+      && self.cancellationSafeCleanup
+      && self.target.safe()
+      && self.write.safe()
+      && self.flush.safe()
+      && self.terminalCapability.safe()
+      && self.emergencyOutput.safe()
+      && self.buffer.safe()
+      && self.hotPath.passed()
+      && self.noPanic
+      && self.noCoredump
+  }
+}

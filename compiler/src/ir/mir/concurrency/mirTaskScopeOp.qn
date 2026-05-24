@@ -1,0 +1,27 @@
+pub enum MirTaskScopeOpKind {
+  CreateTask
+  CreateJoinHandle
+  OpenScope
+  CloseScope
+  OpenGroup
+  JoinGroup
+  RejectOrphan
+  SubmitBlocking
+}
+
+pub struct MirTaskScopeOp {
+  instruction: u64,
+  kind: MirTaskScopeOpKind,
+  runtimeCallReady: bool,
+  cleanupReady: bool,
+  sourceMapReady: bool,
+}
+
+impl MirTaskScopeOp {
+  pub fn lowerable(self: MirTaskScopeOp) -> bool {
+    return self.instruction > 0
+      && self.runtimeCallReady
+      && self.cleanupReady
+      && self.sourceMapReady
+  }
+}

@@ -1,0 +1,27 @@
+pub struct RuntimeAtomicTypeSupport {
+  payload: RuntimeAtomicPayload,
+  targetSupported: bool,
+  lockFree: bool,
+  diagnosticCode: string,
+}
+
+impl RuntimeAtomicTypeSupport {
+  pub fn init(payload: RuntimeAtomicPayload, targetSupported: bool, lockFree: bool, diagnosticCode: string) -> RuntimeAtomicTypeSupport {
+    return RuntimeAtomicTypeSupport {
+      payload: payload,
+      targetSupported: targetSupported,
+      lockFree: lockFree,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn usable(self: RuntimeAtomicTypeSupport) -> bool {
+    if self.targetSupported == false {
+      return false
+    }
+    if self.payload.lockFreeRequired && self.lockFree == false {
+      return false
+    }
+    return self.diagnosticCode != ""
+  }
+}

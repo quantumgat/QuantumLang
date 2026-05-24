@@ -1,0 +1,36 @@
+pub enum HirChannelSelectKind {
+  ChannelCreate
+  Send
+  Receive
+  Close
+  SelectOpen
+  SelectBranch
+  SelectAwait
+}
+
+pub struct HirChannelSelectHandoff {
+  nodeId: u64,
+  kind: HirChannelSelectKind,
+  cancellationLinked: bool,
+  cleanupRequired: bool,
+}
+
+impl HirChannelSelectHandoff {
+  pub fn init(
+    nodeId: u64,
+    kind: HirChannelSelectKind,
+    cancellationLinked: bool,
+    cleanupRequired: bool,
+  ) -> HirChannelSelectHandoff {
+    return HirChannelSelectHandoff {
+      nodeId: nodeId,
+      kind: kind,
+      cancellationLinked: cancellationLinked,
+      cleanupRequired: cleanupRequired,
+    }
+  }
+
+  pub fn accepted(self: HirChannelSelectHandoff) -> bool {
+    return self.nodeId > 0 && self.cancellationLinked && self.cleanupRequired
+  }
+}

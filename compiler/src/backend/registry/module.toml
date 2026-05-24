@@ -1,0 +1,9 @@
+[module]
+name = "registry"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_qtlang_oop_style_conformance", "qtlc_qtlang_oop_architecture_foundation"]

@@ -1,0 +1,33 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum SessionStoreKind {
+  Cookie
+  Server
+  Redis
+  Database
+}
+pub struct SessionStorePolicy {
+  kind: SessionStoreKind
+  signedValue: bool
+  encryptedValue: bool
+  ttlSeconds: usize
+  rotationSafe: bool
+}
+pub trait SessionStore<S> {
+  pub async fn load(self: S, id: HttpSessionId) -> Result<HttpSessionHandle, HttpError>
+  pub async fn save(self: S, session: HttpSessionHandle) -> Result<Unit, HttpError>
+  pub async fn destroy(self: S, id: HttpSessionId) -> Result<Unit, HttpError>
+}
+pub struct CookieSessionStore {
+  policy: SessionStorePolicy
+}
+pub struct ServerSessionStore {
+  policy: SessionStorePolicy
+}
+pub struct RedisSessionStore {
+  url: string
+  policy: SessionStorePolicy
+}
+pub struct DatabaseSessionStore {
+  tableName: string
+  policy: SessionStorePolicy
+}

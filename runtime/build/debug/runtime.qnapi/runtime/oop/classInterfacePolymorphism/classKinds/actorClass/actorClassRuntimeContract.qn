@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ActorClassRuntimeContract {
+  typeId: u64
+  mailboxBound: bool
+  schedulerBound: bool
+  messageIsolationBound: bool
+  shutdownBound: bool
+}

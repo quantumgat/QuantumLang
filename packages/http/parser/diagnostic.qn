@@ -1,0 +1,120 @@
+pub enum HttpParseErrorKind {
+  InvalidRequestLine,
+  InvalidMethod,
+  InvalidUri,
+  InvalidVersion,
+  InvalidHeader,
+  HeaderTooLarge,
+  BodyTooLarge,
+  Incomplete,
+  UnsupportedTransferEncoding,
+  InvalidContentLength,
+}
+
+pub struct HttpParseDiagnostic {
+  kind: HttpParseErrorKind,
+  message: string,
+  offset: usize,
+}
+
+impl HttpParseDiagnostic {
+  pub fn init(kind: HttpParseErrorKind, message: string, offset: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic {
+      kind: kind,
+      message: message,
+      offset: offset,
+    }
+  }
+
+  pub fn invalidRequestLine(offset: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.InvalidRequestLine,
+      "invalid HTTP request line",
+      offset
+    )
+  }
+
+  pub fn bodyTooLarge(limit: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.BodyTooLarge,
+      "HTTP body exceeded configured limit",
+      limit
+    )
+  }
+
+  pub fn invalidMethod(offset: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.InvalidMethod,
+      "invalid HTTP method",
+      offset
+    )
+  }
+
+  pub fn invalidUri(offset: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.InvalidUri,
+      "invalid HTTP uri",
+      offset
+    )
+  }
+
+  pub fn invalidVersion(offset: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.InvalidVersion,
+      "invalid HTTP version",
+      offset
+    )
+  }
+
+  pub fn invalidHeader(offset: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.InvalidHeader,
+      "invalid HTTP header",
+      offset
+    )
+  }
+
+  pub fn headerTooLarge(limit: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.HeaderTooLarge,
+      "HTTP header exceeded configured limit",
+      limit
+    )
+  }
+
+  pub fn incomplete(offset: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.Incomplete,
+      "incomplete HTTP message",
+      offset
+    )
+  }
+
+  pub fn unsupportedTransferEncoding(offset: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.UnsupportedTransferEncoding,
+      "unsupported HTTP transfer encoding",
+      offset
+    )
+  }
+
+  pub fn invalidContentLength(offset: usize) -> HttpParseDiagnostic {
+    return HttpParseDiagnostic.init(
+      HttpParseErrorKind.InvalidContentLength,
+      "invalid HTTP content-length",
+      offset
+    )
+  }
+
+  pub fn kind(self: HttpParseDiagnostic) -> HttpParseErrorKind {
+    return self.kind
+  }
+
+  pub fn message(self: HttpParseDiagnostic) -> string {
+    return self.message
+  }
+
+  pub fn offset(self: HttpParseDiagnostic) -> usize {
+    return self.offset
+  }
+}

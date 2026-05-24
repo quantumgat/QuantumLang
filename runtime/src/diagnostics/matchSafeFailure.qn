@@ -1,0 +1,86 @@
+pub enum MatchSafeFailureKind {
+  NonExhaustive
+  UnreachableArm
+  InvalidGuard
+  TypeNarrowingFailure
+  CollectionShapeFailure
+  BinaryShapeFailure
+}
+
+pub struct MatchSafeFailure {
+  kind: MatchSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+  executableNegativeCovered: bool,
+}
+
+pub struct MatchRuntimeExecution {
+  failure: MatchSafeFailure,
+  asyncHandoffReady: bool,
+  channelHandoffReady: bool,
+  actorMessageHandoffReady: bool,
+  noCoredumpBoundaryReady: bool,
+}
+
+pub fn matchSafeFailure(
+  kind: MatchSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+  executableNegativeCovered: bool,
+) -> MatchSafeFailure {
+  return MatchSafeFailure {
+    kind: kind,
+    sourceRangeReady: sourceRangeReady,
+    fixitReady: fixitReady,
+    noCoredump: noCoredump,
+    recoverable: recoverable,
+    executableNegativeCovered: executableNegativeCovered,
+  }
+}
+
+pub fn matchRuntimeExecution(
+  failure: MatchSafeFailure,
+  asyncHandoffReady: bool,
+  channelHandoffReady: bool,
+  actorMessageHandoffReady: bool,
+  noCoredumpBoundaryReady: bool,
+) -> MatchRuntimeExecution {
+  return MatchRuntimeExecution {
+    failure: failure,
+    asyncHandoffReady: asyncHandoffReady,
+    channelHandoffReady: channelHandoffReady,
+    actorMessageHandoffReady: actorMessageHandoffReady,
+    noCoredumpBoundaryReady: noCoredumpBoundaryReady,
+  }
+}
+
+pub fn matchDefaultSafeFailure(kind: MatchSafeFailureKind) -> MatchSafeFailure {
+  return matchSafeFailure(kind, true, true, true, true, true)
+}
+
+impl MatchSafeFailure {
+  pub fn safe(self: MatchSafeFailure) -> bool {
+    return self.sourceRangeReady
+      && self.fixitReady
+      && self.noCoredump
+      && self.recoverable
+  }
+
+  pub fn executableReady(self: MatchSafeFailure) -> bool {
+    return self.safe() && self.executableNegativeCovered
+  }
+}
+
+impl MatchRuntimeExecution {
+  pub fn complete(self: MatchRuntimeExecution) -> bool {
+    return self.failure.executableReady()
+      && self.asyncHandoffReady
+      && self.channelHandoffReady
+      && self.actorMessageHandoffReady
+      && self.noCoredumpBoundaryReady
+  }
+}

@@ -1,0 +1,51 @@
+pub enum RuntimeFlushReason {
+  Manual,
+  Newline,
+  BufferFull,
+  ErrorCleanup,
+  CancellationCleanup,
+}
+
+pub struct RuntimeFlushState {
+  reason: RuntimeFlushReason,
+  requestedBytes: usize,
+  flushedBytes: usize,
+  partial: PartialWrite,
+  returnedResult: bool,
+  noPanic: bool,
+}
+
+impl RuntimeFlushState {
+  pub fn complete(reason: RuntimeFlushReason, byteCount: usize) -> RuntimeFlushState {
+    return RuntimeFlushState {
+      reason: reason,
+      requestedBytes: byteCount,
+      flushedBytes: byteCount,
+      partial: PartialWrite.complete(byteCount),
+      returnedResult: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn partial(
+    reason: RuntimeFlushReason,
+    requestedBytes: usize,
+    writtenBytes: usize,
+  ) -> RuntimeFlushState {
+    return RuntimeFlushState {
+      reason: reason,
+      requestedBytes: requestedBytes,
+      flushedBytes: writtenBytes,
+      partial: PartialWrite.pending(requestedBytes, writtenBytes),
+      returnedResult: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeFlushState) -> bool {
+    return self.flushedBytes <= self.requestedBytes
+      && self.partial.safe()
+      && self.returnedResult
+      && self.noPanic
+  }
+}

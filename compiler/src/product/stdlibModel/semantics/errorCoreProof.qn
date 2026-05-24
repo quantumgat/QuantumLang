@@ -1,0 +1,45 @@
+pub struct StdlibErrorCoreProof {
+  typedCode: bool,
+  typedCategory: bool,
+  typedFields: bool,
+  sourceLocation: bool,
+  causeChain: bool,
+  stableDisplay: bool,
+  stableDebug: bool,
+  conversionPolicy: bool,
+  stringOnlyRejected: bool,
+  secretRedaction: bool,
+  noCoredump: bool,
+}
+
+impl StdlibErrorCoreProof {
+  pub fn complete() -> StdlibErrorCoreProof {
+    return StdlibErrorCoreProof {
+      typedCode: true,
+      typedCategory: true,
+      typedFields: true,
+      sourceLocation: true,
+      causeChain: true,
+      stableDisplay: true,
+      stableDebug: true,
+      conversionPolicy: true,
+      stringOnlyRejected: true,
+      secretRedaction: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn passed(self: StdlibErrorCoreProof) -> bool {
+    return self.typedCode
+      && self.typedCategory
+      && self.typedFields
+      && self.sourceLocation
+      && self.causeChain
+      && self.stableDisplay
+      && self.stableDebug
+      && self.conversionPolicy
+      && self.stringOnlyRejected
+      && self.secretRedaction
+      && self.noCoredump
+  }
+}

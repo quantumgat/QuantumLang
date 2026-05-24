@@ -1,0 +1,15 @@
+pub struct AtomicRealtimeFact {
+  node: u64,
+  lockFreeRequired: bool,
+  realtimeSafe: bool,
+}
+
+pub fn atomicRealtimeFact(node: u64, lockFreeRequired: bool, realtimeSafe: bool) -> AtomicRealtimeFact {
+  return AtomicRealtimeFact { node: node, lockFreeRequired: lockFreeRequired, realtimeSafe: realtimeSafe }
+}
+
+impl AtomicRealtimeFact {
+  pub fn accepted(self: AtomicRealtimeFact) -> bool {
+    return self.realtimeSafe || self.lockFreeRequired == false
+  }
+}

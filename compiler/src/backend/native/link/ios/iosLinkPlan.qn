@@ -1,0 +1,12 @@
+pub struct IosLinkPlan {
+  target: string,
+  appleSdkRequired: bool,
+  machoRequired: bool,
+  entitlementAware: bool,
+}
+
+impl IosLinkPlan {
+  pub fn accepted(self: IosLinkPlan) -> bool {
+    return self.target != "" && self.appleSdkRequired && self.entitlementAware
+  }
+}

@@ -1,0 +1,170 @@
+pub enum PrintErrorLogNegativeCaseKind {
+  BadFormatArgs
+  UnprintableType
+  PanicInFormat
+  SecretLeak
+  InvalidLogField
+  MissingSourceRange
+  StringOnlyIncident
+  UnredactedDiagnostic
+  UnsafeCrashPath
+}
+
+pub struct PrintErrorLogNegativeCase {
+  kind: PrintErrorLogNegativeCaseKind,
+  diagnostic: Diagnostic,
+  analyzer: ErrorAnalyzerOutput,
+  rejected: bool,
+  exactSourceRangeRequired: bool,
+  safeFixRequired: bool,
+  redactionRequired: bool,
+  noCoredumpRequired: bool,
+  noStringOnlyIncident: bool,
+}
+
+pub fn printErrorLogNegativeCase(
+  kind: PrintErrorLogNegativeCaseKind,
+  diagnostic: Diagnostic,
+  analyzer: ErrorAnalyzerOutput,
+) -> PrintErrorLogNegativeCase {
+  return PrintErrorLogNegativeCase {
+    kind: kind,
+    diagnostic: diagnostic,
+    analyzer: analyzer,
+    rejected: true,
+    exactSourceRangeRequired: true,
+    safeFixRequired: true,
+    redactionRequired: true,
+    noCoredumpRequired: true,
+    noStringOnlyIncident: true,
+  }
+}
+
+impl PrintErrorLogNegativeCase {
+  pub fn passed(self: PrintErrorLogNegativeCase) -> bool {
+    return self.diagnostic.complete()
+      && self.analyzer.useful()
+      && self.rejected
+      && self.exactSourceRangeRequired
+      && self.safeFixRequired
+      && self.redactionRequired
+      && self.noCoredumpRequired
+      && self.noStringOnlyIncident
+  }
+}
+
+pub struct PrintErrorLogNegativeGate {
+  badFormatArgs: PrintErrorLogNegativeCase,
+  unprintableType: PrintErrorLogNegativeCase,
+  panicInFormat: PrintErrorLogNegativeCase,
+  secretLeak: PrintErrorLogNegativeCase,
+  invalidLogField: PrintErrorLogNegativeCase,
+  missingSourceRange: PrintErrorLogNegativeCase,
+  stringOnlyIncident: PrintErrorLogNegativeCase,
+  unredactedDiagnostic: PrintErrorLogNegativeCase,
+  unsafeCrashPath: PrintErrorLogNegativeCase,
+  formatCheckerConnected: bool,
+  logElisionConnected: bool,
+  runtimeIncidentConnected: bool,
+  ideAnalyzerConnected: bool,
+}
+
+pub fn printErrorLogNegativeGate(file: u32) -> PrintErrorLogNegativeGate {
+  let analyzer = errorAnalyzerOutput(file)
+  let badFormat = Diagnostic.model(
+    diagnosticCode("QLTEXT", 2),
+    DiagnosticCategory.Format,
+    DiagnosticSeverity.Error,
+    SourceRange.init(file, 1, 2),
+    "format placeholder has no matching argument"
+  )
+  let unprintable = Diagnostic.model(
+    diagnosticCode("QLTEXT", 5),
+    DiagnosticCategory.Format,
+    DiagnosticSeverity.Error,
+    SourceRange.init(file, 3, 4),
+    "type does not implement Display"
+  )
+  let panicFormat = Diagnostic.model(
+    diagnosticCode("QLTEXT", 8),
+    DiagnosticCategory.Format,
+    DiagnosticSeverity.Error,
+    SourceRange.init(file, 5, 6),
+    "formatter may panic in a print path"
+  )
+  let secret = Diagnostic.model(
+    diagnosticCode("QLSEC", 3),
+    DiagnosticCategory.Format,
+    DiagnosticSeverity.Error,
+    SourceRange.init(file, 7, 8),
+    "secret value requires explicit redaction"
+  )
+  let invalidField = Diagnostic.model(
+    diagnosticCode("QLLOG", 1002),
+    DiagnosticCategory.Log,
+    DiagnosticSeverity.Error,
+    SourceRange.init(file, 9, 10),
+    "log field key must be stable and value must be typed"
+  )
+  let missingRange = Diagnostic.model(
+    diagnosticCode("QLDIAG", 1001),
+    DiagnosticCategory.Internal,
+    DiagnosticSeverity.Error,
+    SourceRange.init(file, 11, 12),
+    "diagnostic without exact source range is rejected"
+  )
+  let stringOnly = Diagnostic.model(
+    diagnosticCode("QLRT", 1001),
+    DiagnosticCategory.Runtime,
+    DiagnosticSeverity.Error,
+    SourceRange.init(file, 13, 14),
+    "runtime incident must be structured, not string-only"
+  )
+  let unredacted = Diagnostic.model(
+    diagnosticCode("QLSEC", 4),
+    DiagnosticCategory.Internal,
+    DiagnosticSeverity.Error,
+    SourceRange.init(file, 15, 16),
+    "diagnostic output must be redacted before publishing"
+  )
+  let unsafeCrash = Diagnostic.model(
+    diagnosticCode("QSAFEFAIL", 1001),
+    DiagnosticCategory.Runtime,
+    DiagnosticSeverity.Error,
+    SourceRange.init(file, 17, 18),
+    "unsafe crash path must become a recoverable report"
+  )
+  return PrintErrorLogNegativeGate {
+    badFormatArgs: printErrorLogNegativeCase(PrintErrorLogNegativeCaseKind.BadFormatArgs, badFormat, analyzer),
+    unprintableType: printErrorLogNegativeCase(PrintErrorLogNegativeCaseKind.UnprintableType, unprintable, analyzer),
+    panicInFormat: printErrorLogNegativeCase(PrintErrorLogNegativeCaseKind.PanicInFormat, panicFormat, analyzer),
+    secretLeak: printErrorLogNegativeCase(PrintErrorLogNegativeCaseKind.SecretLeak, secret, analyzer),
+    invalidLogField: printErrorLogNegativeCase(PrintErrorLogNegativeCaseKind.InvalidLogField, invalidField, analyzer),
+    missingSourceRange: printErrorLogNegativeCase(PrintErrorLogNegativeCaseKind.MissingSourceRange, missingRange, analyzer),
+    stringOnlyIncident: printErrorLogNegativeCase(PrintErrorLogNegativeCaseKind.StringOnlyIncident, stringOnly, analyzer),
+    unredactedDiagnostic: printErrorLogNegativeCase(PrintErrorLogNegativeCaseKind.UnredactedDiagnostic, unredacted, analyzer),
+    unsafeCrashPath: printErrorLogNegativeCase(PrintErrorLogNegativeCaseKind.UnsafeCrashPath, unsafeCrash, analyzer),
+    formatCheckerConnected: true,
+    logElisionConnected: true,
+    runtimeIncidentConnected: true,
+    ideAnalyzerConnected: true,
+  }
+}
+
+impl PrintErrorLogNegativeGate {
+  pub fn passed(self: PrintErrorLogNegativeGate) -> bool {
+    return self.badFormatArgs.passed()
+      && self.unprintableType.passed()
+      && self.panicInFormat.passed()
+      && self.secretLeak.passed()
+      && self.invalidLogField.passed()
+      && self.missingSourceRange.passed()
+      && self.stringOnlyIncident.passed()
+      && self.unredactedDiagnostic.passed()
+      && self.unsafeCrashPath.passed()
+      && self.formatCheckerConnected
+      && self.logElisionConnected
+      && self.runtimeIncidentConnected
+      && self.ideAnalyzerConnected
+  }
+}

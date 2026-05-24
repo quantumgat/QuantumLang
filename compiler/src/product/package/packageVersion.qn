@@ -1,0 +1,70 @@
+pub enum PackageVersionRequirementKind {
+  Wildcard,
+  Exact,
+  Caret,
+  Tilde,
+  Comparator,
+  ComparatorRange,
+}
+
+pub struct PackageVersionRequirement {
+  text: string,
+  kind: PackageVersionRequirementKind,
+  deterministic: bool,
+}
+
+impl PackageVersionRequirement {
+  pub fn caret(text: string) -> PackageVersionRequirement {
+    return PackageVersionRequirement {
+      text: text,
+      kind: PackageVersionRequirementKind.Caret,
+      deterministic: true,
+    }
+  }
+
+  pub fn range(text: string) -> PackageVersionRequirement {
+    return PackageVersionRequirement {
+      text: text,
+      kind: PackageVersionRequirementKind.ComparatorRange,
+      deterministic: true,
+    }
+  }
+
+  pub fn supported(self: PackageVersionRequirement) -> bool {
+    return self.deterministic && self.text != ""
+  }
+}
+
+pub struct PackageResolvedVersion {
+  requirement: string,
+  resolved: string,
+  satisfied: bool,
+  selectedFromRegistryIndex: bool,
+  yankedSkipped: usize,
+}
+
+impl PackageResolvedVersion {
+  pub fn accepted(requirement: string, resolved: string) -> PackageResolvedVersion {
+    return PackageResolvedVersion {
+      requirement: requirement,
+      resolved: resolved,
+      satisfied: true,
+      selectedFromRegistryIndex: false,
+      yankedSkipped: 0,
+    }
+  }
+
+  pub fn selected(requirement: string, resolved: string, yankedSkipped: usize) -> PackageResolvedVersion {
+    return PackageResolvedVersion {
+      requirement: requirement,
+      resolved: resolved,
+      satisfied: true,
+      selectedFromRegistryIndex: true,
+      yankedSkipped: yankedSkipped,
+    }
+  }
+
+  pub fn reproducible(self: PackageResolvedVersion) -> bool {
+    return self.satisfied && self.resolved != ""
+  }
+}

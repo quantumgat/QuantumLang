@@ -1,0 +1,33 @@
+pub struct JsonStringPlan {
+  utf8Validated: bool,
+  zeroCopyWhenUnescaped: bool,
+  escapeChecked: bool,
+  surrogatePairsChecked: bool,
+  controlCharactersRejected: bool,
+  invalidEscapeRejected: bool,
+  allocationOnlyWhenEscaped: bool,
+}
+
+pub fn stringPlan() -> JsonStringPlan {
+  return JsonStringPlan {
+    utf8Validated: true,
+    zeroCopyWhenUnescaped: true,
+    escapeChecked: true,
+    surrogatePairsChecked: true,
+    controlCharactersRejected: true,
+    invalidEscapeRejected: true,
+    allocationOnlyWhenEscaped: true,
+  }
+}
+
+impl JsonStringPlan {
+  pub fn viewReady(self: JsonStringPlan) -> bool {
+    return self.utf8Validated
+      && self.zeroCopyWhenUnescaped
+      && self.escapeChecked
+      && self.surrogatePairsChecked
+      && self.controlCharactersRejected
+      && self.invalidEscapeRejected
+      && self.allocationOnlyWhenEscaped
+  }
+}

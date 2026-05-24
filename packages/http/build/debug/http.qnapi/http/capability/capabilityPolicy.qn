@@ -1,0 +1,26 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum CapabilityPolicyOrigin {
+  AppContext,
+  ControllerWith,
+  RouteParam,
+  RouteWithout,
+}
+pub struct ControllerCapabilityPolicy {
+  controllerName: string
+  inheritedCapabilities: Vec<string>
+}
+pub struct EndpointCapabilityPolicy {
+  endpointName: string
+  routeCapabilities: Vec<string>
+  removedInheritedCapabilities: Vec<string>
+}
+pub struct EndpointCapabilityResolution {
+  endpointName: string
+  inheritedCount: usize
+  activeInheritedCount: usize
+  routeOnlyCount: usize
+  removedInheritedCount: usize
+  dataAccessCount: usize
+  effectiveCount: usize
+  validWithout: bool
+}

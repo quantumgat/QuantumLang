@@ -1,0 +1,20 @@
+pub enum TimingIncidentKind {
+  SecretBranch,
+  SecretMemoryAccess,
+  EarlyExitEquality,
+  TimingLeak,
+}
+
+pub struct TimingIncident {
+  kind: TimingIncidentKind,
+  recoverable: bool,
+}
+
+impl TimingIncident {
+  pub fn init(kind: TimingIncidentKind) -> TimingIncident {
+    return TimingIncident {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+}

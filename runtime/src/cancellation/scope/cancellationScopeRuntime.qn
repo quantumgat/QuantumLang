@@ -1,0 +1,29 @@
+pub struct CancellationScopeRuntime {
+  scopeId: u64,
+  parentTokenId: u64,
+  childCount: usize,
+  cleanupRegistered: bool,
+  open: bool,
+}
+
+impl CancellationScopeRuntime {
+  pub fn init(
+    scopeId: u64,
+    parentTokenId: u64,
+    childCount: usize,
+    cleanupRegistered: bool,
+    open: bool,
+  ) -> CancellationScopeRuntime {
+    return CancellationScopeRuntime {
+      scopeId: scopeId,
+      parentTokenId: parentTokenId,
+      childCount: childCount,
+      cleanupRegistered: cleanupRegistered,
+      open: open,
+    }
+  }
+
+  pub fn structured(self: CancellationScopeRuntime) -> bool {
+    return self.scopeId > 0 && self.parentTokenId > 0 && self.cleanupRegistered
+  }
+}

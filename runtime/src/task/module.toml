@@ -1,0 +1,9 @@
+[module]
+name = "task"
+visibility = "internal"
+root = "mod.qn"
+owner = "runtime"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots", "qtlc_qtlang_runtime_subsystem_contracts_foundation"]

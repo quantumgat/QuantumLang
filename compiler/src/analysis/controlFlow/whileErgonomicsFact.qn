@@ -1,0 +1,131 @@
+pub enum WhileErgonomicsFamily {
+  Core
+  PatternLoop
+  LoopValue
+  LabeledFlow
+  QuestionFlow
+  AwaitQuestionFlow
+  ElseNoBreak
+  Until
+  Timeout
+  Poll
+  Quantum
+}
+
+pub struct WhileErgonomicsFact {
+  family: WhileErgonomicsFamily,
+  formCount: usize,
+  hotPathSelected: bool,
+  safetyChecked: bool,
+  diagnosticsReady: bool,
+  noCoredump: bool,
+}
+
+pub struct WhileAnalysisInput {
+  ast: AstWhileLoopForm,
+  syntax: WhileSyntaxParse,
+  safeFailure: WhileLoopSafeFailure,
+  conditionTypeChecked: bool,
+  patternTypeChecked: bool,
+  labelResolved: bool,
+  breakValueTyped: bool,
+  asyncRuntimeReady: bool,
+  qwhileQirReady: bool,
+}
+
+pub struct WhileAnalysisResult {
+  fact: WhileErgonomicsFact,
+  diagnosticsReady: bool,
+  readyForHir: bool,
+  safeFailureReady: bool,
+}
+
+pub fn whileErgonomicsFact(
+  family: WhileErgonomicsFamily,
+  formCount: usize,
+  hotPathSelected: bool,
+  safetyChecked: bool,
+  diagnosticsReady: bool,
+  noCoredump: bool,
+) -> WhileErgonomicsFact {
+  return WhileErgonomicsFact {
+    family: family,
+    formCount: formCount,
+    hotPathSelected: hotPathSelected,
+    safetyChecked: safetyChecked,
+    diagnosticsReady: diagnosticsReady,
+    noCoredump: noCoredump,
+  }
+}
+
+pub fn whileAnalysisInput(
+  ast: AstWhileLoopForm,
+  syntax: WhileSyntaxParse,
+  safeFailure: WhileLoopSafeFailure,
+  conditionTypeChecked: bool,
+  patternTypeChecked: bool,
+  labelResolved: bool,
+  breakValueTyped: bool,
+  asyncRuntimeReady: bool,
+  qwhileQirReady: bool,
+) -> WhileAnalysisInput {
+  return WhileAnalysisInput {
+    ast: ast,
+    syntax: syntax,
+    safeFailure: safeFailure,
+    conditionTypeChecked: conditionTypeChecked,
+    patternTypeChecked: patternTypeChecked,
+    labelResolved: labelResolved,
+    breakValueTyped: breakValueTyped,
+    asyncRuntimeReady: asyncRuntimeReady,
+    qwhileQirReady: qwhileQirReady,
+  }
+}
+
+pub fn analyzeWhile(input: WhileAnalysisInput) -> WhileAnalysisResult {
+  let diagnosticsReady = input.safeFailure.executableReady()
+  let safetyChecked = input.conditionTypeChecked
+    && input.patternTypeChecked
+    && input.labelResolved
+    && input.breakValueTyped
+    && input.asyncRuntimeReady
+    && input.qwhileQirReady
+  let hotPathSelected = input.ast.complete()
+    && input.syntax.complete()
+    && safetyChecked
+
+  let fact = whileErgonomicsFact(
+    WhileErgonomicsFamily.Core,
+    input.syntax.formTotal(),
+    hotPathSelected,
+    safetyChecked,
+    diagnosticsReady,
+    input.safeFailure.noCoredumpReady()
+  )
+
+  return WhileAnalysisResult {
+    fact: fact,
+    diagnosticsReady: diagnosticsReady,
+    readyForHir: fact.complete(),
+    safeFailureReady: input.safeFailure.executableReady(),
+  }
+}
+
+impl WhileErgonomicsFact {
+  pub fn complete(self: WhileErgonomicsFact) -> bool {
+    return self.formCount >= 15
+      && self.hotPathSelected
+      && self.safetyChecked
+      && self.diagnosticsReady
+      && self.noCoredump
+  }
+}
+
+impl WhileAnalysisResult {
+  pub fn complete(self: WhileAnalysisResult) -> bool {
+    return self.fact.complete()
+      && self.diagnosticsReady
+      && self.readyForHir
+      && self.safeFailureReady
+  }
+}

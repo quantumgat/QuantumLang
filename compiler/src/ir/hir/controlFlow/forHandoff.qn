@@ -1,0 +1,47 @@
+pub enum HirForHandoffKind {
+  CountedRange
+  DirectIndex
+  BorrowedSlice
+  ErasedCursor
+  FusedFilterMap
+  EarlyExitFind
+  AsyncStream
+  ParallelSplit
+  ParallelReduce
+  BinaryZeroCopy
+  DomainEngineLoop
+  QuantumLoop
+  UnsafePointerLoop
+  ComptimeExpansion
+}
+
+pub struct HirForHandoff {
+  sourceNode: u64,
+  kind: HirForHandoffKind,
+  formCount: usize,
+  executableCoverageReady: bool,
+  cursorHandoffReady: bool,
+  zipEnumerateHandoffReady: bool,
+  asyncParallelHandoffReady: bool,
+  qforHandoffReady: bool,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+}
+
+impl HirForHandoff {
+  pub fn complete(self: HirForHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.formCount > 0
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+
+  pub fn executableHotPathReady(self: HirForHandoff) -> bool {
+    return self.complete()
+      && self.executableCoverageReady
+      && self.cursorHandoffReady
+      && self.zipEnumerateHandoffReady
+      && self.asyncParallelHandoffReady
+      && self.qforHandoffReady
+  }
+}

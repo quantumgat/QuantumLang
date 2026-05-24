@@ -1,0 +1,134 @@
+pub enum OsPlatform {
+  Posix,
+  Windows,
+  Mobile,
+  Embedded,
+  Portable,
+}
+
+pub enum OsErrorKind {
+  NotFound,
+  PermissionDenied,
+  Interrupted,
+  TimedOut,
+  WouldBlock,
+  Cancelled,
+  ResourceBusy,
+  ConnectionReset,
+  Unsupported,
+  Unknown,
+}
+
+pub struct OsErrorMapping {
+  platform: OsPlatform,
+  platformCode: i32,
+  stableCode: ErrorCode,
+  category: ErrorCategory,
+}
+
+pub struct OsError {
+  code: ErrorCode,
+  kind: OsErrorKind,
+  platform: OsPlatform,
+  platformCode: i32,
+  retryable: bool,
+  interrupted: bool,
+  timedOut: bool,
+  cancelled: bool,
+  source: ErrorSource,
+  fields: ErrorFields,
+  noCoredump: bool,
+}
+
+impl OsError {
+  /**
+    Creates a stable OS error from a platform code.
+
+    example:
+      let err = OsError.fromPlatform(OsPlatform.Posix, 2, OsErrorKind.NotFound)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn fromPlatform(platform: OsPlatform, platformCode: i32, kind: OsErrorKind) -> OsError {
+    return OsError {
+      code: ErrorCode.new(ErrorCategory.Os, "QOS", OsError.codeNumber(kind)),
+      kind: kind,
+      platform: platform,
+      platformCode: platformCode,
+      retryable: OsError.retryableKind(kind),
+      interrupted: kind == OsErrorKind.Interrupted,
+      timedOut: kind == OsErrorKind.TimedOut,
+      cancelled: kind == OsErrorKind.Cancelled,
+      source: ErrorSource.unknown(),
+      fields: ErrorFields.empty(),
+      noCoredump: true,
+    }
+  }
+
+  pub fn canRetry(self: OsError) -> bool {
+    return self.retryable
+  }
+
+  pub fn toError(self: OsError) -> Error {
+    return Error.new(self.code, self.message()).withFields(self.fields)
+  }
+
+  pub fn safe(self: OsError) -> bool {
+    return self.code.stable() && self.noCoredump
+  }
+
+  pub fn message(self: OsError) -> string {
+    match self.kind {
+      OsErrorKind.NotFound => { return "os resource not found" }
+      OsErrorKind.PermissionDenied => { return "os permission denied" }
+      OsErrorKind.Interrupted => { return "os operation interrupted" }
+      OsErrorKind.TimedOut => { return "os operation timed out" }
+      OsErrorKind.WouldBlock => { return "os operation would block" }
+      OsErrorKind.Cancelled => { return "os operation cancelled" }
+      OsErrorKind.ResourceBusy => { return "os resource busy" }
+      OsErrorKind.ConnectionReset => { return "os connection reset" }
+      OsErrorKind.Unsupported => { return "os operation unsupported" }
+      OsErrorKind.Unknown => { return "unknown os error" }
+    }
+  }
+
+  pub fn codeNumber(kind: OsErrorKind) -> u32 {
+    match kind {
+      OsErrorKind.NotFound => { return 2001 }
+      OsErrorKind.PermissionDenied => { return 2002 }
+      OsErrorKind.Interrupted => { return 2003 }
+      OsErrorKind.TimedOut => { return 2004 }
+      OsErrorKind.WouldBlock => { return 2005 }
+      OsErrorKind.Cancelled => { return 2006 }
+      OsErrorKind.ResourceBusy => { return 2007 }
+      OsErrorKind.ConnectionReset => { return 2008 }
+      OsErrorKind.Unsupported => { return 2009 }
+      OsErrorKind.Unknown => { return 2999 }
+    }
+  }
+
+  pub fn retryableKind(kind: OsErrorKind) -> bool {
+    return kind == OsErrorKind.Interrupted
+      || kind == OsErrorKind.TimedOut
+      || kind == OsErrorKind.WouldBlock
+      || kind == OsErrorKind.ResourceBusy
+  }
+}
+
+impl OsErrorMapping {
+  pub fn mapped(platform: OsPlatform, platformCode: i32, kind: OsErrorKind) -> OsErrorMapping {
+    return OsErrorMapping {
+      platform: platform,
+      platformCode: platformCode,
+      stableCode: ErrorCode.new(ErrorCategory.Os, "QOS", OsError.codeNumber(kind)),
+      category: ErrorCategory.Os,
+    }
+  }
+
+  pub fn stable(self: OsErrorMapping) -> bool {
+    return self.platformCode != 0 && self.stableCode.stable()
+  }
+}

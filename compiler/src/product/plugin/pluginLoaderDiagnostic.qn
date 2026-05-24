@@ -1,0 +1,51 @@
+pub enum PluginLoaderDiagnosticKind {
+  Accepted,
+  MissingPluginSection,
+  MissingStdlibSection,
+  MissingProofSection,
+  LegacyTopLevelTypes,
+  LegacyTopLevelFacts,
+  LegacyTopLevelLowering,
+  DuplicateSection,
+}
+
+pub struct PluginLoaderDiagnostic {
+  kind: PluginLoaderDiagnosticKind,
+  sourcePath: string,
+  line: usize,
+  message: string,
+  sourceMapped: bool,
+  typedFailure: bool,
+}
+
+impl PluginLoaderDiagnostic {
+  pub fn accepted(sourcePath: string) -> PluginLoaderDiagnostic {
+    return PluginLoaderDiagnostic {
+      kind: PluginLoaderDiagnosticKind.Accepted,
+      sourcePath: sourcePath,
+      line: 1,
+      message: "plugin manifest accepted",
+      sourceMapped: true,
+      typedFailure: true,
+    }
+  }
+
+  pub fn missing(sourcePath: string, kind: PluginLoaderDiagnosticKind, message: string) -> PluginLoaderDiagnostic {
+    return PluginLoaderDiagnostic {
+      kind: kind,
+      sourcePath: sourcePath,
+      line: 1,
+      message: message,
+      sourceMapped: true,
+      typedFailure: true,
+    }
+  }
+
+  pub fn isFailure(self: PluginLoaderDiagnostic) -> bool {
+    return self.kind != PluginLoaderDiagnosticKind.Accepted
+  }
+
+  pub fn usable(self: PluginLoaderDiagnostic) -> bool {
+    return self.sourcePath != "" && self.message != "" && self.sourceMapped && self.typedFailure
+  }
+}

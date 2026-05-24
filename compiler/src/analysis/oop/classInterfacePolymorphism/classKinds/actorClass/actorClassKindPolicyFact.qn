@@ -1,0 +1,19 @@
+pub struct ActorClassKindPolicyFact {
+  ownerId: u64,
+  mailboxBound: bool,
+  messageIsolationBound: bool,
+  schedulerHandoffBound: bool,
+  asyncShutdownBound: bool,
+  noSharedMutableState: bool,
+}
+
+impl ActorClassKindPolicyFact {
+  pub fn complete(self: ActorClassKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.mailboxBound
+      && self.messageIsolationBound
+      && self.schedulerHandoffBound
+      && self.asyncShutdownBound
+      && self.noSharedMutableState
+  }
+}

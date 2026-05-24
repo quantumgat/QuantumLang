@@ -1,0 +1,63 @@
+pub enum SafeFailureDomain {
+  Binary,
+  Pointer,
+  Allocator,
+  Ffi,
+  Oop,
+  Collections,
+  Async,
+  Quantum,
+  Platform,
+}
+
+pub enum SafeFailureKind {
+  Bounds,
+  Null,
+  UseAfterFree,
+  DoubleFree,
+  OutOfMemory,
+  Panic,
+  FfiPanic,
+  StackOverflow,
+  InvalidAlignment,
+  TargetTrap,
+  LogTransportFailure,
+  ReportEmissionFailure,
+}
+
+pub struct SafeFailureGuarantee {
+  domain: SafeFailureDomain,
+  kind: SafeFailureKind,
+  diagnosticCode: string,
+  sourceMapped: bool,
+  recoverableReport: bool,
+  coredump: bool,
+  abortsProcess: bool,
+  unsafeBoundary: bool,
+  incidentEmitted: bool,
+  emergencyReportBuffered: bool,
+  fatalRecoverableSeparated: bool,
+}
+
+impl SafeFailureGuarantee {
+  pub fn accepted(self: SafeFailureGuarantee) -> bool {
+    return self.diagnosticCode != ""
+      && self.sourceMapped
+      && self.recoverableReport
+      && self.coredump == false
+      && self.abortsProcess == false
+      && self.unsafeBoundary == false
+      && self.incidentEmitted
+      && self.emergencyReportBuffered
+      && self.fatalRecoverableSeparated
+  }
+
+  pub fn unsafeBoundaryAccepted(self: SafeFailureGuarantee) -> bool {
+    return self.diagnosticCode != ""
+      && self.sourceMapped
+      && self.coredump == false
+      && self.unsafeBoundary
+      && self.incidentEmitted
+      && self.emergencyReportBuffered
+  }
+}

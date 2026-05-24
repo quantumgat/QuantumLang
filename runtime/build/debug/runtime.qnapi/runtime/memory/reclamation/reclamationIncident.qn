@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum ReclamationIncidentKind {
+  UnprotectedHazardLoad,
+  AbaVersionMissing,
+  PrematureFree,
+  StalePointer,
+  MissedWake,
+}
+pub struct ReclamationIncident {
+  kind: ReclamationIncidentKind
+  address: usize
+  recoverable: bool
+}

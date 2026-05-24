@@ -1,0 +1,23 @@
+pub struct BoxDropFact {
+  allocationId: u64,
+  generation: u64,
+  moved: bool,
+  dropEmitted: bool,
+  doubleDropRejected: bool,
+}
+
+impl BoxDropFact {
+  pub fn init(allocationId: u64, generation: u64, moved: bool, dropEmitted: bool, doubleDropRejected: bool) -> BoxDropFact {
+    return BoxDropFact {
+      allocationId: allocationId,
+      generation: generation,
+      moved: moved,
+      dropEmitted: dropEmitted,
+      doubleDropRejected: doubleDropRejected,
+    }
+  }
+
+  pub fn accepted(self: BoxDropFact) -> bool {
+    return self.allocationId > 0 && self.generation > 0 && self.moved == false && self.dropEmitted && self.doubleDropRejected
+  }
+}

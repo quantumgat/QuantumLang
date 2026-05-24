@@ -1,0 +1,107 @@
+pub struct Ipv4Addr {
+  octets: u32,
+}
+
+pub struct Ipv6Addr {
+  high: u64,
+  low: u64,
+}
+
+pub enum IpAddr {
+  V4(Ipv4Addr)
+  V6(Ipv6Addr)
+}
+
+pub struct Port {
+  value: u16,
+}
+
+pub struct SocketAddrV4 {
+  ip: Ipv4Addr,
+  port: Port,
+}
+
+pub struct SocketAddrV6 {
+  ip: Ipv6Addr,
+  port: Port,
+  flowInfo: u32,
+  scopeId: u32,
+}
+
+pub enum SocketAddr {
+  V4(SocketAddrV4)
+  V6(SocketAddrV6)
+}
+
+pub struct Host {
+  value: string,
+}
+
+pub struct Endpoint {
+  host: Host,
+  port: Port,
+}
+
+pub struct Cidr {
+  address: IpAddr,
+  prefix: u8,
+}
+
+pub struct InterfaceAddr {
+  address: IpAddr,
+  prefix: u8,
+}
+
+pub struct NetworkInterface {
+  name: string,
+  index: u32,
+  addressCount: usize,
+}
+
+pub struct Url {
+  scheme: string,
+  host: Host,
+  port: Option<Port>,
+  path: string,
+}
+
+impl Port {
+  pub fn valid(self: Port) -> bool {
+    return self.value > 0
+  }
+}
+
+impl Host {
+  pub fn valid(self: Host) -> bool {
+    return self.value != ""
+  }
+
+  pub fn endpoint(self: Host, port: Port) -> NetResult<Endpoint> {
+    if !self.valid() || !port.valid() {
+      return Err(NetError {
+        kind: NetErrorKind.PlatformFailure,
+        message: "invalid network endpoint",
+        retryable: false,
+      })
+    }
+    return Ok(Endpoint { host: self, port: port })
+  }
+}
+
+impl Endpoint {
+  pub fn valid(self: Endpoint) -> bool {
+    return self.host.valid() && self.port.valid()
+  }
+}
+
+impl Cidr {
+  pub fn valid(self: Cidr) -> bool {
+    return self.prefix <= 128
+  }
+}
+
+impl Url {
+  pub fn valid(self: Url) -> bool {
+    return self.scheme != "" && self.host.valid() && self.path != ""
+  }
+}

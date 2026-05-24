@@ -1,0 +1,85 @@
+pub struct Arena<T> {
+  region: Region,
+  allocator: BumpAllocator,
+  stats: ArenaStats,
+}
+
+impl<T> Arena<T> {
+  /**
+    Creates an arena with a byte capacity for bulk allocation.
+
+    example:
+      let mut arena = Arena<User>.withCapacity(4096)
+
+    effects: initializes an arena region
+    complexity: O(1)
+    allocation: reserves arena domain capacity
+    safety: region generation starts live and non-released
+    stability: public since 0.1
+  */
+  pub fn withCapacity(capacityBytes: usize) -> Arena<T> {
+    let region = Region.init(0)
+    return Arena<T> {
+      region: region,
+      allocator: BumpAllocator.withCapacity(capacityBytes, region.generation()),
+      stats: ArenaStats.init(capacityBytes),
+    }
+  }
+
+  pub fn init() -> Arena<T> {
+    return Arena<T>.withCapacity(0)
+  }
+
+  pub fn region(self: Arena<T>) -> Region {
+    return self.region
+  }
+
+  pub fn stats(self: Arena<T>) -> ArenaStats {
+    return self.stats
+  }
+
+  /**
+    Stores one value in the arena and returns an arena-owned box.
+
+    example:
+      let mut arena = Arena<User>.withCapacity(4096)
+      let user = arena.box(User(...))?
+
+    effects: advances bump allocation
+    complexity: O(1)
+    allocation: arena bump allocation
+    safety: returned value is valid only for current region generation
+    stability: public since 0.1
+  */
+  pub fn box(self: &mut Arena<T>, value: T) -> Result<ArenaBox<T>, ArenaError> {
+    let allocator = self.allocator.allocate(1, 1)?
+    self.allocator = allocator
+    self.stats = self.stats.withAllocation(1)
+    return Ok(ArenaBox<T>.init(value, self.region))
+  }
+
+  pub fn slice(self: &mut Arena<T>, values: Vec<T>) -> Result<ArenaSlice<T>, ArenaError> {
+    let allocator = self.allocator.allocate(values.len, 1)?
+    self.allocator = allocator
+    self.stats = self.stats.withAllocation(values.len)
+    return Ok(ArenaSlice<T>.init(values, self.region))
+  }
+
+  pub fn scope(self: Arena<T>) -> Result<RegionScope, ArenaError> {
+    return RegionScope.enter(self.region)
+  }
+
+  pub fn reset(self: &mut Arena<T>) -> Result<Arena<T>, ArenaError> {
+    let region = self.region.reset()?
+    self.region = region
+    self.allocator = self.allocator.reset(region.generation())
+    self.stats = self.stats.reset()
+    return Ok(self)
+  }
+
+  pub fn release(self: &mut Arena<T>) -> Result<Arena<T>, ArenaError> {
+    let region = self.region.release()?
+    self.region = region
+    return Ok(self)
+  }
+}

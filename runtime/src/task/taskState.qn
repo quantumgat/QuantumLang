@@ -1,0 +1,9 @@
+pub enum TaskState {
+  NewTask
+  ReadyTask
+  RunningTask
+  WaitingTask
+  CompletedTask
+  FailedTask
+  CancelledTask
+}

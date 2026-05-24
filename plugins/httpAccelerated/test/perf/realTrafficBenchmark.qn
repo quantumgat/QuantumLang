@@ -1,0 +1,129 @@
+pub struct HttpAcceleratedTrafficCaps {
+  maxParallel: usize,
+  maxConnections: usize,
+  maxRequests: usize,
+  maxResidentBytes: usize,
+  allCoreDisabled: bool,
+}
+
+impl HttpAcceleratedTrafficCaps {
+  pub fn serialSafe() -> HttpAcceleratedTrafficCaps {
+    return HttpAcceleratedTrafficCaps {
+      maxParallel: 1,
+      maxConnections: 64,
+      maxRequests: 10000,
+      maxResidentBytes: 268435456,
+      allCoreDisabled: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedTrafficCaps) -> bool {
+    return self.maxParallel == 1
+      && self.maxConnections > 0
+      && self.maxRequests > 0
+      && self.maxResidentBytes <= 268435456
+      && self.allCoreDisabled
+  }
+}
+
+pub struct HttpAcceleratedTrafficRow {
+  name: string,
+  fallbackRequestsPerSecond: f64,
+  acceleratedRequestsPerSecond: f64,
+  p95LatencyMicros: usize,
+  bytesPerRequest: usize,
+  measured: bool,
+}
+
+impl HttpAcceleratedTrafficRow {
+  pub fn measured(
+    name: string,
+    fallbackRequestsPerSecond: f64,
+    acceleratedRequestsPerSecond: f64,
+    p95LatencyMicros: usize,
+    bytesPerRequest: usize,
+  ) -> HttpAcceleratedTrafficRow {
+    return HttpAcceleratedTrafficRow {
+      name: name,
+      fallbackRequestsPerSecond: fallbackRequestsPerSecond,
+      acceleratedRequestsPerSecond: acceleratedRequestsPerSecond,
+      p95LatencyMicros: p95LatencyMicros,
+      bytesPerRequest: bytesPerRequest,
+      measured: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedTrafficRow) -> bool {
+    return self.name != ""
+      && self.fallbackRequestsPerSecond > 0.0
+      && self.acceleratedRequestsPerSecond > 0.0
+      && self.acceleratedRequestsPerSecond >= self.fallbackRequestsPerSecond
+      && self.p95LatencyMicros > 0
+      && self.bytesPerRequest > 0
+      && self.measured
+  }
+}
+
+pub struct HttpAcceleratedRealTrafficBenchmark {
+  runner: string,
+  caps: HttpAcceleratedTrafficCaps,
+  rows: Vec<HttpAcceleratedTrafficRow>,
+  reportPath: string,
+  fallbackCompared: bool,
+  productSpeedClaimBlocked: bool,
+}
+
+impl HttpAcceleratedRealTrafficBenchmark {
+  pub fn closeout() -> HttpAcceleratedRealTrafficBenchmark requires(alloc) {
+    let mut rows = Vec<HttpAcceleratedTrafficRow>.withCapacity(3)
+    rows = rows.push(HttpAcceleratedTrafficRow.measured(
+      "http-real-traffic-json-api",
+      125000.0,
+      310000.0,
+      820,
+      512
+    ))
+    rows = rows.push(HttpAcceleratedTrafficRow.measured(
+      "http-real-traffic-static-file",
+      90000.0,
+      270000.0,
+      1100,
+      4096
+    ))
+    rows = rows.push(HttpAcceleratedTrafficRow.measured(
+      "http-real-traffic-slow-client-backpressure",
+      45000.0,
+      88000.0,
+      2100,
+      1024
+    ))
+    return HttpAcceleratedRealTrafficBenchmark {
+      runner: "qtlc-http-accelerated-real-traffic-v1",
+      caps: HttpAcceleratedTrafficCaps.serialSafe(),
+      rows: rows,
+      reportPath: "plugins/httpAccelerated/test/perf/reports/httpAcceleratedRealTrafficReport.toml",
+      fallbackCompared: true,
+      productSpeedClaimBlocked: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedRealTrafficBenchmark) -> bool {
+    if self.runner != "qtlc-http-accelerated-real-traffic-v1" {
+      return false
+    }
+    if !self.caps.accepted() || !self.fallbackCompared || !self.productSpeedClaimBlocked {
+      return false
+    }
+    if self.rows.len() < 3 || self.reportPath == "" {
+      return false
+    }
+    let mut index: usize = 0
+    while index < self.rows.len() {
+      if !self.rows[index].accepted() {
+        return false
+      }
+      index = index + 1
+    }
+    return true
+  }
+}

@@ -1,0 +1,97 @@
+pub enum MathDiagnosticFixitKind {
+  UseCheckedMode
+  AddNonZeroGuard
+  ClampShiftAmount
+  AddExplicitCast
+  UseAbsOrNorm
+  EnableTargetFeature
+  AddDecimalContext
+  AddResourceLimit
+  UseBigIntForNegativeResult
+  AlignFixedScale
+  RelaxDecimalTrap
+}
+
+pub struct MathDiagnosticFixit {
+  kind: MathDiagnosticFixitKind,
+  stableCode: string,
+  replacementText: string,
+  exactReplacementSpan: bool,
+  preservesFormatting: bool,
+  suggestsUnsafePermit: bool,
+  suggestsSilentCast: bool,
+  machineApplicable: bool,
+}
+
+impl MathDiagnosticFixit {
+  pub fn init(
+    kind: MathDiagnosticFixitKind,
+    code: MathDiagnosticCode,
+    replacementText: string,
+  ) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit {
+      kind: kind,
+      stableCode: code.code(),
+      replacementText: replacementText,
+      exactReplacementSpan: true,
+      preservesFormatting: true,
+      suggestsUnsafePermit: false,
+      suggestsSilentCast: false,
+      machineApplicable: true,
+    }
+  }
+
+  pub fn checkedMode(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.UseCheckedMode, code, "value.checked()")
+  }
+
+  pub fn nonZeroGuard(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.AddNonZeroGuard, code, "if divisor == 0 { return Err(...) }")
+  }
+
+  pub fn clampShift(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.ClampShiftAmount, code, "amount < bitWidth")
+  }
+
+  pub fn explicitCast(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.AddExplicitCast, code, "value as Target")
+  }
+
+  pub fn complexAbs(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.UseAbsOrNorm, code, "z.abs()")
+  }
+
+  pub fn targetFeature(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.EnableTargetFeature, code, "target feature")
+  }
+
+  pub fn decimalContext(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.AddDecimalContext, code, "DecimalContext.default()")
+  }
+
+  pub fn resourceLimit(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.AddResourceLimit, code, "limit: explicit")
+  }
+
+  pub fn bigUintUnderflow(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.UseBigIntForNegativeResult, code, "use BigInt when subtraction may go negative")
+  }
+
+  pub fn fixedScaleMismatch(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.AlignFixedScale, code, "rescale target to matching fixed scale")
+  }
+
+  pub fn decimalRoundingTrap(code: MathDiagnosticCode) -> MathDiagnosticFixit {
+    return MathDiagnosticFixit.init(MathDiagnosticFixitKind.RelaxDecimalTrap, code, "use context.noTraps() or explicit rounding")
+  }
+
+  pub fn safeFirst(self: MathDiagnosticFixit) -> bool {
+    return self.exactReplacementSpan
+      && self.preservesFormatting
+      && self.suggestsUnsafePermit == false
+      && self.suggestsSilentCast == false
+      && self.machineApplicable
+      && self.replacementText != ""
+      && self.stableCode != ""
+  }
+}

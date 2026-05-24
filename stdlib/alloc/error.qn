@@ -1,0 +1,30 @@
+pub enum AllocErrorKind {
+  OutOfMemory,
+  InvalidLayout,
+  WrongDomain,
+  DoubleFree,
+  StaleAllocation,
+  PressureDenied,
+}
+
+pub struct AllocError {
+  kind: AllocErrorKind,
+  recoverable: bool,
+}
+
+impl AllocError {
+  pub fn init(kind: AllocErrorKind, recoverable: bool) -> AllocError {
+    AllocError {
+      kind: kind,
+      recoverable: recoverable,
+    }
+  }
+
+  pub fn kind(self: AllocError) -> AllocErrorKind {
+    self.kind
+  }
+
+  pub fn recoverable(self: AllocError) -> bool {
+    self.recoverable
+  }
+}

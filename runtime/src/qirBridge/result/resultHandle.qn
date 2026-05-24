@@ -1,0 +1,15 @@
+pub struct ResultHandle {
+  handleId: u64,
+  providerOwned: bool,
+  generationChecked: bool,
+}
+
+pub fn resultHandle(handleId: u64) -> ResultHandle {
+  return ResultHandle { handleId: handleId, providerOwned: true, generationChecked: true }
+}
+
+impl ResultHandle {
+  pub fn canRead(self: ResultHandle) -> bool {
+    return self.handleId > 0 && self.providerOwned && self.generationChecked
+  }
+}

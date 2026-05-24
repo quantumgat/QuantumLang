@@ -1,0 +1,139 @@
+pub enum BsonWireType {
+  Double
+  String
+  Document
+  Array
+  Binary
+  Undefined
+  ObjectId
+  Bool
+  DateTime
+  Null
+  Regex
+  DbPointer
+  JavaScript
+  Symbol
+  JavaScriptWithScope
+  Int32
+  Timestamp
+  Int64
+  Decimal128
+  MinKey
+  MaxKey
+}
+
+pub struct BsonWireTag {
+  kind: BsonWireType,
+  byte: u8,
+}
+
+impl BsonWireTag {
+  pub fn double() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Double, byte: 0x01 }
+  }
+
+  pub fn string() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.String, byte: 0x02 }
+  }
+
+  pub fn document() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Document, byte: 0x03 }
+  }
+
+  pub fn array() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Array, byte: 0x04 }
+  }
+
+  pub fn binary() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Binary, byte: 0x05 }
+  }
+
+  pub fn undefined() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Undefined, byte: 0x06 }
+  }
+
+  pub fn objectId() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.ObjectId, byte: 0x07 }
+  }
+
+  pub fn bool() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Bool, byte: 0x08 }
+  }
+
+  pub fn dateTime() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.DateTime, byte: 0x09 }
+  }
+
+  pub fn nullTag() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Null, byte: 0x0a }
+  }
+
+  pub fn regex() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Regex, byte: 0x0b }
+  }
+
+  pub fn dbPointer() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.DbPointer, byte: 0x0c }
+  }
+
+  pub fn javaScript() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.JavaScript, byte: 0x0d }
+  }
+
+  pub fn symbol() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Symbol, byte: 0x0e }
+  }
+
+  pub fn javaScriptWithScope() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.JavaScriptWithScope, byte: 0x0f }
+  }
+
+  pub fn int32() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Int32, byte: 0x10 }
+  }
+
+  pub fn timestamp() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Timestamp, byte: 0x11 }
+  }
+
+  pub fn int64() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Int64, byte: 0x12 }
+  }
+
+  pub fn decimal128() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.Decimal128, byte: 0x13 }
+  }
+
+  pub fn minKey() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.MinKey, byte: 0xff }
+  }
+
+  pub fn maxKey() -> BsonWireTag {
+    return BsonWireTag { kind: BsonWireType.MaxKey, byte: 0x7f }
+  }
+}
+
+pub struct BsonWireLayout {
+  littleEndianLength: bool,
+  cstringFieldNames: bool,
+  documentEndsWithZero: bool,
+  lengthIncludesTerminator: bool,
+}
+
+impl BsonWireLayout {
+  pub fn standard() -> BsonWireLayout {
+    return BsonWireLayout {
+      littleEndianLength: true,
+      cstringFieldNames: true,
+      documentEndsWithZero: true,
+      lengthIncludesTerminator: true,
+    }
+  }
+
+  pub fn accepted(self: BsonWireLayout) -> bool {
+    return self.littleEndianLength
+      && self.cstringFieldNames
+      && self.documentEndsWithZero
+      && self.lengthIncludesTerminator
+  }
+}

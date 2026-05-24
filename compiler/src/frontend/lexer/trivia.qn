@@ -1,0 +1,31 @@
+pub enum TriviaKind {
+  Whitespace
+  LineComment
+  BlockComment
+  Newline
+}
+
+pub struct TriviaToken {
+  kind: TriviaKind,
+  file: u32,
+  start: usize,
+  end: usize,
+}
+
+pub fn triviaToken(kind: TriviaKind, file: u32, start: usize, end: usize) -> TriviaToken {
+  return TriviaToken { kind: kind, file: file, start: start, end: end }
+}
+
+impl TriviaToken {
+  pub fn triviaKind(self: TriviaToken) -> TriviaKind {
+    return self.kind
+  }
+
+  pub fn len(self: TriviaToken) -> usize {
+    if self.end <= self.start {
+      return 0
+    }
+
+    return self.end - self.start
+  }
+}

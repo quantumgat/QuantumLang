@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeSyncDiagnosticKind {
+  InvalidOrdering,
+  StaleWaitHandle,
+  DoubleUnlock,
+  MissedWake,
+  AbaVersionMissing,
+  PrematureReclaim,
+}
+pub struct RuntimeSyncDiagnostic {
+  kind: RuntimeSyncDiagnosticKind
+  recoverable: bool
+  redacted: bool
+  noCoredump: bool
+}

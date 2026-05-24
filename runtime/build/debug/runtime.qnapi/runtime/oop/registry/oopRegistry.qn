@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopRegistry {
+  classCount: usize
+  interfaceCount: usize
+  ownsCompilerAnalysis: bool
+}
+pub extern "qnpkg" {
+  pub fn oopRegistry(classCount: usize, interfaceCount: usize) -> OopRegistry
+}

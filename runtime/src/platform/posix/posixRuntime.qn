@@ -1,0 +1,12 @@
+pub struct PosixRuntime {
+  target: string,
+  fdModel: bool,
+  pthreadModel: bool,
+  signalModel: bool,
+}
+
+impl PosixRuntime {
+  pub fn accepted(self: PosixRuntime) -> bool {
+    return self.target != "" && self.fdModel
+  }
+}

@@ -1,0 +1,98 @@
+import body::{HttpBody}
+
+pub struct HttpRequest {
+  method: HttpMethod,
+  uri: HttpUri,
+  version: HttpVersion,
+  headers: HttpHeaderMap,
+  body: HttpBody,
+}
+
+impl HttpRequest {
+  pub fn init(method: HttpMethod, uri: HttpUri, version: HttpVersion, headers: HttpHeaderMap, body: HttpBody) -> HttpRequest {
+    return HttpRequest {
+      method: method,
+      uri: uri,
+      version: version,
+      headers: headers,
+      body: body,
+    }
+  }
+
+  pub fn get(path: string) -> HttpRequest {
+    return HttpRequest.init(
+      HttpMethod.Get,
+      HttpUri.pathOnly(path),
+      HttpVersion.Http11,
+      HttpHeaderMap.empty(),
+      HttpBody.empty()
+    )
+  }
+
+  pub fn post(path: string, body: HttpBody) -> HttpRequest {
+    return HttpRequest.init(
+      HttpMethod.Post,
+      HttpUri.pathOnly(path),
+      HttpVersion.Http11,
+      HttpHeaderMap.empty(),
+      body
+    )
+  }
+
+  pub fn method(self: HttpRequest) -> HttpMethod {
+    return self.method
+  }
+
+  pub fn uri(self: HttpRequest) -> HttpUri {
+    return self.uri
+  }
+
+  pub fn version(self: HttpRequest) -> HttpVersion {
+    return self.version
+  }
+
+  pub fn headers(self: HttpRequest) -> HttpHeaderMap {
+    return self.headers
+  }
+
+  pub fn body(self: HttpRequest) -> HttpBody {
+    return self.body
+  }
+
+  pub fn withHeader(self: HttpRequest, name: string, value: string) -> HttpRequest {
+    return HttpRequest {
+      method: self.method,
+      uri: self.uri,
+      version: self.version,
+      headers: self.headers.add(name, value),
+      body: self.body,
+    }
+  }
+
+  pub fn withBody(self: HttpRequest, body: HttpBody) -> HttpRequest {
+    return HttpRequest {
+      method: self.method,
+      uri: self.uri,
+      version: self.version,
+      headers: self.headers,
+      body: body,
+    }
+  }
+
+  pub fn withVersion(self: HttpRequest, version: HttpVersion) -> HttpRequest {
+    return HttpRequest {
+      method: self.method,
+      uri: self.uri,
+      version: version,
+      headers: self.headers,
+      body: self.body,
+    }
+  }
+
+  pub fn keepAlive(self: HttpRequest) -> bool {
+    match self.headers.get("connection") {
+      Some(value) => return value != "close"
+      None => return self.version != HttpVersion.Http10
+    }
+  }
+}

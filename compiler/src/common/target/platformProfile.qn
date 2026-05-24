@@ -1,0 +1,19 @@
+pub struct PlatformProfile {
+  target: TargetTriple,
+  pointerWidth: usize,
+  littleEndian: bool,
+}
+
+pub fn platformProfile(target: TargetTriple, pointerWidth: usize, littleEndian: bool) -> PlatformProfile {
+  return PlatformProfile { target: target, pointerWidth: pointerWidth, littleEndian: littleEndian }
+}
+
+impl PlatformProfile {
+  pub fn pointerBits(self: PlatformProfile) -> usize {
+    return self.pointerWidth
+  }
+
+  pub fn supportsNativeBackend(self: PlatformProfile) -> bool {
+    return self.pointerWidth == 64 && self.littleEndian
+  }
+}

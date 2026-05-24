@@ -1,0 +1,23 @@
+pub struct PointerLoweringProof {
+  node: u64,
+  accessAccepted: bool,
+  provenanceAccepted: bool,
+  unsafeBoundaryAccepted: bool,
+  targetFactsAccepted: bool,
+  targetMatrixAccepted: bool,
+  mirChecksEmitted: bool,
+  nativeLoweringCovered: bool,
+}
+
+impl PointerLoweringProof {
+  pub fn accepted(self: PointerLoweringProof) -> bool {
+    return self.node > 0
+      && self.accessAccepted
+      && self.provenanceAccepted
+      && self.unsafeBoundaryAccepted
+      && self.targetFactsAccepted
+      && self.targetMatrixAccepted
+      && self.mirChecksEmitted
+      && self.nativeLoweringCovered
+  }
+}

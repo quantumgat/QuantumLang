@@ -1,0 +1,50 @@
+pub enum RuntimeAllocatorFailureKind {
+  OutOfMemory,
+  PressureDenied,
+  InvalidLayout,
+  AllocatorStopped,
+}
+
+pub struct RuntimeAllocatorFailurePolicy {
+  kind: RuntimeAllocatorFailureKind,
+  returnsResult: bool,
+  noCoredump: bool,
+  redactedDiagnostic: bool,
+  emergencyDiagnosticNoAlloc: bool,
+}
+
+impl RuntimeAllocatorFailurePolicy {
+  pub fn init(kind: RuntimeAllocatorFailureKind) -> RuntimeAllocatorFailurePolicy {
+    return RuntimeAllocatorFailurePolicy {
+      kind: kind,
+      returnsResult: true,
+      noCoredump: true,
+      redactedDiagnostic: true,
+      emergencyDiagnosticNoAlloc: true,
+    }
+  }
+
+  pub fn safeFailure(self: RuntimeAllocatorFailurePolicy) -> bool {
+    return self.returnsResult
+      && self.noCoredump
+      && self.redactedDiagnostic
+      && self.emergencyDiagnosticNoAlloc
+  }
+
+  pub fn asError(self: RuntimeAllocatorFailurePolicy) -> RuntimeMemoryError {
+    match self.kind {
+      RuntimeAllocatorFailureKind.OutOfMemory => {
+        return RuntimeMemoryError.OutOfMemory
+      }
+      RuntimeAllocatorFailureKind.PressureDenied => {
+        return RuntimeMemoryError.PressureDenied
+      }
+      RuntimeAllocatorFailureKind.InvalidLayout => {
+        return RuntimeMemoryError.InvalidLayout
+      }
+      RuntimeAllocatorFailureKind.AllocatorStopped => {
+        return RuntimeMemoryError.AllocatorStopped
+      }
+    }
+  }
+}

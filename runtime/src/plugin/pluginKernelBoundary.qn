@@ -1,0 +1,30 @@
+pub struct PluginKernelBoundary {
+  allocatorDomainChecked: bool,
+  noUnwindAcrossBoundary: bool,
+  capabilityTokensChecked: bool,
+  memoryIncidentSafe: bool,
+  schedulerIncidentSafe: bool,
+  resourceLimitsChecked: bool,
+}
+
+impl PluginKernelBoundary {
+  pub fn isolated() -> PluginKernelBoundary {
+    return PluginKernelBoundary {
+      allocatorDomainChecked: true,
+      noUnwindAcrossBoundary: true,
+      capabilityTokensChecked: true,
+      memoryIncidentSafe: true,
+      schedulerIncidentSafe: true,
+      resourceLimitsChecked: true,
+    }
+  }
+
+  pub fn accepted(self: PluginKernelBoundary) -> bool {
+    return self.allocatorDomainChecked
+      && self.noUnwindAcrossBoundary
+      && self.capabilityTokensChecked
+      && self.memoryIncidentSafe
+      && self.schedulerIncidentSafe
+      && self.resourceLimitsChecked
+  }
+}

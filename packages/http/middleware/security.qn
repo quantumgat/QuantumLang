@@ -1,0 +1,73 @@
+pub struct SecurityHeaders {
+  strictTransportSecurity: bool,
+  contentSecurityPolicy: string,
+  contentTypeOptions: bool,
+  frameOptions: string,
+  referrerPolicy: string,
+  permissionsPolicy: string,
+  crossOriginOpenerPolicy: string,
+  crossOriginEmbedderPolicy: string,
+  crossOriginResourcePolicy: string,
+  clearSiteData: bool,
+  serverLeakBlocked: bool,
+}
+
+pub struct Security {
+}
+
+impl Security {
+  pub fn strict() -> SecurityHeaders {
+    return SecurityHeaders.init(true, "default-src 'self'", true, "DENY", "no-referrer", "default=()", "same-origin", "require-corp", "same-origin", false)
+  }
+
+  pub fn api() -> SecurityHeaders {
+    return SecurityHeaders.init(true, "default-src 'none'", true, "DENY", "no-referrer", "default=()", "same-origin", "credentialless", "same-site", false)
+  }
+
+  pub fn relaxed() -> SecurityHeaders {
+    return SecurityHeaders.init(false, "", true, "SAMEORIGIN", "strict-origin-when-cross-origin", "", "same-origin", "", "same-site", false)
+  }
+}
+
+impl SecurityHeaders {
+  pub fn init(
+    hsts: bool,
+    csp: string,
+    contentTypeOptions: bool,
+    frameOptions: string,
+    referrerPolicy: string,
+    permissionsPolicy: string,
+    openerPolicy: string,
+    embedderPolicy: string,
+    resourcePolicy: string,
+    clearSiteData: bool,
+  ) -> SecurityHeaders {
+    return SecurityHeaders {
+      strictTransportSecurity: hsts,
+      contentSecurityPolicy: csp,
+      contentTypeOptions: contentTypeOptions,
+      frameOptions: frameOptions,
+      referrerPolicy: referrerPolicy,
+      permissionsPolicy: permissionsPolicy,
+      crossOriginOpenerPolicy: openerPolicy,
+      crossOriginEmbedderPolicy: embedderPolicy,
+      crossOriginResourcePolicy: resourcePolicy,
+      clearSiteData: clearSiteData,
+      serverLeakBlocked: true,
+    }
+  }
+
+  pub fn complete(self: SecurityHeaders) -> bool {
+    return self.contentTypeOptions
+      && self.frameOptions != ""
+      && self.referrerPolicy != ""
+      && self.serverLeakBlocked
+  }
+
+  pub fn hstsHeader(self: SecurityHeaders) -> string {
+    if self.strictTransportSecurity {
+      return "Strict-Transport-Security"
+    }
+    return ""
+  }
+}

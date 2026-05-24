@@ -1,0 +1,12 @@
+pub enum CompilePhase {
+  LoadPackage,
+  ParseSource,
+  AnalyzeProgram,
+  LowerIr,
+  EmitNative,
+  LinkProduct,
+}
+
+pub fn firstCompilePhase() -> CompilePhase {
+  return CompilePhase.LoadPackage
+}

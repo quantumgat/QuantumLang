@@ -1,0 +1,716 @@
+pub enum BsonValueKind {
+  Null
+  Bool
+  Int32
+  Int64
+  Double
+  String
+  Binary
+  ObjectId
+  DateTime
+  Decimal128
+  Array
+  Document
+  Timestamp
+  Regex
+  JavaScript
+  Symbol
+  DbPointer
+  Undefined
+  MinKey
+  MaxKey
+  Exact
+}
+
+pub struct BsonElement {
+  name: string,
+  value: BsonValue,
+}
+
+pub struct BsonValue {
+  kind: BsonValueKind,
+  boolValue: bool,
+  int32Value: i32,
+  int64Value: i64,
+  doubleValue: f64,
+  stringValue: string,
+  binaryValue: BsonBinary,
+  objectIdValue: ObjectId,
+  dateTimeValue: BsonDateTime,
+  decimal128Value: BsonDecimal128,
+  arrayValue: BsonArray,
+  documentValue: BsonDocument,
+  timestampValue: BsonTimestamp,
+  regexValue: BsonRegex,
+  javaScriptValue: BsonJavaScript,
+  dbPointerValue: BsonDbPointer,
+  exactTypeName: string,
+  exactText: string,
+  exactBytes: BinaryView,
+  exactEncoding: BsonExactEncoding,
+  path: string,
+}
+
+impl BsonValue {
+  pub fn nullValue() -> BsonValue {
+    return bsonNullValue()
+  }
+
+  pub fn bool(value: bool) -> BsonValue {
+    return bsonBoolValue(value)
+  }
+
+  pub fn i8(value: i8) -> BsonValue {
+    return bsonInt32Value(value as i32)
+  }
+
+  pub fn u8(value: u8) -> BsonValue {
+    return bsonInt32Value(value as i32)
+  }
+
+  pub fn i16(value: i16) -> BsonValue {
+    return bsonInt32Value(value as i32)
+  }
+
+  pub fn u16(value: u16) -> BsonValue {
+    return bsonInt32Value(value as i32)
+  }
+
+  pub fn i32(value: i32) -> BsonValue {
+    return bsonInt32Value(value)
+  }
+
+  pub fn u32(value: u32) -> Result<BsonValue, BsonError> {
+    return bsonUInt32Value(value)
+  }
+
+  pub fn i64(value: i64) -> BsonValue {
+    return bsonInt64Value(value)
+  }
+
+  pub fn u64(value: u64) -> Result<BsonValue, BsonError> {
+    return bsonUInt64Value(value)
+  }
+
+  pub fn i128(value: i128) -> BsonValue {
+    return bsonStringValue(bsonFormatI128(value))
+  }
+
+  pub fn u128(value: u128) -> BsonValue {
+    return bsonStringValue(bsonFormatU128(value))
+  }
+
+  pub fn i256(value: i256) -> BsonValue {
+    return bsonStringValue(bsonFormatI256(value))
+  }
+
+  pub fn u256(value: u256) -> BsonValue {
+    return bsonStringValue(bsonFormatU256(value))
+  }
+
+  pub fn isize(value: isize) -> BsonValue {
+    return bsonStringValue(bsonFormatIsize(value))
+  }
+
+  pub fn usize(value: usize) -> BsonValue {
+    return bsonStringValue(bsonFormatUsize(value))
+  }
+
+  pub fn f16(value: f16) -> BsonValue {
+    return bsonDoubleValue(value as f64)
+  }
+
+  pub fn f32(value: f32) -> BsonValue {
+    return bsonDoubleValue(value as f64)
+  }
+
+  pub fn f64(value: f64) -> BsonValue {
+    return bsonDoubleValue(value)
+  }
+
+  pub fn f128(value: f128) -> BsonValue {
+    return bsonStringValue(bsonFormatF128(value))
+  }
+
+  pub fn char(value: char) -> BsonValue {
+    return bsonStringValue(bsonFormatChar(value))
+  }
+
+  pub fn string(value: string) -> BsonValue {
+    return bsonStringValue(value)
+  }
+
+  pub fn bytes(value: BinaryView) -> BsonValue {
+    return bsonBinaryValue(BsonBinary.init(value))
+  }
+
+  pub fn binary(value: BsonBinary) -> BsonValue {
+    return bsonBinaryValue(value)
+  }
+
+  pub fn objectId(value: ObjectId) -> BsonValue {
+    return bsonObjectIdValue(value)
+  }
+
+  pub fn dateTime(value: BsonDateTime) -> BsonValue {
+    return bsonDateTimeValue(value)
+  }
+
+  pub fn decimal128(value: BsonDecimal128) -> BsonValue {
+    return bsonDecimal128Value(value)
+  }
+
+  pub fn dec128(value: dec128) -> BsonValue {
+    return bsonDecimal128Value(BsonDecimal128.fromDecimal(value))
+  }
+
+  pub fn bigint(value: BigInt) -> BsonValue {
+    return bsonStringValue(value.format())
+  }
+
+  pub fn biguint(value: BigUint) -> BsonValue {
+    return bsonStringValue(value.format())
+  }
+
+  pub fn complex64(value: complex64) -> Result<BsonValue, BsonError> requires(alloc) {
+    let mut document = BsonDocument.init()
+    document = document.set("real", value.real())?
+    document = document.set("imag", value.imag())?
+    return Ok(bsonDocumentValue(document))
+  }
+
+  pub fn complex128(value: complex128) -> Result<BsonValue, BsonError> requires(alloc) {
+    let mut document = BsonDocument.init()
+    document = document.set("real", value.real())?
+    document = document.set("imag", value.imag())?
+    return Ok(bsonDocumentValue(document))
+  }
+
+  pub fn complex256(value: complex256) -> Result<BsonValue, BsonError> requires(alloc) {
+    let mut document = BsonDocument.init()
+    document = document.set("real", value.real())?
+    document = document.set("imag", value.imag())?
+    return Ok(bsonDocumentValue(document))
+  }
+
+  pub fn array(value: BsonArray) -> BsonValue {
+    return bsonArrayValue(value)
+  }
+
+  pub fn document(value: BsonDocument) -> BsonValue {
+    return bsonDocumentValue(value)
+  }
+
+  pub fn timestamp(value: BsonTimestamp) -> BsonValue {
+    return bsonTimestampValue(value)
+  }
+
+  pub fn regex(value: BsonRegex) -> BsonValue {
+    return bsonRegexValue(value)
+  }
+
+  pub fn javaScript(value: BsonJavaScript) -> BsonValue {
+    return bsonJavaScriptValue(value)
+  }
+
+  pub fn symbol(value: string) -> BsonValue {
+    return bsonSymbolValue(value)
+  }
+
+  pub fn dbPointer(value: BsonDbPointer) -> BsonValue {
+    return bsonDbPointerValue(value)
+  }
+
+  pub fn undefined() -> BsonValue {
+    return bsonUndefinedValue()
+  }
+
+  pub fn minKey() -> BsonValue {
+    return bsonMinKeyValue()
+  }
+
+  pub fn maxKey() -> BsonValue {
+    return bsonMaxKeyValue()
+  }
+
+  pub fn exactString(typeName: string, text: string) -> BsonValue {
+    return bsonExactStringValue(BsonExactValue.string(typeName, text))
+  }
+
+  pub fn exactBinary(typeName: string, bytes: BinaryView) -> BsonValue {
+    return bsonExactBinaryValue(BsonExactValue.binary(typeName, bytes))
+  }
+
+  pub fn exactValue(value: BsonExactValue) -> BsonValue {
+    return bsonExactCarrierValue(value)
+  }
+
+  pub fn exact<T>(value: T) -> Result<BsonValue, BsonError> {
+    return bsonExactValue(value)
+  }
+
+  pub fn from<T>(value: T) -> Result<BsonValue, BsonError> {
+    return bsonValueFrom(value)
+  }
+
+  pub fn kind(self: BsonValue) -> BsonValueKind {
+    return self.kind
+  }
+
+  pub fn withPath(self: BsonValue, path: string) -> BsonValue {
+    return bsonValueWithPath(self, path)
+  }
+
+  pub fn toJson(self: BsonValue) -> Result<JsonValue, BsonError> {
+    return self.toJson(BsonCodecMode.Mongo)
+  }
+
+  pub fn toJson(self: BsonValue, mode: BsonCodecMode) -> Result<JsonValue, BsonError> {
+    return Bson.toJson(Bson.encodeValue(self)?, mode)
+  }
+
+  pub fn toJsonExact(self: BsonValue) -> Result<JsonValue, BsonError> {
+    return self.toJson(BsonCodecMode.Exact)
+  }
+
+  pub fn asBool(self: BsonValue) -> Result<bool, BsonError> {
+    return bsonValueAsBool(self)
+  }
+
+  pub fn asI32(self: BsonValue) -> Result<i32, BsonError> {
+    return bsonValueAsI32(self)
+  }
+
+  pub fn asI8(self: BsonValue) -> Result<i8, BsonError> {
+    return bsonValueAsI8(self)
+  }
+
+  pub fn asU8(self: BsonValue) -> Result<u8, BsonError> {
+    return bsonValueAsU8(self)
+  }
+
+  pub fn asI16(self: BsonValue) -> Result<i16, BsonError> {
+    return bsonValueAsI16(self)
+  }
+
+  pub fn asU16(self: BsonValue) -> Result<u16, BsonError> {
+    return bsonValueAsU16(self)
+  }
+
+  pub fn asU32(self: BsonValue) -> Result<u32, BsonError> {
+    return bsonValueAsU32(self)
+  }
+
+  pub fn asI64(self: BsonValue) -> Result<i64, BsonError> {
+    return bsonValueAsI64(self)
+  }
+
+  pub fn asU64(self: BsonValue) -> Result<u64, BsonError> {
+    return bsonValueAsU64(self)
+  }
+
+  pub fn asI128(self: BsonValue) -> Result<i128, BsonError> {
+    return bsonValueAsI128(self)
+  }
+
+  pub fn asU128(self: BsonValue) -> Result<u128, BsonError> {
+    return bsonValueAsU128(self)
+  }
+
+  pub fn asI256(self: BsonValue) -> Result<i256, BsonError> {
+    return bsonValueAsI256(self)
+  }
+
+  pub fn asU256(self: BsonValue) -> Result<u256, BsonError> {
+    return bsonValueAsU256(self)
+  }
+
+  pub fn asIsize(self: BsonValue) -> Result<isize, BsonError> {
+    return bsonValueAsIsize(self)
+  }
+
+  pub fn asUsize(self: BsonValue) -> Result<usize, BsonError> {
+    return bsonValueAsUsize(self)
+  }
+
+  pub fn asF64(self: BsonValue) -> Result<f64, BsonError> {
+    return bsonValueAsF64(self)
+  }
+
+  pub fn asF16(self: BsonValue) -> Result<f16, BsonError> {
+    return bsonValueAsF16(self)
+  }
+
+  pub fn asF32(self: BsonValue) -> Result<f32, BsonError> {
+    return bsonValueAsF32(self)
+  }
+
+  pub fn asF128(self: BsonValue) -> Result<f128, BsonError> {
+    return bsonValueAsF128(self)
+  }
+
+  pub fn asChar(self: BsonValue) -> Result<char, BsonError> {
+    return bsonValueAsChar(self)
+  }
+
+  pub fn asString(self: BsonValue) -> Result<string, BsonError> {
+    return bsonValueAsString(self)
+  }
+
+  pub fn asBinary(self: BsonValue) -> Result<BsonBinary, BsonError> {
+    return bsonValueAsBinary(self)
+  }
+
+  pub fn asObjectId(self: BsonValue) -> Result<ObjectId, BsonError> {
+    return bsonValueAsObjectId(self)
+  }
+
+  pub fn asDateTime(self: BsonValue) -> Result<BsonDateTime, BsonError> {
+    return bsonValueAsDateTime(self)
+  }
+
+  pub fn asDecimal128(self: BsonValue) -> Result<BsonDecimal128, BsonError> {
+    return bsonValueAsDecimal128(self)
+  }
+
+  pub fn asArray(self: BsonValue) -> Result<BsonArray, BsonError> {
+    return bsonValueAsArray(self)
+  }
+
+  pub fn asDocument(self: BsonValue) -> Result<BsonDocument, BsonError> {
+    return bsonValueAsDocument(self)
+  }
+
+  pub fn asTimestamp(self: BsonValue) -> Result<BsonTimestamp, BsonError> {
+    return bsonValueAsTimestamp(self)
+  }
+
+  pub fn asRegex(self: BsonValue) -> Result<BsonRegex, BsonError> {
+    return bsonValueAsRegex(self)
+  }
+
+  pub fn asJavaScript(self: BsonValue) -> Result<BsonJavaScript, BsonError> {
+    return bsonValueAsJavaScript(self)
+  }
+
+  pub fn asSymbol(self: BsonValue) -> Result<string, BsonError> {
+    return bsonValueAsSymbol(self)
+  }
+
+  pub fn asDbPointer(self: BsonValue) -> Result<BsonDbPointer, BsonError> {
+    return bsonValueAsDbPointer(self)
+  }
+
+  pub fn asExact(self: BsonValue) -> Result<BsonExactValue, BsonError> {
+    return bsonValueAsExact(self)
+  }
+
+  pub fn bool(self: BsonValue) -> Result<bool, BsonError> {
+    return self.asBool()
+  }
+
+  pub fn i32(self: BsonValue) -> Result<i32, BsonError> {
+    return self.asI32()
+  }
+
+  pub fn i8(self: BsonValue) -> Result<i8, BsonError> {
+    return self.asI8()
+  }
+
+  pub fn u8(self: BsonValue) -> Result<u8, BsonError> {
+    return self.asU8()
+  }
+
+  pub fn i16(self: BsonValue) -> Result<i16, BsonError> {
+    return self.asI16()
+  }
+
+  pub fn u16(self: BsonValue) -> Result<u16, BsonError> {
+    return self.asU16()
+  }
+
+  pub fn u32(self: BsonValue) -> Result<u32, BsonError> {
+    return self.asU32()
+  }
+
+  pub fn i64(self: BsonValue) -> Result<i64, BsonError> {
+    return self.asI64()
+  }
+
+  pub fn u64(self: BsonValue) -> Result<u64, BsonError> {
+    return self.asU64()
+  }
+
+  pub fn i128(self: BsonValue) -> Result<i128, BsonError> {
+    return self.asI128()
+  }
+
+  pub fn u128(self: BsonValue) -> Result<u128, BsonError> {
+    return self.asU128()
+  }
+
+  pub fn i256(self: BsonValue) -> Result<i256, BsonError> {
+    return self.asI256()
+  }
+
+  pub fn u256(self: BsonValue) -> Result<u256, BsonError> {
+    return self.asU256()
+  }
+
+  pub fn isize(self: BsonValue) -> Result<isize, BsonError> {
+    return self.asIsize()
+  }
+
+  pub fn usize(self: BsonValue) -> Result<usize, BsonError> {
+    return self.asUsize()
+  }
+
+  pub fn f64(self: BsonValue) -> Result<f64, BsonError> {
+    return self.asF64()
+  }
+
+  pub fn f16(self: BsonValue) -> Result<f16, BsonError> {
+    return self.asF16()
+  }
+
+  pub fn f32(self: BsonValue) -> Result<f32, BsonError> {
+    return self.asF32()
+  }
+
+  pub fn f128(self: BsonValue) -> Result<f128, BsonError> {
+    return self.asF128()
+  }
+
+  pub fn char(self: BsonValue) -> Result<char, BsonError> {
+    return self.asChar()
+  }
+
+  pub fn string(self: BsonValue) -> Result<string, BsonError> {
+    return self.asString()
+  }
+
+  pub fn binary(self: BsonValue) -> Result<BsonBinary, BsonError> {
+    return self.asBinary()
+  }
+
+  pub fn bytes(self: BsonValue) -> Result<BinaryView, BsonError> {
+    return self.asBinary()?.view()
+  }
+
+  pub fn objectId(self: BsonValue) -> Result<ObjectId, BsonError> {
+    return self.asObjectId()
+  }
+
+  pub fn dateTime(self: BsonValue) -> Result<BsonDateTime, BsonError> {
+    return self.asDateTime()
+  }
+
+  pub fn decimal128(self: BsonValue) -> Result<BsonDecimal128, BsonError> {
+    return self.asDecimal128()
+  }
+
+  pub fn dec128(self: BsonValue) -> Result<dec128, BsonError> {
+    return self.asDecimal128()?.decimal()
+  }
+
+  pub fn array(self: BsonValue) -> Result<BsonArray, BsonError> {
+    return self.asArray()
+  }
+
+  pub fn document(self: BsonValue) -> Result<BsonDocument, BsonError> {
+    return self.asDocument()
+  }
+
+  pub fn timestamp(self: BsonValue) -> Result<BsonTimestamp, BsonError> {
+    return self.asTimestamp()
+  }
+
+  pub fn regex(self: BsonValue) -> Result<BsonRegex, BsonError> {
+    return self.asRegex()
+  }
+
+  pub fn javaScript(self: BsonValue) -> Result<BsonJavaScript, BsonError> {
+    return self.asJavaScript()
+  }
+
+  pub fn symbol(self: BsonValue) -> Result<string, BsonError> {
+    return self.asSymbol()
+  }
+
+  pub fn dbPointer(self: BsonValue) -> Result<BsonDbPointer, BsonError> {
+    return self.asDbPointer()
+  }
+
+  pub fn exact(self: BsonValue) -> Result<BsonExactValue, BsonError> {
+    return self.asExact()
+  }
+
+  pub fn isNull(self: BsonValue) -> bool {
+    return self.kind == BsonValueKind.Null
+  }
+
+  pub fn isUndefined(self: BsonValue) -> bool {
+    return self.kind == BsonValueKind.Undefined
+  }
+
+  pub fn isMinKey(self: BsonValue) -> bool {
+    return self.kind == BsonValueKind.MinKey
+  }
+
+  pub fn isMaxKey(self: BsonValue) -> bool {
+    return self.kind == BsonValueKind.MaxKey
+  }
+
+  pub fn isScalar(self: BsonValue) -> bool {
+    return self.kind != BsonValueKind.Array
+      && self.kind != BsonValueKind.Document
+      && self.kind != BsonValueKind.Exact
+  }
+
+  pub fn kindName(self: BsonValue) -> string {
+    match self.kind {
+      BsonValueKind.Null => {
+        return "null"
+      }
+      BsonValueKind.Bool => {
+        return "bool"
+      }
+      BsonValueKind.Int32 => {
+        return "i32"
+      }
+      BsonValueKind.Int64 => {
+        return "i64"
+      }
+      BsonValueKind.Double => {
+        return "f64"
+      }
+      BsonValueKind.String => {
+        return "string"
+      }
+      BsonValueKind.Binary => {
+        return "binary"
+      }
+      BsonValueKind.ObjectId => {
+        return "objectId"
+      }
+      BsonValueKind.DateTime => {
+        return "dateTime"
+      }
+      BsonValueKind.Decimal128 => {
+        return "decimal128"
+      }
+      BsonValueKind.Array => {
+        return "array"
+      }
+      BsonValueKind.Document => {
+        return "document"
+      }
+      BsonValueKind.Timestamp => {
+        return "timestamp"
+      }
+      BsonValueKind.Regex => {
+        return "regex"
+      }
+      BsonValueKind.JavaScript => {
+        return "javascript"
+      }
+      BsonValueKind.Symbol => {
+        return "symbol"
+      }
+      BsonValueKind.DbPointer => {
+        return "dbPointer"
+      }
+      BsonValueKind.Undefined => {
+        return "undefined"
+      }
+      BsonValueKind.MinKey => {
+        return "minKey"
+      }
+      BsonValueKind.MaxKey => {
+        return "maxKey"
+      }
+      BsonValueKind.Exact => {
+        return self.exactTypeName
+      }
+    }
+  }
+}
+
+impl BsonElement {
+  pub fn init(name: string, value: BsonValue) -> BsonElement {
+    return BsonElement {
+      name: name,
+      value: value,
+    }
+  }
+}
+
+fn bsonNullValue() -> BsonValue
+fn bsonBoolValue(value: bool) -> BsonValue
+fn bsonInt32Value(value: i32) -> BsonValue
+fn bsonUInt32Value(value: u32) -> Result<BsonValue, BsonError>
+fn bsonInt64Value(value: i64) -> BsonValue
+fn bsonUInt64Value(value: u64) -> Result<BsonValue, BsonError>
+fn bsonFormatI128(value: i128) -> string
+fn bsonFormatU128(value: u128) -> string
+fn bsonFormatI256(value: i256) -> string
+fn bsonFormatU256(value: u256) -> string
+fn bsonFormatIsize(value: isize) -> string
+fn bsonFormatUsize(value: usize) -> string
+fn bsonFormatF128(value: f128) -> string
+fn bsonFormatChar(value: char) -> string
+fn bsonDoubleValue(value: f64) -> BsonValue
+fn bsonStringValue(value: string) -> BsonValue
+fn bsonBinaryValue(value: BsonBinary) -> BsonValue
+fn bsonObjectIdValue(value: ObjectId) -> BsonValue
+fn bsonDateTimeValue(value: BsonDateTime) -> BsonValue
+fn bsonDecimal128Value(value: BsonDecimal128) -> BsonValue
+fn bsonArrayValue(value: BsonArray) -> BsonValue
+fn bsonDocumentValue(value: BsonDocument) -> BsonValue
+fn bsonTimestampValue(value: BsonTimestamp) -> BsonValue
+fn bsonRegexValue(value: BsonRegex) -> BsonValue
+fn bsonJavaScriptValue(value: BsonJavaScript) -> BsonValue
+fn bsonSymbolValue(value: string) -> BsonValue
+fn bsonDbPointerValue(value: BsonDbPointer) -> BsonValue
+fn bsonUndefinedValue() -> BsonValue
+fn bsonMinKeyValue() -> BsonValue
+fn bsonMaxKeyValue() -> BsonValue
+fn bsonExactStringValue(value: BsonExactValue) -> BsonValue
+fn bsonExactBinaryValue(value: BsonExactValue) -> BsonValue
+fn bsonExactCarrierValue(value: BsonExactValue) -> BsonValue
+fn bsonExactValue<T>(value: T) -> Result<BsonValue, BsonError>
+fn bsonValueFrom<T>(value: T) -> Result<BsonValue, BsonError>
+fn bsonValueWithPath(value: BsonValue, path: string) -> BsonValue
+fn bsonValueAsBool(value: BsonValue) -> Result<bool, BsonError>
+fn bsonValueAsI8(value: BsonValue) -> Result<i8, BsonError>
+fn bsonValueAsU8(value: BsonValue) -> Result<u8, BsonError>
+fn bsonValueAsI16(value: BsonValue) -> Result<i16, BsonError>
+fn bsonValueAsU16(value: BsonValue) -> Result<u16, BsonError>
+fn bsonValueAsI32(value: BsonValue) -> Result<i32, BsonError>
+fn bsonValueAsU32(value: BsonValue) -> Result<u32, BsonError>
+fn bsonValueAsI64(value: BsonValue) -> Result<i64, BsonError>
+fn bsonValueAsU64(value: BsonValue) -> Result<u64, BsonError>
+fn bsonValueAsI128(value: BsonValue) -> Result<i128, BsonError>
+fn bsonValueAsU128(value: BsonValue) -> Result<u128, BsonError>
+fn bsonValueAsI256(value: BsonValue) -> Result<i256, BsonError>
+fn bsonValueAsU256(value: BsonValue) -> Result<u256, BsonError>
+fn bsonValueAsIsize(value: BsonValue) -> Result<isize, BsonError>
+fn bsonValueAsUsize(value: BsonValue) -> Result<usize, BsonError>
+fn bsonValueAsF64(value: BsonValue) -> Result<f64, BsonError>
+fn bsonValueAsF16(value: BsonValue) -> Result<f16, BsonError>
+fn bsonValueAsF32(value: BsonValue) -> Result<f32, BsonError>
+fn bsonValueAsF128(value: BsonValue) -> Result<f128, BsonError>
+fn bsonValueAsChar(value: BsonValue) -> Result<char, BsonError>
+fn bsonValueAsString(value: BsonValue) -> Result<string, BsonError>
+fn bsonValueAsBinary(value: BsonValue) -> Result<BsonBinary, BsonError>
+fn bsonValueAsObjectId(value: BsonValue) -> Result<ObjectId, BsonError>
+fn bsonValueAsDateTime(value: BsonValue) -> Result<BsonDateTime, BsonError>
+fn bsonValueAsDecimal128(value: BsonValue) -> Result<BsonDecimal128, BsonError>
+fn bsonValueAsArray(value: BsonValue) -> Result<BsonArray, BsonError>
+fn bsonValueAsDocument(value: BsonValue) -> Result<BsonDocument, BsonError>
+fn bsonValueAsTimestamp(value: BsonValue) -> Result<BsonTimestamp, BsonError>
+fn bsonValueAsRegex(value: BsonValue) -> Result<BsonRegex, BsonError>
+fn bsonValueAsJavaScript(value: BsonValue) -> Result<BsonJavaScript, BsonError>
+fn bsonValueAsSymbol(value: BsonValue) -> Result<string, BsonError>
+fn bsonValueAsDbPointer(value: BsonValue) -> Result<BsonDbPointer, BsonError>
+fn bsonValueAsExact(value: BsonValue) -> Result<BsonExactValue, BsonError>

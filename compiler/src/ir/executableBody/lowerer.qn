@@ -1,0 +1,19 @@
+pub struct ExecutableBodyLowerer {
+  bodyId: u64,
+  inputMirBlockCount: usize,
+  emitsCleanupPlan: bool,
+}
+
+pub fn executableBodyLowerer(bodyId: u64, inputMirBlockCount: usize, emitsCleanupPlan: bool) -> ExecutableBodyLowerer {
+  return ExecutableBodyLowerer {
+    bodyId: bodyId,
+    inputMirBlockCount: inputMirBlockCount,
+    emitsCleanupPlan: emitsCleanupPlan,
+  }
+}
+
+impl ExecutableBodyLowerer {
+  pub fn ready(self: ExecutableBodyLowerer) -> bool {
+    return self.inputMirBlockCount > 0 && self.emitsCleanupPlan
+  }
+}

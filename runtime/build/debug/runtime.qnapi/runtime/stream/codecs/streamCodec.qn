@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum StreamCodecKind {
+  BinaryCodec
+  TextCodec
+  JsonCodec
+}
+pub struct StreamCodec {
+  kind: StreamCodecKind
+  name: string
+  deterministic: bool
+}
+pub extern "qnpkg" {
+  pub fn streamCodec(kind: StreamCodecKind, name: string) -> StreamCodec
+}

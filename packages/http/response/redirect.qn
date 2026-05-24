@@ -1,0 +1,28 @@
+pub struct Redirect {
+  status: HttpStatus,
+  location: string,
+}
+
+impl Redirect {
+  pub fn temporary(location: string) -> Redirect {
+    return Redirect {
+      status: HttpStatus.temporaryRedirect(),
+      location: location,
+    }
+  }
+
+  pub fn permanent(location: string) -> Redirect {
+    return Redirect {
+      status: HttpStatus.permanentRedirect(),
+      location: location,
+    }
+  }
+
+  pub fn status(self: Redirect) -> HttpStatus {
+    return self.status
+  }
+
+  pub fn location(self: Redirect) -> string {
+    return self.location
+  }
+}

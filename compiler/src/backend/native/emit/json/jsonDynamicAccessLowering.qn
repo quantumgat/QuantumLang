@@ -1,0 +1,41 @@
+pub struct JsonDynamicAccessLowering {
+  jsonAliasLoweredToJsonValue: bool,
+  objectLiteralLowered: bool,
+  arrayLiteralLowered: bool,
+  dotAccessLoweredToFieldLookup: bool,
+  bracketKeyLoweredToFieldLookup: bool,
+  bracketIndexLoweredToArrayLookup: bool,
+  assignmentLoweredToSet: bool,
+  bulkSetLoweredToObjectMerge: bool,
+  mergeLoweredToObjectMerge: bool,
+  objectMergeModeLowered: bool,
+  arrayMergeModeLowered: bool,
+  uniqueByLowered: bool,
+  pushLoweredToArrayAppend: bool,
+  appendLoweredToArrayAppend: bool,
+  removeAtLoweredToArrayRemove: bool,
+  typedReadLoweredToCheckedAccessor: bool,
+  pathDiagnosticsPreserved: bool,
+}
+
+impl JsonDynamicAccessLowering {
+  pub fn accepted(self: JsonDynamicAccessLowering) -> bool {
+    return self.jsonAliasLoweredToJsonValue
+      && self.objectLiteralLowered
+      && self.arrayLiteralLowered
+      && self.dotAccessLoweredToFieldLookup
+      && self.bracketKeyLoweredToFieldLookup
+      && self.bracketIndexLoweredToArrayLookup
+      && self.assignmentLoweredToSet
+      && self.bulkSetLoweredToObjectMerge
+      && self.mergeLoweredToObjectMerge
+      && self.objectMergeModeLowered
+      && self.arrayMergeModeLowered
+      && self.uniqueByLowered
+      && self.pushLoweredToArrayAppend
+      && self.appendLoweredToArrayAppend
+      && self.removeAtLoweredToArrayRemove
+      && self.typedReadLoweredToCheckedAccessor
+      && self.pathDiagnosticsPreserved
+  }
+}

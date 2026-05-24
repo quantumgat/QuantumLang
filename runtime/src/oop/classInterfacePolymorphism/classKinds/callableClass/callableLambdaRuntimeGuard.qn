@@ -1,0 +1,44 @@
+pub enum CallableLambdaRuntimeGuardKind {
+  DirectInlineLambda
+  StackEnvironment
+  AsyncClosureFrame
+  CallableClassThunk
+  DynCallableBoundary
+  SafetyDiagnostic
+}
+
+pub struct CallableLambdaRuntimeGuard {
+  kind: CallableLambdaRuntimeGuardKind,
+  callableId: u64,
+  generation: u64,
+  environmentLive: bool,
+  captureBorrowValid: bool,
+  mutableAliasFree: bool,
+  sendSyncBoundaryValid: bool,
+  asyncFrameValid: bool,
+  dynBoundaryExplicit: bool,
+  typedFailureBound: bool,
+  noCoredumpFailure: bool,
+}
+
+impl CallableLambdaRuntimeGuard {
+  pub fn accepted(self: CallableLambdaRuntimeGuard) -> bool {
+    return self.callableId > 0
+      && self.generation > 0
+      && self.environmentLive
+      && self.captureBorrowValid
+      && self.mutableAliasFree
+      && self.sendSyncBoundaryValid
+      && self.typedFailureBound
+      && self.noCoredumpFailure
+      && (!self.dynBoundaryExplicit || self.kind == CallableLambdaRuntimeGuardKind.DynCallableBoundary)
+  }
+
+  pub fn canInvoke(self: CallableLambdaRuntimeGuard) -> bool {
+    return self.accepted()
+      && (
+        !self.asyncFrameValid
+        || self.kind == CallableLambdaRuntimeGuardKind.AsyncClosureFrame
+      )
+  }
+}

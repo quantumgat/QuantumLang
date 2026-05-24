@@ -1,0 +1,15 @@
+pub struct RuntimePort {
+  portName: string,
+  subsystemName: string,
+  publicPort: bool,
+}
+
+pub fn runtimePort(portName: string, subsystemName: string) -> RuntimePort {
+  return RuntimePort { portName: portName, subsystemName: subsystemName, publicPort: true }
+}
+
+impl RuntimePort {
+  pub fn isPublicBoundary(self: RuntimePort) -> bool {
+    return self.publicPort
+  }
+}

@@ -1,0 +1,27 @@
+pub struct StringInterpolationEmission {
+  directCheckedFormatCall: bool,
+  preservesSourceMap: bool,
+  evaluatesEachExpressionOnce: bool,
+  publicRuntimeBinding: bool,
+  hiddenUnsafePath: bool,
+}
+
+pub fn stringInterpolationEmission() -> StringInterpolationEmission {
+  return StringInterpolationEmission {
+    directCheckedFormatCall: true,
+    preservesSourceMap: true,
+    evaluatesEachExpressionOnce: true,
+    publicRuntimeBinding: false,
+    hiddenUnsafePath: false,
+  }
+}
+
+impl StringInterpolationEmission {
+  pub fn usesCheckedFormatPath(self: StringInterpolationEmission) -> bool {
+    return self.directCheckedFormatCall
+      && self.preservesSourceMap
+      && self.evaluatesEachExpressionOnce
+      && self.publicRuntimeBinding == false
+      && self.hiddenUnsafePath == false
+  }
+}

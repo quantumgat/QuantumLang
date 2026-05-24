@@ -1,0 +1,21 @@
+pub struct RuntimePartialStreamError {
+  streamId: u64,
+  itemIndex: usize,
+  recoverable: bool,
+  provenancePreserved: bool,
+}
+
+impl RuntimePartialStreamError {
+  pub fn init(streamId: u64, itemIndex: usize, recoverable: bool, provenancePreserved: bool) -> RuntimePartialStreamError {
+    return RuntimePartialStreamError {
+      streamId: streamId,
+      itemIndex: itemIndex,
+      recoverable: recoverable,
+      provenancePreserved: provenancePreserved,
+    }
+  }
+
+  pub fn canContinue(self: RuntimePartialStreamError) -> bool {
+    return self.streamId > 0 && self.recoverable && self.provenancePreserved
+  }
+}

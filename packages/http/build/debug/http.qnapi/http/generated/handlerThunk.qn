@@ -1,0 +1,22 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum HandlerThunkKind {
+  Sync,
+  Async,
+  Stream,
+  WebSocket,
+  Sse,
+}
+pub struct HandlerThunk {
+  endpointName: string
+  handlerName: string
+  kind: HandlerThunkKind
+  extractorCount: usize
+  capabilityCount: usize
+  contextSlotCount: usize
+  rawEscapeHatchCount: usize
+  rawEscapeHatchHotPath: bool
+  sourceMapId: string
+}
+pub struct HandlerThunkGraph {
+  thunks: Vec<HandlerThunk>
+}

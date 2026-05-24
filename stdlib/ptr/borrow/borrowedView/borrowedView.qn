@@ -1,0 +1,122 @@
+/**
+  Provenance-tracked immutable borrowed view.
+
+  example:
+    let view = BorrowedView<User>.fromSlice(slice)
+    let first = view.get(0)
+
+  effects: pure for metadata operations; reads through get
+  complexity: O(1)
+  allocation: none
+  safety: preserves the Slice provenance for diagnostics and borrow checking
+  stability: public since 0.1
+*/
+pub struct BorrowedView<T> {
+  slice: Slice<T>,
+  provenance: Provenance,
+}
+
+impl<T> BorrowedView<T> {
+  /**
+    Wraps a Slice as a provenance-tracked borrowed view.
+
+    example:
+      let view = BorrowedView<User>.fromSlice(slice)
+      let provenance = view.provenance()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: inherits the source Slice readable lifetime proof
+    stability: public since 0.1
+  */
+  pub fn fromSlice(slice: Slice<T>) -> BorrowedView<T> {
+    return BorrowedView<T> {
+      slice: slice,
+      provenance: slice.asPtr().provenance(),
+    }
+  }
+
+  /**
+    Returns the number of visible elements.
+
+    example:
+      let count = view.len()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn len(self: BorrowedView<T>) -> usize {
+    return self.slice.len()
+  }
+
+  /**
+    Returns true when the view is empty.
+
+    example:
+      if view.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: BorrowedView<T>) -> bool {
+    return self.slice.isEmpty()
+  }
+
+  /**
+    Returns the underlying immutable slice.
+
+    example:
+      let slice = view.asSlice()
+      let first = slice.first()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: preserves immutable borrowed access
+    stability: public since 0.1
+  */
+  pub fn asSlice(self: BorrowedView<T>) -> Slice<T> {
+    return self.slice
+  }
+
+  /**
+    Returns provenance metadata for this view.
+
+    example:
+      if view.provenance().valid() == false {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: metadata only; does not access memory
+    stability: public since 0.1
+  */
+  pub fn provenance(self: BorrowedView<T>) -> Provenance {
+    return self.provenance
+  }
+
+  /**
+    Reads a value from the view when index is in bounds.
+
+    example:
+      let first = view.get(0)
+
+    effects: reads memory when index is valid
+    complexity: O(1)
+    allocation: none
+    safety: delegates to Slice.get bounds checking
+    stability: public since 0.1
+  */
+  pub fn get(self: BorrowedView<T>, index: usize) -> Option<T> {
+    return self.slice.get(index)
+  }
+}

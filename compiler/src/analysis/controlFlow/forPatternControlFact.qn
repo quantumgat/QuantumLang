@@ -1,0 +1,37 @@
+pub enum ForPatternControlKind {
+  LoopBreak
+  LoopBreakValue
+  LoopContinue
+  LabelledControl
+  ForElse
+  TuplePattern
+  StructPattern
+  EnumPattern
+  ResultPattern
+  GuardedPattern
+}
+
+pub struct ForPatternControlFact {
+  kind: ForPatternControlKind,
+  patternType: string,
+  valueType: string,
+  patternTypeChecked: bool,
+  guardTypeChecked: bool,
+  labelResolved: bool,
+  breakValueCompatible: bool,
+  cleanupPreserved: bool,
+  diagnosticsReady: bool,
+}
+
+impl ForPatternControlFact {
+  pub fn complete(self: ForPatternControlFact) -> bool {
+    return self.patternType != ""
+      && self.valueType != ""
+      && self.patternTypeChecked
+      && self.guardTypeChecked
+      && self.labelResolved
+      && self.breakValueCompatible
+      && self.cleanupPreserved
+      && self.diagnosticsReady
+  }
+}

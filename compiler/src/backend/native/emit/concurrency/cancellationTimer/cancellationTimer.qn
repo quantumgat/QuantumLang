@@ -1,0 +1,41 @@
+pub enum NativeCancellationTimerLoweringKind {
+  TokenTreeCreate
+  TokenCancelPropagate
+  CleanupRegister
+  TimerArm
+  TimerCancel
+  SleepSuspend
+  TimeoutRace
+  IntervalTick
+  StaleWakeSuppress
+}
+
+pub struct NativeCancellationTimerLowering {
+  instruction: u64,
+  kind: NativeCancellationTimerLoweringKind,
+  runtimeAbiReady: bool,
+  schedulerWakeReady: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeCancellationTimerLowering {
+  pub fn init(
+    instruction: u64,
+    kind: NativeCancellationTimerLoweringKind,
+    runtimeAbiReady: bool,
+    schedulerWakeReady: bool,
+    noGeneratedFallback: bool,
+  ) -> NativeCancellationTimerLowering {
+    return NativeCancellationTimerLowering {
+      instruction: instruction,
+      kind: kind,
+      runtimeAbiReady: runtimeAbiReady,
+      schedulerWakeReady: schedulerWakeReady,
+      noGeneratedFallback: noGeneratedFallback,
+    }
+  }
+
+  pub fn complete(self: NativeCancellationTimerLowering) -> bool {
+    return self.instruction > 0 && self.runtimeAbiReady && self.schedulerWakeReady && self.noGeneratedFallback
+  }
+}

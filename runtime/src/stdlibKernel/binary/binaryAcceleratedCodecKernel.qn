@@ -1,0 +1,48 @@
+pub struct BinaryAcceleratedCodecKernel {
+  validationTokens: bool,
+  zeroCopyBorrowGuards: bool,
+  pageArenaBounds: bool,
+  projectionRuntimeShape: bool,
+  predicateCompareKernel: bool,
+  columnBlockKernel: bool,
+  stableKeyKernel: bool,
+  rowDeltaKernel: bool,
+  codecBuilderKernel: bool,
+  limitsKernel: bool,
+  compiledCodecCache: bool,
+  diagnosticsNoCoredump: bool,
+}
+
+impl BinaryAcceleratedCodecKernel {
+  pub fn standard() -> BinaryAcceleratedCodecKernel {
+    return BinaryAcceleratedCodecKernel {
+      validationTokens: true,
+      zeroCopyBorrowGuards: true,
+      pageArenaBounds: true,
+      projectionRuntimeShape: true,
+      predicateCompareKernel: true,
+      columnBlockKernel: true,
+      stableKeyKernel: true,
+      rowDeltaKernel: true,
+      codecBuilderKernel: true,
+      limitsKernel: true,
+      compiledCodecCache: true,
+      diagnosticsNoCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: BinaryAcceleratedCodecKernel) -> bool {
+    return self.validationTokens
+      && self.zeroCopyBorrowGuards
+      && self.pageArenaBounds
+      && self.projectionRuntimeShape
+      && self.predicateCompareKernel
+      && self.columnBlockKernel
+      && self.stableKeyKernel
+      && self.rowDeltaKernel
+      && self.codecBuilderKernel
+      && self.limitsKernel
+      && self.compiledCodecCache
+      && self.diagnosticsNoCoredump
+  }
+}

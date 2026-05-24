@@ -1,0 +1,22 @@
+pub enum CarrierKindFact {
+  OptionNiche,
+  OptionTag,
+  ResultTag,
+}
+
+pub struct CarrierLayoutFact {
+  kind: CarrierKindFact,
+  payloadSize: usize,
+  tagBytes: usize,
+  nicheOptimized: bool,
+  supported: bool,
+}
+
+impl CarrierLayoutFact {
+  pub fn valid(self: CarrierLayoutFact) -> bool {
+    if self.nicheOptimized {
+      return self.supported && self.tagBytes == 0
+    }
+    return self.supported && self.tagBytes > 0
+  }
+}

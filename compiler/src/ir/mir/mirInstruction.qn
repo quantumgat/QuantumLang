@@ -1,0 +1,38 @@
+pub enum MirInstructionKind {
+  NopInstruction
+  AssignInstruction
+  CallInstruction
+  BranchInstruction
+  ReturnInstruction
+  DropInstruction
+  QuantumInstruction
+}
+
+pub struct MirInstruction {
+  id: u64,
+  block: u64,
+  kind: MirInstructionKind,
+  result: u64,
+}
+
+pub fn mirInstruction(id: u64, block: u64, kind: MirInstructionKind, result: u64) -> MirInstruction {
+  return MirInstruction { id: id, block: block, kind: kind, result: result }
+}
+
+impl MirInstruction {
+  pub fn instructionId(self: MirInstruction) -> u64 {
+    return self.id
+  }
+
+  pub fn blockId(self: MirInstruction) -> u64 {
+    return self.block
+  }
+
+  pub fn instructionKind(self: MirInstruction) -> MirInstructionKind {
+    return self.kind
+  }
+
+  pub fn resultValue(self: MirInstruction) -> u64 {
+    return self.result
+  }
+}

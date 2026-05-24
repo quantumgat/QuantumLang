@@ -1,0 +1,15 @@
+pub struct DispatchPlan {
+  boundaryDispatch: bool,
+  hotLoopDispatch: bool,
+  cachedTarget: bool,
+}
+
+pub fn dispatchPlan() -> DispatchPlan {
+  return DispatchPlan { boundaryDispatch: true, hotLoopDispatch: false, cachedTarget: true }
+}
+
+impl DispatchPlan {
+  pub fn isHotPathSafe(self: DispatchPlan) -> bool {
+    return self.boundaryDispatch && self.hotLoopDispatch == false && self.cachedTarget
+  }
+}

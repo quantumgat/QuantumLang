@@ -1,0 +1,12 @@
+pub struct RuntimePlatformDiagnostic {
+  target: string,
+  code: string,
+  incident: bool,
+  fatal: bool,
+}
+
+impl RuntimePlatformDiagnostic {
+  pub fn reportable(self: RuntimePlatformDiagnostic) -> bool {
+    return self.target != "" && self.code != ""
+  }
+}

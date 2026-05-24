@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct BorrowLease {
+  range: BorrowRange
+  generation: u64
+  mutationEpoch: u64
+  active: bool
+}

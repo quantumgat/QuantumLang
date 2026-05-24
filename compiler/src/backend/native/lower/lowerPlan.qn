@@ -1,0 +1,35 @@
+pub enum LowerPlanKind {
+  FunctionLowering
+  GlobalLowering
+  QuantumLowering
+  RuntimeBridgeLowering
+}
+
+pub struct LowerPlan {
+  unit: u64,
+  kind: LowerPlanKind,
+  expectedObjects: usize,
+  pureNative: bool,
+}
+
+pub fn lowerPlan(unit: u64, kind: LowerPlanKind, expectedObjects: usize, pureNative: bool) -> LowerPlan {
+  return LowerPlan { unit: unit, kind: kind, expectedObjects: expectedObjects, pureNative: pureNative }
+}
+
+impl LowerPlan {
+  pub fn unitId(self: LowerPlan) -> u64 {
+    return self.unit
+  }
+
+  pub fn planKind(self: LowerPlan) -> LowerPlanKind {
+    return self.kind
+  }
+
+  pub fn objectCount(self: LowerPlan) -> usize {
+    return self.expectedObjects
+  }
+
+  pub fn isPureNative(self: LowerPlan) -> bool {
+    return self.pureNative
+  }
+}

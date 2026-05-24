@@ -1,0 +1,32 @@
+[module]
+name = "product"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "artifacts-package-query-cache"
+
+[submodules]
+artifacts = "artifacts/mod.qn"
+package = "package/mod.qn"
+plugin = "plugin/mod.qn"
+stdlibModel = "stdlibModel/mod.qn"
+incremental = "incremental/mod.qn"
+linker = "linker/mod.qn"
+cache = "cache/mod.qn"
+query = "query/mod.qn"
+queryProtocol = "queryProtocol/mod.qn"
+server = "server/mod.qn"
+codeActions = "codeActions/mod.qn"
+completion = "completion/mod.qn"
+completionAudit = "completionAudit/mod.qn"
+dumps = "dumps/mod.qn"
+ideDiagnostics = "ideDiagnostics/mod.qn"
+errorAnalyzer = "errorAnalyzer/mod.qn"
+negativeGates = "negativeGates/mod.qn"
+
+[dependencies]
+allowed = ["common", "frontend", "analysis", "ir", "backend"]
+forbidden = ["runtime internals"]
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

@@ -1,0 +1,27 @@
+pub struct DynInterface {
+  dataPtr: u64,
+  interfaceTablePtr: u64,
+  interfaceTypeId: u64,
+}
+
+pub fn dynInterface(dataPtr: u64, interfaceTablePtr: u64, interfaceTypeId: u64) -> DynInterface {
+  return DynInterface {
+    dataPtr: dataPtr,
+    interfaceTablePtr: interfaceTablePtr,
+    interfaceTypeId: interfaceTypeId,
+  }
+}
+
+impl DynInterface {
+  pub fn dataPointer(self: DynInterface) -> u64 {
+    return self.dataPtr
+  }
+
+  pub fn tablePointer(self: DynInterface) -> u64 {
+    return self.interfaceTablePtr
+  }
+
+  pub fn canDispatch(self: DynInterface) -> bool {
+    return self.dataPtr > 0 && self.interfaceTablePtr > 0 && self.interfaceTypeId > 0
+  }
+}

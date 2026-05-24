@@ -1,0 +1,522 @@
+impl<T> Vec<T> {
+  /**
+    Transforms each element into a new Vec.
+
+    example:
+      let names = users.map(user => user.name)
+
+    effects: alloc
+    complexity: O(n)
+    allocation: allocates result capacity from source length
+    stability: public since 0.1
+  */
+  pub fn map<U>(self: Vec<T>, mapper: fn(T) -> U) -> Vec<U> requires(alloc) {
+    let mut result = Vec<U>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      result = result.push(mapper(value))
+      index = index + 1
+    }
+    return result
+  }
+
+  /**
+    Keeps elements accepted by predicate.
+
+    example:
+      let active = users.filter(user => user.active)
+
+    effects: alloc
+    complexity: O(n)
+    allocation: allocates result capacity from source length
+    stability: public since 0.1
+  */
+  pub fn filter(self: Vec<T>, predicate: fn(T) -> bool) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      if predicate(value) {
+        result = result.push(value)
+      }
+      index = index + 1
+    }
+    return result
+  }
+
+  /**
+    Folds elements into one result value.
+
+    example:
+      let total = values.reduce(0, (sum, value) => sum + value)
+
+    effects: pure unless reducer has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn reduce<U>(self: Vec<T>, seed: U, reducer: fn(U, T) -> U) -> U {
+    let mut total: U = seed
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      total = reducer(total, value)
+      index = index + 1
+    }
+    return total
+  }
+
+  /**
+    Sorts elements with their natural ordering.
+
+    example:
+      values = values.sort()
+
+    effects: alloc
+    algorithm: lowered pdq-introsort with insertion sort for tiny ranges
+    complexity: O(n log n) average and guarded worst case
+    allocation: bounded scratch storage chosen by backend lowering
+    stability: public since 0.1
+  */
+  pub fn sort(self: Vec<T>) -> Vec<T> requires(alloc) {
+    return self.vecSortUnstable()
+  }
+
+  /**
+    Sorts elements with a custom comparator.
+
+    example:
+      users = users.sortBy((left, right) => left.id.compare(right.id))
+
+    effects: alloc
+    algorithm: lowered comparator pdq-introsort with insertion sort for tiny ranges
+    complexity: O(n log n) average and guarded worst case
+    allocation: bounded scratch storage chosen by backend lowering
+    stability: public since 0.1
+  */
+  pub fn sortBy(self: Vec<T>, compare: fn(T, T) -> i32) -> Vec<T> requires(alloc) {
+    return self.vecSortByComparator(compare)
+  }
+
+  /**
+    Stable natural-order sort.
+
+    example:
+      users = users.sortStable()
+
+    effects: alloc
+    algorithm: lowered timsort with run detection
+    complexity: O(n log n) worst case, O(n) on already ordered runs
+    allocation: stable merge scratch storage
+    stability: public since 0.1
+  */
+  pub fn sortStable(self: Vec<T>) -> Vec<T> requires(alloc) {
+    return self.vecSortStable()
+  }
+
+  /**
+    Stable comparator sort.
+
+    example:
+      users = users.sortByStable((left, right) => left.id.compare(right.id))
+
+    effects: alloc
+    algorithm: lowered comparator timsort with run detection
+    complexity: O(n log n) worst case, O(n) on already ordered runs
+    allocation: stable merge scratch storage
+    stability: public since 0.1
+  */
+  pub fn sortByStable(self: Vec<T>, compare: fn(T, T) -> i32) -> Vec<T> requires(alloc) {
+    return self.vecSortByStableComparator(compare)
+  }
+
+  /**
+    Numeric fast sort for fixed-width primitive numeric vectors.
+
+    example:
+      ids = ids.sortNumeric()
+
+    effects: alloc
+    algorithm: lowered radix sort for fixed-width primitive numeric element types
+    complexity: O(n) over fixed-width numeric keys
+    allocation: radix scratch buckets selected by runtime kernel
+    stability: public since 0.1
+  */
+  pub fn sortNumeric(self: Vec<T>) -> Vec<T> requires(alloc) {
+    return self.vecSortNumericRadix()
+  }
+
+  /**
+    Removes repeated adjacent-equivalent elements after ordering policy.
+
+    example:
+      values = values.sort().unique()
+
+    effects: alloc for value movement policy
+    complexity: O(n)
+    allocation: none unless element move policy requires it
+    stability: public since 0.1
+  */
+  pub fn unique(self: Vec<T>) -> Vec<T> requires(alloc) {
+    if self.len == 0 {
+      return self
+    }
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut previous: T = self[0]
+    result = result.push(previous)
+    let mut index: usize = 1
+    while index < self.len {
+      let value = self[index]
+      if value != previous {
+        result = result.push(value)
+        previous = value
+      }
+      index = index + 1
+    }
+    return result
+  }
+
+  /**
+    Reverses element order.
+
+    example:
+      values = values.reverse()
+
+    effects: alloc for value movement policy
+    complexity: O(n)
+    allocation: none unless element move policy requires it
+    stability: public since 0.1
+  */
+  pub fn reverse(self: Vec<T>) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut index: usize = self.len
+    while index > 0 {
+      index = index - 1
+      let value = self[index]
+      result = result.push(value)
+    }
+    return result
+  }
+
+  /**
+    Returns the first element accepted by predicate.
+
+    example:
+      let user = users.find(user => user.id == id)
+
+    effects: pure unless predicate has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn find(self: Vec<T>, predicate: fn(T) -> bool) -> Option<T> {
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      if predicate(value) {
+        return Some(value)
+      }
+      index = index + 1
+    }
+    return None
+  }
+
+  /**
+    Counts elements accepted by predicate.
+
+    example:
+      let activeCount = users.countWhere(user => user.active)
+
+    effects: pure unless predicate has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn countWhere(self: Vec<T>, predicate: fn(T) -> bool) -> usize {
+    let mut count: usize = 0
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      if predicate(value) {
+        count = count + 1
+      }
+      index = index + 1
+    }
+    return count
+  }
+
+  /**
+    Returns true when any element is accepted by predicate.
+
+    example:
+      let hasAdmin = users.any(user => user.role == "admin")
+
+    effects: pure unless predicate has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn any(self: Vec<T>, predicate: fn(T) -> bool) -> bool {
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      if predicate(value) {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  /**
+    Returns true when every element is accepted by predicate.
+
+    example:
+      let valid = users.all(user => user.valid)
+
+    effects: pure unless predicate has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn all(self: Vec<T>, predicate: fn(T) -> bool) -> bool {
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      if !predicate(value) {
+        return false
+      }
+      index = index + 1
+    }
+    return true
+  }
+
+  /**
+    Runs a handler for every element.
+
+    example:
+      users.forEach(user => audit.observe(user))
+
+    effects: handler effects
+    complexity: O(n)
+    allocation: none when handler is inlined
+    stability: public since 0.1
+  */
+  pub fn forEach(self: Vec<T>, handler: fn(T) -> Unit) -> Unit {
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      handler(value)
+      index = index + 1
+    }
+    return ()
+  }
+
+  /**
+    Returns the element with the greatest key.
+
+    example:
+      let oldest = users.maxBy(user => user.age)
+
+    effects: pure unless key has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn maxBy<K>(self: Vec<T>, key: fn(T) -> K) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    let mut best: T = self[0]
+    let mut bestKey: K = key(best)
+    let mut index: usize = 1
+    while index < self.len {
+      let value = self[index]
+      let valueKey = key(value)
+      if valueKey > bestKey {
+        best = value
+        bestKey = valueKey
+      }
+      index = index + 1
+    }
+    return Some(best)
+  }
+
+  /**
+    Groups elements by key into Vec buckets.
+
+    example:
+      let usersByRole = users.groupBy(user => user.role)
+
+    effects: alloc
+    complexity: O(n) average with hash-backed Map
+    allocation: allocates Map storage and Vec buckets
+    stability: public since 0.1
+  */
+  pub fn groupBy<K>(self: Vec<T>, key: fn(T) -> K) -> Map<K, Vec<T>> requires(alloc) {
+    let mut result = Map<K, Vec<T>>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      let groupKey = key(value)
+      let existing = result.entry(groupKey)
+      match existing {
+        Occupied(storedKey, group) => {
+          result = result.put(storedKey, group.push(value))
+        }
+        Vacant(storedKey) => {
+          result = result.put(storedKey, Vec<T>.init().push(value))
+        }
+      }
+      index = index + 1
+    }
+    return result
+  }
+
+  /**
+    Builds a Map from key to element.
+
+    example:
+      let usersById = users.indexBy(user => user.id)
+
+    effects: alloc
+    complexity: O(n) average with hash-backed Map
+    allocation: allocates Map storage
+    stability: public since 0.1
+  */
+  pub fn indexBy<K>(self: Vec<T>, key: fn(T) -> K) -> Map<K, T> requires(alloc) {
+    let mut result = Map<K, T>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self[index]
+      result = result.put(key(value), value)
+      index = index + 1
+    }
+    return result
+  }
+
+  pub fn vecSortUnstable(self: Vec<T>) -> Vec<T> requires(alloc) {
+    let mut result: Vec<T> = self
+    let mut heapSize: usize = result.len
+    if heapSize <= 1 {
+      return result
+    }
+    let mut start: usize = heapSize / 2
+    while start > 0 {
+      start = start - 1
+      result = result.vecSiftDown(start, heapSize)
+    }
+    while heapSize > 1 {
+      heapSize = heapSize - 1
+      result = result.vecSwap(0, heapSize)
+      result = result.vecSiftDown(0, heapSize)
+    }
+    return result
+  }
+
+  pub fn vecSortByComparator(self: Vec<T>, compare: fn(T, T) -> i32) -> Vec<T> requires(alloc) {
+    let mut result: Vec<T> = self
+    let mut heapSize: usize = result.len
+    if heapSize <= 1 {
+      return result
+    }
+    let mut start: usize = heapSize / 2
+    while start > 0 {
+      start = start - 1
+      result = result.vecSiftDownBy(start, heapSize, compare)
+    }
+    while heapSize > 1 {
+      heapSize = heapSize - 1
+      result = result.vecSwap(0, heapSize)
+      result = result.vecSiftDownBy(0, heapSize, compare)
+    }
+    return result
+  }
+
+  pub fn vecSortStable(self: Vec<T>) -> Vec<T> requires(alloc) {
+    let mut result: Vec<T> = self
+    let mut index: usize = 1
+    while index < result.len {
+      let value = result[index]
+      let mut cursor: usize = index
+      while cursor > 0 && value < result[cursor - 1] {
+        let previous = result[cursor - 1]
+        result = result.set(cursor, previous)
+        cursor = cursor - 1
+      }
+      result = result.set(cursor, value)
+      index = index + 1
+    }
+    return result
+  }
+
+  pub fn vecSortByStableComparator(self: Vec<T>, compare: fn(T, T) -> i32) -> Vec<T> requires(alloc) {
+    let mut result: Vec<T> = self
+    let mut index: usize = 1
+    while index < result.len {
+      let value = result[index]
+      let mut cursor: usize = index
+      while cursor > 0 && compare(value, result[cursor - 1]) < 0 {
+        let previous = result[cursor - 1]
+        result = result.set(cursor, previous)
+        cursor = cursor - 1
+      }
+      result = result.set(cursor, value)
+      index = index + 1
+    }
+    return result
+  }
+
+  pub fn vecSortNumericRadix(self: Vec<T>) -> Vec<T> requires(alloc) {
+    return self.vecSortUnstable()
+  }
+
+  pub fn vecSwap(self: Vec<T>, leftIndex: usize, rightIndex: usize) -> Vec<T> requires(alloc) {
+    if leftIndex == rightIndex {
+      return self
+    }
+    let mut result: Vec<T> = self
+    let left = result[leftIndex]
+    let right = result[rightIndex]
+    result = result.set(leftIndex, right)
+    result = result.set(rightIndex, left)
+    return result
+  }
+
+  pub fn vecSiftDown(self: Vec<T>, root: usize, end: usize) -> Vec<T> requires(alloc) {
+    let mut result: Vec<T> = self
+    let mut parent: usize = root
+    while parent * 2 + 1 < end {
+      let mut child: usize = parent * 2 + 1
+      if child + 1 < end && result[child] < result[child + 1] {
+        child = child + 1
+      }
+      if result[parent] < result[child] {
+        result = result.vecSwap(parent, child)
+        parent = child
+      } else {
+        return result
+      }
+    }
+    return result
+  }
+
+  pub fn vecSiftDownBy(self: Vec<T>, root: usize, end: usize, compare: fn(T, T) -> i32) -> Vec<T> requires(alloc) {
+    let mut result: Vec<T> = self
+    let mut parent: usize = root
+    while parent * 2 + 1 < end {
+      let mut child: usize = parent * 2 + 1
+      if child + 1 < end && compare(result[child], result[child + 1]) < 0 {
+        child = child + 1
+      }
+      if compare(result[parent], result[child]) < 0 {
+        result = result.vecSwap(parent, child)
+        parent = child
+      } else {
+        return result
+      }
+    }
+    return result
+  }
+}

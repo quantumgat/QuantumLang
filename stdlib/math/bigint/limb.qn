@@ -1,0 +1,15 @@
+pub struct BigNumberLimbView {
+  limbCount: usize,
+}
+
+impl BigNumberLimbView {
+  pub fn len(self: BigNumberLimbView) -> usize {
+    return self.limbCount
+  }
+
+  pub fn isEmpty(self: BigNumberLimbView) -> bool {
+    return self.limbCount == 0
+  }
+
+  pub fn get(self: BigNumberLimbView, index: usize) -> Result<usize, BigNumberError>
+}

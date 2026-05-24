@@ -1,0 +1,25 @@
+pub struct RuntimeLinkPlan {
+  runtimePackage: string,
+  archivePath: string,
+  hiddenArchive: bool,
+  publicHeaders: bool,
+  generatedSourceFallback: bool,
+}
+
+pub fn runtimeLinkPlan() -> RuntimeLinkPlan {
+  return RuntimeLinkPlan {
+    runtimePackage: "runtime",
+    archivePath: ".qtlc/cache/native/libqtlcRuntime.a",
+    hiddenArchive: true,
+    publicHeaders: false,
+    generatedSourceFallback: false,
+  }
+}
+
+impl RuntimeLinkPlan {
+  pub fn isNativeHidden(self) -> bool {
+    return self.hiddenArchive &&
+      self.publicHeaders == false &&
+      self.generatedSourceFallback == false
+  }
+}

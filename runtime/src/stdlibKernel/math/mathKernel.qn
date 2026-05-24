@@ -1,0 +1,19 @@
+pub struct MathKernel {
+  targetFeatureChecked: bool,
+  scalarFallbackRejected: bool,
+  publicApiOwnedByStdlib: bool,
+}
+
+impl MathKernel {
+  pub fn standard() -> MathKernel {
+    return MathKernel {
+      targetFeatureChecked: true,
+      scalarFallbackRejected: true,
+      publicApiOwnedByStdlib: true,
+    }
+  }
+
+  pub fn canRun(self: MathKernel) -> bool {
+    return self.targetFeatureChecked && self.scalarFallbackRejected && self.publicApiOwnedByStdlib
+  }
+}

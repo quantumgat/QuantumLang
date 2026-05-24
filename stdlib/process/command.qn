@@ -1,0 +1,102 @@
+pub struct Command {
+  program: string,
+  args: Vec<string>,
+  env: Vec<EnvVar>,
+  cwd: Option<PathBuf>,
+  stdin: ProcessStream,
+  stdout: ProcessStream,
+  stderr: ProcessStream,
+  timeoutMillis: u64,
+  maxOutputBytes: usize,
+}
+
+pub fn command(program: string) -> Command
+pub fn shell(command: string) -> Command
+
+impl Command {
+  pub fn arg(self: Command, value: string) -> Command {
+    self.args = self.args.push(value)
+    return self
+  }
+
+  pub fn args(self: Command, values: Vec<string>) -> Command {
+    let mut command = self
+    let mut index: usize = 0
+    while index < values.len {
+      command = command.arg(values[index])
+      index = index + 1
+    }
+    return command
+  }
+
+  pub fn env(self: Command, name: string, value: string) -> Command {
+    self.env = self.env.push(EnvVar { name: name, value: value })
+    return self
+  }
+
+  pub fn timeout(self: Command, millis: u64) -> Command {
+    self.timeoutMillis = millis
+    return self
+  }
+
+  pub fn maxOutput(self: Command, bytes: usize) -> Command {
+    self.maxOutputBytes = bytes
+    return self
+  }
+
+  pub fn withCwd(self: Command, cwd: PathBuf) -> Command {
+    self.cwd = Some(cwd)
+    return self
+  }
+
+  pub fn stdin(self: Command, stream: ProcessStream) -> Command {
+    self.stdin = stream
+    return self
+  }
+
+  pub fn stdout(self: Command, stream: ProcessStream) -> Command {
+    self.stdout = stream
+    return self
+  }
+
+  pub fn stderr(self: Command, stream: ProcessStream) -> Command {
+    self.stderr = stream
+    return self
+  }
+
+  pub fn stdio(self: Command, stdio: ProcessStdio) -> Command {
+    self.stdin = stdio.stdin
+    self.stdout = stdio.stdout
+    self.stderr = stdio.stderr
+    return self
+  }
+
+  pub fn capture(self: Command, maxBytes: usize) -> Command {
+    self.stdout = ProcessStream.Pipe
+    self.stderr = ProcessStream.Pipe
+    self.maxOutputBytes = maxBytes
+    return self
+  }
+
+  pub fn quiet(self: Command) -> Command {
+    self.stdout = ProcessStream.Null
+    self.stderr = ProcessStream.Null
+    return self
+  }
+
+  pub fn spawn(self: Command) -> Result<Process, OsError> {
+    return spawn(self)
+  }
+
+  pub fn output(self: Command) -> Result<ProcessOutput, OsError> {
+    return output(self)
+  }
+
+  pub fn status(self: Command) -> Result<ExitStatus, OsError> {
+    return output(self).map(fn(out: ProcessOutput) -> ExitStatus { return out.status })
+  }
+
+  pub fn safe(self: Command) -> bool {
+    return self.program != "" && self.maxOutputBytes <= 16777216
+  }
+}

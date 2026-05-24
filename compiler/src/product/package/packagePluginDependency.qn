@@ -1,0 +1,50 @@
+pub enum PackagePluginDependencyKind {
+  NormalPackage,
+  PluginPackage,
+}
+
+pub struct PackagePluginDependency {
+  packageName: string,
+  version: string,
+  source: PackageDependencySource,
+  kind: PackagePluginDependencyKind,
+  pluginTomlPath: string,
+  sourceCacheRoot: string,
+  buildDepsRoot: string,
+  manifestFingerprintRequired: bool,
+  lockfileEntryRequired: bool,
+  trustVerified: bool,
+}
+
+impl PackagePluginDependency {
+  pub fn plugin(packageName: string, version: string, source: PackageDependencySource, pluginTomlPath: string) -> PackagePluginDependency {
+    return PackagePluginDependency {
+      packageName: packageName,
+      version: version,
+      source: source,
+      kind: PackagePluginDependencyKind.PluginPackage,
+      pluginTomlPath: pluginTomlPath,
+      sourceCacheRoot: "~/.qtlc/packages",
+      buildDepsRoot: "build/deps",
+      manifestFingerprintRequired: true,
+      lockfileEntryRequired: true,
+      trustVerified: true,
+    }
+  }
+
+  pub fn fromPackageDependency(dependency: PackageDependency, pluginTomlPath: string) -> PackagePluginDependency {
+    return PackagePluginDependency.plugin(dependency.name, dependency.requirement, dependency.source, pluginTomlPath)
+  }
+
+  pub fn accepted(self: PackagePluginDependency) -> bool {
+    return self.kind == PackagePluginDependencyKind.PluginPackage
+      && self.packageName != ""
+      && self.version != ""
+      && self.pluginTomlPath != ""
+      && self.sourceCacheRoot == "~/.qtlc/packages"
+      && self.buildDepsRoot == "build/deps"
+      && self.manifestFingerprintRequired
+      && self.lockfileEntryRequired
+      && self.trustVerified
+  }
+}

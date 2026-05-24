@@ -1,0 +1,19 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ParallelLoopRuntimeFanout {
+  runtimeSymbol: string
+  pthreadWorkers: bool
+  maxWorkers: usize
+  sharedStopStatus: bool
+  panicSafeJoin: bool
+  fallbackSafe: bool
+  compilerCallbackReady: bool
+}
+pub extern "qnpkg" {
+  pub fn parallelLoopRuntimeFanout(
+  pthreadWorkers: bool,
+  sharedStopStatus: bool,
+  panicSafeJoin: bool,
+  fallbackSafe: bool,
+  compilerCallbackReady: bool,
+) -> ParallelLoopRuntimeFanout
+}

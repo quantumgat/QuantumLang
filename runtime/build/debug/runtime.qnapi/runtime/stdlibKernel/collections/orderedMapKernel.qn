@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OrderedMapKernel {
+  btreeBacked: bool
+  rangeQueryFastPath: bool
+  lowerBoundFastPath: bool
+  upperBoundFastPath: bool
+  rangeAllCursorFastPath: bool
+  orderedSetCursorProjection: bool
+  repeatedEntryAtScanRejected: bool
+  orderedIterationStable: bool
+  nodeCapacityTracked: bool
+}

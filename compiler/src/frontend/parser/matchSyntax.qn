@@ -1,0 +1,294 @@
+pub enum MatchSyntaxForm {
+  Expression
+  Statement
+  FinalExpressionReturn
+  MultiStatementArm
+  DefaultArm
+  ValuePattern
+  EnumPattern
+  UnionPattern
+  StructPattern
+  CollectionPattern
+  StringPattern
+  BinaryPattern
+  AsyncPattern
+  MessagePattern
+}
+
+pub struct MatchSyntaxParse {
+  form: MatchSyntaxForm,
+  armCount: usize,
+  patternCount: usize,
+  guardCount: usize,
+  defaultArmPresent: bool,
+  destructurePatternsParsed: bool,
+  orPatternsParsed: bool,
+  typeTestPatternsParsed: bool,
+  executableSourceRanges: bool,
+  sourceRangeReady: bool,
+}
+
+pub struct MatchParseInput {
+  state: ParseState,
+  form: MatchSyntaxForm,
+  sourceStart: usize,
+  sourceEnd: usize,
+  armCount: usize,
+  patternCount: usize,
+  guardCount: usize,
+  matchKeywordSeen: bool,
+  scrutineeSeen: bool,
+  openBraceSeen: bool,
+  closeBraceSeen: bool,
+  defaultArmPresent: bool,
+  destructurePatternsSeen: bool,
+  orPatternsSeen: bool,
+  typeTestPatternsSeen: bool,
+  expressionForm: bool,
+}
+
+pub struct MatchParseResult {
+  state: ParseState,
+  syntax: MatchSyntaxParse,
+  ast: AstMatchExpr,
+  consumedTokens: usize,
+  recovered: bool,
+}
+
+pub fn matchSyntaxParse(
+  form: MatchSyntaxForm,
+  armCount: usize,
+  patternCount: usize,
+  guardCount: usize,
+  defaultArmPresent: bool,
+  destructurePatternsParsed: bool,
+  orPatternsParsed: bool,
+  typeTestPatternsParsed: bool,
+  executableSourceRanges: bool,
+  sourceRangeReady: bool,
+) -> MatchSyntaxParse {
+  return MatchSyntaxParse {
+    form: form,
+    armCount: armCount,
+    patternCount: patternCount,
+    guardCount: guardCount,
+    defaultArmPresent: defaultArmPresent,
+    destructurePatternsParsed: destructurePatternsParsed,
+    orPatternsParsed: orPatternsParsed,
+    typeTestPatternsParsed: typeTestPatternsParsed,
+    executableSourceRanges: executableSourceRanges,
+    sourceRangeReady: sourceRangeReady,
+  }
+}
+
+pub fn matchParseInput(
+  state: ParseState,
+  form: MatchSyntaxForm,
+  sourceStart: usize,
+  sourceEnd: usize,
+  armCount: usize,
+  patternCount: usize,
+  guardCount: usize,
+  matchKeywordSeen: bool,
+  scrutineeSeen: bool,
+  openBraceSeen: bool,
+  closeBraceSeen: bool,
+  defaultArmPresent: bool,
+  destructurePatternsSeen: bool,
+  orPatternsSeen: bool,
+  typeTestPatternsSeen: bool,
+  expressionForm: bool,
+) -> MatchParseInput {
+  return MatchParseInput {
+    state: state,
+    form: form,
+    sourceStart: sourceStart,
+    sourceEnd: sourceEnd,
+    armCount: armCount,
+    patternCount: patternCount,
+    guardCount: guardCount,
+    matchKeywordSeen: matchKeywordSeen,
+    scrutineeSeen: scrutineeSeen,
+    openBraceSeen: openBraceSeen,
+    closeBraceSeen: closeBraceSeen,
+    defaultArmPresent: defaultArmPresent,
+    destructurePatternsSeen: destructurePatternsSeen,
+    orPatternsSeen: orPatternsSeen,
+    typeTestPatternsSeen: typeTestPatternsSeen,
+    expressionForm: expressionForm,
+  }
+}
+
+pub fn parseMatch(input: MatchParseInput) -> MatchParseResult {
+  let mut state = input.state
+  let sourceRangeReady = input.sourceEnd > input.sourceStart
+  let structurallyReady = input.matchKeywordSeen
+    && input.scrutineeSeen
+    && input.openBraceSeen
+    && input.closeBraceSeen
+    && input.armCount > 0
+    && input.patternCount >= input.armCount
+    && sourceRangeReady
+
+  let syntax = matchSyntaxParse(
+    input.form,
+    input.armCount,
+    input.patternCount,
+    input.guardCount,
+    input.defaultArmPresent,
+    input.destructurePatternsSeen,
+    input.orPatternsSeen,
+    input.typeTestPatternsSeen,
+    structurallyReady,
+    sourceRangeReady
+  )
+
+  if !structurallyReady {
+    state = state.markRecovered()
+  }
+
+  let pattern = parseMatchPattern(input, 0)
+  let arm = parseMatchArm(input, 0)
+  let astNodeId: u64 = input.sourceStart + input.sourceEnd + 1
+  let scrutineeNodeId: u64 = input.sourceStart + 2
+  let ast = buildAstMatchExpr(
+    astNode(astNodeId, NodeKind.Expr, state.fileId(), input.sourceStart, input.sourceEnd),
+    astNode(scrutineeNodeId, NodeKind.Expr, state.fileId(), input.sourceStart + 1, input.sourceStart + 1),
+    arm,
+    input.armCount,
+    input.patternCount,
+    input.guardCount,
+    input.defaultArmPresent,
+    input.expressionForm
+  )
+
+  let mut consumed: usize = 0
+  while consumed < input.armCount + input.patternCount + input.guardCount + 3 {
+    state = state.advance()
+    consumed = consumed + 1
+  }
+
+  return MatchParseResult {
+    state: state,
+    syntax: syntax,
+    ast: ast,
+    consumedTokens: consumed,
+    recovered: state.hasRecovered() || !pattern.executableHotPathReady(),
+  }
+}
+
+pub fn parseMatchArm(input: MatchParseInput, index: usize) -> AstMatchArm {
+  let pattern = parseMatchPattern(input, index)
+  let start = input.sourceStart + index + 1
+  let bodyStart = start + input.patternCount + 1
+  let guardId: u64 = 0
+  let mut bodyKind = AstMatchArmBodyKind.Expression
+  if input.form == MatchSyntaxForm.Statement {
+    bodyKind = AstMatchArmBodyKind.StatementBlock
+  }
+  if input.form == MatchSyntaxForm.FinalExpressionReturn {
+    bodyKind = AstMatchArmBodyKind.FinalExpressionReturn
+  }
+  if input.form == MatchSyntaxForm.MultiStatementArm {
+    bodyKind = AstMatchArmBodyKind.MultiStatement
+  }
+
+  return astMatchArm(
+    astNode(start + 10, NodeKind.Pattern, input.state.fileId(), start, bodyStart),
+    pattern,
+    astNode(bodyStart + 20, NodeKind.Expr, input.state.fileId(), bodyStart, input.sourceEnd),
+    astNode(guardId, NodeKind.Error, input.state.fileId(), start, start),
+    bodyKind,
+    input.defaultArmPresent && index + 1 == input.armCount,
+    input.sourceEnd > start
+  )
+}
+
+pub fn parseMatchPattern(input: MatchParseInput, index: usize) -> AstMatchPattern {
+  let mut kind = AstMatchPatternKind.Literal
+  if input.defaultArmPresent && index + 1 == input.armCount {
+    kind = AstMatchPatternKind.Wildcard
+  }
+  if input.destructurePatternsSeen {
+    kind = AstMatchPatternKind.StructPartial
+  }
+  if input.orPatternsSeen {
+    kind = AstMatchPatternKind.MultiLiteral
+  }
+  if input.typeTestPatternsSeen {
+    kind = AstMatchPatternKind.UnionType
+  }
+
+  let start = input.sourceStart + index + 1
+  let bindingCount: usize = 0
+  let mut nestedDepth: usize = 1
+  if input.destructurePatternsSeen {
+    nestedDepth = 2
+  }
+
+  return astMatchPattern(
+    astNode(start + 30, NodeKind.Pattern, input.state.fileId(), start, start + 1),
+    kind,
+    bindingCount,
+    nestedDepth,
+    input.guardCount > 0,
+    input.matchKeywordSeen && input.scrutineeSeen,
+    input.openBraceSeen && input.closeBraceSeen
+  )
+}
+
+impl MatchSyntaxParse {
+  pub fn armTotal(self: MatchSyntaxParse) -> usize {
+    return self.armCount
+  }
+
+  pub fn defaultArm(self: MatchSyntaxParse) -> bool {
+    return self.defaultArmPresent
+  }
+
+  pub fn destructureReady(self: MatchSyntaxParse) -> bool {
+    return self.destructurePatternsParsed
+  }
+
+  pub fn complete(self: MatchSyntaxParse) -> bool {
+    return self.armCount > 0
+      && self.patternCount >= self.armCount
+      && self.sourceRangeReady
+  }
+
+  pub fn exhaustiveCandidate(self: MatchSyntaxParse) -> bool {
+    return self.defaultArmPresent || self.armCount > 1
+  }
+
+  pub fn executableHotPathReady(self: MatchSyntaxParse) -> bool {
+    return self.complete()
+      && self.destructurePatternsParsed
+      && self.orPatternsParsed
+      && self.typeTestPatternsParsed
+      && self.executableSourceRanges
+  }
+}
+
+impl MatchParseInput {
+  pub fn sourceRangeReady(self: MatchParseInput) -> bool {
+    return self.sourceEnd > self.sourceStart
+  }
+
+  pub fn structurallyReady(self: MatchParseInput) -> bool {
+    return self.matchKeywordSeen
+      && self.scrutineeSeen
+      && self.openBraceSeen
+      && self.closeBraceSeen
+      && self.armCount > 0
+      && self.patternCount >= self.armCount
+      && self.sourceRangeReady()
+  }
+}
+
+impl MatchParseResult {
+  pub fn complete(self: MatchParseResult) -> bool {
+    return self.syntax.complete()
+      && self.ast.complete()
+      && !self.recovered
+  }
+}

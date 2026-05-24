@@ -1,0 +1,45 @@
+pub struct StdlibPrintLowering {
+  directWriteEligible: bool,
+  formatChecked: bool,
+  allocationFreeWhenLiteral: bool,
+  variadicPrintChecked: bool,
+  sepEndChecked: bool,
+  plainStringBracesLiteral: bool,
+  fStringInterpolationChecked: bool,
+  formatViewsChecked: bool,
+  bufferPolicyChecked: bool,
+  flushPolicyChecked: bool,
+  partialWritePreserved: bool,
+  targetSelectionChecked: bool,
+  cancellationCleanupChecked: bool,
+  noPanicErrorReturn: bool,
+  directLiteralWriteLowered: bool,
+  formatElisionLowered: bool,
+  bufferReuseLowered: bool,
+  allocationFreeCommonCase: bool,
+  noCoredump: bool,
+}
+
+impl StdlibPrintLowering {
+  pub fn hotPath(self: StdlibPrintLowering) -> bool {
+    return self.directWriteEligible
+      && self.formatChecked
+      && self.allocationFreeWhenLiteral
+      && self.variadicPrintChecked
+      && self.sepEndChecked
+      && self.plainStringBracesLiteral
+      && self.fStringInterpolationChecked
+      && self.formatViewsChecked
+      && self.bufferPolicyChecked
+      && self.flushPolicyChecked
+      && self.partialWritePreserved
+      && self.targetSelectionChecked
+      && self.cancellationCleanupChecked
+      && self.noPanicErrorReturn
+      && self.directLiteralWriteLowered
+      && self.formatElisionLowered
+      && self.bufferReuseLowered
+      && self.allocationFreeCommonCase
+      && self.noCoredump
+  }
+}

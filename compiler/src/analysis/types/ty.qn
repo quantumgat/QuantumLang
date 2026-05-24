@@ -1,0 +1,25 @@
+pub enum TypeShapeKind {
+  Primitive
+  Aggregate
+  Callable
+  Generic
+  Quantum
+  Union
+  Dynamic
+}
+
+pub struct TypeShape {
+  typeId: u64,
+  kind: TypeShapeKind,
+  fieldCount: usize,
+}
+
+pub fn typeShape(typeId: u64, kind: TypeShapeKind, fieldCount: usize) -> TypeShape {
+  return TypeShape { typeId: typeId, kind: kind, fieldCount: fieldCount }
+}
+
+impl TypeShape {
+  pub fn isAggregate(self: TypeShape) -> bool {
+    return self.fieldCount > 0
+  }
+}

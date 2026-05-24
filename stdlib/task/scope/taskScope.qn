@@ -1,0 +1,21 @@
+pub struct TaskScope {
+  scopeId: u64,
+  open: bool,
+  cancellationLinked: bool,
+}
+
+impl TaskScope {
+  pub fn spawn<T>(self: TaskScope, work: TaskFn<T>) -> Result<JoinHandle<T>, TaskError>
+
+  pub fn group(self: TaskScope) -> TaskGroup
+
+  pub fn cancel(self: TaskScope) -> Result<Unit, TaskError>
+
+  pub fn isOpen(self: TaskScope) -> bool {
+    return self.open
+  }
+
+  pub fn structured(self: TaskScope) -> bool {
+    return self.open && self.cancellationLinked
+  }
+}

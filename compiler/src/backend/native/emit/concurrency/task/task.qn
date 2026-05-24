@@ -1,0 +1,28 @@
+pub enum NativeTaskScopeLoweringKind {
+  TaskCreate
+  JoinHandleCreate
+  ScopeOpen
+  ScopeClose
+  GroupJoin
+  OrphanReject
+  BlockingSubmit
+}
+
+pub struct NativeTaskScopeLowering {
+  instruction: u64,
+  kind: NativeTaskScopeLoweringKind,
+  runtimeAbiReady: bool,
+  cleanupPreserved: bool,
+  sourceMapReady: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeTaskScopeLowering {
+  pub fn complete(self: NativeTaskScopeLowering) -> bool {
+    return self.instruction > 0
+      && self.runtimeAbiReady
+      && self.cleanupPreserved
+      && self.sourceMapReady
+      && self.noGeneratedFallback
+  }
+}

@@ -1,0 +1,13 @@
+pub struct TargetFeatureSet {
+  simd: bool,
+  atomics: bool,
+  threads: bool,
+  filesystem: bool,
+  network: bool,
+}
+
+impl TargetFeatureSet {
+  pub fn hasExecutionCore(self: TargetFeatureSet) -> bool {
+    return self.threads || self.atomics
+  }
+}

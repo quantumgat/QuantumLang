@@ -1,0 +1,23 @@
+pub struct ErrorFormatPolicy {
+  errorCode: bool,
+  category: bool,
+  fields: bool,
+  sourceLocation: bool,
+  causeChain: bool,
+  diagnostics: bool,
+  redacted: bool,
+}
+
+impl ErrorFormatPolicy {
+  pub fn productionSafe() -> ErrorFormatPolicy {
+    return ErrorFormatPolicy {
+      errorCode: true,
+      category: true,
+      fields: true,
+      sourceLocation: true,
+      causeChain: true,
+      diagnostics: true,
+      redacted: true,
+    }
+  }
+}

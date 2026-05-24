@@ -1,0 +1,20 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct ExtractorFact {
+  endpointName: string
+  paramName: string
+  typeName: string
+  source: EndpointParamSource
+  required: bool
+  contextType: string
+  contextSlotIndex: usize
+}
+pub struct ExtractorGraph {
+  facts: Vec<ExtractorFact>
+  pathCount: usize
+  queryCount: usize
+  bodyCount: usize
+  capabilityCount: usize
+  contextCount: usize
+  requestCount: usize
+  responseCount: usize
+}

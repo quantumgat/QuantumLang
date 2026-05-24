@@ -1,0 +1,16 @@
+[module]
+name = "app"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "driver-cli-command-pipeline"
+[dependencies]
+allowed = ["common", "product"]
+forbidden = ["backend/c", "backend/llvm", "runtime internals"]
+
+[tests]
+required = [
+  "qtlc_clean_qtlang_source_roots",
+  "qtlc_qtlang_driver_pipeline_foundation",
+  "qtlc_qtlang_package_cli_plugin_driver_gap_closure"
+]

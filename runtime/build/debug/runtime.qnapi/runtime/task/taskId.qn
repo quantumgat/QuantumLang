@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct TaskId {
+  value: u64
+}
+pub extern "qnpkg" {
+  pub fn taskId(value: u64) -> TaskId
+}

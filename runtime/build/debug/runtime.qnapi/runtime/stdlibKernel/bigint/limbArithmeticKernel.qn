@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum LimbArithmeticFamily {
+  BigInt
+  BigUint
+  I256
+  U256
+}
+pub struct LimbArithmeticKernel {
+  family: LimbArithmeticFamily
+  canonicalLimbOrder: bool
+  carryChecked: bool
+  borrowChecked: bool
+  divisionChecked: bool
+  resourceLimitChecked: bool
+  noCoredump: bool
+}

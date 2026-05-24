@@ -1,0 +1,6 @@
+[module]
+name = "runtime"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "runtime"

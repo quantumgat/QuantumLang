@@ -1,0 +1,21 @@
+pub struct StaleWakeSuppression {
+  tokenId: u64,
+  timerGeneration: u64,
+  wakeGeneration: u64,
+  suppressed: bool,
+}
+
+impl StaleWakeSuppression {
+  pub fn init(tokenId: u64, timerGeneration: u64, wakeGeneration: u64, suppressed: bool) -> StaleWakeSuppression {
+    return StaleWakeSuppression {
+      tokenId: tokenId,
+      timerGeneration: timerGeneration,
+      wakeGeneration: wakeGeneration,
+      suppressed: suppressed,
+    }
+  }
+
+  pub fn accepted(self: StaleWakeSuppression) -> bool {
+    return self.tokenId > 0 && self.wakeGeneration <= self.timerGeneration && self.suppressed
+  }
+}

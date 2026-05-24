@@ -1,0 +1,21 @@
+pub struct FileId {
+  value: u32,
+}
+
+pub fn fileId(value: u32) -> FileId {
+  return FileId { value: value }
+}
+
+pub fn invalidFileId() -> FileId {
+  return FileId { value: 0 }
+}
+
+impl FileId {
+  pub fn raw(self: FileId) -> u32 {
+    return self.value
+  }
+
+  pub fn isValid(self: FileId) -> bool {
+    return self.value != 0
+  }
+}

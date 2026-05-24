@@ -1,0 +1,33 @@
+pub struct RegAllocDecision {
+  virtualRegister: string,
+  physicalRegister: string,
+  spilled: bool,
+  spillSlot: usize,
+}
+
+pub fn regAllocDecision(virtualRegister: string, physicalRegister: string, spilled: bool, spillSlot: usize) -> RegAllocDecision {
+  return RegAllocDecision {
+    virtualRegister: virtualRegister,
+    physicalRegister: physicalRegister,
+    spilled: spilled,
+    spillSlot: spillSlot,
+  }
+}
+
+impl RegAllocDecision {
+  pub fn virtualReg(self: RegAllocDecision) -> string {
+    return self.virtualRegister
+  }
+
+  pub fn physicalReg(self: RegAllocDecision) -> string {
+    return self.physicalRegister
+  }
+
+  pub fn isSpilled(self: RegAllocDecision) -> bool {
+    return self.spilled
+  }
+
+  pub fn slot(self: RegAllocDecision) -> usize {
+    return self.spillSlot
+  }
+}

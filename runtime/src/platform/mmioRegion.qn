@@ -1,0 +1,21 @@
+pub struct RuntimeMmioRegion {
+  base: usize,
+  bytes: usize,
+  targetCapable: bool,
+  deviceMemory: bool,
+}
+
+impl RuntimeMmioRegion {
+  pub fn init(base: usize, bytes: usize, targetCapable: bool, deviceMemory: bool) -> RuntimeMmioRegion {
+    return RuntimeMmioRegion {
+      base: base,
+      bytes: bytes,
+      targetCapable: targetCapable,
+      deviceMemory: deviceMemory,
+    }
+  }
+
+  pub fn accepted(self: RuntimeMmioRegion) -> bool {
+    return self.base > 0 && self.bytes > 0 && self.targetCapable && self.deviceMemory
+  }
+}

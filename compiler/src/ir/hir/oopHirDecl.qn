@@ -1,0 +1,31 @@
+pub enum OopHirDeclKind {
+  ClassHirDecl
+  InterfaceHirDecl
+  ImplHirDecl
+}
+
+pub struct OopHirDecl {
+  nodeId: u64,
+  kind: OopHirDeclKind,
+  memberCount: usize,
+  dispatchSensitiveMembers: usize,
+}
+
+pub fn oopHirDecl(nodeId: u64, kind: OopHirDeclKind, memberCount: usize, dispatchSensitiveMembers: usize) -> OopHirDecl {
+  return OopHirDecl {
+    nodeId: nodeId,
+    kind: kind,
+    memberCount: memberCount,
+    dispatchSensitiveMembers: dispatchSensitiveMembers,
+  }
+}
+
+impl OopHirDecl {
+  pub fn hirNode(self: OopHirDecl) -> u64 {
+    return self.nodeId
+  }
+
+  pub fn needsOopAnalysis(self: OopHirDecl) -> bool {
+    return self.dispatchSensitiveMembers > 0 || self.kind == OopHirDeclKind.InterfaceHirDecl
+  }
+}

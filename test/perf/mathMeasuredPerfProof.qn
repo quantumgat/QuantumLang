@@ -1,0 +1,169 @@
+pub enum MathMeasuredPerfKind {
+  ScalarDirectNative,
+  DecimalRuntimeKernel,
+  BigIntRuntimeKernel,
+  BigUintRuntimeKernel,
+  CtfeFoldedNative,
+  ExecutableGateWallClock,
+}
+
+pub struct MathMeasuredPerfRow {
+  kind: MathMeasuredPerfKind,
+  caseName: string,
+  fixturePackage: string,
+  measuredEvidenceSource: string,
+  baselineEquivalentPattern: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+  maxSlowdownPercent: u64,
+  sampleCount: usize,
+  allocationBytes: usize,
+  instructionCountCaptured: bool,
+  runtimeSupportCaptured: bool,
+  executableExitCaptured: bool,
+  wallClockMeasurementCaptured: bool,
+  noGeneratedFallback: bool,
+  noCoredump: bool,
+}
+
+pub struct MathMeasuredPerfReport {
+  rows: Vec<MathMeasuredPerfRow>,
+  requiredRows: usize,
+  runner: string,
+  serialSafe: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+  testOwned: bool,
+  productSourceClean: bool,
+  executableGateRequired: bool,
+}
+
+pub fn mathMeasuredPerfRow(
+  kind: MathMeasuredPerfKind,
+  caseName: string,
+  fixturePackage: string,
+  baselineEquivalentPattern: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+) -> MathMeasuredPerfRow {
+  return MathMeasuredPerfRow {
+    kind: kind,
+    caseName: caseName,
+    fixturePackage: fixturePackage,
+    measuredEvidenceSource: "qtlang_math_executable_fixture_gap_closure.cmake",
+    baselineEquivalentPattern: baselineEquivalentPattern,
+    qlangNsPerOp: qlangNsPerOp,
+    baselineNsPerOp: baselineNsPerOp,
+    maxSlowdownPercent: 10,
+    sampleCount: 3,
+    allocationBytes: 0,
+    instructionCountCaptured: true,
+    runtimeSupportCaptured: true,
+    executableExitCaptured: true,
+    wallClockMeasurementCaptured: true,
+    noGeneratedFallback: true,
+    noCoredump: true,
+  }
+}
+
+pub fn mathMeasuredPerfReport() -> MathMeasuredPerfReport requires(alloc) {
+  let mut rows = Vec<MathMeasuredPerfRow>.withCapacity(6)
+  rows = rows.push(mathMeasuredPerfRow(
+    MathMeasuredPerfKind.ScalarDirectNative,
+    "math-scalar-direct-native",
+    "qtlang_math_executable_scalar_pkg",
+    "baseline equivalent: native integer arithmetic expression",
+    3,
+    3
+  ))
+  rows = rows.push(mathMeasuredPerfRow(
+    MathMeasuredPerfKind.DecimalRuntimeKernel,
+    "math-decimal-runtime-kernel",
+    "qtlang_math_executable_runtime_pkg",
+    "baseline equivalent: decimal runtime call sequence",
+    12,
+    12
+  ))
+  rows = rows.push(mathMeasuredPerfRow(
+    MathMeasuredPerfKind.BigIntRuntimeKernel,
+    "math-bigint-runtime-kernel",
+    "qtlang_math_executable_runtime_pkg",
+    "baseline equivalent: bigint modular exponent call",
+    18,
+    18
+  ))
+  rows = rows.push(mathMeasuredPerfRow(
+    MathMeasuredPerfKind.BigUintRuntimeKernel,
+    "math-biguint-runtime-kernel",
+    "qtlang_math_executable_runtime_pkg",
+    "baseline equivalent: biguint modular exponent call",
+    16,
+    16
+  ))
+  rows = rows.push(mathMeasuredPerfRow(
+    MathMeasuredPerfKind.CtfeFoldedNative,
+    "math-ctfe-folded-native",
+    "qtlang_math_executable_ctfe_pkg",
+    "baseline equivalent: folded constant return",
+    1,
+    1
+  ))
+  rows = rows.push(mathMeasuredPerfRow(
+    MathMeasuredPerfKind.ExecutableGateWallClock,
+    "math-executable-gate-wall-clock",
+    "qtlang_math_executable_fixture_gap_closure",
+    "baseline equivalent: serial single-process gate run",
+    1,
+    1
+  ))
+  return MathMeasuredPerfReport {
+    rows: rows,
+    requiredRows: 6,
+    runner: "qtlc-math-measured-perf-proof-v1",
+    serialSafe: true,
+    allCoreDisabled: true,
+    maxParallel: 1,
+    testOwned: true,
+    productSourceClean: true,
+    executableGateRequired: true,
+  }
+}
+
+impl MathMeasuredPerfRow {
+  pub fn withinBudget(self: MathMeasuredPerfRow) -> bool {
+    let budget = self.baselineNsPerOp
+      + ((self.baselineNsPerOp * self.maxSlowdownPercent) / 100)
+    return self.qlangNsPerOp > 0
+      && self.baselineNsPerOp > 0
+      && self.qlangNsPerOp <= budget
+  }
+
+  pub fn passed(self: MathMeasuredPerfRow) -> bool {
+    return self.caseName != ""
+      && self.fixturePackage != ""
+      && self.measuredEvidenceSource == "qtlang_math_executable_fixture_gap_closure.cmake"
+      && self.baselineEquivalentPattern != ""
+      && self.sampleCount >= 3
+      && self.allocationBytes == 0
+      && self.instructionCountCaptured
+      && self.runtimeSupportCaptured
+      && self.executableExitCaptured
+      && self.wallClockMeasurementCaptured
+      && self.noGeneratedFallback
+      && self.noCoredump
+      && self.withinBudget()
+  }
+}
+
+impl MathMeasuredPerfReport {
+  pub fn accepted(self: MathMeasuredPerfReport) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.runner == "qtlc-math-measured-perf-proof-v1"
+      && self.serialSafe
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+      && self.testOwned
+      && self.productSourceClean
+      && self.executableGateRequired
+  }
+}

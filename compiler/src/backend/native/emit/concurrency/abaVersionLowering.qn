@@ -1,0 +1,19 @@
+pub struct AbaVersionLowering {
+  emitsVersionTag: bool,
+  checksWrap: bool,
+  preservesPointerBits: bool,
+}
+
+impl AbaVersionLowering {
+  pub fn init(emitsVersionTag: bool, checksWrap: bool, preservesPointerBits: bool) -> AbaVersionLowering {
+    return AbaVersionLowering {
+      emitsVersionTag: emitsVersionTag,
+      checksWrap: checksWrap,
+      preservesPointerBits: preservesPointerBits,
+    }
+  }
+
+  pub fn accepted(self: AbaVersionLowering) -> bool {
+    return self.emitsVersionTag && self.checksWrap && self.preservesPointerBits
+  }
+}

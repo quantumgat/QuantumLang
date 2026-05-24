@@ -1,0 +1,47 @@
+pub class DiagnosticEmitter {
+  emitted: usize,
+  errors: usize,
+
+  pub init() {
+    self.emitted = 0
+    self.errors = 0
+  }
+
+  pub fn emitNote(self: &mut DiagnosticEmitter) -> usize {
+    self.emitted = self.emitted + 1
+    return self.emitted
+  }
+
+  pub fn emitError(self: &mut DiagnosticEmitter) -> usize {
+    self.emitted = self.emitted + 1
+    self.errors = self.errors + 1
+    return self.errors
+  }
+}
+impl DiagnosticEmitter {
+  pub fn count(self: DiagnosticEmitter) -> usize {
+    return self.emitted
+  }
+
+  pub fn errorCount(self: DiagnosticEmitter) -> usize {
+    return self.errors
+  }
+
+  pub fn hasErrors(self: DiagnosticEmitter) -> bool {
+    return self.errors > 0
+  }
+
+  pub fn withNote(self: DiagnosticEmitter) -> DiagnosticEmitter {
+    return DiagnosticEmitter {
+      emitted: self.emitted + 1,
+      errors: self.errors,
+    }
+  }
+
+  pub fn withError(self: DiagnosticEmitter) -> DiagnosticEmitter {
+    return DiagnosticEmitter {
+      emitted: self.emitted + 1,
+      errors: self.errors + 1,
+    }
+  }
+}

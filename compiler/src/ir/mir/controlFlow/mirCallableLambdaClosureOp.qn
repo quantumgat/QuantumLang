@@ -1,0 +1,53 @@
+pub enum MirCallableLambdaClosureOpKind {
+  DirectLambdaCall
+  StackEnvironmentLoad
+  FlattenNestedCapture
+  AsyncClosurePoll
+  MoveEnvironment
+  MethodReferenceCall
+  CallableClassMonomorphicCall
+  DynCallableDispatch
+  CollectionCallbackInline
+  RejectBorrowedEscape
+  RejectMutableAliasAcrossAsync
+  RejectNonSendCrossing
+}
+
+pub struct MirCallableLambdaClosureOp {
+  instruction: u64,
+  kind: MirCallableLambdaClosureOpKind,
+  environmentLayoutId: u64,
+  captureCount: usize,
+  allocationFreeWhenHot: bool,
+  directCallWhenMonomorphic: bool,
+  asyncStateMachineBound: bool,
+  dynBoundaryExplicit: bool,
+  diagnosticsBound: bool,
+  sourceMapReady: bool,
+  typedFailureNoCoredump: bool,
+}
+
+impl MirCallableLambdaClosureOp {
+  pub fn accepted(self: MirCallableLambdaClosureOp) -> bool {
+    return self.instruction > 0
+      && self.diagnosticsBound
+      && self.sourceMapReady
+      && self.typedFailureNoCoredump
+  }
+
+  pub fn hotLowerable(self: MirCallableLambdaClosureOp) -> bool {
+    return self.accepted()
+      && self.allocationFreeWhenHot
+      && self.directCallWhenMonomorphic
+      && !self.dynBoundaryExplicit
+  }
+
+  pub fn safetyDiagnostic(self: MirCallableLambdaClosureOp) -> bool {
+    return self.accepted()
+      && (
+        self.kind == MirCallableLambdaClosureOpKind.RejectBorrowedEscape
+        || self.kind == MirCallableLambdaClosureOpKind.RejectMutableAliasAcrossAsync
+        || self.kind == MirCallableLambdaClosureOpKind.RejectNonSendCrossing
+      )
+  }
+}

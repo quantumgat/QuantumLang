@@ -1,0 +1,23 @@
+pub struct Location {
+  file: u32,
+  line: usize,
+  column: usize,
+}
+
+pub fn location(file: u32, line: usize, column: usize) -> Location {
+  return Location { file: file, line: line, column: column }
+}
+
+impl Location {
+  pub fn fileId(self: Location) -> u32 {
+    return self.file
+  }
+
+  pub fn lineNumber(self: Location) -> usize {
+    return self.line
+  }
+
+  pub fn columnNumber(self: Location) -> usize {
+    return self.column
+  }
+}

@@ -1,0 +1,29 @@
+pub enum TaskScopeDiagnosticKind {
+  None
+  OrphanTask
+  DetachedWithoutPolicy
+  JoinMissing
+  BlockingInAsync
+  NonSendCapture
+}
+
+pub struct TaskScopeSafety {
+  nodeId: u64,
+  spawnCount: usize,
+  joinCount: usize,
+  explicitDetachPolicy: bool,
+  diagnostic: TaskScopeDiagnosticKind,
+}
+
+impl TaskScopeSafety {
+  pub fn structured(self: TaskScopeSafety) -> bool {
+    return self.nodeId > 0
+      && self.joinCount >= self.spawnCount
+      && self.diagnostic == TaskScopeDiagnosticKind.None
+  }
+
+  pub fn rejectsOrphan(self: TaskScopeSafety) -> bool {
+    return self.diagnostic == TaskScopeDiagnosticKind.OrphanTask
+      || self.structured()
+  }
+}

@@ -1,0 +1,33 @@
+pub struct PluginFingerprint {
+  manifestHash: string,
+  sourceHash: string,
+  publicRootHash: string,
+  compilerHookHash: string,
+  runtimeKernelHash: string,
+  proofHash: string,
+  deterministic: bool,
+}
+
+impl PluginFingerprint {
+  pub fn fromEntry(entry: PluginLockfileEntry) -> PluginFingerprint {
+    return PluginFingerprint {
+      manifestHash: entry.manifestFingerprint,
+      sourceHash: entry.sourceFingerprint,
+      publicRootHash: entry.publicRootFingerprint,
+      compilerHookHash: entry.compilerFingerprint,
+      runtimeKernelHash: entry.runtimeFingerprint,
+      proofHash: entry.proofFingerprint,
+      deterministic: true,
+    }
+  }
+
+  pub fn accepted(self: PluginFingerprint) -> bool {
+    return self.manifestHash != ""
+      && self.sourceHash != ""
+      && self.publicRootHash != ""
+      && self.compilerHookHash != ""
+      && self.runtimeKernelHash != ""
+      && self.proofHash != ""
+      && self.deterministic
+  }
+}

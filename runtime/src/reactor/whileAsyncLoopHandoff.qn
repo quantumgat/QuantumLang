@@ -1,0 +1,26 @@
+pub enum WhileAsyncLoopHandoffKind {
+  AwaitQuestion
+  Timeout
+  Poll
+}
+
+pub struct WhileAsyncLoopHandoff {
+  kind: WhileAsyncLoopHandoffKind,
+  reactorReady: bool,
+  deadlineReady: bool,
+  cancellationReady: bool,
+  cleanupRegistered: bool,
+  pollSourceRegistered: bool,
+  noCoredump: bool,
+}
+
+impl WhileAsyncLoopHandoff {
+  pub fn safe(self: WhileAsyncLoopHandoff) -> bool {
+    return self.reactorReady
+      && self.deadlineReady
+      && self.cancellationReady
+      && self.cleanupRegistered
+      && self.pollSourceRegistered
+      && self.noCoredump
+  }
+}

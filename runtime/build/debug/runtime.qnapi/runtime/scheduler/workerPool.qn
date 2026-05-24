@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub abstract class WorkerPool {
+  workers: usize
+  directDispatch: bool
+  dynamicBoundary: bool
+  running: bool
+  pub init(workers: usize) {}
+  pub fn start(self: &mut WorkerPool) -> bool
+  pub fn shutdown(self: &mut WorkerPool) -> bool
+  pub fn drop(self: &mut WorkerPool) -> bool
+  pub fn isHotPathSafe(self: &WorkerPool) -> bool
+}

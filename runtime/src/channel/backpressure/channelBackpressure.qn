@@ -1,0 +1,33 @@
+pub enum RuntimeChannelBackpressureKind {
+  Block
+  DropNewest
+  DropOldest
+  Fail
+}
+
+pub struct RuntimeChannelBackpressure {
+  channelId: u64,
+  kind: RuntimeChannelBackpressureKind,
+  pressureEvents: usize,
+  diagnosticReady: bool,
+}
+
+impl RuntimeChannelBackpressure {
+  pub fn init(
+    channelId: u64,
+    kind: RuntimeChannelBackpressureKind,
+    pressureEvents: usize,
+    diagnosticReady: bool,
+  ) -> RuntimeChannelBackpressure {
+    return RuntimeChannelBackpressure {
+      channelId: channelId,
+      kind: kind,
+      pressureEvents: pressureEvents,
+      diagnosticReady: diagnosticReady,
+    }
+  }
+
+  pub fn visible(self: RuntimeChannelBackpressure) -> bool {
+    return self.channelId > 0 && self.pressureEvents > 0 && self.diagnosticReady
+  }
+}

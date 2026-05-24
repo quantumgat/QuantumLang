@@ -1,0 +1,41 @@
+pub enum ClassMemberSyntaxKind {
+  FieldMember
+  InitMember
+  MethodMember
+  AsyncMethodMember
+  AssociatedFunctionMember
+}
+
+pub struct ClassMemberSyntax {
+  node: AstNode,
+  kind: ClassMemberSyntaxKind,
+  publicMember: bool,
+  virtualMember: bool,
+  overrideMember: bool,
+  asyncMember: bool,
+}
+
+pub fn classMemberSyntax(node: AstNode, kind: ClassMemberSyntaxKind, publicMember: bool, virtualMember: bool, overrideMember: bool, asyncMember: bool) -> ClassMemberSyntax {
+  return ClassMemberSyntax {
+    node: node,
+    kind: kind,
+    publicMember: publicMember,
+    virtualMember: virtualMember,
+    overrideMember: overrideMember,
+    asyncMember: asyncMember,
+  }
+}
+
+impl ClassMemberSyntax {
+  pub fn ast(self: ClassMemberSyntax) -> AstNode {
+    return self.node
+  }
+
+  pub fn isDispatchSensitive(self: ClassMemberSyntax) -> bool {
+    return self.virtualMember || self.overrideMember
+  }
+
+  pub fn isAsyncMethod(self: ClassMemberSyntax) -> bool {
+    return self.asyncMember || self.kind == ClassMemberSyntaxKind.AsyncMethodMember
+  }
+}

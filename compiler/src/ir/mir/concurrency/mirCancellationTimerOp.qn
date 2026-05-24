@@ -1,0 +1,38 @@
+pub enum MirCancellationTimerOpKind {
+  CreateToken
+  LinkChildToken
+  RegisterCleanup
+  ArmTimer
+  CancelTimer
+  SleepAwait
+  TimeoutRace
+  IntervalTick
+  SuppressStaleWake
+}
+
+pub struct MirCancellationTimerOp {
+  instruction: u64,
+  kind: MirCancellationTimerOpKind,
+  runtimeCallRequired: bool,
+  safeFailureRequired: bool,
+}
+
+impl MirCancellationTimerOp {
+  pub fn init(
+    instruction: u64,
+    kind: MirCancellationTimerOpKind,
+    runtimeCallRequired: bool,
+    safeFailureRequired: bool,
+  ) -> MirCancellationTimerOp {
+    return MirCancellationTimerOp {
+      instruction: instruction,
+      kind: kind,
+      runtimeCallRequired: runtimeCallRequired,
+      safeFailureRequired: safeFailureRequired,
+    }
+  }
+
+  pub fn accepted(self: MirCancellationTimerOp) -> bool {
+    return self.instruction > 0 && self.runtimeCallRequired && self.safeFailureRequired
+  }
+}

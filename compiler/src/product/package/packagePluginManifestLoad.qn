@@ -1,0 +1,34 @@
+pub struct PackagePluginManifestLoad {
+  dependency: PackagePluginDependency,
+  parseResult: PluginManifestParseResult,
+  graphNode: PluginManifestGraphNode,
+  lockfileEntry: PluginLockfileEntry,
+  sourceCacheResolved: bool,
+  localBuildDepsResolved: bool,
+  deterministic: bool,
+}
+
+impl PackagePluginManifestLoad {
+  pub fn fromDependency(dependency: PackagePluginDependency, pluginTomlText: string) -> PackagePluginManifestLoad {
+    let parseResult = PluginManifestParseResult.parse(dependency.pluginTomlPath, pluginTomlText, dependency.packageName, dependency.version)
+    return PackagePluginManifestLoad {
+      dependency: dependency,
+      parseResult: parseResult,
+      graphNode: PluginManifestGraphNode.fromParseResult(parseResult),
+      lockfileEntry: PluginLockfileEntry.fromManifest(parseResult.manifest),
+      sourceCacheResolved: dependency.sourceCacheRoot == "~/.qtlc/packages",
+      localBuildDepsResolved: dependency.buildDepsRoot == "build/deps",
+      deterministic: true,
+    }
+  }
+
+  pub fn accepted(self: PackagePluginManifestLoad) -> bool {
+    return self.dependency.accepted()
+      && self.parseResult.accepted()
+      && self.graphNode.accepted()
+      && self.lockfileEntry.accepted()
+      && self.sourceCacheResolved
+      && self.localBuildDepsResolved
+      && self.deterministic
+  }
+}

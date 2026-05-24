@@ -1,0 +1,42 @@
+pub struct ParallelLoopRuntimeFanout {
+  runtimeSymbol: string,
+  pthreadWorkers: bool,
+  maxWorkers: usize,
+  sharedStopStatus: bool,
+  panicSafeJoin: bool,
+  fallbackSafe: bool,
+  compilerCallbackReady: bool,
+}
+
+pub fn parallelLoopRuntimeFanout(
+  pthreadWorkers: bool,
+  sharedStopStatus: bool,
+  panicSafeJoin: bool,
+  fallbackSafe: bool,
+  compilerCallbackReady: bool,
+) -> ParallelLoopRuntimeFanout {
+  return ParallelLoopRuntimeFanout {
+    runtimeSymbol: "QnParallelForRange",
+    pthreadWorkers: pthreadWorkers,
+    maxWorkers: 8,
+    sharedStopStatus: sharedStopStatus,
+    panicSafeJoin: panicSafeJoin,
+    fallbackSafe: fallbackSafe,
+    compilerCallbackReady: compilerCallbackReady,
+  }
+}
+
+impl ParallelLoopRuntimeFanout {
+  pub fn runtimeReady(self: ParallelLoopRuntimeFanout) -> bool {
+    return self.runtimeSymbol == "QnParallelForRange"
+      && self.pthreadWorkers
+      && self.maxWorkers <= 8
+      && self.sharedStopStatus
+      && self.panicSafeJoin
+      && self.fallbackSafe
+  }
+
+  pub fn complete(self: ParallelLoopRuntimeFanout) -> bool {
+    return self.runtimeReady() && self.compilerCallbackReady
+  }
+}

@@ -1,0 +1,11 @@
+pub struct AddressSpaceFact {
+  name: string,
+  targetSupported: bool,
+  requiresCapability: bool,
+}
+
+impl AddressSpaceFact {
+  pub fn allowed(self: AddressSpaceFact) -> bool {
+    return self.targetSupported && self.requiresCapability == false
+  }
+}

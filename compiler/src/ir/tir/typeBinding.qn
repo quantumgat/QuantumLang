@@ -1,0 +1,23 @@
+pub struct TypeBinding {
+  symbol: u64,
+  typeId: u64,
+  mutableBinding: bool,
+}
+
+pub fn typeBinding(symbol: u64, typeId: u64, mutableBinding: bool) -> TypeBinding {
+  return TypeBinding { symbol: symbol, typeId: typeId, mutableBinding: mutableBinding }
+}
+
+impl TypeBinding {
+  pub fn symbolId(self: TypeBinding) -> u64 {
+    return self.symbol
+  }
+
+  pub fn resolvedType(self: TypeBinding) -> u64 {
+    return self.typeId
+  }
+
+  pub fn isMutable(self: TypeBinding) -> bool {
+    return self.mutableBinding
+  }
+}

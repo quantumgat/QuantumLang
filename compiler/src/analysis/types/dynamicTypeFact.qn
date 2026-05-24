@@ -1,0 +1,82 @@
+pub enum DynamicTypeKind {
+  Union
+  Any
+  QAny
+}
+
+pub enum DynamicNarrowingKind {
+  Match
+  IsCheck
+  AsCast
+  ExhaustiveUnionMatch
+  QuantumProfileCheck
+}
+
+pub struct DynamicTypeFact {
+  node: u64,
+  typeId: u64,
+  kind: DynamicTypeKind,
+  alternativeCount: usize,
+  explicit: bool,
+  classicalOnly: bool,
+  quantumOnly: bool,
+}
+
+pub struct DynamicNarrowingFact {
+  sourceType: DynamicTypeFact,
+  kind: DynamicNarrowingKind,
+  targetTypeId: u64,
+  exhaustive: bool,
+  runtimeCheckRequired: bool,
+}
+
+pub fn dynamicTypeFact(
+  node: u64,
+  typeId: u64,
+  kind: DynamicTypeKind,
+  alternativeCount: usize,
+) -> DynamicTypeFact {
+  return DynamicTypeFact {
+    node: node,
+    typeId: typeId,
+    kind: kind,
+    alternativeCount: alternativeCount,
+    explicit: true,
+    classicalOnly: kind == DynamicTypeKind.Any,
+    quantumOnly: kind == DynamicTypeKind.QAny,
+  }
+}
+
+pub fn dynamicNarrowingFact(
+  sourceType: DynamicTypeFact,
+  kind: DynamicNarrowingKind,
+  targetTypeId: u64,
+  exhaustive: bool,
+) -> DynamicNarrowingFact {
+  return DynamicNarrowingFact {
+    sourceType: sourceType,
+    kind: kind,
+    targetTypeId: targetTypeId,
+    exhaustive: exhaustive,
+    runtimeCheckRequired: kind != DynamicNarrowingKind.ExhaustiveUnionMatch,
+  }
+}
+
+impl DynamicTypeFact {
+  pub fn valid(self: DynamicTypeFact) -> bool {
+    return self.node > 0
+      && self.typeId > 0
+      && self.explicit
+      && (self.kind != DynamicTypeKind.Union || self.alternativeCount >= 2)
+      && (self.kind != DynamicTypeKind.Any || self.classicalOnly)
+      && (self.kind != DynamicTypeKind.QAny || self.quantumOnly)
+  }
+}
+
+impl DynamicNarrowingFact {
+  pub fn safe(self: DynamicNarrowingFact) -> bool {
+    return self.sourceType.valid()
+      && self.targetTypeId > 0
+      && (self.exhaustive || self.runtimeCheckRequired)
+  }
+}

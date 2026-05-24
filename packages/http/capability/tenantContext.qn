@@ -1,0 +1,21 @@
+pub struct TenantContext {
+  tenantId: string,
+  region: string,
+}
+
+impl TenantContext {
+  pub fn init(tenantId: string, region: string) -> TenantContext {
+    return TenantContext {
+      tenantId: tenantId,
+      region: region,
+    }
+  }
+
+  pub fn tenantId(self: TenantContext) -> string {
+    return self.tenantId
+  }
+
+  pub fn region(self: TenantContext) -> string {
+    return self.region
+  }
+}

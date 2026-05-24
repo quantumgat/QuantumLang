@@ -1,0 +1,70 @@
+pub enum MathRuntimeSafeFailureKind {
+  Overflow
+  DivideByZero
+  InvalidShift
+  InvalidScale
+  ResourceLimit
+  UnsupportedTargetFeature
+  ComplexDomain
+  DimensionMismatch
+  BigUintUnderflow
+  FixedScaleMismatch
+  DecimalRoundingTrap
+}
+
+pub struct MathRuntimeSafeFailure {
+  kind: MathRuntimeSafeFailureKind,
+  stableCode: string,
+  sourceMapped: bool,
+  typedError: bool,
+  recoverable: bool,
+  emergencyReportReady: bool,
+  noCoredump: bool,
+}
+
+impl MathRuntimeSafeFailure {
+  pub fn init(kind: MathRuntimeSafeFailureKind, stableCode: string) -> MathRuntimeSafeFailure {
+    return MathRuntimeSafeFailure {
+      kind: kind,
+      stableCode: stableCode,
+      sourceMapped: true,
+      typedError: true,
+      recoverable: true,
+      emergencyReportReady: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn overflow() -> MathRuntimeSafeFailure {
+    return MathRuntimeSafeFailure.init(MathRuntimeSafeFailureKind.Overflow, "QLMATH0003")
+  }
+
+  pub fn divideByZero() -> MathRuntimeSafeFailure {
+    return MathRuntimeSafeFailure.init(MathRuntimeSafeFailureKind.DivideByZero, "QLMATH0001")
+  }
+
+  pub fn invalidShift() -> MathRuntimeSafeFailure {
+    return MathRuntimeSafeFailure.init(MathRuntimeSafeFailureKind.InvalidShift, "QLMATH0002")
+  }
+
+  pub fn bigUintUnderflow() -> MathRuntimeSafeFailure {
+    return MathRuntimeSafeFailure.init(MathRuntimeSafeFailureKind.BigUintUnderflow, "QLMATH0009")
+  }
+
+  pub fn fixedScaleMismatch() -> MathRuntimeSafeFailure {
+    return MathRuntimeSafeFailure.init(MathRuntimeSafeFailureKind.FixedScaleMismatch, "QLMATH0010")
+  }
+
+  pub fn decimalRoundingTrap() -> MathRuntimeSafeFailure {
+    return MathRuntimeSafeFailure.init(MathRuntimeSafeFailureKind.DecimalRoundingTrap, "QLMATH0011")
+  }
+
+  pub fn safe(self: MathRuntimeSafeFailure) -> bool {
+    return self.stableCode != ""
+      && self.sourceMapped
+      && self.typedError
+      && self.recoverable
+      && self.emergencyReportReady
+      && self.noCoredump
+  }
+}

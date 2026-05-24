@@ -1,0 +1,42 @@
+pub struct ArrayKernel {
+  fixedCapacityTracked: bool,
+  contiguousStorageStable: bool,
+  directIndexLoadStable: bool,
+  directIndexStoreStable: bool,
+  boundsProofRequired: bool,
+  sliceViewZeroCopy: bool,
+  iteratorIndexCursorStable: bool,
+  builderContiguousInitStable: bool,
+  literalTargetStable: bool,
+  noGrowthOnSet: bool,
+}
+
+impl ArrayKernel {
+  pub fn standard() -> ArrayKernel {
+    return ArrayKernel {
+      fixedCapacityTracked: true,
+      contiguousStorageStable: true,
+      directIndexLoadStable: true,
+      directIndexStoreStable: true,
+      boundsProofRequired: true,
+      sliceViewZeroCopy: true,
+      iteratorIndexCursorStable: true,
+      builderContiguousInitStable: true,
+      literalTargetStable: true,
+      noGrowthOnSet: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: ArrayKernel) -> bool {
+    return self.fixedCapacityTracked
+      && self.contiguousStorageStable
+      && self.directIndexLoadStable
+      && self.directIndexStoreStable
+      && self.boundsProofRequired
+      && self.sliceViewZeroCopy
+      && self.iteratorIndexCursorStable
+      && self.builderContiguousInitStable
+      && self.literalTargetStable
+      && self.noGrowthOnSet
+  }
+}

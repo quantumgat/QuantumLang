@@ -1,0 +1,70 @@
+pub struct HttpAppStateFactModelProof {
+  stateCount: usize,
+  dependencyCount: usize,
+  lifecycleOwnedCount: usize,
+  lifecycleFactCount: usize,
+  scopedStateCount: usize,
+  testOverrideCount: usize,
+  projectionComplete: bool,
+  factModelComplete: bool,
+}
+
+impl HttpAppStateFactModelProof {
+  pub fn init(summary: AppStateGraphSummary) -> HttpAppStateFactModelProof {
+    return HttpAppStateFactModelProof {
+      stateCount: summary.stateCount,
+      dependencyCount: summary.dependencyCount,
+      lifecycleOwnedCount: summary.lifecycleOwnedCount,
+      lifecycleFactCount: summary.lifecycleFactCount(),
+      scopedStateCount: summary.scopedStateCount,
+      testOverrideCount: summary.testOverrideCount,
+      projectionComplete: summary.projectionComplete(),
+      factModelComplete: summary.stateCount > 0
+        && summary.dependencyCount > 0
+        && summary.lifecycleOwnedCount > 0
+        && summary.lifecycleFactCount() > 0,
+    }
+  }
+
+  pub fn complete(self: HttpAppStateFactModelProof) -> bool {
+    return self.factModelComplete
+      && self.projectionComplete
+      && self.lifecycleOwnedCount > 0
+      && self.lifecycleFactCount > 0
+  }
+}
+
+pub fn httpAppStateFactModelProof() -> HttpAppStateFactModelProof {
+  let poolLifecycle = AppStateLifecycle
+    .managed(true, true, true)
+    .withHealthCheck()
+    .withReconnect()
+    .withWarmup()
+  let cacheLifecycle = AppStateLifecycle
+    .managed(true, true, false)
+    .withHealthCheck()
+
+  let db = AppStateFact
+    .init("PostgresPool", 1001, AppStateFamily.Pool, AppStateLifecycle.none(), 0, false, false)
+    .withLifecycle(poolLifecycle)
+    .withDependencyCount(1)
+  let cache = AppStateFact
+    .init("RedisCache", 1002, AppStateFamily.Cache, AppStateLifecycle.none(), 0, false, false)
+    .withLifecycle(cacheLifecycle)
+  let tenant = AppStateFact
+    .init("TenantContext", 1003, AppStateFamily.Scoped, AppStateLifecycle.none(), 0, false, false)
+    .withScoped()
+  let overrideDb = AppStateFact
+    .init("TestPostgresPool", 1004, AppStateFamily.TestOverride, AppStateLifecycle.none(), 0, false, false)
+    .withTestOverrideIsolation()
+
+  let graph = AppStateGraph
+    .empty()
+    .add(db)
+    .add(cache)
+    .add(tenant)
+    .add(overrideDb)
+    .addDependency(AppStateDependency.required(db.ownerId(), cache.ownerId()))
+
+  return HttpAppStateFactModelProof.init(graph.summary())
+}

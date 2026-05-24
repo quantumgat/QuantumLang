@@ -1,0 +1,44 @@
+pub enum PluginSandboxProcessKind {
+  ExternalHelper,
+  Disabled,
+}
+
+pub struct PluginSandboxProcess {
+  kind: PluginSandboxProcessKind,
+  executablePath: string,
+  argvFingerprint: string,
+  environmentFingerprint: string,
+  noSharedAddressSpace: bool,
+  noNetworkDuringCompile: bool,
+  readOnlySourceRoots: bool,
+  resourceLimitsRequired: bool,
+  killedOnTimeout: bool,
+}
+
+impl PluginSandboxProcess {
+  pub fn helper(executablePath: string) -> PluginSandboxProcess {
+    return PluginSandboxProcess {
+      kind: PluginSandboxProcessKind.ExternalHelper,
+      executablePath: executablePath,
+      argvFingerprint: "argv",
+      environmentFingerprint: "environment",
+      noSharedAddressSpace: true,
+      noNetworkDuringCompile: true,
+      readOnlySourceRoots: true,
+      resourceLimitsRequired: true,
+      killedOnTimeout: true,
+    }
+  }
+
+  pub fn accepted(self: PluginSandboxProcess) -> bool {
+    return self.kind == PluginSandboxProcessKind.ExternalHelper
+      && self.executablePath != ""
+      && self.argvFingerprint != ""
+      && self.environmentFingerprint != ""
+      && self.noSharedAddressSpace
+      && self.noNetworkDuringCompile
+      && self.readOnlySourceRoots
+      && self.resourceLimitsRequired
+      && self.killedOnTimeout
+  }
+}

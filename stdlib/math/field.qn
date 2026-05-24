@@ -1,0 +1,21 @@
+pub struct PrimeField64 {
+  value: u64,
+  modulus: u64,
+}
+
+pub struct Field<T> {
+  value: T,
+}
+
+impl PrimeField64 {
+  pub fn canonical(self: PrimeField64) -> u64
+  pub fn inverse(self: PrimeField64) -> Result<PrimeField64, string>
+  pub fn pow(self: PrimeField64, exponent: u64) -> PrimeField64
+  pub fn constantTimeEq(self: PrimeField64, other: PrimeField64) -> bool
+}
+
+impl<T> Field<T> {
+  pub fn raw(self: Field<T>) -> T {
+    return self.value
+  }
+}

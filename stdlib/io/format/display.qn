@@ -1,0 +1,3 @@
+pub trait Display {
+  pub fn display(self: Self, formatter: &mut Formatter) -> Result<Unit, FormatError>
+}

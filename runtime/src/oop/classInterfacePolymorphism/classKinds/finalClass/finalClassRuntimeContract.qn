@@ -1,0 +1,17 @@
+pub struct FinalClassRuntimeContract {
+  typeId: u64,
+  metadataBound: bool,
+  subtypeRejected: bool,
+  overrideRejected: bool,
+  directCallEligible: bool,
+}
+
+impl FinalClassRuntimeContract {
+  pub fn complete(self: FinalClassRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.metadataBound
+      && self.subtypeRejected
+      && self.overrideRejected
+      && self.directCallEligible
+  }
+}

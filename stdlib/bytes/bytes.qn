@@ -1,0 +1,7 @@
+pub struct Bytes {
+  len: usize,
+}
+
+pub fn empty() -> Bytes
+pub fn len(value: Bytes) -> usize
+pub fn concat(left: Bytes, right: Bytes) -> Bytes

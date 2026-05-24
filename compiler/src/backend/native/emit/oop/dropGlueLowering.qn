@@ -1,0 +1,27 @@
+pub struct DropGlueLowering {
+  typeId: u64,
+  dropFnPtr: u64,
+  directDrop: bool,
+  interfaceErasedDrop: bool,
+  noDrop: bool,
+  panicSafe: bool,
+  abiChecked: bool,
+}
+
+pub fn dropGlueLowering(typeId: u64, dropFnPtr: u64, directDrop: bool, interfaceErasedDrop: bool, noDrop: bool, panicSafe: bool, abiChecked: bool) -> DropGlueLowering {
+  return DropGlueLowering {
+    typeId: typeId,
+    dropFnPtr: dropFnPtr,
+    directDrop: directDrop,
+    interfaceErasedDrop: interfaceErasedDrop,
+    noDrop: noDrop,
+    panicSafe: panicSafe,
+    abiChecked: abiChecked,
+  }
+}
+
+impl DropGlueLowering {
+  pub fn canEmit(self: DropGlueLowering) -> bool {
+    return self.typeId > 0 && (self.noDrop || self.dropFnPtr > 0) && self.panicSafe && self.abiChecked && (self.directDrop || self.interfaceErasedDrop || self.noDrop)
+  }
+}

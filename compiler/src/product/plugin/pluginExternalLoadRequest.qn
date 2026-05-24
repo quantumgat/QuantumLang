@@ -1,0 +1,36 @@
+pub struct PluginExternalLoadRequest {
+  parseResult: PluginManifestParseResult,
+  process: PluginSandboxProcess,
+  channel: PluginSandboxChannel,
+  lockfileEntry: PluginLockfileEntry,
+  sourceFingerprint: string,
+  proofFingerprint: string,
+  capabilityTokensRequired: bool,
+  noCompilerMutation: bool,
+}
+
+impl PluginExternalLoadRequest {
+  pub fn fromParseResult(parseResult: PluginManifestParseResult, executablePath: string) -> PluginExternalLoadRequest {
+    return PluginExternalLoadRequest {
+      parseResult: parseResult,
+      process: PluginSandboxProcess.helper(executablePath),
+      channel: PluginSandboxChannel.control(),
+      lockfileEntry: PluginLockfileEntry.fromManifest(parseResult.manifest),
+      sourceFingerprint: "source",
+      proofFingerprint: "proof",
+      capabilityTokensRequired: true,
+      noCompilerMutation: true,
+    }
+  }
+
+  pub fn accepted(self: PluginExternalLoadRequest) -> bool {
+    return self.parseResult.accepted()
+      && self.process.accepted()
+      && self.channel.accepted()
+      && self.lockfileEntry.accepted()
+      && self.sourceFingerprint != ""
+      && self.proofFingerprint != ""
+      && self.capabilityTokensRequired
+      && self.noCompilerMutation
+  }
+}

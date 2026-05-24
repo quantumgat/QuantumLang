@@ -1,0 +1,15 @@
+pub struct ChannelState {
+  channel: ChannelId,
+  bufferedItems: usize,
+  closed: bool,
+}
+
+pub fn channelState(channel: ChannelId, bufferedItems: usize, closed: bool) -> ChannelState {
+  return ChannelState { channel: channel, bufferedItems: bufferedItems, closed: closed }
+}
+
+impl ChannelState {
+  pub fn canSend(self: ChannelState) -> bool {
+    return self.closed == false
+  }
+}

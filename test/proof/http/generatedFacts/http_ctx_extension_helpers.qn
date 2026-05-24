@@ -1,0 +1,24 @@
+pub type ApiCtx = HttpCtx<AuthenticatedUser, TenantContext, TraceContext>
+
+extend ApiCtx {
+  pub fn auth(self: ApiCtx) -> AuthenticatedUser {
+    return self.get<AuthenticatedUser>()
+  }
+
+  pub fn tenant(self: ApiCtx) -> TenantContext {
+    return self.get<TenantContext>()
+  }
+
+  pub fn trace(self: ApiCtx) -> TraceContext {
+    return self.get<TraceContext>()
+  }
+}
+
+pub fn httpCtxExtensionHelperFacts() -> Vec<HttpCtxExtensionFact> {
+  return [
+    HttpCtxExtensionFact.of<ApiCtx, AuthenticatedUser>("auth"),
+    HttpCtxExtensionFact.of<ApiCtx, TenantContext>("tenant"),
+    HttpCtxExtensionFact.of<ApiCtx, TraceContext>("trace"),
+  ]
+}
+

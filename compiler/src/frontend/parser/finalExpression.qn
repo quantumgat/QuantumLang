@@ -1,0 +1,38 @@
+pub struct FinalExpressionParse {
+  parsedBlocks: usize,
+  finalExpressions: usize,
+  suppressedByTerminator: usize,
+  errors: usize,
+}
+
+pub fn finalExpressionParse(
+  parsedBlocks: usize,
+  finalExpressions: usize,
+  suppressedByTerminator: usize,
+  errors: usize,
+) -> FinalExpressionParse {
+  return FinalExpressionParse {
+    parsedBlocks: parsedBlocks,
+    finalExpressions: finalExpressions,
+    suppressedByTerminator: suppressedByTerminator,
+    errors: errors,
+  }
+}
+
+impl FinalExpressionParse {
+  pub fn blockCount(self: FinalExpressionParse) -> usize {
+    return self.parsedBlocks
+  }
+
+  pub fn finalExpressionCount(self: FinalExpressionParse) -> usize {
+    return self.finalExpressions
+  }
+
+  pub fn terminatorSuppressedCount(self: FinalExpressionParse) -> usize {
+    return self.suppressedByTerminator
+  }
+
+  pub fn acceptsImplicitReturn(self: FinalExpressionParse) -> bool {
+    return self.finalExpressions > 0 && self.errors == 0
+  }
+}

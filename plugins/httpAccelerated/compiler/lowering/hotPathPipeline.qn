@@ -1,0 +1,55 @@
+pub struct HttpAcceleratedHotPathPipeline {
+  routeLowering: HttpRouteHotPathLowering,
+  extractorLowering: HttpExtractorHotPathLowering,
+  handlerLowering: HttpHandlerHotPathLowering,
+  writerLowering: HttpWriterHotPathLowering,
+  runtimeBinding: HttpAcceleratedRuntimeBinding,
+  packageFactBinding: HttpPackageFactBinding,
+  hookRegistration: HttpAcceleratedHookRegistration,
+  targetGate: HttpAcceleratedTargetGate,
+  sourceMapBridge: HttpAcceleratedSourceMapBridge,
+  sourceMapsRequired: bool,
+  fallbackRequired: bool,
+  noCoreHttp: bool,
+}
+
+impl HttpAcceleratedHotPathPipeline {
+  pub fn fromPackageGraphs(
+    routes: RouteGraph,
+    extractors: ExtractorGraph,
+    capabilities: CapabilityGraph,
+    thunks: HandlerThunkGraph,
+    sourceMap: HttpSourceMap,
+    transport: HttpAsyncTransportPlan,
+  ) -> HttpAcceleratedHotPathPipeline {
+    return HttpAcceleratedHotPathPipeline {
+      routeLowering: HttpRouteHotPathLowering.fromGraph(routes, sourceMap),
+      extractorLowering: HttpExtractorHotPathLowering.fromGraphs(extractors, capabilities),
+      handlerLowering: HttpHandlerHotPathLowering.fromGraph(thunks),
+      writerLowering: HttpWriterHotPathLowering.fromTransport(transport),
+      runtimeBinding: HttpAcceleratedRuntimeBinding.required(),
+      packageFactBinding: HttpPackageFactBinding.required(),
+      hookRegistration: HttpAcceleratedHookRegistration.required(),
+      targetGate: HttpAcceleratedTargetGate.portable(),
+      sourceMapBridge: HttpAcceleratedSourceMapBridge.required(),
+      sourceMapsRequired: true,
+      fallbackRequired: true,
+      noCoreHttp: true,
+    }
+  }
+
+  pub fn complete(self: HttpAcceleratedHotPathPipeline) -> bool {
+    return self.routeLowering.accepted()
+      && self.extractorLowering.accepted()
+      && self.handlerLowering.accepted()
+      && self.writerLowering.accepted()
+      && self.runtimeBinding.accepted()
+      && self.packageFactBinding.complete()
+      && self.hookRegistration.genericOnly()
+      && self.targetGate.accepted()
+      && self.sourceMapBridge.complete()
+      && self.sourceMapsRequired
+      && self.fallbackRequired
+      && self.noCoreHttp
+  }
+}

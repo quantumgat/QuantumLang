@@ -1,0 +1,21 @@
+pub struct OwnershipTransferFact {
+  allocationId: u64,
+  fromDomain: u64,
+  toDomain: u64,
+  accepted: bool,
+}
+
+impl OwnershipTransferFact {
+  pub fn init(allocationId: u64, fromDomain: u64, toDomain: u64, accepted: bool) -> OwnershipTransferFact {
+    return OwnershipTransferFact {
+      allocationId: allocationId,
+      fromDomain: fromDomain,
+      toDomain: toDomain,
+      accepted: accepted,
+    }
+  }
+
+  pub fn canMove(self: OwnershipTransferFact) -> bool {
+    return self.accepted && self.fromDomain != 0 && self.toDomain != 0
+  }
+}

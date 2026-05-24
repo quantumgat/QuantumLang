@@ -1,0 +1,48 @@
+pub struct GraphKernel {
+  adjacencyVecBacked: bool,
+  typedNodeIds: bool,
+  edgeAppendDirect: bool,
+  bfsUsesFrontierCursor: bool,
+  dfsUsesFrontierCursor: bool,
+  cursorErased: bool,
+  cursorUsesVisitedSet: bool,
+  neighborLoopDirectEdges: bool,
+  shortestPathUsesBfs: bool,
+  predecessorMapBacked: bool,
+  topologicalSortUsesIndegreeVec: bool,
+  callableTraversalInlineable: bool,
+}
+
+impl GraphKernel {
+  pub fn standard() -> GraphKernel {
+    return GraphKernel {
+      adjacencyVecBacked: true,
+      typedNodeIds: true,
+      edgeAppendDirect: true,
+      bfsUsesFrontierCursor: true,
+      dfsUsesFrontierCursor: true,
+      cursorErased: true,
+      cursorUsesVisitedSet: true,
+      neighborLoopDirectEdges: true,
+      shortestPathUsesBfs: true,
+      predecessorMapBacked: true,
+      topologicalSortUsesIndegreeVec: true,
+      callableTraversalInlineable: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: GraphKernel) -> bool {
+    return self.adjacencyVecBacked
+      && self.typedNodeIds
+      && self.edgeAppendDirect
+      && self.bfsUsesFrontierCursor
+      && self.dfsUsesFrontierCursor
+      && self.cursorErased
+      && self.cursorUsesVisitedSet
+      && self.neighborLoopDirectEdges
+      && self.shortestPathUsesBfs
+      && self.predecessorMapBacked
+      && self.topologicalSortUsesIndegreeVec
+      && self.callableTraversalInlineable
+  }
+}

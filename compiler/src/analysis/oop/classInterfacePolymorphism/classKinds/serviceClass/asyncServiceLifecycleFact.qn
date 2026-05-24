@@ -1,0 +1,25 @@
+pub struct AsyncServiceLifecycleFact {
+  ownerId: u64,
+  dependencyGraphBound: bool,
+  asyncInitStartBound: bool,
+  readinessFactBound: bool,
+  healthCheckFactBound: bool,
+  reconnectRetryOwnerBound: bool,
+  shutdownOrderBound: bool,
+  cancellationSafeShutdownBound: bool,
+  typedFailureNoCoredumpBound: bool,
+}
+
+impl AsyncServiceLifecycleFact {
+  pub fn complete(self: AsyncServiceLifecycleFact) -> bool {
+    return self.ownerId > 0
+      && self.dependencyGraphBound
+      && self.asyncInitStartBound
+      && self.readinessFactBound
+      && self.healthCheckFactBound
+      && self.reconnectRetryOwnerBound
+      && self.shutdownOrderBound
+      && self.cancellationSafeShutdownBound
+      && self.typedFailureNoCoredumpBound
+  }
+}

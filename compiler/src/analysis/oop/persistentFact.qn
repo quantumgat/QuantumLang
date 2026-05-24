@@ -1,0 +1,50 @@
+pub struct PersistentFact {
+  typeId: u64,
+  schemaVersionBound: bool,
+  schemaFieldBound: bool,
+  migrationBound: bool,
+  snapshotBound: bool,
+  compatibilityBound: bool,
+  databaseMappingBound: bool,
+  protocolMappingBound: bool,
+  codecBound: bool,
+  privacyBound: bool,
+}
+
+pub fn persistentFact(
+  typeId: u64,
+  schemaVersionBound: bool,
+  schemaFieldBound: bool,
+  migrationBound: bool,
+  snapshotBound: bool,
+  compatibilityBound: bool,
+  databaseMappingBound: bool,
+  protocolMappingBound: bool,
+  codecBound: bool,
+  privacyBound: bool,
+) -> PersistentFact {
+  return PersistentFact {
+    typeId: typeId,
+    schemaVersionBound: schemaVersionBound,
+    schemaFieldBound: schemaFieldBound,
+    migrationBound: migrationBound,
+    snapshotBound: snapshotBound,
+    compatibilityBound: compatibilityBound,
+    databaseMappingBound: databaseMappingBound,
+    protocolMappingBound: protocolMappingBound,
+    codecBound: codecBound,
+    privacyBound: privacyBound,
+  }
+}
+
+impl PersistentFact {
+  pub fn complete(self: PersistentFact) -> bool {
+    return self.schemaVersionBound
+      && self.schemaFieldBound
+      && self.migrationBound
+      && self.snapshotBound
+      && self.compatibilityBound
+      && self.codecBound
+      && self.privacyBound
+  }
+}

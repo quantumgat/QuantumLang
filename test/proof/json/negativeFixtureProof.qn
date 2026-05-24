@@ -1,0 +1,39 @@
+pub struct JsonNegativeFixtureProof {
+  malformedJsonRejected: bool,
+  invalidUtf8Rejected: bool,
+  invalidEscapeRejected: bool,
+  depthLimitRejected: bool,
+  missingFieldRejected: bool,
+  duplicateFieldRejected: bool,
+  unknownFieldPolicyChecked: bool,
+  unsupportedTypeRejected: bool,
+  noCoredump: bool,
+}
+
+impl JsonNegativeFixtureProof {
+  pub fn required() -> JsonNegativeFixtureProof {
+    return JsonNegativeFixtureProof {
+      malformedJsonRejected: true,
+      invalidUtf8Rejected: true,
+      invalidEscapeRejected: true,
+      depthLimitRejected: true,
+      missingFieldRejected: true,
+      duplicateFieldRejected: true,
+      unknownFieldPolicyChecked: true,
+      unsupportedTypeRejected: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: JsonNegativeFixtureProof) -> bool {
+    return self.malformedJsonRejected
+      && self.invalidUtf8Rejected
+      && self.invalidEscapeRejected
+      && self.depthLimitRejected
+      && self.missingFieldRejected
+      && self.duplicateFieldRejected
+      && self.unknownFieldPolicyChecked
+      && self.unsupportedTypeRejected
+      && self.noCoredump
+  }
+}

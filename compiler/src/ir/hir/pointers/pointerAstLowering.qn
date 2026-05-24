@@ -1,0 +1,28 @@
+pub struct HirPointerAstLowering {
+  astNode: u64,
+  syntaxKind: AstPointerSyntaxKind,
+  hirKind: HirPointerCallKind,
+  receiverType: string,
+  resultType: string,
+  nullableInput: bool,
+  questionMarkPropagates: bool,
+  unsafeBoundaryCarried: bool,
+  targetFactsAttached: bool,
+}
+
+impl HirPointerAstLowering {
+  pub fn lowersSafeCall(self: HirPointerAstLowering) -> bool {
+    return self.astNode > 0
+      && self.receiverType != ""
+      && self.resultType != ""
+      && self.questionMarkPropagates
+      && self.unsafeBoundaryCarried == false
+      && self.targetFactsAttached
+  }
+
+  pub fn lowersRawUnsafe(self: HirPointerAstLowering) -> bool {
+    return self.astNode > 0
+      && self.unsafeBoundaryCarried
+      && self.targetFactsAttached
+  }
+}

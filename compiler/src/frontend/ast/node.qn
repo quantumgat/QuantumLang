@@ -1,0 +1,34 @@
+pub enum NodeKind {
+  Item
+  Stmt
+  Expr
+  Pattern
+  TypeSyntax
+  Error
+}
+
+pub struct AstNode {
+  id: u64,
+  kind: NodeKind,
+  file: u32,
+  start: usize,
+  end: usize,
+}
+
+pub fn astNode(id: u64, kind: NodeKind, file: u32, start: usize, end: usize) -> AstNode {
+  return AstNode { id: id, kind: kind, file: file, start: start, end: end }
+}
+
+impl AstNode {
+  pub fn nodeId(self: AstNode) -> u64 {
+    return self.id
+  }
+
+  pub fn nodeKind(self: AstNode) -> NodeKind {
+    return self.kind
+  }
+
+  pub fn fileId(self: AstNode) -> u32 {
+    return self.file
+  }
+}

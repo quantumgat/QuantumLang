@@ -1,0 +1,35 @@
+pub use publicApiPolicy.PrintPublicApiPolicy
+pub use publicApiPolicy.printPublicApiPolicy
+pub use format.Debug
+pub use format.Display
+pub use format.FormatMode
+pub use format.Formatter
+pub use format.FormatRadix
+pub use format.FormatView
+pub use format.bin
+pub use format.format
+pub use format.hex
+pub use format.toString
+pub use print.PrintError
+pub use print.PrintOptions
+pub use print.PrintSink
+pub use print.PrintTarget
+pub use print.dbg
+pub use print.eprint
+pub use print.eprintWith
+pub use print.eprintln
+pub use print.eprintlnWith
+pub use print.flush
+pub use print.flushTarget
+pub use print.print
+pub use print.printWith
+pub use print.println
+pub use print.printlnWith
+
+pub struct IoError {
+  code: i32,
+  message: string,
+}
+
+pub fn readText(path: string) -> Result<string, IoError>
+pub fn writeText(path: string, value: string) -> Result<Unit, IoError>

@@ -1,0 +1,42 @@
+pub struct PoolAdvancedLowering {
+  batchInsertLoopScalarized: bool,
+  batchRemoveLoopScalarized: bool,
+  updateManyDirectHandleLoop: bool,
+  queryPredicateInlineable: bool,
+  retainDrainLoweredToHandleSnapshot: bool,
+  lifecycleReplaceDirectSlotStore: bool,
+  leaseCleanupLoweredToRemove: bool,
+  metricsFreeListWalkScalarized: bool,
+  parallelForEachUsesOccupiedCursor: bool,
+  policySelectionCompileTime: bool,
+}
+
+pub fn poolAdvancedLowering() -> PoolAdvancedLowering {
+  return PoolAdvancedLowering {
+    batchInsertLoopScalarized: true,
+    batchRemoveLoopScalarized: true,
+    updateManyDirectHandleLoop: true,
+    queryPredicateInlineable: true,
+    retainDrainLoweredToHandleSnapshot: true,
+    lifecycleReplaceDirectSlotStore: true,
+    leaseCleanupLoweredToRemove: true,
+    metricsFreeListWalkScalarized: true,
+    parallelForEachUsesOccupiedCursor: true,
+    policySelectionCompileTime: true,
+  }
+}
+
+impl PoolAdvancedLowering {
+  pub fn hotPathReady(self: PoolAdvancedLowering) -> bool {
+    return self.batchInsertLoopScalarized
+      && self.batchRemoveLoopScalarized
+      && self.updateManyDirectHandleLoop
+      && self.queryPredicateInlineable
+      && self.retainDrainLoweredToHandleSnapshot
+      && self.lifecycleReplaceDirectSlotStore
+      && self.leaseCleanupLoweredToRemove
+      && self.metricsFreeListWalkScalarized
+      && self.parallelForEachUsesOccupiedCursor
+      && self.policySelectionCompileTime
+  }
+}

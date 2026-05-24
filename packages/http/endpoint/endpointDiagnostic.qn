@@ -1,0 +1,80 @@
+pub enum EndpointDiagnosticKind {
+  DuplicateEndpoint,
+  MissingReturn,
+  InvalidParameter,
+  InvalidManualRoute,
+  QueryInManualRoute,
+  UnsupportedCapability,
+  RouteConflict,
+}
+
+pub struct EndpointDiagnostic {
+  kind: EndpointDiagnosticKind,
+  endpointName: string,
+  message: string,
+  sourceLine: usize,
+}
+
+impl EndpointDiagnostic {
+  pub fn init(kind: EndpointDiagnosticKind, endpointName: string, message: string, sourceLine: usize) -> EndpointDiagnostic {
+    return EndpointDiagnostic {
+      kind: kind,
+      endpointName: endpointName,
+      message: message,
+      sourceLine: sourceLine,
+    }
+  }
+
+  pub fn duplicateEndpoint(endpointName: string, sourceLine: usize) -> EndpointDiagnostic {
+    return EndpointDiagnostic.init(
+      EndpointDiagnosticKind.DuplicateEndpoint,
+      endpointName,
+      "duplicate HTTP endpoint",
+      sourceLine
+    )
+  }
+
+  pub fn missingReturn(endpointName: string, sourceLine: usize) -> EndpointDiagnostic {
+    return EndpointDiagnostic.init(
+      EndpointDiagnosticKind.MissingReturn,
+      endpointName,
+      "HTTP endpoint is missing return model",
+      sourceLine
+    )
+  }
+
+  pub fn invalidParameter(endpointName: string, sourceLine: usize) -> EndpointDiagnostic {
+    return EndpointDiagnostic.init(
+      EndpointDiagnosticKind.InvalidParameter,
+      endpointName,
+      "HTTP endpoint parameter cannot be extracted",
+      sourceLine
+    )
+  }
+
+  pub fn invalidManualRoute(endpointName: string, sourceLine: usize) -> EndpointDiagnostic {
+    return EndpointDiagnostic.init(
+      EndpointDiagnosticKind.InvalidManualRoute,
+      endpointName,
+      "manual HTTP endpoint route must be an exact path",
+      sourceLine
+    )
+  }
+
+  pub fn queryInManualRoute(endpointName: string, sourceLine: usize) -> EndpointDiagnostic {
+    return EndpointDiagnostic.init(
+      EndpointDiagnosticKind.QueryInManualRoute,
+      endpointName,
+      "manual HTTP endpoint route must not include query string; use Query<T> parameters",
+      sourceLine
+    )
+  }
+
+  pub fn kind(self: EndpointDiagnostic) -> EndpointDiagnosticKind {
+    return self.kind
+  }
+
+  pub fn message(self: EndpointDiagnostic) -> string {
+    return self.message
+  }
+}

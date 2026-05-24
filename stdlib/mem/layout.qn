@@ -1,0 +1,103 @@
+pub struct Layout {
+  size: usize,
+  alignment: usize,
+  stride: usize,
+  padding: usize,
+}
+
+impl Layout {
+  pub fn init(size: usize, alignment: usize) -> Layout {
+    let stride = layoutRoundUp(size, alignment)
+    return Layout {
+      size: size,
+      alignment: alignment,
+      stride: stride,
+      padding: stride - size,
+    }
+  }
+
+  pub fn withStride(size: usize, alignment: usize, stride: usize) -> Layout {
+    let padding = layoutPadding(size, stride)
+    return Layout {
+      size: size,
+      alignment: alignment,
+      stride: stride,
+      padding: padding,
+    }
+  }
+
+  pub fn valid(self: Layout) -> bool {
+    self.alignment > 0 && self.stride >= self.size
+  }
+
+  pub fn size(self: Layout) -> usize {
+    return self.size
+  }
+
+  pub fn alignment(self: Layout) -> usize {
+    return self.alignment
+  }
+
+  pub fn stride(self: Layout) -> usize {
+    return self.stride
+  }
+
+  pub fn padding(self: Layout) -> usize {
+    return self.padding
+  }
+
+  pub fn isAlignedOffset(self: Layout, offset: usize) -> bool {
+    return layoutAligned(offset, self.alignment)
+  }
+
+  pub fn nextOffset(self: Layout, offset: usize) -> usize {
+    return layoutRoundUp(offset, self.alignment)
+  }
+
+  pub fn arraySize(self: Layout, count: usize) -> usize {
+    return self.stride * count
+  }
+}
+
+pub fn layoutOf<T>() -> Layout {
+  return compilerLayoutOf<T>()
+}
+
+pub fn sizeOf<T>() -> usize {
+  return layoutOf<T>().size()
+}
+
+pub fn alignOf<T>() -> usize {
+  return layoutOf<T>().alignment()
+}
+
+pub fn strideOf<T>() -> usize {
+  return layoutOf<T>().stride()
+}
+
+fn layoutAligned(offset: usize, alignment: usize) -> bool {
+  if alignment == 0 {
+    return false
+  }
+  return offset % alignment == 0
+}
+
+fn layoutRoundUp(offset: usize, alignment: usize) -> usize {
+  if alignment == 0 {
+    return offset
+  }
+  let remainder = offset % alignment
+  if remainder == 0 {
+    return offset
+  }
+  return offset + alignment - remainder
+}
+
+fn layoutPadding(size: usize, stride: usize) -> usize {
+  if stride < size {
+    return 0
+  }
+  return stride - size
+}
+
+fn compilerLayoutOf<T>() -> Layout

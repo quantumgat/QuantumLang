@@ -1,0 +1,25 @@
+pub struct WhileAsyncPollTimeoutFact {
+  sourceNode: u64,
+  awaitQuestionInAsyncContext: bool,
+  timeoutDurationType: string,
+  pollSourceType: string,
+  cancellationTokenRequired: bool,
+  cleanupOnBreak: bool,
+  cleanupOnContinue: bool,
+  runtimeHandoffRequired: bool,
+  diagnosticsReady: bool,
+}
+
+impl WhileAsyncPollTimeoutFact {
+  pub fn accepted(self: WhileAsyncPollTimeoutFact) -> bool {
+    return self.sourceNode > 0
+      && self.awaitQuestionInAsyncContext
+      && self.timeoutDurationType != ""
+      && self.pollSourceType != ""
+      && self.cancellationTokenRequired
+      && self.cleanupOnBreak
+      && self.cleanupOnContinue
+      && self.runtimeHandoffRequired
+      && self.diagnosticsReady
+  }
+}

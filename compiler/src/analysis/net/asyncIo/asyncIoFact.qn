@@ -1,0 +1,19 @@
+pub struct NetAsyncIoFact {
+  awaitLowered: bool,
+  cancellationCleanup: bool,
+  noBorrowAcrossAwait: bool,
+  reactorHandoff: bool,
+  directReadWriteLowering: bool,
+  noHeapFutureOnHotPath: bool,
+}
+
+impl NetAsyncIoFact {
+  pub fn accepted(self: NetAsyncIoFact) -> bool {
+    return self.awaitLowered
+      && self.cancellationCleanup
+      && self.noBorrowAcrossAwait
+      && self.reactorHandoff
+      && self.directReadWriteLowering
+      && self.noHeapFutureOnHotPath
+  }
+}

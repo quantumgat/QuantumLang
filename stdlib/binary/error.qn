@@ -1,0 +1,47 @@
+pub enum BinaryErrorKind {
+  Eof,
+  InvalidAlignment,
+  Alignment,
+  Bitfield,
+  VarintOverflow,
+  Checksum,
+  WriterOverflow,
+  PointerRejected,
+}
+
+pub struct BinaryError {
+  kind: BinaryErrorKind,
+  offset: usize,
+  message: string,
+}
+
+impl BinaryError {
+  pub fn init(kind: BinaryErrorKind, offset: usize, message: string) -> BinaryError {
+    return BinaryError { kind: kind, offset: offset, message: message }
+  }
+
+  pub fn diagnosticCode(self: BinaryError) -> string {
+    if self.kind == BinaryErrorKind.Eof {
+      return "QLBIN0002"
+    }
+    if self.kind == BinaryErrorKind.InvalidAlignment {
+      return "QLBIN0003"
+    }
+    if self.kind == BinaryErrorKind.Alignment {
+      return "QLBIN0004"
+    }
+    if self.kind == BinaryErrorKind.Bitfield {
+      return "QLBIN0005"
+    }
+    if self.kind == BinaryErrorKind.VarintOverflow {
+      return "QLBIN0006"
+    }
+    if self.kind == BinaryErrorKind.Checksum {
+      return "QLBIN0007"
+    }
+    if self.kind == BinaryErrorKind.WriterOverflow {
+      return "QLBIN0008"
+    }
+    return "QLBIN0009"
+  }
+}

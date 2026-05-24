@@ -1,0 +1,59 @@
+pub trait Add<T> {
+  type Output
+  pub fn add(self: T, right: T) -> T
+}
+
+pub trait Sub<T> {
+  type Output
+  pub fn sub(self: T, right: T) -> T
+}
+
+pub trait Mul<T> {
+  type Output
+  pub fn mul(self: T, right: T) -> T
+}
+
+pub trait Div<T> {
+  type Output
+  pub fn div(self: T, right: T) -> T
+}
+
+pub trait Rem<T> {
+  type Output
+  pub fn rem(self: T, right: T) -> T
+}
+
+pub trait Pow<T> {
+  type Output
+  pub fn pow(self: T, right: T) -> T
+}
+
+pub trait BitAnd<T> {
+  type Output
+  pub fn bitAnd(self: T, right: T) -> T
+}
+
+pub trait BitOr<T> {
+  type Output
+  pub fn bitOr(self: T, right: T) -> T
+}
+
+pub trait BitXor<T> {
+  type Output
+  pub fn bitXor(self: T, right: T) -> T
+}
+
+pub trait Shl<T> {
+  type Output
+  pub fn shl(self: T, right: T) -> T
+}
+
+pub trait Shr<T> {
+  type Output
+  pub fn shr(self: T, right: T) -> T
+}
+
+pub trait Neg<T> {
+  type Output
+  pub fn neg(self: T) -> T
+}

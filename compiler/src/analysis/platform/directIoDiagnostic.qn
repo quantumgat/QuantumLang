@@ -1,0 +1,19 @@
+pub struct DirectIoDiagnostic {
+  code: string,
+  hasRange: bool,
+  blocksUnsafeDirectIo: bool,
+}
+
+impl DirectIoDiagnostic {
+  pub fn init(code: string, hasRange: bool, blocksUnsafeDirectIo: bool) -> DirectIoDiagnostic {
+    return DirectIoDiagnostic {
+      code: code,
+      hasRange: hasRange,
+      blocksUnsafeDirectIo: blocksUnsafeDirectIo,
+    }
+  }
+
+  pub fn reportable(self: DirectIoDiagnostic) -> bool {
+    return self.code != "" && self.hasRange && self.blocksUnsafeDirectIo
+  }
+}

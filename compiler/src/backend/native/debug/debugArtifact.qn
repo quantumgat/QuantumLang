@@ -1,0 +1,27 @@
+pub struct DebugArtifact {
+  path: string,
+  hidden: bool,
+  ownedByNativeBackend: bool,
+}
+
+pub fn debugArtifact(path: string, hidden: bool, ownedByNativeBackend: bool) -> DebugArtifact {
+  return DebugArtifact {
+    path: path,
+    hidden: hidden,
+    ownedByNativeBackend: ownedByNativeBackend,
+  }
+}
+
+impl DebugArtifact {
+  pub fn artifactPath(self: DebugArtifact) -> string {
+    return self.path
+  }
+
+  pub fn isHidden(self: DebugArtifact) -> bool {
+    return self.hidden
+  }
+
+  pub fn isNativeOwned(self: DebugArtifact) -> bool {
+    return self.ownedByNativeBackend
+  }
+}

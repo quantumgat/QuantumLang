@@ -1,0 +1,56 @@
+pub struct RuntimePrintFlushPrimitive {
+  target: RuntimePrintTarget,
+  buffer: OutputBuffer,
+  state: RuntimeFlushState,
+  manualFlush: bool,
+  errorCleanupFlush: bool,
+  cancellationCleanupFlush: bool,
+  stdoutBeforeStderr: bool,
+  returnsResult: bool,
+  noPanic: bool,
+  noCoredump: bool,
+}
+
+impl RuntimePrintFlushPrimitive {
+  pub fn manual(target: RuntimePrintTarget, byteCount: usize) -> RuntimePrintFlushPrimitive {
+    return RuntimePrintFlushPrimitive {
+      target: target,
+      buffer: OutputBuffer.direct(),
+      state: RuntimeFlushState.complete(RuntimeFlushReason.Manual, byteCount),
+      manualFlush: true,
+      errorCleanupFlush: true,
+      cancellationCleanupFlush: true,
+      stdoutBeforeStderr: true,
+      returnsResult: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn cleanup(target: RuntimePrintTarget, byteCount: usize) -> RuntimePrintFlushPrimitive {
+    return RuntimePrintFlushPrimitive {
+      target: target,
+      buffer: OutputBuffer.lineBuffered(byteCount),
+      state: RuntimeFlushState.complete(RuntimeFlushReason.CancellationCleanup, byteCount),
+      manualFlush: false,
+      errorCleanupFlush: true,
+      cancellationCleanupFlush: true,
+      stdoutBeforeStderr: true,
+      returnsResult: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimePrintFlushPrimitive) -> bool {
+    return self.target.safe()
+      && self.buffer.safe()
+      && self.state.safe()
+      && self.errorCleanupFlush
+      && self.cancellationCleanupFlush
+      && self.stdoutBeforeStderr
+      && self.returnsResult
+      && self.noPanic
+      && self.noCoredump
+  }
+}

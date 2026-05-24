@@ -1,0 +1,23 @@
+pub use option.Option
+pub use option.Some
+pub use option.None
+pub use result.Result
+pub use result.Ok
+pub use result.Err
+pub use error.Error
+pub use error.ErrorKind
+pub use io.print
+pub use io.println
+pub use io.eprint
+pub use io.eprintln
+pub use io.dbg
+pub use log.info
+pub use log.fields
+pub use marker.Send
+pub use marker.Sync
+pub use marker.StableLayout
+pub use marker.NoPadding
+
+// Compiler-owned core primitives and syntax are prelude-visible without
+// stdlib wrapper types: qif, qfor, qubit, Qubit, qreg<N>, QReg<N>, qresult,
+// QResult, Option<T>, Result<T,E>, and Error.

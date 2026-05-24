@@ -1,0 +1,155 @@
+pub enum BinaryMeasuredBenchmarkKind {
+  CursorDirectRead,
+  WriterDirectWrite,
+  PortableRoundTrip,
+  ZeroCopyView,
+  CodecBuilderReuse,
+  EncodeIntoWriter,
+}
+
+pub struct BinaryMeasuredBenchmarkRow {
+  kind: BinaryMeasuredBenchmarkKind,
+  caseName: string,
+  qlangGeneratedFixture: string,
+  baselineOnlyFixture: string,
+  baselineOnlyEquivalentPattern: string,
+  sampleCount: usize,
+  warmupIterations: usize,
+  operationCount: usize,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+  maxSlowdownPercent: u64,
+  allocationBytes: usize,
+  boundsDiagnostics: bool,
+  noCoredump: bool,
+}
+
+pub struct BinaryMeasuredBenchmarkReport {
+  rows: Vec<BinaryMeasuredBenchmarkRow>,
+  requiredRows: usize,
+  runner: string,
+  serialSafe: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+  generatedCppFallbackRejected: bool,
+  baselineOnly: bool,
+}
+
+pub fn binaryMeasuredBenchmarkRow(
+  kind: BinaryMeasuredBenchmarkKind,
+  caseName: string,
+  baselineOnlyEquivalentPattern: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+) -> BinaryMeasuredBenchmarkRow {
+  return BinaryMeasuredBenchmarkRow {
+    kind: kind,
+    caseName: caseName,
+    qlangGeneratedFixture: "binary_hotpath_e2e_perf_ok.qn",
+    baselineOnlyFixture: "binary_e2e_cpp_baseline.cpp",
+    baselineOnlyEquivalentPattern: baselineOnlyEquivalentPattern,
+    sampleCount: 3,
+    warmupIterations: 1,
+    operationCount: 1024,
+    qlangNsPerOp: qlangNsPerOp,
+    baselineNsPerOp: baselineNsPerOp,
+    maxSlowdownPercent: 10,
+    allocationBytes: 0,
+    boundsDiagnostics: true,
+    noCoredump: true,
+  }
+}
+
+pub fn binaryMeasuredBenchmarkReport() -> BinaryMeasuredBenchmarkReport requires(alloc) {
+  let mut rows = Vec<BinaryMeasuredBenchmarkRow>.withCapacity(6)
+  rows = rows.push(binaryMeasuredBenchmarkRow(
+    BinaryMeasuredBenchmarkKind.CursorDirectRead,
+    "cursor-u64le-direct-load-measured",
+    "baseline-only equivalent: memcpy load + bounds check",
+    4,
+    4
+  ))
+  rows = rows.push(binaryMeasuredBenchmarkRow(
+    BinaryMeasuredBenchmarkKind.WriterDirectWrite,
+    "writer-u64le-direct-store-measured",
+    "baseline-only equivalent: memcpy store + bounds check",
+    4,
+    4
+  ))
+  rows = rows.push(binaryMeasuredBenchmarkRow(
+    BinaryMeasuredBenchmarkKind.PortableRoundTrip,
+    "binary-portable-round-trip-measured",
+    "baseline-only equivalent: field-by-field encode/decode",
+    12,
+    12
+  ))
+  rows = rows.push(binaryMeasuredBenchmarkRow(
+    BinaryMeasuredBenchmarkKind.ZeroCopyView,
+    "binary-view-zero-copy-measured",
+    "baseline-only equivalent: span row view + bounds check",
+    3,
+    3
+  ))
+  rows = rows.push(binaryMeasuredBenchmarkRow(
+    BinaryMeasuredBenchmarkKind.CodecBuilderReuse,
+    "binary-codec-builder-reuse-measured",
+    "baseline-only equivalent: prepared codec cached offsets",
+    5,
+    5
+  ))
+  rows = rows.push(binaryMeasuredBenchmarkRow(
+    BinaryMeasuredBenchmarkKind.EncodeIntoWriter,
+    "binary-write-no-temp-buffer-measured",
+    "baseline-only equivalent: encode into caller-owned buffer",
+    8,
+    8
+  ))
+  return BinaryMeasuredBenchmarkReport {
+    rows: rows,
+    requiredRows: 6,
+    runner: "qtlc-binary-hotpath-measured-v1",
+    serialSafe: true,
+    allCoreDisabled: true,
+    maxParallel: 1,
+    generatedCppFallbackRejected: true,
+    baselineOnly: true,
+  }
+}
+
+impl BinaryMeasuredBenchmarkRow {
+  pub fn withinBudget(self: BinaryMeasuredBenchmarkRow) -> bool {
+    let budget = self.baselineNsPerOp
+      + ((self.baselineNsPerOp * self.maxSlowdownPercent) / 100)
+    return self.caseName != ""
+      && self.qlangGeneratedFixture != ""
+      && self.baselineOnlyFixture != ""
+      && self.baselineOnlyEquivalentPattern != ""
+      && self.sampleCount >= 3
+      && self.operationCount > 0
+      && self.qlangNsPerOp > 0
+      && self.baselineNsPerOp > 0
+      && self.qlangNsPerOp <= budget
+      && self.allocationBytes == 0
+      && self.boundsDiagnostics
+      && self.noCoredump
+  }
+}
+
+impl BinaryMeasuredBenchmarkReport {
+  pub fn accepted(self: BinaryMeasuredBenchmarkReport) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.runner == "qtlc-binary-hotpath-measured-v1"
+      && self.serialSafe
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+      && self.generatedCppFallbackRejected
+      && self.baselineOnly
+  }
+
+  pub fn claimBlockedUntilReports(self: BinaryMeasuredBenchmarkReport) -> bool {
+    return self.baselineOnly
+      && self.serialSafe
+      && self.maxParallel == 1
+      && self.generatedCppFallbackRejected
+  }
+}

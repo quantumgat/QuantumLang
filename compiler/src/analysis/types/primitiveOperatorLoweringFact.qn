@@ -1,0 +1,43 @@
+pub enum PrimitiveOperatorLoweringFamily {
+  DirectScalar
+  WideInteger
+  Decimal
+  BigInt
+  BigUint
+  Complex
+  Simd
+  Field
+}
+
+pub struct PrimitiveOperatorLoweringFact {
+  family: PrimitiveOperatorLoweringFamily,
+  operatorChecked: bool,
+  runtimeKernelLinked: bool,
+  nativeLoweringLinked: bool,
+  sourceMappedDiagnostic: bool,
+  noFakeFallback: bool,
+  noCoredump: bool,
+}
+
+impl PrimitiveOperatorLoweringFact {
+  pub fn linked(family: PrimitiveOperatorLoweringFamily) -> PrimitiveOperatorLoweringFact {
+    return PrimitiveOperatorLoweringFact {
+      family: family,
+      operatorChecked: true,
+      runtimeKernelLinked: true,
+      nativeLoweringLinked: true,
+      sourceMappedDiagnostic: true,
+      noFakeFallback: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: PrimitiveOperatorLoweringFact) -> bool {
+    return self.operatorChecked
+      && self.runtimeKernelLinked
+      && self.nativeLoweringLinked
+      && self.sourceMappedDiagnostic
+      && self.noFakeFallback
+      && self.noCoredump
+  }
+}

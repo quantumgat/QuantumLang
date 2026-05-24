@@ -1,0 +1,21 @@
+pub struct ConstantTimeEqualityFact {
+  node: u64,
+  fixedLength: bool,
+  noEarlyExit: bool,
+  branchless: bool,
+}
+
+impl ConstantTimeEqualityFact {
+  pub fn init(node: u64, fixedLength: bool, noEarlyExit: bool, branchless: bool) -> ConstantTimeEqualityFact {
+    return ConstantTimeEqualityFact {
+      node: node,
+      fixedLength: fixedLength,
+      noEarlyExit: noEarlyExit,
+      branchless: branchless,
+    }
+  }
+
+  pub fn accepted(self: ConstantTimeEqualityFact) -> bool {
+    return self.fixedLength && self.noEarlyExit && self.branchless
+  }
+}

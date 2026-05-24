@@ -1,0 +1,27 @@
+pub struct ObjectSourceMapRecord {
+  sourcePath: string,
+  sourceHash: string,
+  objectSection: string,
+}
+
+pub fn objectSourceMapRecord(sourcePath: string, sourceHash: string, objectSection: string) -> ObjectSourceMapRecord {
+  return ObjectSourceMapRecord {
+    sourcePath: sourcePath,
+    sourceHash: sourceHash,
+    objectSection: objectSection,
+  }
+}
+
+impl ObjectSourceMapRecord {
+  pub fn source(self: ObjectSourceMapRecord) -> string {
+    return self.sourcePath
+  }
+
+  pub fn hash(self: ObjectSourceMapRecord) -> string {
+    return self.sourceHash
+  }
+
+  pub fn section(self: ObjectSourceMapRecord) -> string {
+    return self.objectSection
+  }
+}

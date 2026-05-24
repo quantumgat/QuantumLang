@@ -1,0 +1,30 @@
+pub enum ObjectDiagnosticKind {
+  UnsupportedSection
+  UnsupportedRelocation
+  InvalidSymbol
+  ObjectWriterFailed
+}
+
+pub struct ObjectDiagnostic {
+  kind: ObjectDiagnosticKind,
+  message: string,
+  artifactEmitted: bool,
+}
+
+pub fn objectDiagnostic(kind: ObjectDiagnosticKind, message: string, artifactEmitted: bool) -> ObjectDiagnostic {
+  return ObjectDiagnostic { kind: kind, message: message, artifactEmitted: artifactEmitted }
+}
+
+impl ObjectDiagnostic {
+  pub fn diagnosticKind(self: ObjectDiagnostic) -> ObjectDiagnosticKind {
+    return self.kind
+  }
+
+  pub fn text(self: ObjectDiagnostic) -> string {
+    return self.message
+  }
+
+  pub fn stopsBeforeArtifact(self: ObjectDiagnostic) -> bool {
+    return !self.artifactEmitted
+  }
+}

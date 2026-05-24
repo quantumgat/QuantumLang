@@ -1,0 +1,9 @@
+[module]
+name = "incremental"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_qtlang_package_cache_foundation"]

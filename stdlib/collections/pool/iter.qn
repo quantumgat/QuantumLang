@@ -1,0 +1,32 @@
+/**
+  Occupied-slot iterator for Pool.
+
+  effects: pure
+  complexity: O(1) per occupied slot, skips free slots
+  allocation: none
+  stability: public since 0.1
+*/
+pub struct PoolIter<T> {
+  cursor: PoolOccupiedCursor<T>,
+}
+
+impl<T> PoolIter<T> {
+  pub fn fromPool(pool: Pool<T>) -> PoolIter<T> {
+    return PoolIter<T> {
+      cursor: pool.occupiedCursor(),
+    }
+  }
+
+  pub fn next(self: PoolIter<T>) -> Option<T> {
+    if self.cursor.hasNext() {
+      return Some(self.cursor.valueUnchecked())
+    }
+    return None
+  }
+
+  pub fn advance(self: PoolIter<T>) -> PoolIter<T> {
+    return PoolIter<T> {
+      cursor: self.cursor.next(),
+    }
+  }
+}

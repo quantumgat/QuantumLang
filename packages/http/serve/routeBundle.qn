@@ -1,0 +1,38 @@
+pub struct RouteBlock {
+  name: string,
+  endpointCount: usize,
+}
+
+impl RouteBlock {
+  pub fn endpointCount(self: RouteBlock) -> usize {
+    return self.endpointCount
+  }
+}
+
+pub struct RouteBundle {
+  name: string,
+  blockCount: usize,
+  endpointCount: usize,
+}
+
+impl RouteBundle {
+  pub fn init(name: string) -> RouteBundle {
+    return RouteBundle {
+      name: name,
+      blockCount: 0,
+      endpointCount: 0,
+    }
+  }
+
+  pub fn block(self: RouteBundle, block: RouteBlock) -> RouteBundle {
+    return RouteBundle {
+      name: self.name,
+      blockCount: self.blockCount + 1,
+      endpointCount: self.endpointCount + block.endpointCount(),
+    }
+  }
+
+  pub fn endpointCount(self: RouteBundle) -> usize {
+    return self.endpointCount
+  }
+}

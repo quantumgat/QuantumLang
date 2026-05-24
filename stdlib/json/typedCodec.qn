@@ -1,0 +1,58 @@
+pub enum JsonTypedCodecStage {
+  Metadata
+  FieldMatcher
+  Decode
+  Encode
+  Size
+}
+
+pub struct JsonTypedCodecPlan {
+  typeName: string,
+  derive: JsonCodecDerive,
+  fieldMatcher: JsonFieldMatchPlan,
+  policy: SerdePolicy,
+  generatedDecode: bool,
+  generatedEncode: bool,
+  directPrimitiveParsers: bool,
+  directPrimitiveWriters: bool,
+  exactNumberPolicy: bool,
+  noDynamicValueTree: bool,
+  sourceMappedDiagnostics: bool,
+}
+
+impl JsonTypedCodecPlan {
+  pub fn forDerive(typeName: string, derive: JsonCodecDerive) -> JsonTypedCodecPlan {
+    return JsonTypedCodecPlan {
+      typeName: typeName,
+      derive: derive,
+      fieldMatcher: JsonFieldMatchPlan.forFields(typeName, derive.fieldCount),
+      policy: SerdePolicy.jsonDefault(),
+      generatedDecode: derive.generatedDeserialize,
+      generatedEncode: derive.generatedSerialize,
+      directPrimitiveParsers: true,
+      directPrimitiveWriters: true,
+      exactNumberPolicy: true,
+      noDynamicValueTree: true,
+      sourceMappedDiagnostics: true,
+    }
+  }
+
+  pub fn ready(self: JsonTypedCodecPlan) -> bool {
+    return self.typeName != ""
+      && self.derive.accepted()
+      && self.fieldMatcher.hotPathReady()
+      && self.policy.exact()
+      && (self.generatedDecode || self.generatedEncode)
+      && self.directPrimitiveParsers
+      && self.directPrimitiveWriters
+      && self.exactNumberPolicy
+      && self.noDynamicValueTree
+      && self.sourceMappedDiagnostics
+  }
+}
+
+pub fn typedCodec<T>() -> Result<JsonTypedCodecPlan, JsonError> {
+  return jsonTypedCodecPlanFor<T>(SerdePolicy.jsonDefault())
+}
+
+fn jsonTypedCodecPlanFor<T>(policy: SerdePolicy) -> Result<JsonTypedCodecPlan, JsonError>

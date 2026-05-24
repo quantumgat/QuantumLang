@@ -1,0 +1,33 @@
+pub struct MirBlock {
+  id: u64,
+  firstInstruction: usize,
+  instructionCount: usize,
+  reachable: bool,
+}
+
+pub fn mirBlock(id: u64, firstInstruction: usize, instructionCount: usize, reachable: bool) -> MirBlock {
+  return MirBlock {
+    id: id,
+    firstInstruction: firstInstruction,
+    instructionCount: instructionCount,
+    reachable: reachable,
+  }
+}
+
+impl MirBlock {
+  pub fn blockId(self: MirBlock) -> u64 {
+    return self.id
+  }
+
+  pub fn startInstruction(self: MirBlock) -> usize {
+    return self.firstInstruction
+  }
+
+  pub fn len(self: MirBlock) -> usize {
+    return self.instructionCount
+  }
+
+  pub fn isReachable(self: MirBlock) -> bool {
+    return self.reachable
+  }
+}

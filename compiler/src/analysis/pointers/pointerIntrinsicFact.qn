@@ -1,0 +1,23 @@
+pub struct PointerIntrinsicFact {
+  intrinsic: string,
+  accessChecked: bool,
+  runtimeCovered: bool,
+  backendLowered: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl PointerIntrinsicFact {
+  pub fn init(intrinsic: string, accessChecked: bool, runtimeCovered: bool, backendLowered: bool, noCoredumpDiagnostic: bool) -> PointerIntrinsicFact {
+    return PointerIntrinsicFact {
+      intrinsic: intrinsic,
+      accessChecked: accessChecked,
+      runtimeCovered: runtimeCovered,
+      backendLowered: backendLowered,
+      noCoredumpDiagnostic: noCoredumpDiagnostic,
+    }
+  }
+
+  pub fn accepted(self: PointerIntrinsicFact) -> bool {
+    return self.intrinsic != "" && self.accessChecked && self.runtimeCovered && self.backendLowered && self.noCoredumpDiagnostic
+  }
+}

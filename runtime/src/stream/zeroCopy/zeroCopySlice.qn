@@ -1,0 +1,21 @@
+pub struct ZeroCopySlice {
+  ownerHandle: u64,
+  offset: usize,
+  byteLength: usize,
+  provenanceExplicit: bool,
+}
+
+pub fn zeroCopySlice(ownerHandle: u64, offset: usize, byteLength: usize) -> ZeroCopySlice {
+  return ZeroCopySlice {
+    ownerHandle: ownerHandle,
+    offset: offset,
+    byteLength: byteLength,
+    provenanceExplicit: true,
+  }
+}
+
+impl ZeroCopySlice {
+  pub fn isOwnershipProven(self: ZeroCopySlice) -> bool {
+    return self.provenanceExplicit
+  }
+}

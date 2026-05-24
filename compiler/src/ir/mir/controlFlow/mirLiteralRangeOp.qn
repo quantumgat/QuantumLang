@@ -1,0 +1,25 @@
+pub enum MirLiteralRangeOpKind {
+  PreSizedVecLiteral
+  HashMapLiteral
+  RecordInitLiteral
+  TuplePackLiteral
+  CountedRange
+  TypedEmptyInit
+}
+
+pub struct MirLiteralRangeOp {
+  instruction: u64,
+  kind: MirLiteralRangeOpKind,
+  allocationProven: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirLiteralRangeOp {
+  pub fn hotLowerable(self: MirLiteralRangeOp) -> bool {
+    return self.instruction > 0
+      && self.allocationProven
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

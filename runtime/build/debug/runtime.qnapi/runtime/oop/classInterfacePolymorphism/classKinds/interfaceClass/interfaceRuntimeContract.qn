@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct InterfaceRuntimeContract {
+  interfaceTypeId: u64
+  objectSafetyBound: bool
+  tableBound: bool
+  dispatchEntryBound: bool
+  generationChecked: bool
+}

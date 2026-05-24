@@ -1,0 +1,12 @@
+pub struct EmbeddedLinkPlan {
+  target: string,
+  linkerScriptRequired: bool,
+  freestanding: bool,
+  hostRuntimeForbidden: bool,
+}
+
+impl EmbeddedLinkPlan {
+  pub fn accepted(self: EmbeddedLinkPlan) -> bool {
+    return self.target != "" && self.linkerScriptRequired && self.hostRuntimeForbidden
+  }
+}

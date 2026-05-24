@@ -1,0 +1,152 @@
+pub enum HirMatchHandoffKind {
+  ValueDecisionTree
+  EnumTagDispatch
+  UnionNarrowing
+  StructFieldCheck
+  CollectionShapeCheck
+  StringDecision
+  BinaryPrefixCheck
+  GuardedArm
+  AsyncResultArm
+  MessageArm
+}
+
+pub struct HirMatchHandoff {
+  sourceNode: u64,
+  kind: HirMatchHandoffKind,
+  armCount: usize,
+  exhaustivenessReady: bool,
+  executableCoverageReady: bool,
+  destructureHandoffReady: bool,
+  orPatternHandoffReady: bool,
+  typeTestHandoffReady: bool,
+  mirReady: bool,
+}
+
+pub struct HirMatchInput {
+  sourceNode: u64,
+  kind: HirMatchHandoffKind,
+  analysis: MatchAnalysisResult,
+  armCount: usize,
+  destructureHandoffRequired: bool,
+  orPatternHandoffRequired: bool,
+  typeTestHandoffRequired: bool,
+}
+
+pub struct HirMatchBuild {
+  handoff: HirMatchHandoff,
+  mirSeedInstruction: u64,
+  readyForMir: bool,
+}
+
+pub fn hirMatchHandoff(
+  sourceNode: u64,
+  kind: HirMatchHandoffKind,
+  armCount: usize,
+  exhaustivenessReady: bool,
+  executableCoverageReady: bool,
+  destructureHandoffReady: bool,
+  orPatternHandoffReady: bool,
+  typeTestHandoffReady: bool,
+  mirReady: bool,
+) -> HirMatchHandoff {
+  return HirMatchHandoff {
+    sourceNode: sourceNode,
+    kind: kind,
+    armCount: armCount,
+    exhaustivenessReady: exhaustivenessReady,
+    executableCoverageReady: executableCoverageReady,
+    destructureHandoffReady: destructureHandoffReady,
+    orPatternHandoffReady: orPatternHandoffReady,
+    typeTestHandoffReady: typeTestHandoffReady,
+    mirReady: mirReady,
+  }
+}
+
+pub fn hirMatchInput(
+  sourceNode: u64,
+  kind: HirMatchHandoffKind,
+  analysis: MatchAnalysisResult,
+  armCount: usize,
+  destructureHandoffRequired: bool,
+  orPatternHandoffRequired: bool,
+  typeTestHandoffRequired: bool,
+) -> HirMatchInput {
+  return HirMatchInput {
+    sourceNode: sourceNode,
+    kind: kind,
+    analysis: analysis,
+    armCount: armCount,
+    destructureHandoffRequired: destructureHandoffRequired,
+    orPatternHandoffRequired: orPatternHandoffRequired,
+    typeTestHandoffRequired: typeTestHandoffRequired,
+  }
+}
+
+pub fn buildHirMatch(input: HirMatchInput) -> HirMatchBuild {
+  let analysisReady = input.analysis.analysisComplete()
+  let destructureReady = !input.destructureHandoffRequired || analysisReady
+  let orPatternReady = !input.orPatternHandoffRequired || analysisReady
+  let typeTestReady = !input.typeTestHandoffRequired || analysisReady
+  let mirReady = analysisReady
+    && input.sourceNode > 0
+    && input.armCount > 0
+    && destructureReady
+    && orPatternReady
+    && typeTestReady
+
+  let handoff = hirMatchHandoff(
+    input.sourceNode,
+    input.kind,
+    input.armCount,
+    analysisReady,
+    analysisReady,
+    destructureReady,
+    orPatternReady,
+    typeTestReady,
+    mirReady
+  )
+
+  return HirMatchBuild {
+    handoff: handoff,
+    mirSeedInstruction: input.sourceNode + input.armCount + 1,
+    readyForMir: handoff.executableHotPathReady(),
+  }
+}
+
+impl HirMatchHandoff {
+  pub fn sourceNodeId(self: HirMatchHandoff) -> u64 {
+    return self.sourceNode
+  }
+
+  pub fn armTotal(self: HirMatchHandoff) -> usize {
+    return self.armCount
+  }
+
+  pub fn readyForMir(self: HirMatchHandoff) -> bool {
+    return self.mirReady
+  }
+
+  pub fn complete(self: HirMatchHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.armCount > 0
+      && self.exhaustivenessReady
+      && self.mirReady
+  }
+
+  pub fn executableHotPathReady(self: HirMatchHandoff) -> bool {
+    return self.complete()
+      && self.executableCoverageReady
+      && self.destructureHandoffReady
+      && self.orPatternHandoffReady
+      && self.typeTestHandoffReady
+  }
+}
+
+impl HirMatchBuild {
+  pub fn complete(self: HirMatchBuild) -> bool {
+    return self.handoff.executableHotPathReady()
+      && self.mirSeedInstruction > 0
+      && self.readyForMir
+  }
+}

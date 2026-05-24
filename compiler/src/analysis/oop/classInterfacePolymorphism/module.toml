@@ -1,0 +1,11 @@
+[module]
+name = "classInterfacePolymorphism"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "oop-class-interface-polymorphism-boundary"
+
+[policy]
+model = "classes+interface+polymorphism"
+runtimeHandoffExplicit = true
+requestLoopReflectionAllowed = false

@@ -1,0 +1,6 @@
+[module]
+name = "binary"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "binary"

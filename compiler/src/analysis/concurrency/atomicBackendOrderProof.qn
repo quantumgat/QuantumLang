@@ -1,0 +1,21 @@
+pub struct AtomicBackendOrderProof {
+  node: u64,
+  sourceOrdering: AtomicOrdering,
+  nativeOrdering: string,
+  preservesOrdering: bool,
+}
+
+impl AtomicBackendOrderProof {
+  pub fn init(node: u64, sourceOrdering: AtomicOrdering, nativeOrdering: string, preservesOrdering: bool) -> AtomicBackendOrderProof {
+    return AtomicBackendOrderProof {
+      node: node,
+      sourceOrdering: sourceOrdering,
+      nativeOrdering: nativeOrdering,
+      preservesOrdering: preservesOrdering,
+    }
+  }
+
+  pub fn accepted(self: AtomicBackendOrderProof) -> bool {
+    return self.nativeOrdering != "" && self.preservesOrdering
+  }
+}

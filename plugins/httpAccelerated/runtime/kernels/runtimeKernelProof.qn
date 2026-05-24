@@ -1,0 +1,57 @@
+pub struct HttpAcceleratedRuntimeKernelProof {
+  parser: HttpParserRuntimeResult,
+  route: HttpRouteRuntimeResult,
+  writer: HttpWriterRuntimeResult,
+  sendfile: HttpSendfileRuntimeResult,
+  backpressure: HttpBackpressureRuntimeResult,
+  malformedParserSafe: bool,
+  simdParserSafe: bool,
+  scalarFallbackSafe: bool,
+  routeMissSafe: bool,
+  slowClientSafe: bool,
+}
+
+impl HttpAcceleratedRuntimeKernelProof {
+  pub fn complete(self: HttpAcceleratedRuntimeKernelProof) -> bool {
+    return self.parser.safe()
+      && self.route.safe()
+      && self.writer.safe()
+      && self.sendfile.safe()
+      && self.backpressure.safe()
+      && self.malformedParserSafe
+      && self.simdParserSafe
+      && self.scalarFallbackSafe
+      && self.routeMissSafe
+      && self.slowClientSafe
+  }
+}
+
+pub fn httpAcceleratedRuntimeKernelProof() -> HttpAcceleratedRuntimeKernelProof {
+  let parser = HttpParserKernel.simd().parseFast(HttpParserInput.simpleGet(64, 4), HttpParserTarget.avx2())
+  let scalar = HttpParserKernel.simd().parseFast(HttpParserInput.simpleGet(7, 2), HttpParserTarget.scalar())
+  let malformed = HttpParserKernel.simd().parse(HttpParserInput.malformed())
+  let routes = Vec<HttpRouteEntry>()
+    .push(HttpRouteEntry.exact("GET", "/health", 1))
+    .push(HttpRouteEntry.exact("GET", "/users", 2))
+  let route = HttpRouteKernel.trie().lookup("GET", "/users", routes)
+  let routeMiss = HttpRouteKernel.trie().lookup("POST", "/missing", routes)
+  let headers = Vec<HttpResponseHeader>()
+    .push(HttpResponseHeader.new("content-type", "application/json"))
+  let writer = HttpWriterKernel.response().write(200, headers, 21)
+  let sendfile = HttpSendfileKernel.splice().transfer(HttpSendfilePlan.range(4096, 128, 1024))
+  let queue = HttpBackpressureQueue.bounded(2048)
+  let backpressure = HttpBackpressureKernel.queue().enqueue(queue, 1024)
+  let slow = HttpBackpressureKernel.queue().enqueue(queue, 4096)
+  return HttpAcceleratedRuntimeKernelProof {
+    parser: parser,
+    route: route,
+    writer: writer,
+    sendfile: sendfile,
+    backpressure: backpressure,
+    malformedParserSafe: malformed.safe(),
+    simdParserSafe: parser.safe() && parser.simdUsed && parser.targetLaneBytes == 32,
+    scalarFallbackSafe: scalar.safe() && scalar.scalarFallbackUsed,
+    routeMissSafe: routeMiss.safe(),
+    slowClientSafe: slow.safe(),
+  }
+}

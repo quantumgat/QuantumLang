@@ -1,0 +1,34 @@
+pub enum LiteralKind {
+  Integer
+  Float
+  String
+  InterpolatedString
+  Char
+  Bool
+  Null
+}
+
+pub struct LiteralToken {
+  kind: LiteralKind,
+  file: u32,
+  start: usize,
+  end: usize,
+}
+
+pub fn literalToken(kind: LiteralKind, file: u32, start: usize, end: usize) -> LiteralToken {
+  return LiteralToken { kind: kind, file: file, start: start, end: end }
+}
+
+impl LiteralToken {
+  pub fn literalKind(self: LiteralToken) -> LiteralKind {
+    return self.kind
+  }
+
+  pub fn len(self: LiteralToken) -> usize {
+    if self.end <= self.start {
+      return 0
+    }
+
+    return self.end - self.start
+  }
+}

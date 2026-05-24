@@ -1,0 +1,31 @@
+pub struct InterfaceEntryCallLowering {
+  callId: u64,
+  interfaceTypeId: u64,
+  implementorTypeId: u64,
+  methodId: u64,
+  slot: usize,
+  functionPtrLoaded: bool,
+  entryBound: bool,
+  routeMetadata: bool,
+  hotPathSafe: bool,
+}
+
+pub fn interfaceEntryCallLowering(callId: u64, interfaceTypeId: u64, implementorTypeId: u64, methodId: u64, slot: usize, functionPtrLoaded: bool, entryBound: bool, routeMetadata: bool, hotPathSafe: bool) -> InterfaceEntryCallLowering {
+  return InterfaceEntryCallLowering {
+    callId: callId,
+    interfaceTypeId: interfaceTypeId,
+    implementorTypeId: implementorTypeId,
+    methodId: methodId,
+    slot: slot,
+    functionPtrLoaded: functionPtrLoaded,
+    entryBound: entryBound,
+    routeMetadata: routeMetadata,
+    hotPathSafe: hotPathSafe,
+  }
+}
+
+impl InterfaceEntryCallLowering {
+  pub fn canEmit(self: InterfaceEntryCallLowering) -> bool {
+    return self.callId > 0 && self.interfaceTypeId > 0 && self.implementorTypeId > 0 && self.methodId > 0 && self.functionPtrLoaded && self.entryBound && self.routeMetadata && self.hotPathSafe
+  }
+}

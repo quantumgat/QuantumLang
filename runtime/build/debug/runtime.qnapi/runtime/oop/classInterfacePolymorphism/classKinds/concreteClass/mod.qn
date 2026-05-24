@@ -1,0 +1,3 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub mod concreteClassRuntimeContract
+pub use concreteClassRuntimeContract.ConcreteClassRuntimeContract

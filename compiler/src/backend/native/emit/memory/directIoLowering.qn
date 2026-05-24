@@ -1,0 +1,19 @@
+pub struct DirectIoLowering {
+  emitsDirectIo: bool,
+  preservesAlignment: bool,
+  preservesPinnedBuffer: bool,
+}
+
+impl DirectIoLowering {
+  pub fn init(emitsDirectIo: bool, preservesAlignment: bool, preservesPinnedBuffer: bool) -> DirectIoLowering {
+    return DirectIoLowering {
+      emitsDirectIo: emitsDirectIo,
+      preservesAlignment: preservesAlignment,
+      preservesPinnedBuffer: preservesPinnedBuffer,
+    }
+  }
+
+  pub fn accepted(self: DirectIoLowering) -> bool {
+    return self.emitsDirectIo && self.preservesAlignment && self.preservesPinnedBuffer
+  }
+}

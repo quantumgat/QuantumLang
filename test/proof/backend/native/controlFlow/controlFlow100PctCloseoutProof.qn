@@ -1,0 +1,29 @@
+pub struct ControlFlow100PctCloseoutProof {
+  matchForms: usize,
+  forForms: usize,
+  whileForms: usize,
+  ifExecutableCases: usize,
+  breakContinueExecutableCases: usize,
+  parallelLoopFamilies: usize,
+  negativeDiagnosticFamilies: usize,
+  hotPathFamilies: usize,
+  fullPipelineFamilies: usize,
+  noGeneratedFallback: bool,
+  testOwnedEvidence: bool,
+}
+
+impl ControlFlow100PctCloseoutProof {
+  pub fn complete(self: ControlFlow100PctCloseoutProof) -> bool {
+    return self.matchForms == 45
+      && self.forForms == 100
+      && self.whileForms == 15
+      && self.ifExecutableCases >= 3
+      && self.breakContinueExecutableCases >= 3
+      && self.parallelLoopFamilies >= 4
+      && self.negativeDiagnosticFamilies >= 5
+      && self.hotPathFamilies >= 6
+      && self.fullPipelineFamilies >= 6
+      && self.noGeneratedFallback
+      && self.testOwnedEvidence
+  }
+}

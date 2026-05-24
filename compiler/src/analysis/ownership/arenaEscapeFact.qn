@@ -1,0 +1,21 @@
+pub struct ArenaEscapeFact {
+  regionId: u64,
+  valueNode: u64,
+  sourceScopeDepth: usize,
+  targetScopeDepth: usize,
+}
+
+impl ArenaEscapeFact {
+  pub fn init(regionId: u64, valueNode: u64, sourceScopeDepth: usize, targetScopeDepth: usize) -> ArenaEscapeFact {
+    return ArenaEscapeFact {
+      regionId: regionId,
+      valueNode: valueNode,
+      sourceScopeDepth: sourceScopeDepth,
+      targetScopeDepth: targetScopeDepth,
+    }
+  }
+
+  pub fn mustReject(self: ArenaEscapeFact) -> bool {
+    return self.targetScopeDepth < self.sourceScopeDepth
+  }
+}

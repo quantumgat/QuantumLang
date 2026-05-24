@@ -1,0 +1,30 @@
+pub struct MemoryDiagnosticSafetyFact {
+  incidentPath: string,
+  resultOnly: bool,
+  redactsPayload: bool,
+  avoidsAllocationOnFailure: bool,
+  suppressesCoredump: bool,
+  sourceRangeStable: bool,
+}
+
+impl MemoryDiagnosticSafetyFact {
+  pub fn init(incidentPath: string) -> MemoryDiagnosticSafetyFact {
+    return MemoryDiagnosticSafetyFact {
+      incidentPath: incidentPath,
+      resultOnly: true,
+      redactsPayload: true,
+      avoidsAllocationOnFailure: true,
+      suppressesCoredump: true,
+      sourceRangeStable: true,
+    }
+  }
+
+  pub fn accepted(self: MemoryDiagnosticSafetyFact) -> bool {
+    return self.incidentPath != ""
+      && self.resultOnly
+      && self.redactsPayload
+      && self.avoidsAllocationOnFailure
+      && self.suppressesCoredump
+      && self.sourceRangeStable
+  }
+}

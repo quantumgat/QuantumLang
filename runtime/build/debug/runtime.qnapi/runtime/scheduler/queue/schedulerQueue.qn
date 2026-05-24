@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum SchedulerQueueKind {
+  LocalRun
+  GlobalInject
+  Wake
+  Blocking
+}
+pub struct SchedulerQueueRuntime {
+  queueId: u64
+  kind: SchedulerQueueKind
+  bound: usize
+  depth: usize
+  pressureEvents: usize
+}

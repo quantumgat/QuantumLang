@@ -1,0 +1,54 @@
+pub enum RuntimeLogBackpressureKind {
+  DropNewest,
+  DropOldest,
+  BlockCaller,
+  SpillToIncident,
+  ReturnError,
+}
+
+pub struct RuntimeLogBackpressure {
+  kind: RuntimeLogBackpressureKind,
+  queueCapacity: usize,
+  dropCount: usize,
+  returnsTypedError: bool,
+  neverAllocatesOnPressure: bool,
+  incidentFallback: bool,
+  noPanic: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeLogBackpressure {
+  pub fn dropOldest(queueCapacity: usize) -> RuntimeLogBackpressure {
+    return RuntimeLogBackpressure {
+      kind: RuntimeLogBackpressureKind.DropOldest,
+      queueCapacity: queueCapacity,
+      dropCount: 0,
+      returnsTypedError: false,
+      neverAllocatesOnPressure: true,
+      incidentFallback: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn returnError(queueCapacity: usize) -> RuntimeLogBackpressure {
+    return RuntimeLogBackpressure {
+      kind: RuntimeLogBackpressureKind.ReturnError,
+      queueCapacity: queueCapacity,
+      dropCount: 0,
+      returnsTypedError: true,
+      neverAllocatesOnPressure: true,
+      incidentFallback: true,
+      noPanic: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeLogBackpressure) -> bool {
+    return self.queueCapacity > 0
+      && self.neverAllocatesOnPressure
+      && self.incidentFallback
+      && self.noPanic
+      && self.noCoredump
+  }
+}

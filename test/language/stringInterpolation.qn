@@ -1,0 +1,19 @@
+import std::io::{format}
+
+pub fn stringInterpolationGreeting(name: string) -> string {
+  f"Hello, {name}!"
+}
+
+pub fn stringInterpolationReceipt(amount: dec128, id: u64, currency: string) -> string {
+  let price: string = f"Price: {amount:.2}"
+  let userId: string = f"User ID: {id:08}"
+  f"{price} {userId} Total: {amount} {currency}"
+}
+
+pub fn stringInterpolationDebug(id: u64) -> string {
+  f"User: {id:?}"
+}
+
+pub fn stringInterpolationEscapedBrace(name: string) -> string {
+  f"Use {{name}} for {name}"
+}

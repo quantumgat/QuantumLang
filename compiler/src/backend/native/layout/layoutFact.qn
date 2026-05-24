@@ -1,0 +1,36 @@
+pub enum LayoutKind {
+  ScalarLayout
+  AggregateLayout
+  EnumLayout
+  PointerLayout
+  QuantumHandleLayout
+}
+
+pub struct LayoutFact {
+  typeId: u64,
+  size: usize,
+  align: usize,
+  kind: LayoutKind,
+}
+
+pub fn layoutFact(typeId: u64, size: usize, align: usize, kind: LayoutKind) -> LayoutFact {
+  return LayoutFact { typeId: typeId, size: size, align: align, kind: kind }
+}
+
+impl LayoutFact {
+  pub fn resolvedType(self: LayoutFact) -> u64 {
+    return self.typeId
+  }
+
+  pub fn sizeBytes(self: LayoutFact) -> usize {
+    return self.size
+  }
+
+  pub fn alignment(self: LayoutFact) -> usize {
+    return self.align
+  }
+
+  pub fn layoutKind(self: LayoutFact) -> LayoutKind {
+    return self.kind
+  }
+}

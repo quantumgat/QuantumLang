@@ -1,0 +1,46 @@
+pub enum FormatRequirement {
+  Display
+  Debug
+  Precision
+  ZeroPaddedWidth
+}
+
+pub enum FormatObligationDiagnostic {
+  None
+  UnsupportedDisplay
+  UnsupportedDebug
+  InvalidPrecisionType
+  InvalidWidthType
+  SecretRequiresRedaction
+}
+
+pub struct FormatObligation {
+  expressionTypeId: u64,
+  requirement: FormatRequirement,
+  checked: bool,
+  diagnostic: FormatObligationDiagnostic,
+}
+
+pub fn formatObligation(
+  expressionTypeId: u64,
+  requirement: FormatRequirement,
+  checked: bool,
+  diagnostic: FormatObligationDiagnostic,
+) -> FormatObligation {
+  return FormatObligation {
+    expressionTypeId: expressionTypeId,
+    requirement: requirement,
+    checked: checked,
+    diagnostic: diagnostic,
+  }
+}
+
+impl FormatObligation {
+  pub fn isSatisfied(self: FormatObligation) -> bool {
+    return self.checked && self.diagnostic == FormatObligationDiagnostic.None
+  }
+
+  pub fn requiresDebugRoute(self: FormatObligation) -> bool {
+    return self.requirement == FormatRequirement.Debug
+  }
+}

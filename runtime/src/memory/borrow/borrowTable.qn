@@ -1,0 +1,44 @@
+pub struct BorrowTable {
+  activeCount: usize,
+  mutationEpoch: u64,
+}
+
+impl BorrowTable {
+  pub fn init() -> BorrowTable {
+    return BorrowTable {
+      activeCount: 0,
+      mutationEpoch: 0,
+    }
+  }
+
+  pub fn acquire(self: BorrowTable, lease: BorrowLease, existing: BorrowLease) -> Result<BorrowTable, BorrowRuntimeError> {
+    if lease.range.conflicts(existing.range) && existing.active {
+      return Err(BorrowRuntimeError.OverlappingMutableBorrow)
+    }
+    return Ok(BorrowTable {
+      activeCount: self.activeCount + 1,
+      mutationEpoch: self.mutationEpoch,
+    })
+  }
+
+  pub fn acquireView(self: BorrowTable, lease: BorrowLease, existing: BorrowLease) -> Result<BorrowTable, BorrowRuntimeError> {
+    return self.acquire(lease, existing)
+  }
+
+  pub fn recordMutation(self: BorrowTable) -> BorrowTable {
+    return BorrowTable {
+      activeCount: self.activeCount,
+      mutationEpoch: self.mutationEpoch + 1,
+    }
+  }
+
+  pub fn release(self: BorrowTable) -> BorrowTable {
+    if self.activeCount == 0 {
+      return self
+    }
+    return BorrowTable {
+      activeCount: self.activeCount - 1,
+      mutationEpoch: self.mutationEpoch,
+    }
+  }
+}

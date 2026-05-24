@@ -1,0 +1,43 @@
+pub enum QuantumEffectKind {
+  Allocate
+  Gate
+  Measure
+  Reset
+  Release
+  ProviderRun
+}
+
+pub struct QuantumEffectFact {
+  node: u64,
+  effect: QuantumEffectKind,
+  requiresProvider: bool,
+  crossesClassicalBoundary: bool,
+}
+
+pub fn quantumEffectFact(
+  node: u64,
+  effect: QuantumEffectKind,
+  requiresProvider: bool,
+  crossesClassicalBoundary: bool
+) -> QuantumEffectFact {
+  return QuantumEffectFact {
+    node: node,
+    effect: effect,
+    requiresProvider: requiresProvider,
+    crossesClassicalBoundary: crossesClassicalBoundary,
+  }
+}
+
+impl QuantumEffectFact {
+  pub fn nodeId(self: QuantumEffectFact) -> u64 {
+    return self.node
+  }
+
+  pub fn effectKind(self: QuantumEffectFact) -> QuantumEffectKind {
+    return self.effect
+  }
+
+  pub fn needsProvider(self: QuantumEffectFact) -> bool {
+    return self.requiresProvider
+  }
+}

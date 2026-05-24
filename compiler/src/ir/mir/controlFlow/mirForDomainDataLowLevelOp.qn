@@ -1,0 +1,51 @@
+pub enum MirForDomainDataLowLevelOpKind {
+  DirectTableCursor
+  BinaryViewCursor
+  ColumnBlockVectorLoop
+  DeltaApplyLoop
+  PageDecodeLoop
+  BitScanLoop
+  ProbeLoop
+  MergeLoop
+  PipelineLoop
+  PointerRangeLoop
+  CheckedSliceLoop
+  MemoryRegionLoop
+  AtomicRetryLoop
+  MmioVolatileLoop
+  FileLineLoop
+  TextTokenLoop
+  GraphemeLoop
+  RetryBatchLoop
+  TimeWindowLoop
+  ResourceTransactionLoop
+}
+
+pub struct MirForDomainDataLowLevelOp {
+  instruction: u64,
+  kind: MirForDomainDataLowLevelOpKind,
+  cursorErased: bool,
+  boundsHoisted: bool,
+  aliasProofReady: bool,
+  capabilityProofReady: bool,
+  directLoadStoreReady: bool,
+  runtimeCallReady: bool,
+  cleanupReady: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirForDomainDataLowLevelOp {
+  pub fn complete(self: MirForDomainDataLowLevelOp) -> bool {
+    return self.instruction > 0
+      && self.cursorErased
+      && self.boundsHoisted
+      && self.aliasProofReady
+      && self.capabilityProofReady
+      && self.directLoadStoreReady
+      && self.runtimeCallReady
+      && self.cleanupReady
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

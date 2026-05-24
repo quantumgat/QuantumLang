@@ -1,0 +1,26 @@
+pub struct TemplateInput {
+  id: u64,
+  payloadBytes: usize,
+}
+
+pub struct TemplateOutput {
+  id: u64,
+  processedBytes: usize,
+}
+
+impl TemplateInput {
+  pub fn new(id: u64, payloadBytes: usize) -> TemplateInput {
+    return TemplateInput { id: id, payloadBytes: payloadBytes }
+  }
+}
+
+pub fn run(input: TemplateInput) -> Result<TemplateOutput, TemplateError> {
+  return pluginTemplate.run(input)
+}
+
+pub enum TemplateError {
+  MissingCapability,
+  KernelFailed,
+  UnsupportedTarget,
+}
+

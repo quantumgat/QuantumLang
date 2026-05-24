@@ -1,0 +1,39 @@
+pub struct JsonMeasuredBenchmarkProof {
+  typedDecodeMeasured: bool,
+  typedEncodeMeasured: bool,
+  dynamicParseMeasured: bool,
+  zeroCopyViewMeasured: bool,
+  malformedDiagnosticsMeasured: bool,
+  scalarVsSimdMeasured: bool,
+  baselineComparisonMeasured: bool,
+  reportComplete: bool,
+  productClaimAllowed: bool,
+}
+
+impl JsonMeasuredBenchmarkProof {
+  pub fn required() -> JsonMeasuredBenchmarkProof {
+    return JsonMeasuredBenchmarkProof {
+      typedDecodeMeasured: false,
+      typedEncodeMeasured: false,
+      dynamicParseMeasured: false,
+      zeroCopyViewMeasured: false,
+      malformedDiagnosticsMeasured: false,
+      scalarVsSimdMeasured: false,
+      baselineComparisonMeasured: false,
+      reportComplete: false,
+      productClaimAllowed: false,
+    }
+  }
+
+  pub fn complete(self: JsonMeasuredBenchmarkProof) -> bool {
+    return self.typedDecodeMeasured
+      && self.typedEncodeMeasured
+      && self.dynamicParseMeasured
+      && self.zeroCopyViewMeasured
+      && self.malformedDiagnosticsMeasured
+      && self.scalarVsSimdMeasured
+      && self.baselineComparisonMeasured
+      && self.reportComplete
+      && self.productClaimAllowed
+  }
+}

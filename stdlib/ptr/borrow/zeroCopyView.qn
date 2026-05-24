@@ -1,0 +1,84 @@
+pub struct ZeroCopyView<T> {
+  slice: Slice<T>,
+  token: ViewToken,
+}
+
+impl<T> ZeroCopyView<T> {
+  /**
+    Creates an immutable zero-copy view from a checked pointer slice.
+
+    example:
+      let view = ZeroCopyView<User>.fromSlice(users, token)
+      let first = view.get(0)?
+
+    effects: pure for construction
+    complexity: O(1)
+    allocation: none
+    safety: token must match the source generation and mutation epoch
+    stability: public since 0.1
+  */
+  pub fn fromSlice(slice: Slice<T>, token: ViewToken) -> ZeroCopyView<T> {
+    return ZeroCopyView<T> {
+      slice: slice,
+      token: token,
+    }
+  }
+
+  pub fn len(self: ZeroCopyView<T>) -> usize {
+    return self.slice.len()
+  }
+
+  pub fn isEmpty(self: ZeroCopyView<T>) -> bool {
+    return self.slice.isEmpty()
+  }
+
+  pub fn token(self: ZeroCopyView<T>) -> ViewToken {
+    return self.token
+  }
+
+  pub fn asSlice(self: ZeroCopyView<T>) -> Slice<T> {
+    return self.slice
+  }
+
+  pub fn validate(self: ZeroCopyView<T>, generation: u64, mutationEpoch: u64) -> Result<ZeroCopyView<T>, AliasError> {
+    if self.token.validates(generation, mutationEpoch) {
+      return Ok(self)
+    }
+    return Err(AliasError.init(AliasErrorKind.ReadAfterMutation))
+  }
+
+  pub fn get(self: ZeroCopyView<T>, index: usize) -> Result<T, AliasError> {
+    if index >= self.slice.len() {
+      return Err(AliasError.init(AliasErrorKind.InvalidRange))
+    }
+    match self.slice.get(index) {
+      Some(value) => {
+        return Ok(value)
+      }
+      None => {
+        return Err(AliasError.init(AliasErrorKind.DanglingView))
+      }
+    }
+  }
+
+  pub fn subView(self: ZeroCopyView<T>, start: usize, len: usize) -> Result<ZeroCopyView<T>, AliasError> {
+    if start > self.slice.len() {
+      return Err(AliasError.init(AliasErrorKind.InvalidRange))
+    }
+    return Ok(ZeroCopyView<T> {
+      slice: self.slice.subSlice(start, len),
+      token: ViewToken.init(
+        self.token.sourceId,
+        self.token.start + start,
+        len,
+        self.token.generation,
+        self.token.mutationEpoch,
+        false,
+      ),
+    })
+  }
+
+  pub fn toVec(self: ZeroCopyView<T>) -> Vec<T> requires(alloc) {
+    return self.slice.toVec()
+  }
+}

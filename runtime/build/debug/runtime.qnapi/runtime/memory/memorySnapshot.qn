@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct MemorySnapshot {
+  allocationCount: usize
+  arenaCount: usize
+  poolCount: usize
+}
+pub extern "qnpkg" {
+  pub fn memorySnapshot(allocationCount: usize, arenaCount: usize, poolCount: usize) -> MemorySnapshot
+}

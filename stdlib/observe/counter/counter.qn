@@ -1,0 +1,6 @@
+pub struct Counter {
+  name: string,
+  value: u64,
+}
+
+pub fn counter(name: string) -> Counter

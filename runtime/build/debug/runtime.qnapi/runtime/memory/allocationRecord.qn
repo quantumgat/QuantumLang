@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeAllocationState {
+  Live,
+  Freed,
+  Revoked,
+}
+pub struct AllocationRecord {
+  allocationId: u64
+  generation: u64
+  domainId: u64
+  bytes: usize
+  state: RuntimeAllocationState
+}

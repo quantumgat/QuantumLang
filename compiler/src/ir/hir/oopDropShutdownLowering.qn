@@ -1,0 +1,43 @@
+pub enum OopDropShutdownLoweringKind {
+  DropBody
+  FieldDropReverse
+  BaseDropReverse
+  CloseMethod
+  ShutdownAsync
+  ShutdownBeforeDropProof
+  DoubleDropDiagnostic
+  UseAfterDropDiagnostic
+}
+
+pub struct OopDropShutdownLowering {
+  ownerTypeId: u64,
+  lifecycleMethodId: u64,
+  kind: OopDropShutdownLoweringKind,
+  astBound: bool,
+  hirBound: bool,
+  classDropFactsBound: bool,
+  cleanupPlanBound: bool,
+  reverseCleanupBound: bool,
+  doubleDropRejected: bool,
+  useAfterDropRejected: bool,
+  shutdownBeforeDropBound: bool,
+  asyncAwaitBound: bool,
+  sourceMapBound: bool,
+}
+
+impl OopDropShutdownLowering {
+  pub fn complete(self: OopDropShutdownLowering) -> bool {
+    return self.ownerTypeId > 0
+      && self.lifecycleMethodId > 0
+      && self.astBound
+      && self.hirBound
+      && self.classDropFactsBound
+      && self.cleanupPlanBound
+      && self.reverseCleanupBound
+      && self.doubleDropRejected
+      && self.useAfterDropRejected
+      && self.shutdownBeforeDropBound
+      && self.sourceMapBound
+      && (self.kind != OopDropShutdownLoweringKind.ShutdownAsync || self.asyncAwaitBound)
+  }
+}

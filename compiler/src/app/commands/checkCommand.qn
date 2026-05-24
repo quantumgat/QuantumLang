@@ -1,0 +1,19 @@
+pub class CheckCommand {
+  commandName: string,
+  delegatesToPipeline: bool,
+  emitsBinary: bool,
+  diagnosticsOnly: bool,
+
+  pub init() {
+    self.commandName = "check"
+    self.delegatesToPipeline = true
+    self.emitsBinary = false
+    self.diagnosticsOnly = true
+  }
+
+  pub fn execute(self: &CheckCommand) -> bool {
+    return self.delegatesToPipeline &&
+      self.emitsBinary == false &&
+      self.diagnosticsOnly
+  }
+}

@@ -1,0 +1,29 @@
+pub struct BigPrimePolicy {
+  rounds: usize,
+  deterministic: bool,
+}
+
+impl BigPrimePolicy {
+  pub fn deterministic() -> BigPrimePolicy {
+    return BigPrimePolicy {
+      rounds: 0,
+      deterministic: true,
+    }
+  }
+}
+
+pub trait BigPrimeNumber<T> {
+  pub fn factorial(self: T) -> Result<T, BigNumberError>
+  pub fn binomial(self: T, k: T) -> Result<T, BigNumberError>
+  pub fn isPrime(self: T) -> bool
+  pub fn isPrime(self: T, policy: BigPrimePolicy) -> bool
+  pub fn nextPrime(self: T) -> Result<T, BigNumberError>
+}
+
+extend<T: BigPrimeNumber<T>> T {
+  pub fn factorial(self: T) -> Result<T, BigNumberError>
+  pub fn binomial(self: T, k: T) -> Result<T, BigNumberError>
+  pub fn isPrime(self: T) -> bool
+  pub fn isPrime(self: T, policy: BigPrimePolicy) -> bool
+  pub fn nextPrime(self: T) -> Result<T, BigNumberError>
+}

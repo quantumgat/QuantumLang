@@ -1,0 +1,39 @@
+pub enum ForQuantumComptimeSyntaxKind {
+  QforRegister
+  QforIndexedRegister
+  QforControlled
+  QforMeasurement
+  QifNestedQfor
+  QwhileRestricted
+  ComptimeFor
+  StaticFor
+  ReflectionFor
+  BuilderFor
+}
+
+pub struct ForQuantumComptimeSyntax {
+  kind: ForQuantumComptimeSyntaxKind,
+  loopHeaderParsed: bool,
+  quantumProfileParsed: bool,
+  qregShapeParsed: bool,
+  measurementClauseParsed: bool,
+  comptimeDomainParsed: bool,
+  finiteExpansionParsed: bool,
+  bodyParsed: bool,
+  sourceRangeReady: bool,
+  recoveryReady: bool,
+}
+
+impl ForQuantumComptimeSyntax {
+  pub fn parsed(self: ForQuantumComptimeSyntax) -> bool {
+    return self.loopHeaderParsed
+      && self.quantumProfileParsed
+      && self.qregShapeParsed
+      && self.measurementClauseParsed
+      && self.comptimeDomainParsed
+      && self.finiteExpansionParsed
+      && self.bodyParsed
+      && self.sourceRangeReady
+      && self.recoveryReady
+  }
+}

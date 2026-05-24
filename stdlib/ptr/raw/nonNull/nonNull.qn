@@ -1,0 +1,912 @@
+/**
+  Non-null wrapper around a typed raw pointer.
+
+  example:
+    let nonNull = ptr.checkNonNull()?
+    let raw = nonNull.asPtr()
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: guarantees non-zero address only; access still needs read/write proof
+  stability: public since 0.1
+*/
+pub struct NonNull<T> {
+  ptr: Ptr<T>,
+}
+
+impl<T> NonNull<T> {
+  /**
+    Creates NonNull when the input pointer is not null.
+
+    example:
+      let nonNull = ptr.checkNonNull()?
+      let address = nonNull.rawAddress()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: checks null only; does not prove lifetime, alignment, or bounds
+    stability: public since 0.1
+  */
+  pub fn from(ptr: Ptr<T>) -> Option<NonNull<T>> {
+    if ptr.isNull() {
+      return None
+    }
+    return Some(NonNull<T> {
+      ptr: ptr,
+    })
+  }
+
+  /**
+    Creates NonNull or returns PtrError.Null.
+
+    example:
+      let nonNull = NonNull<User>.checked(ptr)?
+      let raw = nonNull.asPtr()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: checks null only; access still needs readable or writable proof
+    stability: public since 0.1
+  */
+  pub fn checked(ptr: Ptr<T>) -> Result<NonNull<T>, PtrError> {
+    if ptr.isNull() {
+      return Err(PtrError.Null)
+    }
+    return Ok(NonNull<T> {
+      ptr: ptr,
+    })
+  }
+
+  /**
+    Creates NonNull or panics with a diagnostic message.
+
+    example:
+      unsafe {
+        let nonNull = NonNull<User>.require(ptr, "users pointer is null")
+      }
+
+    effects: pure unless null triggers panic
+    complexity: O(1)
+    allocation: none
+    safety: advanced unsafe helper for APIs that cannot return Result
+    stability: public since 0.1
+  */
+  pub fn require(ptr: Ptr<T>, message: string) -> NonNull<T> requires(unsafe) {
+    if ptr.isNull() {
+      return panic(message)
+    }
+    return NonNull<T> {
+      ptr: ptr,
+    }
+  }
+
+  /**
+    Creates a dangling non-null pointer for zero-length views.
+
+    example:
+      unsafe {
+        let emptyPtr = NonNull<User>.dangling()
+        let empty = Slice<User>.fromPtr(emptyPtr, 0)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: must not be read or written; valid only for empty views
+    stability: public since 0.1
+  */
+  pub fn dangling() -> NonNull<T> requires(unsafe) {
+    return NonNull<T> {
+      ptr: Ptr<T>.danglingAligned(),
+    }
+  }
+
+  /**
+    Returns the underlying raw pointer.
+
+    example:
+      let ptr = nonNull.asPtr()
+      let user = ptr.get()?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: conversion preserves non-null but does not grant access rights
+    stability: public since 0.1
+  */
+  pub fn asPtr(self: NonNull<T>) -> Ptr<T> {
+    return self.ptr
+  }
+
+  /**
+    Returns the typed address for this non-null pointer.
+
+    example:
+      let address = nonNull.address()
+      let raw = address.raw()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn address(self: NonNull<T>) -> Address {
+    return self.ptr.address()
+  }
+
+  /**
+    Returns the integer address for this non-null pointer.
+
+    example:
+      let nonNull = ptr.checkNonNull()?
+      let raw = nonNull.rawAddress()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: integer addresses should not be used to bypass provenance checks
+    stability: public since 0.1
+  */
+  pub fn rawAddress(self: NonNull<T>) -> usize {
+    return self.ptr.rawAddress()
+  }
+
+  /**
+    Returns the provenance metadata for this pointer.
+
+    example:
+      let provenance = nonNull.provenance()
+      if provenance.valid() == false { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: provenance is metadata; it does not prove a specific access length
+    stability: public since 0.1
+  */
+  pub fn provenance(self: NonNull<T>) -> Provenance {
+    return self.ptr.provenance()
+  }
+
+  /**
+    Returns the address space for this pointer.
+
+    example:
+      if nonNull.addressSpace() == AddressSpace.Foreign {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: address-space checks help prevent host/device/foreign mixups
+    stability: public since 0.1
+  */
+  pub fn addressSpace(self: NonNull<T>) -> AddressSpace {
+    return self.ptr.addressSpace()
+  }
+
+  /**
+    Reinterprets this non-null pointer as another element type.
+
+    example:
+      unsafe {
+        let bytes = nonNull.cast<u8>()
+        let first = bytes.read()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove target layout, aliasing, and alignment
+    stability: public since 0.1
+  */
+  pub fn cast<U>(self: NonNull<T>) -> NonNull<U> requires(unsafe) {
+    return NonNull<U>.require(self.ptr.cast<U>(), "cast preserved null unexpectedly")
+  }
+
+  /**
+    Re-tags this non-null pointer with another address space.
+
+    example:
+      unsafe {
+        let devicePtr = nonNull.castAddressSpace(AddressSpace.Device)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove the address is valid in the target address space
+    stability: public since 0.1
+  */
+  pub fn castAddressSpace(self: NonNull<T>, space: AddressSpace) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self.ptr.castAddressSpace(space), "address-space cast preserved null unexpectedly")
+  }
+
+  /**
+    Attaches provenance metadata to this non-null pointer.
+
+    example:
+      unsafe {
+        let tracked = nonNull.withProvenance(provenance)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: provenance must belong to the pointer address
+    stability: public since 0.1
+  */
+  pub fn withProvenance(self: NonNull<T>, provenance: Provenance) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self.ptr.withProvenance(provenance), "provenance update preserved null unexpectedly")
+  }
+
+  /**
+    Exposes the non-null pointer address as an integer.
+
+    example:
+      unsafe {
+        let raw = nonNull.exposeAddress()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: exposed addresses must not bypass provenance checks
+    stability: public since 0.1
+  */
+  pub fn exposeAddress(self: NonNull<T>) -> usize requires(unsafe) {
+    return self.ptr.exposeAddress()
+  }
+
+  /**
+    Advances this non-null pointer by element count.
+
+    example:
+      unsafe {
+        let next = nonNull.add(1)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: result must remain inside the live allocation or one-past boundary
+    stability: public since 0.1
+  */
+  pub fn add(self: NonNull<T>, count: usize) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self.ptr.add(count), "pointer arithmetic produced null")
+  }
+
+  /**
+    Moves this non-null pointer backward by element count.
+
+    example:
+      unsafe {
+        let previous = current.sub(1)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: result must remain inside the same live allocation
+    stability: public since 0.1
+  */
+  pub fn sub(self: NonNull<T>, count: usize) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self.ptr.sub(count), "pointer arithmetic produced null")
+  }
+
+  /**
+    Advances this non-null pointer by raw bytes.
+
+    example:
+      unsafe {
+        let header = nonNull.byteAdd(16).cast<Header>()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove byte offset, target layout, and alignment
+    stability: public since 0.1
+  */
+  pub fn byteAdd(self: NonNull<T>, bytes: usize) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self.ptr.byteAdd(bytes), "byte offset produced null")
+  }
+
+  /**
+    Moves this non-null pointer backward by raw bytes.
+
+    example:
+      unsafe {
+        let base = field.byteSub(8).cast<Record>()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove the result remains in the valid allocation range
+    stability: public since 0.1
+  */
+  pub fn byteSub(self: NonNull<T>, bytes: usize) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self.ptr.byteSub(bytes), "byte offset produced null")
+  }
+
+  /**
+    Offsets this non-null pointer by signed element count.
+
+    example:
+      unsafe {
+        let item = base.offset(index)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove the signed offset is in bounds for T
+    stability: public since 0.1
+  */
+  pub fn offset(self: NonNull<T>, count: isize) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self.ptr.offset(count), "pointer offset produced null")
+  }
+
+  /**
+    Returns the element distance between two non-null pointers.
+
+    example:
+      unsafe {
+        let count = end.distanceTo(start)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: both pointers must refer to the same allocation and element type
+    stability: public since 0.1
+  */
+  pub fn distanceTo(self: NonNull<T>, other: NonNull<T>) -> isize requires(unsafe) {
+    return self.ptr.distanceTo(other.ptr)
+  }
+
+  /**
+    Returns true when this pointer is aligned for T.
+
+    example:
+      let aligned = nonNull.checkAligned()?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: alignment does not prove lifetime or bounds
+    stability: public since 0.1
+  */
+  pub fn isAligned(self: NonNull<T>) -> bool {
+    return self.ptr.isAligned()
+  }
+
+  /**
+    Returns true when this pointer is aligned to a requested boundary.
+
+    example:
+      if nonNull.isAlignedTo(16) == false { return Err(PtrError.Misaligned) }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: align must be non-zero and valid for the target operation
+    stability: public since 0.1
+  */
+  pub fn isAlignedTo(self: NonNull<T>, align: usize) -> bool {
+    return self.ptr.isAlignedTo(align)
+  }
+
+  /**
+    Returns the byte remainder relative to an alignment boundary.
+
+    example:
+      let offset = nonNull.alignOffset(64)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: returns 0 for invalid align 0; use isAlignedTo for validation
+    stability: public since 0.1
+  */
+  pub fn alignOffset(self: NonNull<T>, align: usize) -> usize {
+    return self.ptr.alignOffset(align)
+  }
+
+  /**
+    Checks alignment for T.
+
+    example:
+      let aligned = nonNull.checkAligned()?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: alignment success does not prove readable or writable access
+    stability: public since 0.1
+  */
+  pub fn checkAligned(self: NonNull<T>) -> Result<NonNull<T>, PtrError> {
+    if self.isAligned() {
+      return Ok(self)
+    }
+    return Err(PtrError.Misaligned)
+  }
+
+  /**
+    Rounds this non-null pointer up to the next alignment boundary.
+
+    example:
+      unsafe {
+        let aligned = nonNull.alignUp(64)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove the aligned address remains valid
+    stability: public since 0.1
+  */
+  pub fn alignUp(self: NonNull<T>, align: usize) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self.ptr.alignUp(align), "alignment produced null")
+  }
+
+  /**
+    Rounds this non-null pointer down to the previous alignment boundary.
+
+    example:
+      unsafe {
+        let header = nonNull.alignDown(64).cast<Header>()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove the rounded address still belongs to the object
+    stability: public since 0.1
+  */
+  pub fn alignDown(self: NonNull<T>, align: usize) -> NonNull<T> requires(unsafe) {
+    return NonNull<T>.require(self.ptr.alignDown(align), "alignment produced null")
+  }
+
+  /**
+    Reads one aligned value.
+
+    example:
+      let user = nonNull.get()?
+
+    advanced:
+      unsafe {
+        let user = nonNull.read()
+      }
+
+    effects: reads memory
+    complexity: O(1)
+    allocation: none
+    safety: requires live, initialized, aligned, readable storage for T
+    stability: public since 0.1
+  */
+  pub fn read(self: NonNull<T>) -> T requires(unsafe) {
+    return self.ptr.read()
+  }
+
+  /**
+    Reads one unaligned value.
+
+    example:
+      unsafe {
+        nonNull.checkReadable(1)?
+        let header = nonNull.readUnaligned()
+      }
+
+    effects: reads memory
+    complexity: O(1)
+    allocation: none
+    safety: requires readable initialized storage; alignment is not assumed
+    stability: public since 0.1
+  */
+  pub fn readUnaligned(self: NonNull<T>) -> T requires(unsafe) {
+    return self.ptr.readUnaligned()
+  }
+
+  /**
+    Writes one aligned value.
+
+    example:
+      nonNull.set(user)?
+
+    advanced:
+      unsafe {
+        nonNull.write(user)
+      }
+
+    effects: writes memory
+    complexity: O(1)
+    allocation: none
+    safety: requires live, aligned, writable storage and valid ownership
+    stability: public since 0.1
+  */
+  pub fn write(self: NonNull<T>, value: T) -> Unit requires(unsafe) {
+    self.ptr.write(value)
+  }
+
+  /**
+    Writes one value without requiring alignment.
+
+    example:
+      unsafe {
+        nonNull.checkWritable(1)?
+        nonNull.writeUnaligned(header)
+      }
+
+    effects: writes memory
+    complexity: O(1)
+    allocation: none
+    safety: requires writable storage; caller must prove unaligned writes are allowed
+    stability: public since 0.1
+  */
+  pub fn writeUnaligned(self: NonNull<T>, value: T) -> Unit requires(unsafe) {
+    self.ptr.writeUnaligned(value)
+  }
+
+  /**
+    Replaces the current value and returns the previous one.
+
+    example:
+      unsafe {
+        nonNull.checkWritable(1)?
+        let old = nonNull.replace(user)
+      }
+
+    effects: reads and writes memory
+    complexity: O(1)
+    allocation: none
+    safety: requires readable and writable initialized storage for T
+    stability: public since 0.1
+  */
+  pub fn replace(self: NonNull<T>, value: T) -> T requires(unsafe) {
+    return self.ptr.replace(value)
+  }
+
+  /**
+    Swaps values stored behind two non-null pointers.
+
+    example:
+      unsafe {
+        left.checkWritable(1)?
+        right.checkWritable(1)?
+        left.swap(right)
+      }
+
+    effects: reads and writes memory
+    complexity: O(1)
+    allocation: none
+    safety: both pointers must be valid, writable, and not illegally aliased
+    stability: public since 0.1
+  */
+  pub fn swap(self: NonNull<T>, other: NonNull<T>) -> Unit requires(unsafe) {
+    self.ptr.swap(other.ptr)
+  }
+
+  /**
+    Reads the value at an element index.
+
+    example:
+      let user = nonNull.getAt(index)?
+
+    advanced:
+      unsafe {
+        let user = nonNull.readAt(index)
+      }
+
+    effects: reads memory
+    complexity: O(1)
+    allocation: none
+    safety: index must be in bounds for the same allocation
+    stability: public since 0.1
+  */
+  pub fn readAt(self: NonNull<T>, index: usize) -> T requires(unsafe) {
+    return self.ptr.readAt(index)
+  }
+
+  /**
+    Writes a value at an element index.
+
+    example:
+      nonNull.setAt(index, user)?
+
+    advanced:
+      unsafe {
+        nonNull.writeAt(index, user)
+      }
+
+    effects: writes memory
+    complexity: O(1)
+    allocation: none
+    safety: index must be writable in the same allocation
+    stability: public since 0.1
+  */
+  pub fn writeAt(self: NonNull<T>, index: usize, value: T) -> Unit requires(unsafe) {
+    self.ptr.writeAt(index, value)
+  }
+
+  /**
+    Copies initialized values from this pointer into a destination pointer.
+
+    example:
+      unsafe {
+        src.checkReadable(count)?
+        dst.checkWritable(count)?
+        src.copyTo(dst, count)
+      }
+
+    effects: reads and writes memory
+    complexity: O(n)
+    allocation: none
+    safety: ranges must be valid and overlap policy must be accepted by lowering
+    stability: public since 0.1
+  */
+  pub fn copyTo(self: NonNull<T>, dst: NonNull<T>, count: usize) -> Unit requires(unsafe) {
+    self.ptr.copyTo(dst.ptr, count)
+  }
+
+  /**
+    Copies initialized values from a source pointer into this pointer.
+
+    example:
+      unsafe {
+        dst.checkWritable(count)?
+        src.checkReadable(count)?
+        dst.copyFrom(src, count)
+      }
+
+    effects: reads and writes memory
+    complexity: O(n)
+    allocation: none
+    safety: ranges must be valid and overlap must be accepted by lowering
+    stability: public since 0.1
+  */
+  pub fn copyFrom(self: NonNull<T>, src: NonNull<T>, count: usize) -> Unit requires(unsafe) {
+    self.ptr.copyFrom(src.ptr, count)
+  }
+
+  /**
+    Moves values from this pointer to a destination pointer.
+
+    example:
+      unsafe {
+        src.checkReadable(count)?
+        dst.checkWritable(count)?
+        src.moveTo(dst, count)
+      }
+
+    effects: moves memory
+    complexity: O(n)
+    allocation: none
+    safety: supports overlap only when backend lowers to the correct move primitive
+    stability: public since 0.1
+  */
+  pub fn moveTo(self: NonNull<T>, dst: NonNull<T>, count: usize) -> Unit requires(unsafe) {
+    self.ptr.moveTo(dst.ptr, count)
+  }
+
+  /**
+    Fills a writable range with a repeated value.
+
+    example:
+      unsafe {
+        nonNull.checkWritable(count)?
+        nonNull.fill(defaultUser, count)
+      }
+
+    effects: writes memory
+    complexity: O(n)
+    allocation: none
+    safety: range must be writable and value must be valid to duplicate
+    stability: public since 0.1
+  */
+  pub fn fill(self: NonNull<T>, value: T, count: usize) -> Unit requires(unsafe) {
+    self.ptr.fill(value, count)
+  }
+
+  /**
+    Zeroes a writable range.
+
+    example:
+      unsafe {
+        nonNull.checkWritable(count)?
+        nonNull.zero(count)
+      }
+
+    effects: writes memory
+    complexity: O(n)
+    allocation: none
+    safety: zero must be a valid initialization pattern for the destination use
+    stability: public since 0.1
+  */
+  pub fn zero(self: NonNull<T>, count: usize) -> Unit requires(unsafe) {
+    self.ptr.zero(count)
+  }
+
+  /**
+    Checks and reads one value.
+
+    example:
+      let user = nonNull.get()?
+
+    effects: reads memory when the pointer is valid
+    complexity: O(1)
+    allocation: none
+    safety: checks readable access for one T before reading
+    stability: public since 0.1
+  */
+  pub fn get(self: NonNull<T>) -> Result<T, PtrError> {
+    let checked = self.checkReadable(1)?
+    return Ok(checked.read())
+  }
+
+  /**
+    Checks and writes one value.
+
+    example:
+      nonNull.set(user)?
+
+    effects: writes memory when the pointer is valid
+    complexity: O(1)
+    allocation: none
+    safety: checks writable access for one T before writing
+    stability: public since 0.1
+  */
+  pub fn set(self: NonNull<T>, value: T) -> Result<NonNull<T>, PtrError> {
+    let checked = self.checkWritable(1)?
+    checked.write(value)
+    return Ok(checked)
+  }
+
+  /**
+    Checks and reads the value at an element index.
+
+    example:
+      let user = nonNull.getAt(index)?
+
+    effects: reads memory when index is valid
+    complexity: O(1)
+    allocation: none
+    safety: checks readable access through index + 1 before reading
+    stability: public since 0.1
+  */
+  pub fn getAt(self: NonNull<T>, index: usize) -> Result<T, PtrError> {
+    let checked = self.checkReadable(index + 1)?
+    return Ok(checked.readAt(index))
+  }
+
+  /**
+    Checks and writes the value at an element index.
+
+    example:
+      nonNull.setAt(index, user)?
+
+    effects: writes memory when index is valid
+    complexity: O(1)
+    allocation: none
+    safety: checks writable access through index + 1 before writing
+    stability: public since 0.1
+  */
+  pub fn setAt(self: NonNull<T>, index: usize, value: T) -> Result<NonNull<T>, PtrError> {
+    let checked = self.checkWritable(index + 1)?
+    checked.writeAt(index, value)
+    return Ok(checked)
+  }
+
+  /**
+    Checks that count elements can be read from this non-null pointer.
+
+    example:
+      let readable = nonNull.checkReadable(count)?
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: validates bounds, provenance, and readable access
+    stability: public since 0.1
+  */
+  pub fn checkReadable(self: NonNull<T>, count: usize) -> Result<NonNull<T>, PtrError> {
+    let checked = self.ptr.checkReadable(count)?
+    return NonNull<T>.checked(checked)
+  }
+
+  /**
+    Checks that count elements can be written through this non-null pointer.
+
+    example:
+      let writable = nonNull.checkWritable(count)?
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: validates mutability, bounds, provenance, and writable ownership
+    stability: public since 0.1
+  */
+  pub fn checkWritable(self: NonNull<T>, count: usize) -> Result<NonNull<T>, PtrError> {
+    let checked = self.ptr.checkWritable(count)?
+    return NonNull<T>.checked(checked)
+  }
+
+  /**
+    Attaches a debug label used by pointer diagnostics.
+
+    example:
+      let users = nonNull.debugLabel("users buffer")
+      let user = users.get()?
+
+    effects: diagnostic metadata update
+    complexity: O(1)
+    allocation: none
+    safety: labeling does not change pointer validity
+    stability: public since 0.1
+  */
+  pub fn debugLabel(self: NonNull<T>, label: string) -> NonNull<T> {
+    return NonNull<T> {
+      ptr: self.ptr.debugLabel(label),
+    }
+  }
+
+  /**
+    Compares address space, address, and provenance allocation id.
+
+    example:
+      if left.equals(right) {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: equality does not prove the pointer is currently live
+    stability: public since 0.1
+  */
+  pub fn equals(self: NonNull<T>, other: NonNull<T>) -> bool {
+    return self.ptr.equals(other.ptr)
+  }
+
+  /**
+    Compares only the numeric address.
+
+    example:
+      if left.sameAddress(right) {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: same address can still have different provenance or address space
+    stability: public since 0.1
+  */
+  pub fn sameAddress(self: NonNull<T>, other: NonNull<T>) -> bool {
+    return self.ptr.sameAddress(other.ptr)
+  }
+
+  /**
+    Compares only provenance allocation identity.
+
+    example:
+      if first.sameProvenance(last) == false {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: same provenance does not prove a specific offset is in bounds
+    stability: public since 0.1
+  */
+  pub fn sameProvenance(self: NonNull<T>, other: NonNull<T>) -> bool {
+    return self.ptr.sameProvenance(other.ptr)
+  }
+}

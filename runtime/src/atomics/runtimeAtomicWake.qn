@@ -1,0 +1,27 @@
+pub struct RuntimeAtomicWake {
+  requested: usize,
+  schedulerParkSupported: bool,
+  targetSupported: bool,
+}
+
+impl RuntimeAtomicWake {
+  pub fn one(schedulerParkSupported: bool, targetSupported: bool) -> RuntimeAtomicWake {
+    return RuntimeAtomicWake {
+      requested: 1,
+      schedulerParkSupported: schedulerParkSupported,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn all(waiterCount: usize, schedulerParkSupported: bool, targetSupported: bool) -> RuntimeAtomicWake {
+    return RuntimeAtomicWake {
+      requested: waiterCount,
+      schedulerParkSupported: schedulerParkSupported,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn accepted(self: RuntimeAtomicWake) -> bool {
+    return self.targetSupported && self.schedulerParkSupported && self.requested > 0
+  }
+}

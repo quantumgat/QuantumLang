@@ -1,0 +1,19 @@
+pub struct RuntimeFacadeReport {
+  schemaName: string,
+  dependsOnCompiler: bool,
+  structuredFacts: bool,
+}
+
+pub fn runtimeFacadeReport() -> RuntimeFacadeReport {
+  return RuntimeFacadeReport {
+    schemaName: "qtruntime-facade-json",
+    dependsOnCompiler: false,
+    structuredFacts: true,
+  }
+}
+
+impl RuntimeFacadeReport {
+  pub fn isRuntimeOnly(self: RuntimeFacadeReport) -> bool {
+    return self.structuredFacts && self.dependsOnCompiler == false
+  }
+}

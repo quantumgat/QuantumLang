@@ -1,0 +1,33 @@
+pub struct RelocationRecord {
+  section: string,
+  symbol: string,
+  offset: usize,
+  relocationKind: string,
+}
+
+pub fn relocationRecord(section: string, symbol: string, offset: usize, relocationKind: string) -> RelocationRecord {
+  return RelocationRecord {
+    section: section,
+    symbol: symbol,
+    offset: offset,
+    relocationKind: relocationKind,
+  }
+}
+
+impl RelocationRecord {
+  pub fn sectionName(self: RelocationRecord) -> string {
+    return self.section
+  }
+
+  pub fn symbolName(self: RelocationRecord) -> string {
+    return self.symbol
+  }
+
+  pub fn byteOffset(self: RelocationRecord) -> usize {
+    return self.offset
+  }
+
+  pub fn kind(self: RelocationRecord) -> string {
+    return self.relocationKind
+  }
+}

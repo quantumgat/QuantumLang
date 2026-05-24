@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub abstract class Runtime {
+  name: string
+  scheduler: Scheduler
+  memory: Allocator
+  qir: QirBridge
+  running: bool
+  pub init() {}
+  pub fn start(self: &mut Runtime) -> bool
+  pub fn shutdown(self: &mut Runtime) -> bool
+  pub fn drop(self: &mut Runtime) -> bool
+  pub fn ownsCoreServices(self: &Runtime) -> bool
+}

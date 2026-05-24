@@ -1,0 +1,42 @@
+pub struct StdlibPreludeExportPolicy {
+  sourceOwnedByStdlib: bool,
+  compilerHardcodeRejected: bool,
+  optionResultErrorNoImport: bool,
+  quantumSyntaxNoImport: bool,
+  quantumPrimitiveTypesNoImport: bool,
+  printExports: usize,
+  logExports: usize,
+  advancedApisRequireImport: bool,
+}
+
+pub fn stdlibPreludeExportPolicy() -> StdlibPreludeExportPolicy {
+  return StdlibPreludeExportPolicy {
+    sourceOwnedByStdlib: true,
+    compilerHardcodeRejected: true,
+    optionResultErrorNoImport: true,
+    quantumSyntaxNoImport: true,
+    quantumPrimitiveTypesNoImport: true,
+    printExports: 5,
+    logExports: 2,
+    advancedApisRequireImport: true,
+  }
+}
+
+impl StdlibPreludeExportPolicy {
+  pub fn accepted(self: StdlibPreludeExportPolicy) -> bool {
+    return self.sourceOwnedByStdlib
+      && self.compilerHardcodeRejected
+      && self.optionResultErrorNoImport
+      && self.quantumSyntaxNoImport
+      && self.quantumPrimitiveTypesNoImport
+      && self.printExports == 5
+      && self.logExports == 2
+      && self.advancedApisRequireImport
+  }
+
+  pub fn coreNoImportAccepted(self: StdlibPreludeExportPolicy) -> bool {
+    return self.optionResultErrorNoImport
+      && self.quantumSyntaxNoImport
+      && self.quantumPrimitiveTypesNoImport
+  }
+}

@@ -1,0 +1,33 @@
+pub struct FrameLayout {
+  stackBytes: usize,
+  spillSlotCount: usize,
+  callFrameBytes: usize,
+  hasUnwindInfo: bool,
+}
+
+pub fn frameLayout(stackBytes: usize, spillSlotCount: usize, callFrameBytes: usize, hasUnwindInfo: bool) -> FrameLayout {
+  return FrameLayout {
+    stackBytes: stackBytes,
+    spillSlotCount: spillSlotCount,
+    callFrameBytes: callFrameBytes,
+    hasUnwindInfo: hasUnwindInfo,
+  }
+}
+
+impl FrameLayout {
+  pub fn stackSize(self: FrameLayout) -> usize {
+    return self.stackBytes
+  }
+
+  pub fn spills(self: FrameLayout) -> usize {
+    return self.spillSlotCount
+  }
+
+  pub fn callFrameSize(self: FrameLayout) -> usize {
+    return self.callFrameBytes
+  }
+
+  pub fn emitsUnwindInfo(self: FrameLayout) -> bool {
+    return self.hasUnwindInfo
+  }
+}

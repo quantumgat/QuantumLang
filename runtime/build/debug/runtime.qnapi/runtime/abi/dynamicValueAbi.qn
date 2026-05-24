@@ -1,0 +1,22 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum DynamicValueAbiKind {
+  UnionValue
+  AnyValue
+  QAnyValue
+}
+pub struct DynamicValueAbi {
+  kind: DynamicValueAbiKind
+  tagBytes: usize
+  payloadBytes: usize
+  typeIdBytes: usize
+  ownsPayload: bool
+  quantumPayload: bool
+  redactedDiagnostics: bool
+}
+pub extern "qnpkg" {
+  pub fn dynamicValueAbi(
+  kind: DynamicValueAbiKind,
+  tagBytes: usize,
+  payloadBytes: usize,
+) -> DynamicValueAbi
+}

@@ -1,0 +1,28 @@
+pub struct FieldLayout {
+  fieldId: u64,
+  offset: usize,
+  size: usize,
+  align: usize,
+}
+
+pub fn fieldLayout(fieldId: u64, offset: usize, size: usize, align: usize) -> FieldLayout {
+  return FieldLayout { fieldId: fieldId, offset: offset, size: size, align: align }
+}
+
+impl FieldLayout {
+  pub fn field(self: FieldLayout) -> u64 {
+    return self.fieldId
+  }
+
+  pub fn byteOffset(self: FieldLayout) -> usize {
+    return self.offset
+  }
+
+  pub fn sizeBytes(self: FieldLayout) -> usize {
+    return self.size
+  }
+
+  pub fn alignment(self: FieldLayout) -> usize {
+    return self.align
+  }
+}

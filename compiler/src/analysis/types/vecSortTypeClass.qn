@@ -1,0 +1,46 @@
+import analysis.types::{BuiltinPrimitiveTypeId}
+
+pub enum VecSortTypeClassKind {
+  GeneralComparable
+  Comparator
+  StableComparable
+  FixedWidthNumeric
+}
+
+pub struct VecSortTypeClass {
+  kind: VecSortTypeClassKind,
+  elementType: BuiltinPrimitiveTypeId,
+  comparatorProvided: bool,
+  stableRequested: bool,
+  fixedWidthNumeric: bool,
+}
+
+pub fn vecSortTypeClass(
+  kind: VecSortTypeClassKind,
+  elementType: BuiltinPrimitiveTypeId,
+  comparatorProvided: bool,
+  stableRequested: bool,
+  fixedWidthNumeric: bool
+) -> VecSortTypeClass {
+  return VecSortTypeClass {
+    kind: kind,
+    elementType: elementType,
+    comparatorProvided: comparatorProvided,
+    stableRequested: stableRequested,
+    fixedWidthNumeric: fixedWidthNumeric,
+  }
+}
+
+impl VecSortTypeClass {
+  pub fn canUseComparatorSort(self: VecSortTypeClass) -> bool {
+    return self.kind == VecSortTypeClassKind.Comparator && self.comparatorProvided
+  }
+
+  pub fn canUseStableSort(self: VecSortTypeClass) -> bool {
+    return self.kind == VecSortTypeClassKind.StableComparable && self.stableRequested
+  }
+
+  pub fn canUseNumericRadixSort(self: VecSortTypeClass) -> bool {
+    return self.kind == VecSortTypeClassKind.FixedWidthNumeric && self.fixedWidthNumeric
+  }
+}

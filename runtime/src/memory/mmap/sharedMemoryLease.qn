@@ -1,0 +1,21 @@
+pub struct RuntimeSharedMemoryLease {
+  mappingId: u64,
+  generation: u64,
+  active: bool,
+  revoked: bool,
+}
+
+impl RuntimeSharedMemoryLease {
+  pub fn init(mappingId: u64, generation: u64, active: bool, revoked: bool) -> RuntimeSharedMemoryLease {
+    return RuntimeSharedMemoryLease {
+      mappingId: mappingId,
+      generation: generation,
+      active: active,
+      revoked: revoked,
+    }
+  }
+
+  pub fn accepted(self: RuntimeSharedMemoryLease) -> bool {
+    return self.mappingId > 0 && self.generation > 0 && self.active && self.revoked == false
+  }
+}

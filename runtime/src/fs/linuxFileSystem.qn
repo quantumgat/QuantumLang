@@ -1,0 +1,53 @@
+import fileSystem::{FileSystem}
+
+pub class LinuxFileSystem {
+  root: string,
+  mounted: bool,
+
+  pub init(root: string) {
+    self.root = root
+    self.mounted = true
+  }
+
+  pub fn providerName(self: &LinuxFileSystem) -> string {
+    return "linux"
+  }
+
+  pub fn supportsAtomicRename(self: &LinuxFileSystem) -> bool {
+    return self.mounted
+  }
+
+  pub fn supportsSymlink(self: &LinuxFileSystem) -> bool {
+    return self.mounted
+  }
+
+  pub fn supportsStreaming(self: &LinuxFileSystem) -> bool {
+    return self.mounted
+  }
+
+  pub fn noCoredump(self: &LinuxFileSystem) -> bool {
+    return self.mounted
+  }
+}
+
+impl FileSystem for LinuxFileSystem {
+  pub fn providerName(self: &LinuxFileSystem) -> string {
+    return "linux"
+  }
+
+  pub fn supportsAtomicRename(self: &LinuxFileSystem) -> bool {
+    return self.mounted
+  }
+
+  pub fn supportsSymlink(self: &LinuxFileSystem) -> bool {
+    return self.mounted
+  }
+
+  pub fn supportsStreaming(self: &LinuxFileSystem) -> bool {
+    return self.mounted
+  }
+
+  pub fn noCoredump(self: &LinuxFileSystem) -> bool {
+    return self.mounted
+  }
+}

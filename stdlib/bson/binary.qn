@@ -1,0 +1,38 @@
+pub enum BsonBinarySubtype {
+  Generic
+  Function
+  BinaryOld
+  UuidOld
+  Uuid
+  Md5
+  Encrypted
+  Sensitive
+  Vector
+  CompressedColumn
+  UserDefined
+}
+
+pub struct BsonBinary {
+  subtype: BsonBinarySubtype,
+  bytes: BinaryView,
+}
+
+impl BsonBinary {
+  pub fn init(bytes: BinaryView) -> BsonBinary {
+    return BsonBinary {
+      subtype: BsonBinarySubtype.Generic,
+      bytes: bytes,
+    }
+  }
+
+  pub fn withSubtype(bytes: BinaryView, subtype: BsonBinarySubtype) -> BsonBinary {
+    return BsonBinary {
+      subtype: subtype,
+      bytes: bytes,
+    }
+  }
+
+  pub fn view(self: BsonBinary) -> BinaryView {
+    return self.bytes
+  }
+}

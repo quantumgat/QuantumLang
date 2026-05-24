@@ -1,0 +1,29 @@
+pub struct RuntimeAllocatorDomain {
+  id: u64,
+  name: string,
+  isolated: bool,
+  pressureLimitBytes: usize,
+}
+
+impl RuntimeAllocatorDomain {
+  pub fn init(id: u64, name: string, isolated: bool, pressureLimitBytes: usize) -> RuntimeAllocatorDomain {
+    return RuntimeAllocatorDomain {
+      id: id,
+      name: name,
+      isolated: isolated,
+      pressureLimitBytes: pressureLimitBytes,
+    }
+  }
+
+  pub fn id(self: RuntimeAllocatorDomain) -> u64 {
+    return self.id
+  }
+
+  pub fn pressureLimit(self: RuntimeAllocatorDomain) -> usize {
+    return self.pressureLimitBytes
+  }
+
+  pub fn accepts(self: RuntimeAllocatorDomain, record: AllocationRecord) -> bool {
+    return record.matchesDomain(self.id)
+  }
+}

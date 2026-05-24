@@ -1,0 +1,31 @@
+pub enum SpecializedLoopDiagnosticKind {
+  AsyncForRequiresAsync
+  SelectRequiresAsyncInputs
+  JoinRequiresTasks
+  TimeoutRequiresDuration
+  CancelRequiresToken
+  ParallelReduceRequiresAssociativeCombiner
+  ParallelErrorAggregationRequired
+  DomainLoopRequiresKnownLayout
+  CursorLoopRequiresLinearCursor
+  PointerLoopRequiresUnsafeOrProof
+  CheckedSliceLoopRequiresBoundsProof
+  AtomicRetryRequiresProgressProof
+  QuantumProfileUnsupported
+  ComptimeLoopRequiresFiniteExpansion
+}
+
+pub struct SpecializedLoopDiagnostic {
+  kind: SpecializedLoopDiagnosticKind,
+  code: string,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+}
+
+impl SpecializedLoopDiagnostic {
+  pub fn complete(self: SpecializedLoopDiagnostic) -> bool {
+    return self.code != ""
+      && self.sourceRangeReady
+      && self.fixitReady
+  }
+}

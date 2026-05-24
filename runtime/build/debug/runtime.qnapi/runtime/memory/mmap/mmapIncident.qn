@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum MmapIncidentKind {
+  InvalidMapping,
+  LeaseAfterRevocation,
+  RelativePointerOutOfBounds,
+  FlushSyncFailed,
+}
+pub struct MmapIncident {
+  kind: MmapIncidentKind
+  recoverable: bool
+}

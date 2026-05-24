@@ -1,0 +1,39 @@
+pub struct IncidentRecord {
+  incidentId: u64,
+  code: string,
+  category: string,
+  sourceSubsystem: string,
+  taskId: u64,
+  threadId: u64,
+  crash: bool,
+  fault: bool,
+  redacted: bool,
+  noCoredump: bool,
+}
+
+pub fn incidentRecord(incidentId: u64, crash: bool, fault: bool) -> IncidentRecord {
+  return IncidentRecord {
+    incidentId: incidentId,
+    code: "QRT0000",
+    category: "runtime",
+    sourceSubsystem: "runtime",
+    taskId: 0,
+    threadId: 1,
+    crash: crash,
+    fault: fault,
+    redacted: true,
+    noCoredump: true,
+  }
+}
+
+impl IncidentRecord {
+  pub fn isProductionSafe(self: IncidentRecord) -> bool {
+    return self.incidentId > 0
+      && self.code != ""
+      && self.category != ""
+      && self.sourceSubsystem != ""
+      && self.threadId > 0
+      && self.redacted
+      && self.noCoredump
+  }
+}

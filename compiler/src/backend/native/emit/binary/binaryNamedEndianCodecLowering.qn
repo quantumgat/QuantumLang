@@ -1,0 +1,19 @@
+pub struct BinaryNamedEndianCodecLowering {
+  endianBranchFolded: bool,
+  bigEndianUsesSwap: bool,
+  littleEndianUsesDirectStore: bool,
+  optionAllocationElided: bool,
+  contextualEnumHasNoRuntimeCost: bool,
+  typoDiagnosticsNoRuntimeCost: bool,
+}
+
+impl BinaryNamedEndianCodecLowering {
+  pub fn hotPath(self: BinaryNamedEndianCodecLowering) -> bool {
+    return self.endianBranchFolded
+      && self.bigEndianUsesSwap
+      && self.littleEndianUsesDirectStore
+      && self.optionAllocationElided
+      && self.contextualEnumHasNoRuntimeCost
+      && self.typoDiagnosticsNoRuntimeCost
+  }
+}

@@ -1,0 +1,18 @@
+[module]
+name = "root"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "self-hosted-compiler-root"
+
+[submodules]
+app = "app/mod.qn"
+common = "common/mod.qn"
+frontend = "frontend/mod.qn"
+analysis = "analysis/mod.qn"
+ir = "ir/mod.qn"
+backend = "backend/mod.qn"
+product = "product/mod.qn"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

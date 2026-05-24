@@ -1,0 +1,204 @@
+pub enum PrintBufferMode {
+  Direct,
+  LineBuffered,
+  BlockBuffered,
+}
+
+pub struct PrintBufferPolicy {
+  mode: PrintBufferMode,
+  maxBytes: usize,
+  flushOnNewline: bool,
+  flushOnFull: bool,
+  flushOnError: bool,
+  preservesPartialWrite: bool,
+  cancellationSafeCleanup: bool,
+  noPanic: bool,
+}
+
+impl PrintBufferPolicy {
+  /**
+    Writes immediately without retaining bytes in a user-visible buffer.
+
+    example:
+      let options = PrintOptions.direct()
+      printlnWith(options, "ready")?
+
+    effects: writes through runtime IO
+    complexity: O(n)
+    allocation: none in the common literal path
+    stability: public since 0.1
+  */
+  pub fn direct() -> PrintBufferPolicy {
+    return PrintBufferPolicy {
+      mode: PrintBufferMode.Direct,
+      maxBytes: 0,
+      flushOnNewline: true,
+      flushOnFull: true,
+      flushOnError: true,
+      preservesPartialWrite: true,
+      cancellationSafeCleanup: true,
+      noPanic: true,
+    }
+  }
+
+  /**
+    Buffers until a newline or explicit flush.
+
+    example:
+      let options = PrintOptions.lineBuffered()
+      printWith(options, "progress=", step)?
+
+    effects: writes through runtime IO on newline, full buffer, or flush
+    complexity: O(n)
+    allocation: bounded by the configured runtime buffer
+    stability: public since 0.1
+  */
+  pub fn lineBuffered(maxBytes: usize) -> PrintBufferPolicy {
+    return PrintBufferPolicy {
+      mode: PrintBufferMode.LineBuffered,
+      maxBytes: maxBytes,
+      flushOnNewline: true,
+      flushOnFull: true,
+      flushOnError: true,
+      preservesPartialWrite: true,
+      cancellationSafeCleanup: true,
+      noPanic: true,
+    }
+  }
+
+  /**
+    Buffers until full or explicitly flushed.
+
+    example:
+      let options = PrintOptions.blockBuffered(4096)
+      printWith(options, payload)?
+
+    effects: writes through runtime IO on full buffer or flush
+    complexity: O(n)
+    allocation: bounded by maxBytes
+    stability: public since 0.1
+  */
+  pub fn blockBuffered(maxBytes: usize) -> PrintBufferPolicy {
+    return PrintBufferPolicy {
+      mode: PrintBufferMode.BlockBuffered,
+      maxBytes: maxBytes,
+      flushOnNewline: false,
+      flushOnFull: true,
+      flushOnError: true,
+      preservesPartialWrite: true,
+      cancellationSafeCleanup: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn safe(self: PrintBufferPolicy) -> bool {
+    return self.preservesPartialWrite
+      && self.cancellationSafeCleanup
+      && self.noPanic
+      && (self.mode == PrintBufferMode.Direct || self.maxBytes > 0)
+  }
+
+  pub fn shouldFlushNewline(self: PrintBufferPolicy) -> bool {
+    return self.flushOnNewline
+  }
+
+  pub fn shouldFlushFull(self: PrintBufferPolicy) -> bool {
+    return self.flushOnFull
+  }
+
+  pub fn shouldFlushError(self: PrintBufferPolicy) -> bool {
+    return self.flushOnError
+  }
+}
+
+pub struct PrintBufferState {
+  bufferedBytes: usize,
+  capacity: usize,
+  pendingFlush: bool,
+  partialWriteSaved: bool,
+}
+
+impl PrintBufferState {
+  pub fn empty(capacity: usize) -> PrintBufferState {
+    return PrintBufferState {
+      bufferedBytes: 0,
+      capacity: capacity,
+      pendingFlush: false,
+      partialWriteSaved: true,
+    }
+  }
+
+  pub fn hasRoom(self: PrintBufferState) -> bool {
+    return self.bufferedBytes < self.capacity
+  }
+
+  pub fn needsFlush(self: PrintBufferState) -> bool {
+    return self.pendingFlush || self.bufferedBytes >= self.capacity
+  }
+
+  pub fn safe(self: PrintBufferState) -> bool {
+    return self.partialWriteSaved && self.bufferedBytes <= self.capacity
+  }
+}
+
+pub struct PrintPartialWrite {
+  requestedBytes: usize,
+  writtenBytes: usize,
+  resumeOffset: usize,
+  resumable: bool,
+  noDataLoss: bool,
+}
+
+impl PrintPartialWrite {
+  pub fn complete(byteCount: usize) -> PrintPartialWrite {
+    return PrintPartialWrite {
+      requestedBytes: byteCount,
+      writtenBytes: byteCount,
+      resumeOffset: byteCount,
+      resumable: false,
+      noDataLoss: true,
+    }
+  }
+
+  pub fn pending(requestedBytes: usize, writtenBytes: usize) -> PrintPartialWrite {
+    return PrintPartialWrite {
+      requestedBytes: requestedBytes,
+      writtenBytes: writtenBytes,
+      resumeOffset: writtenBytes,
+      resumable: true,
+      noDataLoss: true,
+    }
+  }
+
+  pub fn incomplete(self: PrintPartialWrite) -> bool {
+    return self.writtenBytes < self.requestedBytes
+  }
+
+  pub fn safe(self: PrintPartialWrite) -> bool {
+    return self.noDataLoss
+      && self.writtenBytes <= self.requestedBytes
+      && self.resumeOffset == self.writtenBytes
+  }
+}
+
+pub struct PrintCleanupPolicy {
+  flushBeforeDrop: bool,
+  preserveBufferedBytesOnCancel: bool,
+  returnErrorInsteadOfPanic: bool,
+}
+
+impl PrintCleanupPolicy {
+  pub fn safeDefault() -> PrintCleanupPolicy {
+    return PrintCleanupPolicy {
+      flushBeforeDrop: true,
+      preserveBufferedBytesOnCancel: true,
+      returnErrorInsteadOfPanic: true,
+    }
+  }
+
+  pub fn safe(self: PrintCleanupPolicy) -> bool {
+    return self.flushBeforeDrop
+      && self.preserveBufferedBytesOnCancel
+      && self.returnErrorInsteadOfPanic
+  }
+}

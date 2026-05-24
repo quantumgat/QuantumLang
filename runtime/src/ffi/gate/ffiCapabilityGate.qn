@@ -1,0 +1,15 @@
+pub struct FfiCapabilityGate {
+  effectsRequired: bool,
+  unsafeRequired: bool,
+  targetAllowed: bool,
+}
+
+pub fn ffiCapabilityGate() -> FfiCapabilityGate {
+  return FfiCapabilityGate { effectsRequired: true, unsafeRequired: true, targetAllowed: true }
+}
+
+impl FfiCapabilityGate {
+  pub fn canCross(self: FfiCapabilityGate) -> bool {
+    return self.effectsRequired && self.unsafeRequired && self.targetAllowed
+  }
+}

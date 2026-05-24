@@ -1,0 +1,4 @@
+pub fn writeText(path: PathBuf, value: string) -> FsResult<Unit>
+pub fn writeText(path: PathBuf, value: string, options: WriteOptions) -> FsResult<Unit>
+pub fn writeBytes(path: PathBuf, value: Bytes) -> FsResult<Unit>
+pub fn writeBytes(path: PathBuf, value: Bytes, options: WriteOptions) -> FsResult<Unit>

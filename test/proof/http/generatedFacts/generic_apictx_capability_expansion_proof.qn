@@ -1,0 +1,127 @@
+pub struct ProductMiddlewareData {
+  requestClass: string,
+}
+
+impl ProductMiddlewareData {
+  pub fn init(requestClass: string) -> ProductMiddlewareData {
+    return ProductMiddlewareData {
+      requestClass: requestClass,
+    }
+  }
+}
+
+pub type ProductApiCtx = HttpCtx<AuthenticatedUser, TenantContext, TraceContext, ProductMiddlewareData>
+
+extend ProductApiCtx {
+  pub fn auth(self: ProductApiCtx) -> AuthenticatedUser {
+    return self.get<AuthenticatedUser>()
+  }
+
+  pub fn tenant(self: ProductApiCtx) -> TenantContext {
+    return self.get<TenantContext>()
+  }
+
+  pub fn trace(self: ProductApiCtx) -> TraceContext {
+    return self.get<TraceContext>()
+  }
+
+  pub fn productData(self: ProductApiCtx) -> ProductMiddlewareData {
+    return self.get<ProductMiddlewareData>()
+  }
+}
+
+pub struct HttpGenericApiCtxExpansionProof {
+  planComplete: bool,
+  contextParamReady: bool,
+  genericGetReady: bool,
+  extensionFactsReady: bool,
+  extractorExpansionReady: bool,
+  capabilityExpansionReady: bool,
+  handlerThunkReady: bool,
+  customCapabilityReady: bool,
+}
+
+impl HttpGenericApiCtxExpansionProof {
+  pub fn init(
+    plan: HttpCtxCapabilityPlan,
+    endpoint: EndpointFact,
+    extractors: ExtractorGraph,
+    capabilities: CapabilityGraph,
+    thunk: HandlerThunk,
+    extensionFacts: Vec<HttpCtxExtensionFact>,
+  ) -> HttpGenericApiCtxExpansionProof {
+    let ctx = ProductApiCtx.init()
+    return HttpGenericApiCtxExpansionProof {
+      planComplete: plan.complete() && plan.slotCount() == 4,
+      contextParamReady: endpoint.paramCount() == 2 && endpoint.routePath() == "/product",
+      genericGetReady: ctx.has<AuthenticatedUser>()
+        && ctx.has<ProductMiddlewareData>()
+        && ctx.slotCount() == 4,
+      extensionFactsReady: extensionFacts.len() == 4,
+      extractorExpansionReady: extractors.contextExtractors() == 4,
+      capabilityExpansionReady: capabilities.factCount() == 4
+        && capabilities.requiredCount() == 4,
+      handlerThunkReady: thunk.acceleratorReady() && thunk.contextSlotCount() == 4,
+      customCapabilityReady: CapabilityFact.of<ProductMiddlewareData>("product.create").required(),
+    }
+  }
+
+  pub fn complete(self: HttpGenericApiCtxExpansionProof) -> bool {
+    return self.planComplete
+      && self.contextParamReady
+      && self.genericGetReady
+      && self.extensionFactsReady
+      && self.extractorExpansionReady
+      && self.capabilityExpansionReady
+      && self.handlerThunkReady
+      && self.customCapabilityReady
+  }
+}
+
+pub fn productApiCtxPlan() -> HttpCtxCapabilityPlan {
+  return HttpCtxCapabilityPlan
+    .empty<ProductApiCtx>()
+    .add<AuthenticatedUser>(0)
+    .add<TenantContext>(1)
+    .add<TraceContext>(2)
+    .add<ProductMiddlewareData>(3)
+}
+
+pub fn productApiCtxExtensionFacts() -> Vec<HttpCtxExtensionFact> {
+  return [
+    HttpCtxExtensionFact.of<ProductApiCtx, AuthenticatedUser>("auth"),
+    HttpCtxExtensionFact.of<ProductApiCtx, TenantContext>("tenant"),
+    HttpCtxExtensionFact.of<ProductApiCtx, TraceContext>("trace"),
+    HttpCtxExtensionFact.of<ProductApiCtx, ProductMiddlewareData>("productData"),
+  ]
+}
+
+pub fn productApiCtxGenericAccess(ctx: ProductApiCtx) -> bool {
+  let auth = ctx.get<AuthenticatedUser>()
+  let productData = ctx.get<ProductMiddlewareData>()
+  return auth.userId() != "" && productData.requestClass != ""
+}
+
+pub fn httpGenericApiCtxExpansionProof() -> HttpGenericApiCtxExpansionProof {
+  let plan = productApiCtxPlan()
+  let endpoint = EndpointFact
+    .simple("product", EndpointMethod.create(), EndpointReturn.json("ProductResponse"))
+    .withParam(EndpointParam.body("body", "CreateProductRequest"))
+    .withParam(EndpointParam.context("ctx", "ProductApiCtx"))
+
+  let extractors = ExtractorGraph
+    .empty()
+    .add(ExtractorFact.init("product.create", EndpointParam.body("body", "CreateProductRequest")))
+    .addContext("product.create", "ctx", plan)
+
+  let capabilities = CapabilityGraph.empty().addContext("product.create", plan)
+  let thunk = HandlerThunk.fromEndpoint(endpoint, extractors, capabilities)
+  return HttpGenericApiCtxExpansionProof.init(
+    plan,
+    endpoint,
+    extractors,
+    capabilities,
+    thunk,
+    productApiCtxExtensionFacts()
+  )
+}

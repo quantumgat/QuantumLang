@@ -1,0 +1,48 @@
+pub struct Rational64Kernel {
+  noCoredump: bool,
+}
+
+pub struct Rational64Parts {
+  numerator: i64,
+  denominator: i64,
+}
+
+impl Rational64Kernel {
+  pub fn init() -> Rational64Kernel {
+    return Rational64Kernel { noCoredump: true }
+  }
+
+  pub fn gcdU64(self: Rational64Kernel, left: u64, right: u64) -> u64 {
+    let mut a = left
+    let mut b = right
+    while b != 0 {
+      let next = a % b
+      a = b
+      b = next
+    }
+    return a
+  }
+
+  pub fn normalize(self: Rational64Kernel, numerator: i64, denominator: i64) -> Result<Rational64Parts, MathRuntimeError> {
+    if denominator == 0 {
+      return Err(MathRuntimeError.DivideByZero)
+    }
+    let mut n = numerator
+    let mut d = denominator
+    if d < 0 {
+      n = 0 - n
+      d = 0 - d
+    }
+    let magN: u64 = if n < 0 { (0 - n) as u64 } else { n as u64 }
+    let magD = d as u64
+    let gcd = self.gcdU64(magN, magD)
+    return Ok(Rational64Parts {
+      numerator: n / (gcd as i64),
+      denominator: d / (gcd as i64),
+    })
+  }
+
+  pub fn accepted(self: Rational64Kernel) -> bool {
+    return self.noCoredump
+  }
+}

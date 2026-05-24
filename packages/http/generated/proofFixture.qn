@@ -1,0 +1,61 @@
+pub struct HttpGeneratedFactsProof {
+  endpointGraphReady: bool,
+  routeGraphReady: bool,
+  extractorGraphReady: bool,
+  capabilityGraphReady: bool,
+  handlerThunkReady: bool,
+  sourceMapsResolved: bool,
+  noCoreHttp: bool,
+}
+
+impl HttpGeneratedFactsProof {
+  pub fn init(
+    endpointGraphReady: bool,
+    routeGraphReady: bool,
+    extractorGraphReady: bool,
+    capabilityGraphReady: bool,
+    handlerThunkReady: bool,
+    sourceMapsResolved: bool,
+    noCoreHttp: bool,
+  ) -> HttpGeneratedFactsProof {
+    return HttpGeneratedFactsProof {
+      endpointGraphReady: endpointGraphReady,
+      routeGraphReady: routeGraphReady,
+      extractorGraphReady: extractorGraphReady,
+      capabilityGraphReady: capabilityGraphReady,
+      handlerThunkReady: handlerThunkReady,
+      sourceMapsResolved: sourceMapsResolved,
+      noCoreHttp: noCoreHttp,
+    }
+  }
+
+  pub fn fromGraphs(
+    endpoints: EndpointGraph,
+    routes: RouteGraph,
+    extractors: ExtractorGraph,
+    capabilities: CapabilityGraph,
+    thunks: HandlerThunkGraph,
+    sourceMap: HttpSourceMap,
+  ) -> HttpGeneratedFactsProof {
+    return HttpGeneratedFactsProof.init(
+      endpoints.endpointCount() > 0,
+      routes.routeCount() > 0,
+      extractors.factCount() > 0,
+      capabilities.factCount() > 0,
+      thunks.hasThunks(),
+      sourceMap.allResolved(),
+      true
+    )
+  }
+
+  pub fn complete(self: HttpGeneratedFactsProof) -> bool {
+    return self.endpointGraphReady
+      && self.routeGraphReady
+      && self.extractorGraphReady
+      && self.capabilityGraphReady
+      && self.handlerThunkReady
+      && self.sourceMapsResolved
+      && self.noCoreHttp
+  }
+}
+

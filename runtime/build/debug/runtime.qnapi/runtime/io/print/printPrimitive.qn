@@ -1,0 +1,19 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimePrintPrimitive {
+  stream: RuntimePrintStream
+  target: RuntimePrintTarget
+  write: RuntimePrintWrite
+  flush: RuntimePrintFlushPrimitive
+  terminalCapability: RuntimeTerminalCapability
+  emergencyOutput: RuntimeEmergencyOutput
+  buffer: OutputBuffer
+  hotPath: RuntimePrintHotPath
+  preservesPartialWrite: bool
+  supportsVariadicValues: bool
+  supportsSepEnd: bool
+  supportsFlush: bool
+  supportsTargetSelection: bool
+  cancellationSafeCleanup: bool
+  noPanic: bool
+  noCoredump: bool
+}

@@ -1,0 +1,131 @@
+pub struct Json {
+}
+
+pub trait JsonCodec<T> {
+  pub fn encode(self: T) -> Result<Bytes, JsonError>
+  pub fn decode(bytes: Bytes) -> Result<T, JsonError>
+  pub fn metadata() -> JsonCodecDerive
+}
+
+impl Json {
+  pub fn parse(bytes: Bytes) -> Result<JsonValue, JsonError> {
+    return parse(bytes)
+  }
+
+  pub fn value(bytes: Bytes) -> Result<JsonValue, JsonError> {
+    return parse(bytes)
+  }
+
+  pub fn stringify(value: JsonValue) -> Result<Bytes, JsonError> {
+    return encodeValue(value)
+  }
+
+  pub fn stringifyText(value: JsonValue) -> Result<string, JsonError> {
+    return jsonStringifyTextValue(value, JsonEncodePlan.default())
+  }
+
+  pub fn decode<T>(bytes: Bytes) -> Result<T, JsonError> {
+    return jsonDecodeTyped<T>(bytes, SerdePolicy.jsonDefault())
+  }
+
+  pub fn decode<T>(bytes: Bytes, policy: SerdePolicy) -> Result<T, JsonError> {
+    return jsonDecodeTyped<T>(bytes, policy)
+  }
+
+  pub fn encode<T>(value: T) -> Result<Bytes, JsonError> {
+    return jsonEncodeTyped(value, SerdePolicy.jsonDefault())
+  }
+
+  pub fn encode<T>(value: T, policy: SerdePolicy) -> Result<Bytes, JsonError> {
+    return jsonEncodeTyped(value, policy)
+  }
+
+  pub fn pretty<T>(value: T) -> Result<Bytes, JsonError> {
+    return jsonPrettyTyped(value, SerdePolicy.jsonDefault())
+  }
+
+  pub fn pretty<T>(value: T, policy: SerdePolicy) -> Result<Bytes, JsonError> {
+    return jsonPrettyTyped(value, policy)
+  }
+
+  pub fn write<T>(writer: JsonWriter, value: T) -> Result<JsonWriter, JsonError> {
+    return jsonWriteTyped(writer, value, SerdePolicy.jsonDefault())
+  }
+
+  pub fn write<T>(writer: JsonWriter, value: T, policy: SerdePolicy) -> Result<JsonWriter, JsonError> {
+    return jsonWriteTyped(writer, value, policy)
+  }
+
+  pub fn size<T>(value: T) -> Result<usize, JsonError> {
+    return jsonSizeTyped(value, SerdePolicy.jsonDefault())
+  }
+
+  pub fn size<T>(value: T, policy: SerdePolicy) -> Result<usize, JsonError> {
+    return jsonSizeTyped(value, policy)
+  }
+
+  pub fn codec<T>() -> Result<JsonCodec<T>, JsonError> {
+    return jsonCodecFor<T>(SerdePolicy.jsonDefault())
+  }
+
+  pub fn codec<T>(policy: SerdePolicy) -> Result<JsonCodec<T>, JsonError> {
+    return jsonCodecFor<T>(policy)
+  }
+
+  pub fn typedCodec<T>() -> Result<JsonTypedCodecPlan, JsonError> {
+    return typedCodec<T>()
+  }
+
+  pub fn view<T>(bytes: Bytes) -> Result<JsonView<T>, JsonError> {
+    return jsonViewTyped<T>(bytes, SerdePolicy.jsonDefault())
+  }
+
+  pub fn view<T>(bytes: Bytes, policy: SerdePolicy) -> Result<JsonView<T>, JsonError> {
+    return jsonViewTyped<T>(bytes, policy)
+  }
+}
+
+pub fn codec<T>() -> Result<JsonCodec<T>, JsonError> {
+  return Json.codec<T>()
+}
+
+pub fn decode<T>(bytes: Bytes) -> Result<T, JsonError> {
+  return Json.decode<T>(bytes)
+}
+
+pub fn encode<T>(value: T) -> Result<Bytes, JsonError> {
+  return Json.encode(value)
+}
+
+pub fn stringifyText(value: JsonValue) -> Result<string, JsonError> {
+  return Json.stringifyText(value)
+}
+
+pub fn pretty<T>(value: T) -> Result<Bytes, JsonError> {
+  return Json.pretty(value)
+}
+
+pub fn write<T>(writer: JsonWriter, value: T) -> Result<JsonWriter, JsonError> {
+  return Json.write(writer, value)
+}
+
+pub fn size<T>(value: T) -> Result<usize, JsonError> {
+  return Json.size(value)
+}
+
+pub fn typed<T>() -> Result<JsonTypedCodecPlan, JsonError> {
+  return Json.typedCodec<T>()
+}
+
+pub fn view<T>(bytes: Bytes) -> Result<JsonView<T>, JsonError> {
+  return Json.view<T>(bytes)
+}
+
+fn jsonDecodeTyped<T>(bytes: Bytes, policy: SerdePolicy) -> Result<T, JsonError>
+fn jsonEncodeTyped<T>(value: T, policy: SerdePolicy) -> Result<Bytes, JsonError>
+fn jsonPrettyTyped<T>(value: T, policy: SerdePolicy) -> Result<Bytes, JsonError>
+fn jsonWriteTyped<T>(writer: JsonWriter, value: T, policy: SerdePolicy) -> Result<JsonWriter, JsonError>
+fn jsonSizeTyped<T>(value: T, policy: SerdePolicy) -> Result<usize, JsonError>
+fn jsonCodecFor<T>(policy: SerdePolicy) -> Result<JsonCodec<T>, JsonError>
+fn jsonViewTyped<T>(bytes: Bytes, policy: SerdePolicy) -> Result<JsonView<T>, JsonError>
+fn jsonStringifyTextValue(value: JsonValue, plan: JsonEncodePlan) -> Result<string, JsonError>

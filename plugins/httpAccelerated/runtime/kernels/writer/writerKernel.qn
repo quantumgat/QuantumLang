@@ -1,0 +1,140 @@
+pub struct HttpWriterKernel {
+  symbol: string,
+  scatterGather: bool,
+  sendfile: bool,
+  backpressureSafe: bool,
+  zeroCopyBody: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+}
+
+pub struct HttpResponseHeader {
+  name: string,
+  value: string,
+}
+
+impl HttpResponseHeader {
+  pub fn new(name: string, value: string) -> HttpResponseHeader {
+    return HttpResponseHeader {
+      name: name,
+      value: value,
+    }
+  }
+
+  pub fn valid(self: HttpResponseHeader) -> bool {
+    return self.name != "" && self.value != ""
+  }
+}
+
+pub struct HttpWriteSegment {
+  offset: usize,
+  len: usize,
+  zeroCopy: bool,
+}
+
+pub struct HttpWriterRuntimeResult {
+  status: u16,
+  headerSegments: usize,
+  bodySegments: usize,
+  totalBytes: usize,
+  queued: bool,
+  failure: Option<HttpAcceleratedFailure>,
+}
+
+impl HttpWriterRuntimeResult {
+  pub fn ok(status: u16, headerSegments: usize, bodySegments: usize, totalBytes: usize) -> HttpWriterRuntimeResult {
+    return HttpWriterRuntimeResult {
+      status: status,
+      headerSegments: headerSegments,
+      bodySegments: bodySegments,
+      totalBytes: totalBytes,
+      queued: true,
+      failure: None,
+    }
+  }
+
+  pub fn safe(self: HttpWriterRuntimeResult) -> bool {
+    if self.failure == None {
+      return self.status >= 100
+        && self.status <= 599
+        && self.headerSegments > 0
+        && self.queued
+    }
+    match self.failure {
+      Some(failure) => {
+        return failure.safe()
+      }
+      None => {
+        return false
+      }
+    }
+  }
+}
+
+impl HttpWriterKernel {
+  pub fn response() -> HttpWriterKernel {
+    return HttpWriterKernel {
+      symbol: "http.writer.scatterGather",
+      scatterGather: true,
+      sendfile: true,
+      backpressureSafe: true,
+      zeroCopyBody: true,
+      typedFailure: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: HttpWriterKernel) -> bool {
+    return self.symbol == "http.writer.scatterGather"
+      && self.scatterGather
+      && self.sendfile
+      && self.backpressureSafe
+      && self.zeroCopyBody
+      && self.typedFailure
+      && self.noCoredump
+  }
+
+  pub fn write(
+    self: HttpWriterKernel,
+    status: u16,
+    headers: Vec<HttpResponseHeader>,
+    bodyBytes: usize,
+  ) -> HttpWriterRuntimeResult {
+    if !self.accepted() {
+      return HttpWriterRuntimeResult {
+        status: 500,
+        headerSegments: 0,
+        bodySegments: 0,
+        totalBytes: 0,
+        queued: false,
+        failure: Some(HttpAcceleratedFailure.kernelUnavailable()),
+      }
+    }
+    if status < 100 || status > 599 {
+      return HttpWriterRuntimeResult {
+        status: status,
+        headerSegments: 0,
+        bodySegments: 0,
+        totalBytes: 0,
+        queued: false,
+        failure: Some(HttpAcceleratedFailure.badRequest(0, "invalid response status")),
+      }
+    }
+    let mut index: usize = 0
+    while index < headers.len {
+      let header = headers[index]
+      if !header.valid() {
+        return HttpWriterRuntimeResult {
+          status: status,
+          headerSegments: index,
+          bodySegments: 0,
+          totalBytes: 0,
+          queued: false,
+          failure: Some(HttpAcceleratedFailure.badRequest(index, "invalid response header")),
+        }
+      }
+      index = index + 1
+    }
+    return HttpWriterRuntimeResult.ok(status, headers.len + 1, 1, bodyBytes)
+  }
+}

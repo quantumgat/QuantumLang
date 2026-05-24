@@ -1,0 +1,5 @@
+import app::{BuildDriver}
+
+fn main() -> i64 {
+  return BuildDriver().defaultExitCode()
+}

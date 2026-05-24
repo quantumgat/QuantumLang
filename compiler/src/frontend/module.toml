@@ -1,0 +1,21 @@
+[module]
+name = "frontend"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "source-language-frontend"
+
+[submodules]
+lexer = "lexer/mod.qn"
+parser = "parser/mod.qn"
+ast = "ast/mod.qn"
+checkedSource = "checkedSource/mod.qn"
+binaryParse = "binaryParse/mod.qn"
+schemaCodegen = "schemaCodegen/mod.qn"
+
+[dependencies]
+allowed = ["common"]
+forbidden = ["analysis", "backend", "runtime internals"]
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

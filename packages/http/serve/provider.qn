@@ -1,0 +1,21 @@
+pub class ProviderRegistry {
+  providerCount: usize,
+}
+
+impl ProviderRegistry {
+  pub fn init() -> ProviderRegistry {
+    return ProviderRegistry {
+      providerCount: 0,
+    }
+  }
+
+  pub fn register(self: ProviderRegistry, providerName: string) -> ProviderRegistry {
+    return ProviderRegistry {
+      providerCount: self.providerCount + 1,
+    }
+  }
+
+  pub fn providerCount(self: ProviderRegistry) -> usize {
+    return self.providerCount
+  }
+}

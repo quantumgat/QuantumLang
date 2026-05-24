@@ -1,0 +1,100 @@
+pub enum FormatDiagnosticSpanKind {
+  InterpolationPrefix
+  TextSegment
+  ExpressionSegment
+  FormatSpecifier
+  FieldAccess
+  SecretValue
+}
+
+pub struct FormatDiagnosticCode {
+  stableCode: string,
+  namespace: string,
+  spanKind: FormatDiagnosticSpanKind,
+  privacySensitive: bool,
+}
+
+pub fn formatDiagnosticCode(
+  stableCode: string,
+  namespace: string,
+  spanKind: FormatDiagnosticSpanKind,
+  privacySensitive: bool,
+) -> FormatDiagnosticCode {
+  return FormatDiagnosticCode {
+    stableCode: stableCode,
+    namespace: namespace,
+    spanKind: spanKind,
+    privacySensitive: privacySensitive,
+  }
+}
+
+pub fn invalidFormatSpecifierCode() -> FormatDiagnosticCode {
+  return formatDiagnosticCode("QLTEXT0002", "QLTEXT", FormatDiagnosticSpanKind.FormatSpecifier, false)
+}
+
+pub fn invalidPrecisionCode() -> FormatDiagnosticCode {
+  return formatDiagnosticCode("QLTEXT0003", "QLTEXT", FormatDiagnosticSpanKind.FormatSpecifier, false)
+}
+
+pub fn invalidZeroPaddingCode() -> FormatDiagnosticCode {
+  return formatDiagnosticCode("QLTEXT0004", "QLTEXT", FormatDiagnosticSpanKind.FormatSpecifier, false)
+}
+
+pub fn unsupportedDisplayCode() -> FormatDiagnosticCode {
+  return formatDiagnosticCode("QLTEXT0005", "QLTEXT", FormatDiagnosticSpanKind.ExpressionSegment, false)
+}
+
+pub fn unsupportedDebugCode() -> FormatDiagnosticCode {
+  return formatDiagnosticCode("QLTEXT0006", "QLTEXT", FormatDiagnosticSpanKind.ExpressionSegment, false)
+}
+
+pub fn interpolationUnknownFieldCode() -> FormatDiagnosticCode {
+  return formatDiagnosticCode("QLTEXT0007", "QLTEXT", FormatDiagnosticSpanKind.FieldAccess, false)
+}
+
+pub fn secretFormatRequiresRedactionCode() -> FormatDiagnosticCode {
+  return formatDiagnosticCode("QLSEC0003", "QLSEC", FormatDiagnosticSpanKind.SecretValue, true)
+}
+
+impl FormatDiagnosticCode {
+  pub fn code(self: FormatDiagnosticCode) -> string {
+    return self.stableCode
+  }
+
+  pub fn namespaceName(self: FormatDiagnosticCode) -> string {
+    return self.namespace
+  }
+
+  pub fn number(self: FormatDiagnosticCode) -> u32 {
+    if self.stableCode == "QLTEXT0002" {
+      return 2
+    }
+    if self.stableCode == "QLTEXT0003" {
+      return 3
+    }
+    if self.stableCode == "QLTEXT0004" {
+      return 4
+    }
+    if self.stableCode == "QLTEXT0005" {
+      return 5
+    }
+    if self.stableCode == "QLTEXT0006" {
+      return 6
+    }
+    if self.stableCode == "QLTEXT0007" {
+      return 7
+    }
+    if self.stableCode == "QLSEC0003" {
+      return 3
+    }
+    return 1
+  }
+
+  pub fn isSecuritySensitive(self: FormatDiagnosticCode) -> bool {
+    return self.privacySensitive
+  }
+
+  pub fn spanKindValue(self: FormatDiagnosticCode) -> FormatDiagnosticSpanKind {
+    return self.spanKind
+  }
+}

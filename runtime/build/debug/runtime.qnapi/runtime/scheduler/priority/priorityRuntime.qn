@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum SchedulerPriorityClass {
+  Normal
+  LowLatency
+  HighPriority
+  Blocking
+}
+pub struct SchedulerPriorityRuntime {
+  priority: SchedulerPriorityClass
+  queueSelected: bool
+  fairnessPreserved: bool
+}

@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum FfiHandleKind {
+  BorrowedHandle
+  OwnedHandle
+  CallbackHandle
+}
+pub struct FfiHandle {
+  handleId: u64
+  kind: FfiHandleKind
+  generation: usize
+  ownerSubsystem: string
+  state: HandleState
+  generationChecked: bool
+}
+pub extern "qnpkg" {
+  pub fn ffiHandle(handleId: u64, kind: FfiHandleKind) -> FfiHandle
+}

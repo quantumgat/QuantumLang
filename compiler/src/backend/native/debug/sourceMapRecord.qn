@@ -1,0 +1,27 @@
+pub struct SourceMapRecord {
+  sourcePath: string,
+  machineSymbol: string,
+  sourceHash: string,
+}
+
+pub fn sourceMapRecord(sourcePath: string, machineSymbol: string, sourceHash: string) -> SourceMapRecord {
+  return SourceMapRecord {
+    sourcePath: sourcePath,
+    machineSymbol: machineSymbol,
+    sourceHash: sourceHash,
+  }
+}
+
+impl SourceMapRecord {
+  pub fn source(self: SourceMapRecord) -> string {
+    return self.sourcePath
+  }
+
+  pub fn symbol(self: SourceMapRecord) -> string {
+    return self.machineSymbol
+  }
+
+  pub fn hash(self: SourceMapRecord) -> string {
+    return self.sourceHash
+  }
+}

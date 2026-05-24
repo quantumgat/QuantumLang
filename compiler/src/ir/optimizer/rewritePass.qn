@@ -1,0 +1,4 @@
+pub trait RewritePass {
+  fn passName(self) -> string
+  fn rewritesIr(self) -> bool
+}

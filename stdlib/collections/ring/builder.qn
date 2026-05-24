@@ -1,0 +1,31 @@
+pub struct RingBufferBuilder<T> {
+  capacity: usize,
+  overflowPolicy: RingOverflowPolicy,
+}
+
+impl<T> RingBufferBuilder<T> {
+  pub fn init() -> RingBufferBuilder<T> {
+    return RingBufferBuilder<T> {
+      capacity: 0,
+      overflowPolicy: RingOverflowPolicy.OverwriteOldest,
+    }
+  }
+
+  pub fn capacity(self: RingBufferBuilder<T>, capacity: usize) -> RingBufferBuilder<T> {
+    return RingBufferBuilder<T> {
+      capacity: capacity,
+      overflowPolicy: self.overflowPolicy,
+    }
+  }
+
+  pub fn overflowPolicy(self: RingBufferBuilder<T>, overflowPolicy: RingOverflowPolicy) -> RingBufferBuilder<T> {
+    return RingBufferBuilder<T> {
+      capacity: self.capacity,
+      overflowPolicy: overflowPolicy,
+    }
+  }
+
+  pub fn build(self: RingBufferBuilder<T>) -> RingBuffer<T> requires(alloc) {
+    return RingBuffer<T>.withCapacity(self.capacity).withOverflowPolicy(self.overflowPolicy)
+  }
+}

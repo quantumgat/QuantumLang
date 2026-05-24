@@ -1,0 +1,29 @@
+pub struct DispatchTableProofRow {
+  tableSymbolId: u64,
+  abiVersion: string,
+  typeIdentityStable: bool,
+  dropBehaviorKnown: bool,
+  methodOrderingProven: bool,
+  interfaceEntriesBound: bool,
+  emittedByNative: bool,
+  noFallback: bool,
+}
+
+pub fn dispatchTableProofRow(tableSymbolId: u64, abiVersion: string, typeIdentityStable: bool, dropBehaviorKnown: bool, methodOrderingProven: bool, interfaceEntriesBound: bool, emittedByNative: bool, noFallback: bool) -> DispatchTableProofRow {
+  return DispatchTableProofRow {
+    tableSymbolId: tableSymbolId,
+    abiVersion: abiVersion,
+    typeIdentityStable: typeIdentityStable,
+    dropBehaviorKnown: dropBehaviorKnown,
+    methodOrderingProven: methodOrderingProven,
+    interfaceEntriesBound: interfaceEntriesBound,
+    emittedByNative: emittedByNative,
+    noFallback: noFallback,
+  }
+}
+
+impl DispatchTableProofRow {
+  pub fn passed(self: DispatchTableProofRow) -> bool {
+    return self.tableSymbolId > 0 && self.abiVersion != "" && self.typeIdentityStable && self.dropBehaviorKnown && self.methodOrderingProven && self.interfaceEntriesBound && self.emittedByNative && self.noFallback
+  }
+}

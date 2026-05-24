@@ -1,0 +1,19 @@
+pub struct TypeContext {
+  typeCount: usize,
+  inferenceVariableCount: usize,
+  constraintCount: usize,
+}
+
+pub fn typeContext(typeCount: usize, inferenceVariableCount: usize, constraintCount: usize) -> TypeContext {
+  return TypeContext {
+    typeCount: typeCount,
+    inferenceVariableCount: inferenceVariableCount,
+    constraintCount: constraintCount,
+  }
+}
+
+impl TypeContext {
+  pub fn hasOpenInference(self: TypeContext) -> bool {
+    return self.inferenceVariableCount > 0 || self.constraintCount > 0
+  }
+}

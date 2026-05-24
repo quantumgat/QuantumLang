@@ -1,0 +1,35 @@
+pub struct Match45FormsRealImplementationBlocker {
+  fixtureForms: usize,
+  negativeFixtureRows: usize,
+  parserAstImplemented: bool,
+  analysisDiagnosticsImplemented: bool,
+  hirMirImplemented: bool,
+  nativeRuntimeImplemented: bool,
+  realParserBodyRows: usize,
+  realAstBuilderRows: usize,
+  realAnalysisBodyRows: usize,
+  realMirBuilderRows: usize,
+  realNativeEmitterRows: usize,
+  realRuntimeRows: usize,
+}
+
+impl Match45FormsRealImplementationBlocker {
+  pub fn blocked(self: Match45FormsRealImplementationBlocker) -> bool {
+    return !self.complete()
+  }
+
+  pub fn complete(self: Match45FormsRealImplementationBlocker) -> bool {
+    return self.fixtureForms == 45
+      && self.negativeFixtureRows >= 6
+      && self.parserAstImplemented
+      && self.analysisDiagnosticsImplemented
+      && self.hirMirImplemented
+      && self.nativeRuntimeImplemented
+      && self.realParserBodyRows > 0
+      && self.realAstBuilderRows > 0
+      && self.realAnalysisBodyRows > 0
+      && self.realMirBuilderRows > 0
+      && self.realNativeEmitterRows > 0
+      && self.realRuntimeRows > 0
+  }
+}

@@ -1,0 +1,15 @@
+pub struct RuntimeDump {
+  abiRows: usize,
+  serviceRows: usize,
+  providerRows: usize,
+}
+
+pub fn runtimeDump(abiRows: usize, serviceRows: usize, providerRows: usize) -> RuntimeDump {
+  return RuntimeDump { abiRows: abiRows, serviceRows: serviceRows, providerRows: providerRows }
+}
+
+impl RuntimeDump {
+  pub fn rowCount(self: RuntimeDump) -> usize {
+    return self.abiRows + self.serviceRows + self.providerRows
+  }
+}

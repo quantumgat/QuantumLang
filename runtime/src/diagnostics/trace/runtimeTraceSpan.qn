@@ -1,0 +1,37 @@
+pub struct RuntimeTraceSpan {
+  spanId: u64,
+  parentId: u64,
+  traceId: u64,
+  taskId: u64,
+  actorId: u64,
+  requestId: string,
+  correlationId: string,
+  cancellationId: u64,
+  subsystem: string,
+  asyncPropagated: bool,
+  causalChainPreserved: bool,
+  lowOverhead: bool,
+}
+
+pub fn runtimeTraceSpan(spanId: u64, parentId: u64, subsystem: string) -> RuntimeTraceSpan {
+  return RuntimeTraceSpan {
+    spanId: spanId,
+    parentId: parentId,
+    traceId: spanId,
+    taskId: 0,
+    actorId: 0,
+    requestId: "",
+    correlationId: "",
+    cancellationId: 0,
+    subsystem: subsystem,
+    asyncPropagated: true,
+    causalChainPreserved: true,
+    lowOverhead: true,
+  }
+}
+
+impl RuntimeTraceSpan {
+  pub fn isLowOverhead(self: RuntimeTraceSpan) -> bool {
+    return self.lowOverhead && self.asyncPropagated && self.causalChainPreserved
+  }
+}

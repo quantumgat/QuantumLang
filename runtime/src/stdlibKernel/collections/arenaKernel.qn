@@ -1,0 +1,42 @@
+pub struct ArenaKernel {
+  regionBacked: bool,
+  typedHandleBacked: bool,
+  resetGenerationTracked: bool,
+  allocUsesAppendSlot: bool,
+  getUsesIndexGenerationCheck: bool,
+  sliceUsesStartLenGeneration: bool,
+  iteratorOccupiedSlotCursorStable: bool,
+  bytesAccountingStable: bool,
+  staleHandleRejected: bool,
+  zeroCopyHandleReturn: bool,
+}
+
+impl ArenaKernel {
+  pub fn standard() -> ArenaKernel {
+    return ArenaKernel {
+      regionBacked: true,
+      typedHandleBacked: true,
+      resetGenerationTracked: true,
+      allocUsesAppendSlot: true,
+      getUsesIndexGenerationCheck: true,
+      sliceUsesStartLenGeneration: true,
+      iteratorOccupiedSlotCursorStable: true,
+      bytesAccountingStable: true,
+      staleHandleRejected: true,
+      zeroCopyHandleReturn: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: ArenaKernel) -> bool {
+    return self.regionBacked
+      && self.typedHandleBacked
+      && self.resetGenerationTracked
+      && self.allocUsesAppendSlot
+      && self.getUsesIndexGenerationCheck
+      && self.sliceUsesStartLenGeneration
+      && self.iteratorOccupiedSlotCursorStable
+      && self.bytesAccountingStable
+      && self.staleHandleRejected
+      && self.zeroCopyHandleReturn
+  }
+}

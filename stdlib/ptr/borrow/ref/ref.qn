@@ -1,0 +1,37 @@
+/**
+  Immutable borrowed reference backed by a checked non-null pointer.
+
+  example:
+    let user = box.borrow().get()?
+
+  effects: reads memory through checked pointer lowering
+  complexity: O(1)
+  allocation: none
+  safety: compiler proves the referenced owner outlives this Ref
+  stability: public since 0.1
+*/
+pub struct Ref<T> {
+  ptr: NonNull<T>,
+  generation: u64,
+}
+
+impl<T> Ref<T> {
+  pub fn fromPtr(ptr: NonNull<T>, generation: u64) -> Ref<T> {
+    return Ref<T> {
+      ptr: ptr,
+      generation: generation,
+    }
+  }
+
+  pub fn get(self: Ref<T>) -> Result<T, PtrError> {
+    return self.ptr.get()
+  }
+
+  pub fn asPtr(self: Ref<T>) -> Ptr<T> {
+    return self.ptr.asPtr()
+  }
+
+  pub fn generation(self: Ref<T>) -> u64 {
+    return self.generation
+  }
+}

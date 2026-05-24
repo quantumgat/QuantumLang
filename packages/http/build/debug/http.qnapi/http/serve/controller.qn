@@ -1,0 +1,8 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub abstract class ControllerModule {
+  controllerCount: usize
+  providerCount: usize
+  routeBlockCount: usize
+  middlewareCount: usize
+  pub init() {}
+}

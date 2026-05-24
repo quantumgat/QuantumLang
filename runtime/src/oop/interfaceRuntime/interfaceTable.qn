@@ -1,0 +1,21 @@
+pub struct InterfaceTable {
+  interfaceTypeId: u64,
+  implementorTypeId: u64,
+  methodCount: usize,
+  abiVersion: string,
+}
+
+pub fn interfaceTable(interfaceTypeId: u64, implementorTypeId: u64, methodCount: usize, abiVersion: string) -> InterfaceTable {
+  return InterfaceTable {
+    interfaceTypeId: interfaceTypeId,
+    implementorTypeId: implementorTypeId,
+    methodCount: methodCount,
+    abiVersion: abiVersion,
+  }
+}
+
+impl InterfaceTable {
+  pub fn isVersioned(self: InterfaceTable) -> bool {
+    return self.methodCount > 0 && self.abiVersion != ""
+  }
+}

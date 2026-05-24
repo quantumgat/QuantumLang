@@ -1,0 +1,93 @@
+import request::{HttpRequest}
+import response::{HttpResponse, IntoHttpError}
+import serve::{ServerPolicy}
+
+pub struct HttpServer {
+  bindAddress: string,
+  routeCount: usize,
+  router: HttpRouter,
+  policy: ServerPolicy,
+}
+
+impl HttpServer {
+  pub fn init(bindAddress: string, routeCount: usize) -> HttpServer {
+    return HttpServer {
+      bindAddress: bindAddress,
+      routeCount: routeCount,
+      router: HttpRouter.init(routeCount),
+      policy: ServerPolicy.init(),
+    }
+  }
+
+  pub fn bindAddress(self: HttpServer) -> string {
+    return self.bindAddress
+  }
+
+  pub fn routeCount(self: HttpServer) -> usize {
+    return self.routeCount
+  }
+
+  pub fn router(self: HttpServer) -> HttpRouter {
+    return self.router
+  }
+
+  pub fn policy(self: HttpServer) -> ServerPolicy {
+    return self.policy
+  }
+
+  pub fn withRouter(self: HttpServer, router: HttpRouter) -> HttpServer {
+    return HttpServer {
+      bindAddress: self.bindAddress,
+      routeCount: router.routeCount(),
+      router: router,
+      policy: self.policy,
+    }
+  }
+
+  pub fn withPolicy(self: HttpServer, policy: ServerPolicy) -> HttpServer {
+    return HttpServer {
+      bindAddress: self.bindAddress,
+      routeCount: self.routeCount,
+      router: self.router,
+      policy: policy,
+    }
+  }
+
+  pub async fn handle(self: HttpServer, request: HttpRequest) -> Result<HttpResponse, IntoHttpError> {
+    return self.router.dispatch(request)
+  }
+
+  pub async fn acceptLoop(self: HttpServer) -> Result<HttpAsyncTransportPlan, IntoHttpError> {
+    let plan = self.asyncTransportPlan()
+    if !plan.accepted() {
+      return Err(IntoHttpError.badRequest("HTTP async transport plan is incomplete"))
+    }
+    return Ok(plan)
+  }
+
+  pub async fn writeResponse(self: HttpServer, response: HttpResponse) -> Result<Unit, IntoHttpError> {
+    let writePlan = HttpResponseWritePlan.init()
+    if !writePlan.accepted() {
+      return Err(IntoHttpError.badRequest("HTTP async write plan is incomplete"))
+    }
+    return Ok(())
+  }
+
+  pub fn transportPlan(self: HttpServer) -> HttpTransportPlan {
+    return HttpTransportPlan.init(
+      self.bindAddress,
+      self.policy.workersCount(),
+      self.policy.transportMode(),
+      self.policy.blockingPoolWorkers(),
+      true
+    )
+  }
+
+  pub fn asyncTransportPlan(self: HttpServer) -> HttpAsyncTransportPlan {
+    return self.transportPlan().asyncPlan()
+  }
+
+  pub fn transportModePlan(self: HttpServer) -> HttpTransportModePlan {
+    return self.policy.transportModePlan()
+  }
+}

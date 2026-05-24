@@ -1,0 +1,41 @@
+pub enum OsCapabilityKind {
+  Filesystem
+  Network
+  Process
+  Terminal
+  Thread
+  Mmio
+  DirectIo
+  ForeignMemory
+}
+
+pub struct OsCapability {
+  kind: OsCapabilityKind,
+  allowed: bool,
+  checked: bool,
+}
+
+impl OsCapability {
+  pub fn allow(kind: OsCapabilityKind) -> OsCapability {
+    return OsCapability {
+      kind: kind,
+      allowed: true,
+      checked: true,
+    }
+  }
+
+  pub fn deny(kind: OsCapabilityKind) -> OsCapability {
+    return OsCapability {
+      kind: kind,
+      allowed: false,
+      checked: true,
+    }
+  }
+
+  pub fn require(self: OsCapability) -> Result<OsCapability, OsError> {
+    if self.checked && self.allowed {
+      return Ok(self)
+    }
+    return Err(OsError.init(OsErrorKind.CapabilityDenied, "QLOS0002"))
+  }
+}

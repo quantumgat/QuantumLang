@@ -1,0 +1,241 @@
+pub struct ArenaRegion {
+  id: usize,
+  capacity: usize,
+  bytesUsed: usize,
+  generation: usize,
+}
+
+pub struct ArenaHandle<T> {
+  index: usize,
+  generation: usize,
+}
+
+pub struct ArenaSlice<T> {
+  start: usize,
+  len: usize,
+  generation: usize,
+}
+
+pub struct ArenaSlot<T> {
+  value: Option<T>,
+  generation: usize,
+  occupied: bool,
+}
+
+pub struct Arena<T> {
+  region: ArenaRegion,
+  slots: Vec<ArenaSlot<T>>,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl ArenaRegion {
+  pub fn init(capacity: usize) -> ArenaRegion {
+    return ArenaRegion {
+      id: 0,
+      capacity: capacity,
+      bytesUsed: 0,
+      generation: 1,
+    }
+  }
+
+  pub fn withUsed(self: ArenaRegion, bytesUsed: usize) -> ArenaRegion {
+    return ArenaRegion {
+      id: self.id,
+      capacity: self.capacity,
+      bytesUsed: bytesUsed,
+      generation: self.generation,
+    }
+  }
+
+  pub fn reset(self: ArenaRegion) -> ArenaRegion {
+    return ArenaRegion {
+      id: self.id,
+      capacity: self.capacity,
+      bytesUsed: 0,
+      generation: self.generation + 1,
+    }
+  }
+}
+
+impl<T> ArenaHandle<T> {
+  pub fn new(index: usize, generation: usize) -> ArenaHandle<T> {
+    return ArenaHandle<T> {
+      index: index,
+      generation: generation,
+    }
+  }
+}
+
+impl<T> ArenaSlice<T> {
+  pub fn new(start: usize, len: usize, generation: usize) -> ArenaSlice<T> {
+    return ArenaSlice<T> {
+      start: start,
+      len: len,
+      generation: generation,
+    }
+  }
+}
+
+impl<T> ArenaSlot<T> {
+  pub fn occupied(value: T, generation: usize) -> ArenaSlot<T> {
+    return ArenaSlot<T> {
+      value: Some(value),
+      generation: generation,
+      occupied: true,
+    }
+  }
+}
+
+impl<T> Arena<T> {
+  pub fn init() -> Arena<T> requires(alloc) {
+    return Arena<T>.withCapacity(0)
+  }
+
+  pub fn empty() -> Arena<T> requires(alloc) {
+    return Arena<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Arena<T> requires(alloc) {
+    return Arena<T> {
+      region: ArenaRegion.init(capacity),
+      slots: Vec<ArenaSlot<T>>.withCapacity(capacity),
+      len: 0,
+      capacity: capacity,
+      generation: 1,
+    }
+  }
+
+  pub fn builder() -> ArenaBuilder<T> {
+    return ArenaBuilder<T> { capacity: 0 }
+  }
+
+  pub fn len(self: Arena<T>) -> usize {
+    return self.len
+  }
+
+  pub fn bytesUsed(self: Arena<T>) -> usize {
+    return self.region.bytesUsed
+  }
+
+  pub fn isEmpty(self: Arena<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn alloc(self: Arena<T>, value: T) -> (Arena<T>, ArenaHandle<T>) requires(alloc) {
+    let index = self.slots.len
+    let bytes = self.valueBytes(value)
+    let slots = self.slots.push(ArenaSlot<T>.occupied(value, self.generation))
+    let region = self.region.withUsed(self.region.bytesUsed + bytes)
+    return (
+      Arena<T> {
+        region: region,
+        slots: slots,
+        len: self.len + 1,
+        capacity: self.nextCapacity(1),
+        generation: self.generation,
+      },
+      ArenaHandle<T>.new(index, self.generation)
+    )
+  }
+
+  pub fn allocArray(self: Arena<T>, values: Vec<T>) -> (Arena<T>, ArenaSlice<T>) requires(alloc) {
+    let start = self.slots.len
+    let mut arena = self
+    let mut index: usize = 0
+    while index < values.len {
+      let allocated = arena.alloc(values[index])
+      arena = allocated.0
+      index = index + 1
+    }
+    return (
+      arena,
+      ArenaSlice<T>.new(start, values.len, self.generation)
+    )
+  }
+
+  pub fn get(self: Arena<T>, handle: ArenaHandle<T>) -> Option<T> {
+    if handle.index >= self.slots.len {
+      return None
+    }
+    let slot = self.slots[handle.index]
+    if slot.occupied == false {
+      return None
+    }
+    if slot.generation != handle.generation {
+      return None
+    }
+    return slot.value
+  }
+
+  pub fn contains(self: Arena<T>, handle: ArenaHandle<T>) -> bool {
+    if handle.index >= self.slots.len {
+      return false
+    }
+    let slot = self.slots[handle.index]
+    return slot.occupied && slot.generation == handle.generation
+  }
+
+  pub fn sliceToVec(self: Arena<T>, slice: ArenaSlice<T>) -> Vec<T> requires(alloc) {
+    if slice.generation != self.generation {
+      return Vec<T>.empty()
+    }
+    let mut result = Vec<T>.withCapacity(slice.len)
+    let mut offset: usize = 0
+    while offset < slice.len {
+      let handle = ArenaHandle<T>.new(slice.start + offset, slice.generation)
+      let found = self.get(handle)
+      match found {
+        Some(value) => {
+          result = result.push(value)
+        }
+        None => {
+        }
+      }
+      offset = offset + 1
+    }
+    return result
+  }
+
+  pub fn iter(self: Arena<T>) -> ArenaIter<T> {
+    return ArenaIter<T> {
+      arena: self,
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  pub fn reset(self: Arena<T>) -> Arena<T> requires(alloc) {
+    return Arena<T> {
+      region: self.region.reset(),
+      slots: Vec<ArenaSlot<T>>.withCapacity(self.capacity),
+      len: 0,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn clear(self: Arena<T>) -> Arena<T> requires(alloc) {
+    return self.reset()
+  }
+
+  pub fn nextCapacity(self: Arena<T>, additional: usize) -> usize {
+    let needed = self.slots.len + additional
+    if needed <= self.capacity {
+      return self.capacity
+    }
+    if self.capacity == 0 {
+      return needed
+    }
+    let mut next = self.capacity
+    while next < needed {
+      next = next * 2
+    }
+    return next
+  }
+
+  pub fn valueBytes(self: Arena<T>, value: T) -> usize {
+    return 1
+  }
+}

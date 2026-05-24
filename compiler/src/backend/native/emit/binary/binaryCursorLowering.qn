@@ -1,0 +1,17 @@
+pub struct BinaryCursorNativeLowering {
+  directPointerRead: bool,
+  boundsCheckPreserved: bool,
+  byteOffsetDiagnostic: bool,
+  noAllocation: bool,
+  targetEndianHandled: bool,
+}
+
+impl BinaryCursorNativeLowering {
+  pub fn hotPath(self: BinaryCursorNativeLowering) -> bool {
+    return self.directPointerRead
+      && self.boundsCheckPreserved
+      && self.byteOffsetDiagnostic
+      && self.noAllocation
+      && self.targetEndianHandled
+  }
+}

@@ -1,0 +1,30 @@
+pub struct SystemInfo {
+  name: string,
+  target: OsTarget,
+  capabilities: Vec<OsCapability>,
+}
+
+pub fn system() -> SystemInfo
+pub fn name(info: SystemInfo) -> string
+pub fn target(info: SystemInfo) -> OsTarget
+pub fn capabilities(info: SystemInfo) -> Vec<OsCapability>
+pub fn has(kind: OsCapabilityKind) -> bool
+pub fn require(kind: OsCapabilityKind) -> Result<SysCapability, OsError>
+
+impl SystemInfo {
+  pub fn target(self: SystemInfo) -> OsTarget {
+    return self.target
+  }
+
+  pub fn has(self: SystemInfo, kind: OsCapabilityKind) -> bool {
+    let mut index: usize = 0
+    while index < self.capabilities.len {
+      let capability = self.capabilities[index]
+      if capability.kind == kind && capability.allowed {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+}

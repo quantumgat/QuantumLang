@@ -1,0 +1,100 @@
+pub struct RouteGraph {
+  table: HttpRouteTable,
+  trie: HttpRouteTrie,
+  routeCount: usize,
+  dynamicRouteCount: usize,
+}
+
+impl RouteGraph {
+  pub fn empty() -> RouteGraph {
+    return RouteGraph {
+      table: HttpRouteTable.empty(),
+      trie: HttpRouteTrie.empty(),
+      routeCount: 0,
+      dynamicRouteCount: 0,
+    }
+  }
+
+  pub fn fromEndpoints(endpoints: EndpointGraph) -> Result<RouteGraph, HttpRouteConflict> {
+    let tableResult = endpoints.routeTable()
+    match tableResult {
+      Ok(table) => {
+        return Ok(RouteGraph {
+          table: table,
+          trie: HttpRouteTrie.empty(),
+          routeCount: endpoints.endpointCount(),
+          dynamicRouteCount: 0,
+        })
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn addStatic(self: RouteGraph, route: HttpRoute) -> Result<RouteGraph, HttpRouteConflict> {
+    let tableResult = self.table.add(route.method(), route.path(), route.handlerName())
+    match tableResult {
+      Ok(table) => {
+        let trieResult = self.trie.addStatic(route.method(), route.path(), route.handlerName())
+        match trieResult {
+          Ok(trie) => {
+            return Ok(RouteGraph {
+              table: table,
+              trie: trie,
+              routeCount: self.routeCount + 1,
+              dynamicRouteCount: self.dynamicRouteCount,
+            })
+          }
+          Err(error) => {
+            return Err(error)
+          }
+        }
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn addDynamic(self: RouteGraph, route: HttpRoute) -> Result<RouteGraph, HttpRouteConflict> {
+    let tableResult = self.table.add(route.method(), route.path(), route.handlerName())
+    match tableResult {
+      Ok(table) => {
+        let trieResult = self.trie.addDynamic(route.method(), route.path(), route.handlerName())
+        match trieResult {
+          Ok(trie) => {
+            return Ok(RouteGraph {
+              table: table,
+              trie: trie,
+              routeCount: self.routeCount + 1,
+              dynamicRouteCount: self.dynamicRouteCount + 1,
+            })
+          }
+          Err(error) => {
+            return Err(error)
+          }
+        }
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn table(self: RouteGraph) -> HttpRouteTable {
+    return self.table
+  }
+
+  pub fn trie(self: RouteGraph) -> HttpRouteTrie {
+    return self.trie
+  }
+
+  pub fn routeCount(self: RouteGraph) -> usize {
+    return self.routeCount
+  }
+
+  pub fn acceleratorReady(self: RouteGraph) -> bool {
+    return self.routeCount > 0
+  }
+}

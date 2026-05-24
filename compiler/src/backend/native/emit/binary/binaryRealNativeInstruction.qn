@@ -1,0 +1,84 @@
+pub enum BinaryNativeOpcode {
+  DirectLoad,
+  DirectStore,
+  CopyBytes,
+  WriteBytes,
+  DecodeVarU64,
+  EncodeVarU64,
+  FinishWriter,
+}
+
+pub struct BinaryNativeInstruction {
+  opcode: BinaryNativeOpcode,
+  widthBits: u16,
+  endian: BinaryEndian,
+  emitsLoadStore: bool,
+  emitsMemcpy: bool,
+  emitsEndianSwap: bool,
+  boundsCheckHoisted: bool,
+  diagnosticPath: bool,
+  allocationBytes: usize,
+}
+
+pub fn emitBinaryNativeInstruction(op: MirBinaryOp, targetEndian: BinaryEndian) -> BinaryNativeInstruction {
+  match op.kind {
+    MirBinaryOpKind.LoadFixedWidth => {
+      return binaryNativeInstruction(BinaryNativeOpcode.DirectLoad, op.widthBits, op.endian, targetEndian)
+    }
+    MirBinaryOpKind.StoreFixedWidth => {
+      return binaryNativeInstruction(BinaryNativeOpcode.DirectStore, op.widthBits, op.endian, targetEndian)
+    }
+    MirBinaryOpKind.LoadBytes => {
+      return binaryNativeBytesInstruction(BinaryNativeOpcode.CopyBytes, op.endian)
+    }
+    MirBinaryOpKind.StoreBytes => {
+      return binaryNativeBytesInstruction(BinaryNativeOpcode.WriteBytes, op.endian)
+    }
+    MirBinaryOpKind.ReadVarU64 => {
+      return binaryNativeBytesInstruction(BinaryNativeOpcode.DecodeVarU64, op.endian)
+    }
+    MirBinaryOpKind.WriteVarU64 => {
+      return binaryNativeBytesInstruction(BinaryNativeOpcode.EncodeVarU64, op.endian)
+    }
+    MirBinaryOpKind.FinishWriter => {
+      return binaryNativeBytesInstruction(BinaryNativeOpcode.FinishWriter, op.endian)
+    }
+  }
+}
+
+pub fn binaryNativeInstruction(opcode: BinaryNativeOpcode, widthBits: u16, endian: BinaryEndian, targetEndian: BinaryEndian) -> BinaryNativeInstruction {
+  return BinaryNativeInstruction {
+    opcode: opcode,
+    widthBits: widthBits,
+    endian: endian,
+    emitsLoadStore: true,
+    emitsMemcpy: false,
+    emitsEndianSwap: endian != targetEndian,
+    boundsCheckHoisted: true,
+    diagnosticPath: true,
+    allocationBytes: 0,
+  }
+}
+
+pub fn binaryNativeBytesInstruction(opcode: BinaryNativeOpcode, endian: BinaryEndian) -> BinaryNativeInstruction {
+  return BinaryNativeInstruction {
+    opcode: opcode,
+    widthBits: 0,
+    endian: endian,
+    emitsLoadStore: false,
+    emitsMemcpy: opcode == BinaryNativeOpcode.CopyBytes || opcode == BinaryNativeOpcode.WriteBytes,
+    emitsEndianSwap: false,
+    boundsCheckHoisted: true,
+    diagnosticPath: true,
+    allocationBytes: 0,
+  }
+}
+
+impl BinaryNativeInstruction {
+  pub fn hotPath(self: BinaryNativeInstruction) -> bool {
+    return self.boundsCheckHoisted
+      && self.diagnosticPath
+      && self.allocationBytes == 0
+      && (self.emitsLoadStore || self.emitsMemcpy || self.opcode == BinaryNativeOpcode.FinishWriter || self.opcode == BinaryNativeOpcode.DecodeVarU64 || self.opcode == BinaryNativeOpcode.EncodeVarU64)
+  }
+}

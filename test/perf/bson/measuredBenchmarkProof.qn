@@ -1,0 +1,40 @@
+pub struct BsonMeasuredBenchmarkProof {
+  encodeMeasured: bool,
+  decodeMeasured: bool,
+  validateMeasured: bool,
+  objectIdMeasured: bool,
+  jsonBridgeMeasured: bool,
+  exactModeMeasured: bool,
+  reportComplete: bool,
+  productClaimAllowed: bool,
+}
+
+impl BsonMeasuredBenchmarkProof {
+  pub fn required() -> BsonMeasuredBenchmarkProof {
+    return BsonMeasuredBenchmarkProof {
+      encodeMeasured: false,
+      decodeMeasured: false,
+      validateMeasured: false,
+      objectIdMeasured: false,
+      jsonBridgeMeasured: false,
+      exactModeMeasured: false,
+      reportComplete: false,
+      productClaimAllowed: false,
+    }
+  }
+
+  pub fn complete(self: BsonMeasuredBenchmarkProof) -> bool {
+    return self.encodeMeasured
+      && self.decodeMeasured
+      && self.validateMeasured
+      && self.objectIdMeasured
+      && self.jsonBridgeMeasured
+      && self.exactModeMeasured
+      && self.reportComplete
+      && self.productClaimAllowed
+  }
+
+  pub fn claimBlockedUntilReports(self: BsonMeasuredBenchmarkProof) -> bool {
+    return !self.reportComplete && !self.productClaimAllowed
+  }
+}

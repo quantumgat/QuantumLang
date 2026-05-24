@@ -1,0 +1,25 @@
+pub struct RuntimeCpuFeatureSet {
+  target: string,
+  detectedFeatures: usize,
+  staticFeatures: usize,
+  requiredFeatures: usize,
+}
+
+impl RuntimeCpuFeatureSet {
+  pub fn init(target: string, detectedFeatures: usize, staticFeatures: usize, requiredFeatures: usize) -> RuntimeCpuFeatureSet {
+    return RuntimeCpuFeatureSet {
+      target: target,
+      detectedFeatures: detectedFeatures,
+      staticFeatures: staticFeatures,
+      requiredFeatures: requiredFeatures,
+    }
+  }
+
+  pub fn supportsStatic(self: RuntimeCpuFeatureSet) -> bool {
+    return self.staticFeatures >= self.requiredFeatures
+  }
+
+  pub fn supportsRuntime(self: RuntimeCpuFeatureSet) -> bool {
+    return self.detectedFeatures >= self.requiredFeatures
+  }
+}

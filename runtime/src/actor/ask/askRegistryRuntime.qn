@@ -1,0 +1,21 @@
+pub struct RuntimeAskRegistry {
+  actorId: ActorId,
+  pendingAsks: usize,
+  timeoutLinked: bool,
+  cancellationLinked: bool,
+}
+
+impl RuntimeAskRegistry {
+  pub fn init(actorId: ActorId, pendingAsks: usize, timeoutLinked: bool, cancellationLinked: bool) -> RuntimeAskRegistry {
+    return RuntimeAskRegistry {
+      actorId: actorId,
+      pendingAsks: pendingAsks,
+      timeoutLinked: timeoutLinked,
+      cancellationLinked: cancellationLinked,
+    }
+  }
+
+  pub fn safe(self: RuntimeAskRegistry) -> bool {
+    return self.actorId.raw() > 0 && self.timeoutLinked && self.cancellationLinked
+  }
+}

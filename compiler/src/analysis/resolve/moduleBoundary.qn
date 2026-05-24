@@ -1,0 +1,103 @@
+pub enum ModuleAccessKind {
+  SameModule,
+  CrossModule,
+  OutsidePackage,
+}
+
+pub struct ModuleBoundaryPolicy {
+  moduleName: string,
+  packageRoot: string,
+  siblingVisible: bool,
+  exportsViaMod: bool,
+  crossModuleImportRequired: bool,
+  outsidePackageRootOnly: bool,
+}
+
+pub struct ModuleBoundaryOverrideCheck {
+  moduleName: string,
+  accepted: bool,
+  reason: string,
+}
+
+impl ModuleBoundaryPolicy {
+  pub fn strictDefault(moduleName: string, packageRoot: string) -> ModuleBoundaryPolicy {
+    return ModuleBoundaryPolicy {
+      moduleName: moduleName,
+      packageRoot: packageRoot,
+      siblingVisible: true,
+      exportsViaMod: true,
+      crossModuleImportRequired: true,
+      outsidePackageRootOnly: true,
+    }
+  }
+
+  pub fn allowsSameModuleDirectAccess(self: ModuleBoundaryPolicy) -> bool {
+    return self.siblingVisible
+  }
+
+  pub fn requiresModExport(self: ModuleBoundaryPolicy, access: ModuleAccessKind) -> bool {
+    if access == ModuleAccessKind.SameModule {
+      return false
+    }
+    if access == ModuleAccessKind.CrossModule {
+      return self.exportsViaMod || self.crossModuleImportRequired
+    }
+    return self.outsidePackageRootOnly
+  }
+
+  pub fn acceptsPackageRoot(self: ModuleBoundaryPolicy) -> bool {
+    return self.packageRoot != "" && self.outsidePackageRootOnly
+  }
+
+  pub fn atLeastAsStrictAs(self: ModuleBoundaryPolicy, baseline: ModuleBoundaryPolicy) -> bool {
+    if self.moduleName == "" || self.packageRoot == "" {
+      return false
+    }
+    if self.siblingVisible && !baseline.siblingVisible {
+      return false
+    }
+    if baseline.exportsViaMod && !self.exportsViaMod {
+      return false
+    }
+    if baseline.crossModuleImportRequired && !self.crossModuleImportRequired {
+      return false
+    }
+    if baseline.outsidePackageRootOnly && !self.outsidePackageRootOnly {
+      return false
+    }
+    return true
+  }
+
+  pub fn checkOverride(self: ModuleBoundaryPolicy) -> ModuleBoundaryOverrideCheck {
+    let baseline = ModuleBoundaryPolicy.strictDefault(self.moduleName, self.packageRoot)
+    if self.atLeastAsStrictAs(baseline) {
+      return ModuleBoundaryOverrideCheck.accepted(self.moduleName)
+    }
+    return ModuleBoundaryOverrideCheck.rejected(
+      self.moduleName,
+      "module policy override weakens the default boundary"
+    )
+  }
+}
+
+impl ModuleBoundaryOverrideCheck {
+  pub fn accepted(moduleName: string) -> ModuleBoundaryOverrideCheck {
+    return ModuleBoundaryOverrideCheck {
+      moduleName: moduleName,
+      accepted: true,
+      reason: "",
+    }
+  }
+
+  pub fn rejected(moduleName: string, reason: string) -> ModuleBoundaryOverrideCheck {
+    return ModuleBoundaryOverrideCheck {
+      moduleName: moduleName,
+      accepted: false,
+      reason: reason,
+    }
+  }
+
+  pub fn failed(self: ModuleBoundaryOverrideCheck) -> bool {
+    return !self.accepted
+  }
+}

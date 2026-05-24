@@ -1,0 +1,24 @@
+pub enum HirTryResultHandoffKind {
+  ResultQuestion
+  OptionQuestion
+  TryBlock
+  AwaitQuestion
+  ErrorConversion
+  NestedArmPropagation
+  ClosurePropagation
+}
+
+pub struct HirTryResultHandoff {
+  sourceNode: u64,
+  kind: HirTryResultHandoffKind,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+}
+
+impl HirTryResultHandoff {
+  pub fn complete(self: HirTryResultHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+}

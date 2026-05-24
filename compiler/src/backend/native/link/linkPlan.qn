@@ -1,0 +1,39 @@
+pub enum LinkOutputKind {
+  ExecutableOutput
+  StaticArchiveOutput
+  SharedLibraryOutput
+}
+
+pub struct LinkPlan {
+  output: string,
+  kind: LinkOutputKind,
+  objectCount: usize,
+  hiddenRuntimeArchive: bool,
+}
+
+pub fn linkPlan(output: string, kind: LinkOutputKind, objectCount: usize, hiddenRuntimeArchive: bool) -> LinkPlan {
+  return LinkPlan {
+    output: output,
+    kind: kind,
+    objectCount: objectCount,
+    hiddenRuntimeArchive: hiddenRuntimeArchive,
+  }
+}
+
+impl LinkPlan {
+  pub fn outputPath(self: LinkPlan) -> string {
+    return self.output
+  }
+
+  pub fn outputKind(self: LinkPlan) -> LinkOutputKind {
+    return self.kind
+  }
+
+  pub fn objects(self: LinkPlan) -> usize {
+    return self.objectCount
+  }
+
+  pub fn usesHiddenRuntime(self: LinkPlan) -> bool {
+    return self.hiddenRuntimeArchive
+  }
+}

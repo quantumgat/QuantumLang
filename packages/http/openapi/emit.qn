@@ -1,0 +1,39 @@
+pub enum OpenApiFormat {
+  Json,
+  Yaml,
+}
+
+pub struct OpenApiEmitter {
+  format: OpenApiFormat,
+  includeSourceMaps: bool,
+}
+
+impl OpenApiEmitter {
+  pub fn json() -> OpenApiEmitter {
+    return OpenApiEmitter {
+      format: OpenApiFormat.Json,
+      includeSourceMaps: true,
+    }
+  }
+
+  pub fn yaml() -> OpenApiEmitter {
+    return OpenApiEmitter {
+      format: OpenApiFormat.Yaml,
+      includeSourceMaps: true,
+    }
+  }
+
+  pub fn withoutSourceMaps(self: OpenApiEmitter) -> OpenApiEmitter {
+    return OpenApiEmitter {
+      format: self.format,
+      includeSourceMaps: false,
+    }
+  }
+
+  pub fn emit(self: OpenApiEmitter, artifact: OpenApiArtifact) -> string {
+    if self.format == OpenApiFormat.Json {
+      return "{ \"openapi\": \"3.1.0\", \"title\": \"" + artifact.title() + "\" }"
+    }
+    return "openapi: 3.1.0\ninfo:\n  title: " + artifact.title()
+  }
+}

@@ -1,0 +1,12 @@
+pub use constantTime.ConstantTimeBool
+pub use constantTime.ConstantTimePolicy
+pub use constantTime.Secret
+pub use constantTime.constantTimeEqual
+pub use constantTime.constantTimeSelect
+
+pub struct Hash256 {
+  bytes: Bytes,
+}
+
+pub fn sha256(value: Bytes) -> Hash256
+pub fn equals(left: Hash256, right: Hash256) -> bool

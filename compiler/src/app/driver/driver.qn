@@ -1,0 +1,29 @@
+pub class BuildDriver {
+  name: string,
+  ownsCli: bool,
+  ownsCommands: bool,
+  ownsPipeline: bool,
+  strictNative: bool,
+  pipelineReady: bool,
+
+  pub init() {
+    self.name = "qtlc"
+    self.ownsCli = true
+    self.ownsCommands = true
+    self.ownsPipeline = true
+    self.strictNative = true
+    self.pipelineReady = true
+  }
+
+  pub fn run(self: &BuildDriver) -> i64 {
+    if self.strictNative && self.ownsPipeline && self.pipelineReady {
+      return 0
+    }
+    return 1
+  }
+}
+impl BuildDriver {
+  pub fn defaultExitCode(self: &BuildDriver) -> i64 {
+    return 0
+  }
+}

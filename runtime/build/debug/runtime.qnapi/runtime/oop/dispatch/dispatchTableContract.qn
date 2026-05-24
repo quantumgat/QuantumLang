@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct DispatchTableContract {
+  abiVersioned: bool
+  typeIdentityStable: bool
+  dropBehaviorKnown: bool
+  methodOrderingProven: bool
+  interfaceEntriesBound: bool
+}
+pub extern "qnpkg" {
+  pub fn dispatchTableContract(abiVersioned: bool, typeIdentityStable: bool, dropBehaviorKnown: bool, methodOrderingProven: bool, interfaceEntriesBound: bool) -> DispatchTableContract
+}

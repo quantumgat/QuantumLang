@@ -1,0 +1,41 @@
+pub enum TimerDiagnosticKind {
+  None
+  InvalidDuration
+  DeadlineOverflow
+  TimerNotLinkedToToken
+  IntervalWithoutDriftPolicy
+}
+
+pub struct TimerSafety {
+  nodeId: u64,
+  durationChecked: bool,
+  deadlineChecked: bool,
+  cancellationLinked: bool,
+  diagnostic: TimerDiagnosticKind,
+}
+
+impl TimerSafety {
+  pub fn init(
+    nodeId: u64,
+    durationChecked: bool,
+    deadlineChecked: bool,
+    cancellationLinked: bool,
+    diagnostic: TimerDiagnosticKind,
+  ) -> TimerSafety {
+    return TimerSafety {
+      nodeId: nodeId,
+      durationChecked: durationChecked,
+      deadlineChecked: deadlineChecked,
+      cancellationLinked: cancellationLinked,
+      diagnostic: diagnostic,
+    }
+  }
+
+  pub fn accepted(self: TimerSafety) -> bool {
+    return self.nodeId > 0
+      && self.durationChecked
+      && self.deadlineChecked
+      && self.cancellationLinked
+      && self.diagnostic == TimerDiagnosticKind.None
+  }
+}

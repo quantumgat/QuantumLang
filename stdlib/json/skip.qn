@@ -1,0 +1,9 @@
+pub enum JsonSkipPolicy {
+  RejectUnknown
+  IgnoreUnknown
+  PreserveUnknown
+}
+
+pub fn skipPolicy() -> JsonSkipPolicy {
+  return JsonSkipPolicy.RejectUnknown
+}

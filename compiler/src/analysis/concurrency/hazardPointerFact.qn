@@ -1,0 +1,21 @@
+pub struct HazardPointerFact {
+  node: u64,
+  protected: bool,
+  generationMatches: bool,
+  loadBeforeProtect: bool,
+}
+
+impl HazardPointerFact {
+  pub fn init(node: u64, protected: bool, generationMatches: bool, loadBeforeProtect: bool) -> HazardPointerFact {
+    return HazardPointerFact {
+      node: node,
+      protected: protected,
+      generationMatches: generationMatches,
+      loadBeforeProtect: loadBeforeProtect,
+    }
+  }
+
+  pub fn accepted(self: HazardPointerFact) -> bool {
+    return self.protected && self.generationMatches && self.loadBeforeProtect == false
+  }
+}

@@ -1,0 +1,67 @@
+pub struct HttpJsonResponsePolicyProof {
+  exactJson: bool,
+  rawJson: bool,
+  envelopeOk: bool,
+  envelopeCreated: bool,
+  envelopeError: bool,
+  appPolicy: bool,
+  rawBypass: bool,
+}
+
+impl HttpJsonResponsePolicyProof {
+  pub fn complete(self: HttpJsonResponsePolicyProof) -> bool {
+    return self.exactJson
+      && self.rawJson
+      && self.envelopeOk
+      && self.envelopeCreated
+      && self.envelopeError
+      && self.appPolicy
+      && self.rawBypass
+  }
+}
+
+pub struct ResponsePolicyProduct {
+  id: string,
+}
+
+impl ResponsePolicyProduct {
+  pub fn init(id: string) -> ResponsePolicyProduct {
+    return ResponsePolicyProduct {
+      id: id,
+    }
+  }
+}
+
+pub fn httpJsonResponsePolicyProof() -> Result<HttpJsonResponsePolicyProof, JsonError> {
+  let product = ResponsePolicyProduct.init("p1")
+  let exact = HttpResponse.json({
+    ok: true,
+    productId: "p1",
+  })?
+  let raw = HttpResponse.rawJson(RawJson("{\"ok\":true}"))
+  let ok = Response.ok(product)?
+  let created = Response.status(.Created, product)?
+  let error = Response.error(HttpError.notFound("PRODUCT_NOT_FOUND", "product not found"))?
+  let app = App()
+    .response(ResponsePolicy.envelope())
+    .controller<ProductController>()
+    .plan(8080)
+  let rawApp = App()
+    .response(ResponsePolicy.raw())
+    .controller<ProductController>()
+    .plan(8080)
+
+  return Ok(HttpJsonResponsePolicyProof {
+    exactJson: exact.status().code() == 200 && exact.body().contentType() == "application/json",
+    rawJson: raw.status().code() == 200 && raw.body().contentType() == "application/json",
+    envelopeOk: ok.status().code() == 200,
+    envelopeCreated: created.status().code() == 201,
+    envelopeError: error.status().code() == 404,
+    appPolicy: app.responsePolicyComplete()
+      && app.responsePolicyName() == "envelope"
+      && app.wrapsTypedResponses(),
+    rawBypass: rawApp.responsePolicyComplete()
+      && rawApp.responsePolicyName() == "raw"
+      && rawApp.rawHttpResponseBypassesPolicy(),
+  })
+}

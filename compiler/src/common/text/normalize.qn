@@ -1,0 +1,25 @@
+pub enum NormalizationForm {
+  SourceStable,
+  IdentifierStable,
+  DiagnosticDisplay,
+}
+
+pub struct NormalizedText {
+  form: NormalizationForm,
+  changed: bool,
+  utf8Checked: bool,
+}
+
+pub fn normalizedText(form: NormalizationForm, changed: bool, utf8Checked: bool) -> NormalizedText {
+  return NormalizedText { form: form, changed: changed, utf8Checked: utf8Checked }
+}
+
+impl NormalizedText {
+  pub fn isStableForSource(self: NormalizedText) -> bool {
+    return self.utf8Checked
+  }
+
+  pub fn changedInput(self: NormalizedText) -> bool {
+    return self.changed
+  }
+}

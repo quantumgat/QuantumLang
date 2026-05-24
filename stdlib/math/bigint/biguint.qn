@@ -1,0 +1,20 @@
+pub struct BigUint {
+  limbs: usize,
+}
+
+impl BigUint {
+  pub fn zero() -> BigUint
+  pub fn one() -> BigUint
+  pub fn parse(text: string) -> Result<BigUint, BigNumberError>
+  pub fn tryParse(text: string) -> Option<BigUint>
+  pub fn fromU64(value: u64) -> BigUint
+  pub fn fromU128(value: u128) -> BigUint
+  pub fn fromU256(value: u256) -> BigUint
+  pub fn fromBigInt(value: BigInt) -> Result<BigUint, BigNumberError>
+  pub fn toBigInt(self: BigUint) -> BigInt
+  pub fn toU64(self: BigUint) -> Result<u64, BigNumberError>
+  pub fn toU128(self: BigUint) -> Result<u128, BigNumberError>
+  pub fn toU256(self: BigUint) -> Result<u256, BigNumberError>
+  pub fn secret(self: BigUint, policy: BigNumberSecretPolicy) -> SecretBigUint
+  pub fn limbs(self: BigUint) -> BigNumberLimbView
+}

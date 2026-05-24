@@ -1,0 +1,5 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub interface QuantumProvider {
+  pub fn providerName(self: &QuantumProvider) -> string
+  pub fn supportsShots(self: &QuantumProvider) -> bool
+}

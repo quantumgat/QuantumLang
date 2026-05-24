@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeJsonScannerSupport {
+  scalarAvailable: bool
+  simdFeatureChecked: bool
+  avx2FeatureChecked: bool
+  sse42FeatureChecked: bool
+  neonFeatureChecked: bool
+  utf8ValidationAvailable: bool
+  stringEscapeValidationAvailable: bool
+  requiredSimdIncident: bool
+  noUncheckedFeatureUse: bool
+}
+pub struct RuntimeJsonSafety {
+  boundedDepth: bool
+  allocationIncident: bool
+  noCoredump: bool
+}

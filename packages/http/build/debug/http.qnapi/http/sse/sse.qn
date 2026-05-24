@@ -1,0 +1,17 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub abstract class SseStream {
+  eventCount: usize
+  retrySeconds: usize
+  isOpen: bool
+  maxEventBytes: usize
+  pub init() {}
+  pub fn withRetry(self: &mut SseStream, retry: RetryPolicy) -> Result<(), SseDiagnostic>
+  pub fn withMaxEventBytes(self: &mut SseStream, maxEventBytes: usize) -> ()
+  pub fn emit(self: &mut SseStream, event: Event) -> Result<(), SseDiagnostic>
+  pub fn emitText(self: &mut SseStream, text: string) -> Result<(), SseDiagnostic>
+  pub fn heartbeat(self: &mut SseStream) -> Result<(), SseDiagnostic>
+  pub fn close(self: &mut SseStream) -> Unit
+  pub fn backpressureAware(self: SseStream) -> bool
+  pub fn open(self: SseStream) -> bool
+  pub fn sentEvents(self: SseStream) -> usize
+}

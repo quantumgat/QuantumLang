@@ -1,0 +1,13 @@
+[module]
+name = "stdlib"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "public-stdlib-root"
+
+[limits]
+lineHardLimit = 1500
+modLineHardLimit = 300
+
+[tests]
+focusedGate = "qtlc_qtlang_stdlib_public_root_gap_closure"

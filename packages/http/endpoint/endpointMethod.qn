@@ -1,0 +1,143 @@
+pub enum EndpointMethodKind {
+  Get,
+  Post,
+  Put,
+  Patch,
+  Delete,
+  Head,
+  Options,
+  Create,
+  List,
+  Search,
+  Find,
+  Upload,
+  Replace,
+  Update,
+  Remove,
+}
+
+pub struct EndpointMethod {
+  name: string,
+  httpMethod: HttpMethod,
+  kind: EndpointMethodKind,
+  routeName: string,
+}
+
+impl EndpointMethod {
+  pub fn init(name: string, httpMethod: HttpMethod, kind: EndpointMethodKind, routeName: string) -> EndpointMethod {
+    return EndpointMethod {
+      name: name,
+      httpMethod: httpMethod,
+      kind: kind,
+      routeName: routeName,
+    }
+  }
+
+  pub fn get(name: string) -> EndpointMethod {
+    return EndpointMethod.init(name, HttpMethod.Get, EndpointMethodKind.Get, name)
+  }
+
+  pub fn post(name: string) -> EndpointMethod {
+    return EndpointMethod.init(name, HttpMethod.Post, EndpointMethodKind.Post, name)
+  }
+
+  pub fn put(name: string) -> EndpointMethod {
+    return EndpointMethod.init(name, HttpMethod.Put, EndpointMethodKind.Put, name)
+  }
+
+  pub fn patch(name: string) -> EndpointMethod {
+    return EndpointMethod.init(name, HttpMethod.Patch, EndpointMethodKind.Patch, name)
+  }
+
+  pub fn delete(name: string) -> EndpointMethod {
+    return EndpointMethod.init(name, HttpMethod.Delete, EndpointMethodKind.Delete, name)
+  }
+
+  pub fn head(name: string) -> EndpointMethod {
+    return EndpointMethod.init(name, HttpMethod.Head, EndpointMethodKind.Head, name)
+  }
+
+  pub fn options(name: string) -> EndpointMethod {
+    return EndpointMethod.init(name, HttpMethod.Options, EndpointMethodKind.Options, name)
+  }
+
+  pub fn magicGet() -> EndpointMethod {
+    return EndpointMethod.init("get", HttpMethod.Get, EndpointMethodKind.Get, "")
+  }
+
+  pub fn create() -> EndpointMethod {
+    return EndpointMethod.init("create", HttpMethod.Post, EndpointMethodKind.Create, "")
+  }
+
+  pub fn magicPost() -> EndpointMethod {
+    return EndpointMethod.init("post", HttpMethod.Post, EndpointMethodKind.Post, "")
+  }
+
+  pub fn magicPut() -> EndpointMethod {
+    return EndpointMethod.init("put", HttpMethod.Put, EndpointMethodKind.Put, "")
+  }
+
+  pub fn magicPatch() -> EndpointMethod {
+    return EndpointMethod.init("patch", HttpMethod.Patch, EndpointMethodKind.Patch, "")
+  }
+
+  pub fn magicDelete() -> EndpointMethod {
+    return EndpointMethod.init("delete", HttpMethod.Delete, EndpointMethodKind.Delete, "")
+  }
+
+  pub fn list() -> EndpointMethod {
+    return EndpointMethod.init("list", HttpMethod.Get, EndpointMethodKind.List, "")
+  }
+
+  pub fn search() -> EndpointMethod {
+    return EndpointMethod.init("search", HttpMethod.Get, EndpointMethodKind.Search, "search")
+  }
+
+  pub fn find() -> EndpointMethod {
+    return EndpointMethod.init("find", HttpMethod.Get, EndpointMethodKind.Find, "")
+  }
+
+  pub fn upload() -> EndpointMethod {
+    return EndpointMethod.init("upload", HttpMethod.Post, EndpointMethodKind.Upload, "upload")
+  }
+
+  pub fn replace() -> EndpointMethod {
+    return EndpointMethod.init("replace", HttpMethod.Put, EndpointMethodKind.Replace, "")
+  }
+
+  pub fn update() -> EndpointMethod {
+    return EndpointMethod.init("update", HttpMethod.Patch, EndpointMethodKind.Update, "")
+  }
+
+  pub fn remove() -> EndpointMethod {
+    return EndpointMethod.init("remove", HttpMethod.Delete, EndpointMethodKind.Remove, "")
+  }
+
+  pub fn actionGet(name: string) -> EndpointMethod {
+    return EndpointMethod.init(name, HttpMethod.Get, EndpointMethodKind.Get, name)
+  }
+
+  pub fn actionPost(name: string) -> EndpointMethod {
+    return EndpointMethod.init(name, HttpMethod.Post, EndpointMethodKind.Post, name)
+  }
+
+  pub fn name(self: EndpointMethod) -> string {
+    return self.name
+  }
+
+  pub fn httpMethod(self: EndpointMethod) -> HttpMethod {
+    return self.httpMethod
+  }
+
+  pub fn routeName(self: EndpointMethod) -> string {
+    return self.routeName
+  }
+
+  pub fn rootRoute(self: EndpointMethod) -> bool {
+    return self.routeName == ""
+  }
+
+  pub fn safe(self: EndpointMethod) -> bool {
+    return self.httpMethod.safe()
+  }
+}

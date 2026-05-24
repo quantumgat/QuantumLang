@@ -1,0 +1,17 @@
+pub enum StreamBackpressurePolicy {
+  Pull
+  Buffer
+  Drop
+  Fail
+}
+
+pub struct StreamBackpressure {
+  highWatermark: usize,
+  policy: StreamBackpressurePolicy,
+}
+
+impl StreamBackpressure {
+  pub fn enabled(self: StreamBackpressure) -> bool {
+    return self.highWatermark > 0
+  }
+}

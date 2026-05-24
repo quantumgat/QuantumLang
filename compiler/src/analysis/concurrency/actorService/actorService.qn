@@ -1,0 +1,47 @@
+pub enum ActorServiceDiagnosticKind {
+  None
+  UntypedMessage
+  MailboxBackpressureMissing
+  AskWithoutTimeout
+  RestartPolicyMissing
+  LifecycleCleanupMissing
+  ServiceReadinessMissing
+}
+
+pub struct ActorServiceSafety {
+  nodeId: u64,
+  typedMessages: bool,
+  mailboxBackpressure: bool,
+  supervisionDefined: bool,
+  lifecycleCleanup: bool,
+  diagnostic: ActorServiceDiagnosticKind,
+}
+
+impl ActorServiceSafety {
+  pub fn init(
+    nodeId: u64,
+    typedMessages: bool,
+    mailboxBackpressure: bool,
+    supervisionDefined: bool,
+    lifecycleCleanup: bool,
+    diagnostic: ActorServiceDiagnosticKind,
+  ) -> ActorServiceSafety {
+    return ActorServiceSafety {
+      nodeId: nodeId,
+      typedMessages: typedMessages,
+      mailboxBackpressure: mailboxBackpressure,
+      supervisionDefined: supervisionDefined,
+      lifecycleCleanup: lifecycleCleanup,
+      diagnostic: diagnostic,
+    }
+  }
+
+  pub fn accepted(self: ActorServiceSafety) -> bool {
+    return self.nodeId > 0
+      && self.typedMessages
+      && self.mailboxBackpressure
+      && self.supervisionDefined
+      && self.lifecycleCleanup
+      && self.diagnostic == ActorServiceDiagnosticKind.None
+  }
+}

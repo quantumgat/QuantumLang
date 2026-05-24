@@ -1,0 +1,17 @@
+pub struct RuntimeTaskScope {
+  scopeId: u64,
+  parentTask: TaskId,
+  open: bool,
+  childCount: usize,
+  cancellationLinked: bool,
+}
+
+impl RuntimeTaskScope {
+  pub fn acceptsSpawn(self: RuntimeTaskScope) -> bool {
+    return self.open && self.cancellationLinked
+  }
+
+  pub fn requiresJoinBeforeClose(self: RuntimeTaskScope) -> bool {
+    return self.childCount > 0
+  }
+}

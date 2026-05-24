@@ -1,0 +1,142 @@
+/**
+  Provenance-tracked mutable borrowed view.
+
+  example:
+    let view = MutBorrowedView<User>.fromMutSlice(slice)
+    view.set(0, user)
+
+  effects: reads and writes through explicit methods
+  complexity: O(1) metadata and indexed operations
+  allocation: none
+  safety: preserves exclusive mutable borrow provenance for diagnostics
+  stability: public since 0.1
+*/
+pub struct MutBorrowedView<T> {
+  slice: MutSlice<T>,
+  provenance: Provenance,
+}
+
+impl<T> MutBorrowedView<T> {
+  /**
+    Wraps a MutSlice as a provenance-tracked mutable view.
+
+    example:
+      let view = MutBorrowedView<User>.fromMutSlice(slice)
+      let count = view.len()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: inherits the source MutSlice exclusive writable proof
+    stability: public since 0.1
+  */
+  pub fn fromMutSlice(slice: MutSlice<T>) -> MutBorrowedView<T> {
+    return MutBorrowedView<T> {
+      slice: slice,
+      provenance: slice.asPtr().provenance(),
+    }
+  }
+
+  /**
+    Returns the number of visible elements.
+
+    example:
+      let count = view.len()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn len(self: MutBorrowedView<T>) -> usize {
+    return self.slice.len()
+  }
+
+  /**
+    Returns true when the view is empty.
+
+    example:
+      if view.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: MutBorrowedView<T>) -> bool {
+    return self.slice.isEmpty()
+  }
+
+  /**
+    Returns the underlying mutable slice.
+
+    example:
+      let slice = view.asMutSlice()
+      slice.fill(defaultUser)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must preserve exclusive mutable access
+    stability: public since 0.1
+  */
+  pub fn asMutSlice(self: MutBorrowedView<T>) -> MutSlice<T> {
+    return self.slice
+  }
+
+  /**
+    Returns provenance metadata for this mutable view.
+
+    example:
+      if view.provenance().mutable() == false {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: metadata only; does not access memory
+    stability: public since 0.1
+  */
+  pub fn provenance(self: MutBorrowedView<T>) -> Provenance {
+    return self.provenance
+  }
+
+  /**
+    Reads a value when index is in bounds.
+
+    example:
+      let first = view.get(0)
+
+    effects: reads memory when index is valid
+    complexity: O(1)
+    allocation: none
+    safety: delegates to MutSlice bounds checking
+    stability: public since 0.1
+  */
+  pub fn get(self: MutBorrowedView<T>, index: usize) -> Option<T> {
+    return self.slice.get(index)
+  }
+
+  /**
+    Writes one value when index is in bounds.
+
+    example:
+      view = view.set(0, user)?
+
+    effects: writes memory when index is valid
+    complexity: O(1)
+    allocation: none
+    safety: delegates to MutSlice bounds and writable checks
+    stability: public since 0.1
+  */
+  pub fn set(self: MutBorrowedView<T>, index: usize, value: T) -> Result<MutBorrowedView<T>, PtrError> {
+    let slice = self.slice.set(index, value)?
+    return Ok(MutBorrowedView<T> {
+      slice: slice,
+      provenance: self.provenance,
+    })
+  }
+}

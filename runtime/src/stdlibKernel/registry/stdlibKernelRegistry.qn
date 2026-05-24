@@ -1,0 +1,15 @@
+pub struct StdlibKernelRegistry {
+  kernelCount: usize,
+  publicApiOwnedByStdlib: bool,
+  runtimeBackedOnlyWhenNeeded: bool,
+}
+
+impl StdlibKernelRegistry {
+  pub fn standard() -> StdlibKernelRegistry {
+    return StdlibKernelRegistry { kernelCount: 6, publicApiOwnedByStdlib: true, runtimeBackedOnlyWhenNeeded: true }
+  }
+
+  pub fn isBoundaryClean(self: StdlibKernelRegistry) -> bool {
+    return self.kernelCount == 6 && self.publicApiOwnedByStdlib && self.runtimeBackedOnlyWhenNeeded
+  }
+}

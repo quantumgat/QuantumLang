@@ -1,0 +1,42 @@
+pub struct FinalExpressionReturnLowering {
+  bodyId: u64,
+  tailNodeId: u64,
+  emitsDirectReturn: bool,
+  preservesQuestionMarkEarlyReturn: bool,
+  appliesImplicitConversion: bool,
+  wrapsResultOk: bool,
+}
+
+pub fn finalExpressionReturnLowering(
+  bodyId: u64,
+  tailNodeId: u64,
+  emitsDirectReturn: bool,
+  preservesQuestionMarkEarlyReturn: bool,
+  appliesImplicitConversion: bool,
+  wrapsResultOk: bool,
+) -> FinalExpressionReturnLowering {
+  return FinalExpressionReturnLowering {
+    bodyId: bodyId,
+    tailNodeId: tailNodeId,
+    emitsDirectReturn: emitsDirectReturn,
+    preservesQuestionMarkEarlyReturn: preservesQuestionMarkEarlyReturn,
+    appliesImplicitConversion: appliesImplicitConversion,
+    wrapsResultOk: wrapsResultOk,
+  }
+}
+
+impl FinalExpressionReturnLowering {
+  pub fn ready(self: FinalExpressionReturnLowering) -> bool {
+    return self.tailNodeId != 0 &&
+      self.emitsDirectReturn &&
+      self.preservesQuestionMarkEarlyReturn
+  }
+
+  pub fn convertsTailExpression(self: FinalExpressionReturnLowering) -> bool {
+    return self.appliesImplicitConversion
+  }
+
+  pub fn returnsResultOk(self: FinalExpressionReturnLowering) -> bool {
+    return self.wrapsResultOk
+  }
+}

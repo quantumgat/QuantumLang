@@ -1,0 +1,71 @@
+/**
+  Owning heap pointer with deterministic drop and borrow support.
+
+  example:
+    let user = Box<User>(User(...))
+    let ref = user.borrow()
+
+  effects: allocates on construction, frees on drop
+  complexity: O(1)
+  allocation: one owned heap allocation
+  safety: compiler proves move, drop, and borrow lifetime; runtime rejects stale generations
+  stability: public since 0.1
+*/
+pub struct Box<T> {
+  ptr: NonNull<T>,
+  allocationId: u64,
+  generation: u64,
+  moved: bool,
+}
+
+impl<T> Box<T> {
+  pub fn init(value: T) -> Box<T> requires(alloc) {
+    return ptrRuntimeBox<T>(value)
+  }
+
+  pub fn new(value: T) -> Box<T> requires(alloc) {
+    return Box<T>(value)
+  }
+
+  pub fn borrow(self: Box<T>) -> Ref<T> {
+    return Ref<T>.fromPtr(self.ptr, self.generation)
+  }
+
+  pub fn borrowMut(self: &mut Box<T>) -> MutRef<T> {
+    return MutRef<T>.fromPtr(self.ptr, self.generation)
+  }
+
+  pub fn get(self: Box<T>) -> Result<T, PtrError> {
+    return self.ptr.get()
+  }
+
+  pub fn set(self: &mut Box<T>, value: T) -> Result<Box<T>, PtrError> {
+    self.ptr.set(value)?
+    return Ok(self)
+  }
+
+  pub fn asPtr(self: Box<T>) -> Ptr<T> {
+    return self.ptr.asPtr()
+  }
+
+  pub fn intoRaw(self: Box<T>) -> Ptr<T> requires(unsafe) {
+    return self.ptr.asPtr()
+  }
+
+  pub fn allocation(self: Box<T>) -> u64 {
+    return self.allocationId
+  }
+
+  pub fn accepted(self: Box<T>) -> bool {
+    return self.allocationId > 0 && self.generation > 0 && self.moved == false
+  }
+
+  pub fn drop(self: &mut Box<T>) -> Result<Unit, PtrError> {
+    ptrRuntimeDropBox<T>(self.allocationId, self.generation)?
+    self.moved = true
+    return Ok(())
+  }
+}
+
+fn ptrRuntimeBox<T>(value: T) -> Box<T> requires(alloc)
+fn ptrRuntimeDropBox<T>(allocationId: u64, generation: u64) -> Result<Unit, PtrError>

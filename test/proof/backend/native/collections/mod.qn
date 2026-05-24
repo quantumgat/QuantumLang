@@ -1,0 +1,4 @@
+pub mod setDirectCursorHotPathProof
+
+pub use setDirectCursorHotPathProof.SetDirectCursorHotPathProof
+pub use setDirectCursorHotPathProof.setDirectCursorHotPathProof

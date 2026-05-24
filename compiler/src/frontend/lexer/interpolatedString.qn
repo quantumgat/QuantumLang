@@ -1,0 +1,44 @@
+pub enum InterpolatedStringTokenKind {
+  Prefix
+  Text
+  ExprStart
+  ExprEnd
+  FormatSpec
+  EscapedBrace
+  Error
+}
+
+pub struct InterpolatedStringToken {
+  kind: InterpolatedStringTokenKind,
+  file: u32,
+  start: usize,
+  end: usize,
+  preservesSpelling: bool,
+}
+
+pub fn interpolatedStringToken(kind: InterpolatedStringTokenKind, file: u32, start: usize, end: usize) -> InterpolatedStringToken {
+  return InterpolatedStringToken {
+    kind: kind,
+    file: file,
+    start: start,
+    end: end,
+    preservesSpelling: true,
+  }
+}
+
+impl InterpolatedStringToken {
+  pub fn tokenKind(self: InterpolatedStringToken) -> InterpolatedStringTokenKind {
+    return self.kind
+  }
+
+  pub fn len(self: InterpolatedStringToken) -> usize {
+    if self.end <= self.start {
+      return 0
+    }
+    return self.end - self.start
+  }
+
+  pub fn hasSourceSpelling(self: InterpolatedStringToken) -> bool {
+    return self.preservesSpelling
+  }
+}

@@ -1,0 +1,16 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub abstract class WebSocket {
+  frameCount: usize
+  isOpen: bool
+  policy: WebSocketPolicy
+  pub init() {}
+  pub fn withPolicy(self: &mut WebSocket, policy: WebSocketPolicy) -> Unit
+  pub fn send(self: &mut WebSocket, frame: Frame) -> Result<Unit, WebSocketDiagnostic>
+  pub fn sendText(self: &mut WebSocket, text: string) -> Result<Unit, WebSocketDiagnostic>
+  pub fn sendBinary(self: &mut WebSocket, bytes: Vec<u8>) -> Result<Unit, WebSocketDiagnostic>
+  pub fn ping(self: &mut WebSocket) -> Result<Unit, WebSocketDiagnostic>
+  pub fn close(self: &mut WebSocket, code: CloseCode) -> Result<Unit, WebSocketDiagnostic>
+  pub fn backpressureAware(self: WebSocket) -> bool
+  pub fn open(self: WebSocket) -> bool
+  pub fn sentFrames(self: WebSocket) -> usize
+}

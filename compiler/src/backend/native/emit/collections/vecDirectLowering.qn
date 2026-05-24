@@ -1,0 +1,27 @@
+pub struct VecDirectIndexLowering {
+  boundsCheckElided: bool,
+  directLoad: bool,
+  directStore: bool,
+  preallocatedPush: bool,
+  proofRequired: bool,
+}
+
+pub fn vecDirectIndexLowering() -> VecDirectIndexLowering {
+  return VecDirectIndexLowering {
+    boundsCheckElided: true,
+    directLoad: true,
+    directStore: true,
+    preallocatedPush: true,
+    proofRequired: true,
+  }
+}
+
+impl VecDirectIndexLowering {
+  pub fn hotPathReady(self: VecDirectIndexLowering) -> bool {
+    return self.boundsCheckElided
+      && self.directLoad
+      && self.directStore
+      && self.preallocatedPush
+      && self.proofRequired
+  }
+}

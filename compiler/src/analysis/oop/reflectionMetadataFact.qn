@@ -1,0 +1,39 @@
+pub enum ReflectionMetadataLevel {
+  RuntimeType
+  PublicFields
+  SchemaStable
+  ImplicitRejected
+}
+
+pub struct ReflectionMetadataFact {
+  reflectionId: u64,
+  typeId: u64,
+  level: ReflectionMetadataLevel,
+  privateMetadataOptIn: bool,
+  coldPathOnly: bool,
+  removableInRelease: bool,
+}
+
+pub fn reflectionMetadataFact(
+  reflectionId: u64,
+  typeId: u64,
+  level: ReflectionMetadataLevel,
+  privateMetadataOptIn: bool,
+  coldPathOnly: bool,
+  removableInRelease: bool,
+) -> ReflectionMetadataFact {
+  return ReflectionMetadataFact {
+    reflectionId: reflectionId,
+    typeId: typeId,
+    level: level,
+    privateMetadataOptIn: privateMetadataOptIn,
+    coldPathOnly: coldPathOnly,
+    removableInRelease: removableInRelease,
+  }
+}
+
+impl ReflectionMetadataFact {
+  pub fn runtimeSafe(self: ReflectionMetadataFact) -> bool {
+    return self.level != ReflectionMetadataLevel.ImplicitRejected && self.coldPathOnly
+  }
+}

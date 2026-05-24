@@ -1,0 +1,21 @@
+pub enum NativeLiteralRangeLoweringKind {
+  PreSizedVecAllocation
+  HashMapLiteralInsert
+  RecordDirectInit
+  TupleRegisterPack
+  CountedRangeLoop
+  TypedEmptyNoAllocation
+}
+
+pub struct NativeLiteralRangeLowering {
+  kind: NativeLiteralRangeLoweringKind,
+  mirOp: MirLiteralRangeOp,
+  noGeneratedFallback: bool,
+}
+
+impl NativeLiteralRangeLowering {
+  pub fn complete(self: NativeLiteralRangeLowering) -> bool {
+    return self.mirOp.hotLowerable()
+      && self.noGeneratedFallback
+  }
+}

@@ -1,0 +1,39 @@
+pub struct BinaryNamedEndianCodecKernel {
+  namedEndianAccepted: bool,
+  contextualEnumAccepted: bool,
+  qualifiedEnumAccepted: bool,
+  bigEndianPortable: bool,
+  littleEndianPortable: bool,
+  lowercaseEndianRejected: bool,
+  unknownOptionRejected: bool,
+  unknownEndianRejected: bool,
+  diagnosticsNoCoredump: bool,
+}
+
+impl BinaryNamedEndianCodecKernel {
+  pub fn standard() -> BinaryNamedEndianCodecKernel {
+    return BinaryNamedEndianCodecKernel {
+      namedEndianAccepted: true,
+      contextualEnumAccepted: true,
+      qualifiedEnumAccepted: true,
+      bigEndianPortable: true,
+      littleEndianPortable: true,
+      lowercaseEndianRejected: true,
+      unknownOptionRejected: true,
+      unknownEndianRejected: true,
+      diagnosticsNoCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: BinaryNamedEndianCodecKernel) -> bool {
+    return self.namedEndianAccepted
+      && self.contextualEnumAccepted
+      && self.qualifiedEnumAccepted
+      && self.bigEndianPortable
+      && self.littleEndianPortable
+      && self.lowercaseEndianRejected
+      && self.unknownOptionRejected
+      && self.unknownEndianRejected
+      && self.diagnosticsNoCoredump
+  }
+}

@@ -1,0 +1,27 @@
+pub struct BinaryE2eNativeEmission {
+  cursorU64LeDirectLoad: bool,
+  writerU64LeDirectStore: bool,
+  endianSwapOrNoopSelected: bool,
+  boundsCheckHoisted: bool,
+  overflowDiagnosticNoCoredump: bool,
+  eofDiagnosticNoCoredump: bool,
+  alignmentDiagnosticNoCoredump: bool,
+  wideIntMismatchNoCoredump: bool,
+  generatedExecutableCaptured: bool,
+  generatedCppFallbackRejected: bool,
+}
+
+impl BinaryE2eNativeEmission {
+  pub fn complete(self: BinaryE2eNativeEmission) -> bool {
+    return self.cursorU64LeDirectLoad
+      && self.writerU64LeDirectStore
+      && self.endianSwapOrNoopSelected
+      && self.boundsCheckHoisted
+      && self.overflowDiagnosticNoCoredump
+      && self.eofDiagnosticNoCoredump
+      && self.alignmentDiagnosticNoCoredump
+      && self.wideIntMismatchNoCoredump
+      && self.generatedExecutableCaptured
+      && self.generatedCppFallbackRejected
+  }
+}

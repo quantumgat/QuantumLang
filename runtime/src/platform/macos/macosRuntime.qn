@@ -1,0 +1,12 @@
+pub struct MacosRuntime {
+  target: string,
+  kqueue: bool,
+  sandboxAware: bool,
+  entitlementAware: bool,
+}
+
+impl MacosRuntime {
+  pub fn accepted(self: MacosRuntime) -> bool {
+    return self.target != "" && self.kqueue && self.sandboxAware
+  }
+}

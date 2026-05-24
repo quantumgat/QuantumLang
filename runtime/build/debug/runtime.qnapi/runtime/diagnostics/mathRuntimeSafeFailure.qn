@@ -1,0 +1,23 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum MathRuntimeSafeFailureKind {
+  Overflow
+  DivideByZero
+  InvalidShift
+  InvalidScale
+  ResourceLimit
+  UnsupportedTargetFeature
+  ComplexDomain
+  DimensionMismatch
+  BigUintUnderflow
+  FixedScaleMismatch
+  DecimalRoundingTrap
+}
+pub struct MathRuntimeSafeFailure {
+  kind: MathRuntimeSafeFailureKind
+  stableCode: string
+  sourceMapped: bool
+  typedError: bool
+  recoverable: bool
+  emergencyReportReady: bool
+  noCoredump: bool
+}

@@ -1,0 +1,42 @@
+pub enum TargetArch {
+  X64
+  Aarch64
+  Wasm64
+  UnknownArch
+}
+
+pub enum TargetOs {
+  Linux
+  Darwin
+  Windows
+  UnknownOs
+}
+
+pub struct TargetTriple {
+  arch: TargetArch,
+  os: TargetOs,
+  vendor: string,
+  environment: string,
+}
+
+pub fn targetTriple(arch: TargetArch, os: TargetOs, vendor: string, environment: string) -> TargetTriple {
+  return TargetTriple { arch: arch, os: os, vendor: vendor, environment: environment }
+}
+
+impl TargetTriple {
+  pub fn targetArch(self: TargetTriple) -> TargetArch {
+    return self.arch
+  }
+
+  pub fn targetOs(self: TargetTriple) -> TargetOs {
+    return self.os
+  }
+
+  pub fn targetVendor(self: TargetTriple) -> string {
+    return self.vendor
+  }
+
+  pub fn supportsNativeObject(self: TargetTriple) -> bool {
+    return !(self.arch == TargetArch.UnknownArch) && !(self.os == TargetOs.UnknownOs)
+  }
+}

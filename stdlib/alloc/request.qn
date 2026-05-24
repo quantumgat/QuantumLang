@@ -1,0 +1,35 @@
+pub struct AllocRequest {
+  layout: Layout,
+  domain: AllocDomain,
+  zeroed: bool,
+}
+
+impl AllocRequest {
+  pub fn init(layout: Layout, domain: AllocDomain) -> AllocRequest {
+    return AllocRequest {
+      layout: layout,
+      domain: domain,
+      zeroed: false,
+    }
+  }
+
+  pub fn zeroed(layout: Layout, domain: AllocDomain) -> AllocRequest {
+    return AllocRequest {
+      layout: layout,
+      domain: domain,
+      zeroed: true,
+    }
+  }
+
+  pub fn layout(self: AllocRequest) -> Layout {
+    return self.layout
+  }
+
+  pub fn domain(self: AllocRequest) -> AllocDomain {
+    return self.domain
+  }
+
+  pub fn wantsZeroed(self: AllocRequest) -> bool {
+    return self.zeroed
+  }
+}

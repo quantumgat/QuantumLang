@@ -1,0 +1,6 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeAtomicWake {
+  requested: usize
+  schedulerParkSupported: bool
+  targetSupported: bool
+}

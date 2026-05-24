@@ -1,0 +1,25 @@
+pub enum NetCancellationPolicy {
+  Cooperative
+  Deadline
+  ImmediateClose
+}
+
+pub struct CancellationToken {
+  id: u64,
+  cancelled: bool,
+  deadlineNanos: u64,
+}
+
+impl CancellationToken {
+  pub fn isCancelled(self: CancellationToken) -> bool {
+    return self.cancelled
+  }
+
+  pub fn hasDeadline(self: CancellationToken) -> bool {
+    return self.deadlineNanos > 0
+  }
+
+  pub fn safe(self: CancellationToken) -> bool {
+    return self.id > 0
+  }
+}

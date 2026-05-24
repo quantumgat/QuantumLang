@@ -1,0 +1,23 @@
+pub struct DispatchProof {
+  directCalls: usize,
+  devirtualizedCalls: usize,
+  sealedDispatches: usize,
+  cachedDynamicCalls: usize,
+  unresolvedHotCalls: usize,
+}
+
+pub fn dispatchProof(directCalls: usize, devirtualizedCalls: usize, sealedDispatches: usize, cachedDynamicCalls: usize, unresolvedHotCalls: usize) -> DispatchProof {
+  return DispatchProof {
+    directCalls: directCalls,
+    devirtualizedCalls: devirtualizedCalls,
+    sealedDispatches: sealedDispatches,
+    cachedDynamicCalls: cachedDynamicCalls,
+    unresolvedHotCalls: unresolvedHotCalls,
+  }
+}
+
+impl DispatchProof {
+  pub fn passesHotProof(self: DispatchProof) -> bool {
+    return self.unresolvedHotCalls == 0
+  }
+}

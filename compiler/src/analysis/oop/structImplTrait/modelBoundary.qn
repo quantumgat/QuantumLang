@@ -1,0 +1,21 @@
+pub struct StructImplTraitBoundary {
+  structLayoutOwned: bool,
+  implLookupOwned: bool,
+  traitResolutionOwned: bool,
+  extensionLookupOwned: bool,
+  zeroCostDefault: bool,
+  monomorphizedHotPath: bool,
+  noHiddenDynamicDispatch: bool,
+}
+
+impl StructImplTraitBoundary {
+  pub fn complete(self: StructImplTraitBoundary) -> bool {
+    return self.structLayoutOwned
+      && self.implLookupOwned
+      && self.traitResolutionOwned
+      && self.extensionLookupOwned
+      && self.zeroCostDefault
+      && self.monomorphizedHotPath
+      && self.noHiddenDynamicDispatch
+  }
+}

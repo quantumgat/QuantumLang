@@ -1,0 +1,32 @@
+pub struct UnsafeObligation {
+  node: u64,
+  capability: UnsafeCapabilityKind,
+  permitRequired: bool,
+  proofRequired: bool,
+  reasonRequired: bool,
+  diagnosticRequired: bool,
+}
+
+impl UnsafeObligation {
+  pub fn init(
+    node: u64,
+    capability: UnsafeCapabilityKind,
+    permitRequired: bool,
+    proofRequired: bool,
+    reasonRequired: bool,
+    diagnosticRequired: bool,
+  ) -> UnsafeObligation {
+    return UnsafeObligation {
+      node: node,
+      capability: capability,
+      permitRequired: permitRequired,
+      proofRequired: proofRequired,
+      reasonRequired: reasonRequired,
+      diagnosticRequired: diagnosticRequired,
+    }
+  }
+
+  pub fn complete(self: UnsafeObligation) -> bool {
+    return self.permitRequired && self.proofRequired && self.reasonRequired && self.diagnosticRequired
+  }
+}

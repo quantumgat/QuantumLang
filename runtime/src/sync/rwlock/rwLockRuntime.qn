@@ -1,0 +1,25 @@
+pub struct RuntimeRwLock {
+  handle: SyncHandle,
+  readers: usize,
+  writerActive: bool,
+  poisoned: bool,
+}
+
+impl RuntimeRwLock {
+  pub fn init(handle: SyncHandle, readers: usize, writerActive: bool, poisoned: bool) -> RuntimeRwLock {
+    return RuntimeRwLock {
+      handle: handle,
+      readers: readers,
+      writerActive: writerActive,
+      poisoned: poisoned,
+    }
+  }
+
+  pub fn canRead(self: RuntimeRwLock) -> bool {
+    return self.writerActive == false && self.poisoned == false
+  }
+
+  pub fn canWrite(self: RuntimeRwLock) -> bool {
+    return self.readers == 0 && self.writerActive == false && self.poisoned == false
+  }
+}

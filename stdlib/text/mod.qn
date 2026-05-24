@@ -1,0 +1,6 @@
+pub mod text
+
+pub use text.len
+pub use text.isEmpty
+pub use text.trim
+pub use text.contains

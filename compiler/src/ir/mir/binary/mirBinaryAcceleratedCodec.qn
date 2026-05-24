@@ -1,0 +1,31 @@
+pub struct MirBinaryAcceleratedCodec {
+  instruction: u64,
+  directOffsetLoads: bool,
+  directOffsetStores: bool,
+  boundsChecksRegionHoisted: bool,
+  noReflection: bool,
+  noVirtualDispatch: bool,
+  noAllocationOnView: bool,
+  vectorBatchOps: bool,
+  encodedPredicateCompare: bool,
+  compiledCodecConstants: bool,
+  validationTokenFlow: bool,
+  limitsChecksHoisted: bool,
+}
+
+impl MirBinaryAcceleratedCodec {
+  pub fn hotPath(self: MirBinaryAcceleratedCodec) -> bool {
+    return self.instruction > 0
+      && self.directOffsetLoads
+      && self.directOffsetStores
+      && self.boundsChecksRegionHoisted
+      && self.noReflection
+      && self.noVirtualDispatch
+      && self.noAllocationOnView
+      && self.vectorBatchOps
+      && self.encodedPredicateCompare
+      && self.compiledCodecConstants
+      && self.validationTokenFlow
+      && self.limitsChecksHoisted
+  }
+}

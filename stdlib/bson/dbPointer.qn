@@ -1,0 +1,21 @@
+pub struct BsonDbPointer {
+  namespace: string,
+  id: ObjectId,
+}
+
+impl BsonDbPointer {
+  pub fn init(namespace: string, id: ObjectId) -> BsonDbPointer {
+    return BsonDbPointer {
+      namespace: namespace,
+      id: id,
+    }
+  }
+
+  pub fn collection(self: BsonDbPointer) -> string {
+    return self.namespace
+  }
+
+  pub fn objectId(self: BsonDbPointer) -> ObjectId {
+    return self.id
+  }
+}

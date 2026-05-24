@@ -1,0 +1,6 @@
+[module]
+name = "json"
+visibility = "internal"
+root = "mod.qn"
+owner = "runtime"
+role = "runtime-json-support"

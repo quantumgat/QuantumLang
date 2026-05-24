@@ -1,0 +1,19 @@
+pub struct WrongAllocatorFact {
+  allocationId: u64,
+  expectedDomain: u64,
+  actualDomain: u64,
+}
+
+impl WrongAllocatorFact {
+  pub fn init(allocationId: u64, expectedDomain: u64, actualDomain: u64) -> WrongAllocatorFact {
+    return WrongAllocatorFact {
+      allocationId: allocationId,
+      expectedDomain: expectedDomain,
+      actualDomain: actualDomain,
+    }
+  }
+
+  pub fn mustReject(self: WrongAllocatorFact) -> bool {
+    return self.expectedDomain != self.actualDomain
+  }
+}

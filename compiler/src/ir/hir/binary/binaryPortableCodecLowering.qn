@@ -1,0 +1,35 @@
+pub enum HirBinaryPortableCodecKind {
+  Encode,
+  Decode,
+  RawNative,
+}
+
+pub struct HirBinaryPortableCodecLowering {
+  hirNode: u64,
+  kind: HirBinaryPortableCodecKind,
+  typeName: string,
+  fieldCount: usize,
+  nestedDepth: usize,
+  portableDefault: bool,
+  rawRequiresUnsafe: bool,
+  unsupportedResourceRejected: bool,
+}
+
+impl HirBinaryPortableCodecLowering {
+  pub fn lowersPortable(self: HirBinaryPortableCodecLowering) -> bool {
+    return self.hirNode > 0
+      && self.typeName != ""
+      && self.portableDefault
+      && self.rawRequiresUnsafe
+      && self.unsupportedResourceRejected
+      && (self.kind == HirBinaryPortableCodecKind.Encode
+        || self.kind == HirBinaryPortableCodecKind.Decode)
+  }
+
+  pub fn lowersRawNative(self: HirBinaryPortableCodecLowering) -> bool {
+    return self.hirNode > 0
+      && self.typeName != ""
+      && self.kind == HirBinaryPortableCodecKind.RawNative
+      && self.rawRequiresUnsafe
+  }
+}

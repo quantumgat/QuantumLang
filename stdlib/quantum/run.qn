@@ -1,0 +1,10 @@
+pub struct QuantumRunResult {
+  shots: u64,
+}
+
+pub struct QuantumError {
+  message: string,
+}
+
+pub fn run(circuit: QuantumCircuit, provider: QuantumProvider, shots: u64) -> Result<QuantumRunResult, QuantumError>
+pub fn sample(circuit: QuantumCircuit, provider: QuantumProvider, shots: u64) -> Result<QuantumRunResult, QuantumError>

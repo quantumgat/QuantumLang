@@ -1,0 +1,15 @@
+pub struct TraitObligation {
+  typeId: u64,
+  traitId: u64,
+  proven: bool,
+}
+
+pub fn traitObligation(typeId: u64, traitId: u64, proven: bool) -> TraitObligation {
+  return TraitObligation { typeId: typeId, traitId: traitId, proven: proven }
+}
+
+impl TraitObligation {
+  pub fn isSatisfied(self: TraitObligation) -> bool {
+    return self.proven
+  }
+}

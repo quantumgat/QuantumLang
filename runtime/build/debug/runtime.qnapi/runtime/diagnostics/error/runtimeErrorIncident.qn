@@ -1,0 +1,18 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeErrorIncident {
+  code: string
+  numericCode: u32
+  category: string
+  subsystem: string
+  fieldCount: usize
+  causeCount: usize
+  sourceAvailable: bool
+  taskContextPreserved: bool
+  memoryReportAvailable: bool
+  osReportAvailable: bool
+  fatalBoundaryCaptured: bool
+  redacted: bool
+  stableRender: bool
+  stringOnlyRejected: bool
+  noCoredump: bool
+}

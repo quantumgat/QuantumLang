@@ -1,0 +1,11 @@
+pub struct NativeNetBufferEmit {
+  scatterGatherLowered: bool,
+  zeroCopyViewsPreserved: bool,
+  boundsHoisted: bool,
+}
+
+impl NativeNetBufferEmit {
+  pub fn accepted(self: NativeNetBufferEmit) -> bool {
+    return self.scatterGatherLowered && self.zeroCopyViewsPreserved && self.boundsHoisted
+  }
+}

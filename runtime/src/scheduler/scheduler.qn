@@ -1,0 +1,37 @@
+import scheduler::{WorkerPool}
+
+pub class Scheduler {
+  workerCount: usize,
+  ownsWorkerPool: bool,
+  hotQueueLoop: bool,
+  pool: WorkerPool,
+  running: bool,
+
+  pub init(workerCount: usize) {
+    self.workerCount = workerCount
+    self.ownsWorkerPool = true
+    self.hotQueueLoop = false
+    self.pool = WorkerPool(workerCount)
+    self.running = false
+  }
+
+  pub fn start(self: &mut Scheduler) -> bool {
+    self.pool.start()
+    self.running = true
+    return self.running
+  }
+
+  pub fn shutdown(self: &mut Scheduler) -> bool {
+    self.pool.shutdown()
+    self.running = false
+    return self.running == false
+  }
+
+  pub fn drop(self: &mut Scheduler) -> bool {
+    return self.shutdown()
+  }
+
+  pub fn ownsWorkers(self: &Scheduler) -> bool {
+    return self.ownsWorkerPool && self.pool.isHotPathSafe()
+  }
+}

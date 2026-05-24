@@ -1,0 +1,37 @@
+pub struct OopEnginePortBoundary {
+  memoryHeaderIntegrated: bool,
+  allocationFamilyVisible: bool,
+  ownershipMetadataVisible: bool,
+  ffiOpaqueHandleBridge: bool,
+  ffiCallbackObjectSupport: bool,
+  interfaceObjectSafe: bool,
+}
+
+pub fn oopEnginePortBoundary(
+  memoryHeaderIntegrated: bool,
+  allocationFamilyVisible: bool,
+  ownershipMetadataVisible: bool,
+  ffiOpaqueHandleBridge: bool,
+  ffiCallbackObjectSupport: bool,
+  interfaceObjectSafe: bool,
+) -> OopEnginePortBoundary {
+  return OopEnginePortBoundary {
+    memoryHeaderIntegrated: memoryHeaderIntegrated,
+    allocationFamilyVisible: allocationFamilyVisible,
+    ownershipMetadataVisible: ownershipMetadataVisible,
+    ffiOpaqueHandleBridge: ffiOpaqueHandleBridge,
+    ffiCallbackObjectSupport: ffiCallbackObjectSupport,
+    interfaceObjectSafe: interfaceObjectSafe,
+  }
+}
+
+impl OopEnginePortBoundary {
+  pub fn complete(self: OopEnginePortBoundary) -> bool {
+    return self.memoryHeaderIntegrated
+      && self.allocationFamilyVisible
+      && self.ownershipMetadataVisible
+      && self.ffiOpaqueHandleBridge
+      && self.ffiCallbackObjectSupport
+      && self.interfaceObjectSafe
+  }
+}

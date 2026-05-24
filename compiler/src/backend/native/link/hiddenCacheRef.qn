@@ -1,0 +1,33 @@
+pub struct HiddenCacheRef {
+  actionIndexPath: string,
+  objectCachePath: string,
+  archiveCachePath: string,
+  executableCachePath: string,
+}
+
+pub fn hiddenCacheRef(actionIndexPath: string, objectCachePath: string, archiveCachePath: string, executableCachePath: string) -> HiddenCacheRef {
+  return HiddenCacheRef {
+    actionIndexPath: actionIndexPath,
+    objectCachePath: objectCachePath,
+    archiveCachePath: archiveCachePath,
+    executableCachePath: executableCachePath,
+  }
+}
+
+impl HiddenCacheRef {
+  pub fn actionIndex(self: HiddenCacheRef) -> string {
+    return self.actionIndexPath
+  }
+
+  pub fn objectCache(self: HiddenCacheRef) -> string {
+    return self.objectCachePath
+  }
+
+  pub fn archiveCache(self: HiddenCacheRef) -> string {
+    return self.archiveCachePath
+  }
+
+  pub fn executableCache(self: HiddenCacheRef) -> string {
+    return self.executableCachePath
+  }
+}

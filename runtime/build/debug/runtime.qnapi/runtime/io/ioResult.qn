@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct IoResult {
+  completed: bool
+  byteCount: usize
+  diagnosticCode: u32
+  platformCode: i32
+  retryable: bool
+  interrupted: bool
+  timedOut: bool
+  cancelled: bool
+  partialWritePreserved: bool
+  resumeOffset: usize
+  noCoredump: bool
+}
+pub extern "qnpkg" {
+  pub fn ioResult(completed: bool, byteCount: usize, diagnosticCode: u32) -> IoResult
+}

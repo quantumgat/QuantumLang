@@ -1,0 +1,192 @@
+pub enum NativeWhileLoopLoweringKind {
+  DirectBranchLoop
+  PatternPayloadLoop
+  InfiniteLoop
+  LoopBreakValue
+  LabeledJumpLoop
+  QuestionFastExit
+  AwaitQuestionStatePoll
+  ElseNoBreakFlag
+  UntilInvertedBranch
+  TimeoutDeadlineCheck
+  PollReadyState
+  QirProfileLoop
+}
+
+pub struct NativeWhileLoopLowering {
+  kind: NativeWhileLoopLoweringKind,
+  mirLoop: MirWhileLoopOp,
+  noHeapAllocation: bool,
+  directBranches: bool,
+  optionTagTestDirect: bool,
+  optionPayloadExtractDirect: bool,
+  localOptionScrutineeOnly: bool,
+  asyncStatePollDirect: bool,
+  timeoutDeadlineDirect: bool,
+  pollReadyDirect: bool,
+  cancellationCheckDirect: bool,
+  cleanupOnExit: bool,
+  qirProfileLoopDirect: bool,
+  qirBoundCheckDirect: bool,
+  qirBridgeHandoffDirect: bool,
+  noGeneratedFallback: bool,
+}
+
+pub struct NativeWhileInput {
+  mir: MirWhileLoopOp,
+  kind: NativeWhileLoopLoweringKind,
+  runtimeFailure: WhileLoopSafeFailure,
+  optionLoop: bool,
+  asyncPollTimeoutLoop: bool,
+  qwhileLoop: bool,
+}
+
+pub struct NativeWhileBuild {
+  lowering: NativeWhileLoopLowering,
+  emittedInstruction: u64,
+  runtimeSafeFailureReady: bool,
+}
+
+pub fn nativeWhileLoopLowering(
+  kind: NativeWhileLoopLoweringKind,
+  mirLoop: MirWhileLoopOp,
+  noHeapAllocation: bool,
+  directBranches: bool,
+  optionTagTestDirect: bool,
+  optionPayloadExtractDirect: bool,
+  localOptionScrutineeOnly: bool,
+  asyncStatePollDirect: bool,
+  timeoutDeadlineDirect: bool,
+  pollReadyDirect: bool,
+  cancellationCheckDirect: bool,
+  cleanupOnExit: bool,
+  qirProfileLoopDirect: bool,
+  qirBoundCheckDirect: bool,
+  qirBridgeHandoffDirect: bool,
+  noGeneratedFallback: bool,
+) -> NativeWhileLoopLowering {
+  return NativeWhileLoopLowering {
+    kind: kind,
+    mirLoop: mirLoop,
+    noHeapAllocation: noHeapAllocation,
+    directBranches: directBranches,
+    optionTagTestDirect: optionTagTestDirect,
+    optionPayloadExtractDirect: optionPayloadExtractDirect,
+    localOptionScrutineeOnly: localOptionScrutineeOnly,
+    asyncStatePollDirect: asyncStatePollDirect,
+    timeoutDeadlineDirect: timeoutDeadlineDirect,
+    pollReadyDirect: pollReadyDirect,
+    cancellationCheckDirect: cancellationCheckDirect,
+    cleanupOnExit: cleanupOnExit,
+    qirProfileLoopDirect: qirProfileLoopDirect,
+    qirBoundCheckDirect: qirBoundCheckDirect,
+    qirBridgeHandoffDirect: qirBridgeHandoffDirect,
+    noGeneratedFallback: noGeneratedFallback,
+  }
+}
+
+pub fn nativeWhileInput(
+  mir: MirWhileLoopOp,
+  kind: NativeWhileLoopLoweringKind,
+  runtimeFailure: WhileLoopSafeFailure,
+  optionLoop: bool,
+  asyncPollTimeoutLoop: bool,
+  qwhileLoop: bool,
+) -> NativeWhileInput {
+  return NativeWhileInput {
+    mir: mir,
+    kind: kind,
+    runtimeFailure: runtimeFailure,
+    optionLoop: optionLoop,
+    asyncPollTimeoutLoop: asyncPollTimeoutLoop,
+    qwhileLoop: qwhileLoop,
+  }
+}
+
+pub fn emitWhile(input: NativeWhileInput) -> NativeWhileBuild {
+  let mirReady = input.mir.hotLowerable()
+  let runtimeReady = input.runtimeFailure.executableReady()
+  let lowering = nativeWhileLoopLowering(
+    input.kind,
+    input.mir,
+    true,
+    mirReady,
+    !input.optionLoop || mirReady,
+    !input.optionLoop || mirReady,
+    !input.optionLoop || mirReady,
+    !input.asyncPollTimeoutLoop || mirReady,
+    !input.asyncPollTimeoutLoop || mirReady,
+    !input.asyncPollTimeoutLoop || mirReady,
+    !input.asyncPollTimeoutLoop || mirReady,
+    true,
+    !input.qwhileLoop || mirReady,
+    !input.qwhileLoop || mirReady,
+    !input.qwhileLoop || mirReady,
+    true
+  )
+
+  return NativeWhileBuild {
+    lowering: lowering,
+    emittedInstruction: input.mir.instructionId() + 1,
+    runtimeSafeFailureReady: runtimeReady,
+  }
+}
+
+impl NativeWhileLoopLowering {
+  pub fn complete(self: NativeWhileLoopLowering) -> bool {
+    return self.mirLoop.hotLowerable()
+      && self.noHeapAllocation
+      && self.directBranches
+      && self.noGeneratedFallback
+  }
+
+  pub fn whileLetOptionDirect(self: NativeWhileLoopLowering) -> bool {
+    return self.kind == NativeWhileLoopLoweringKind.PatternPayloadLoop
+      && self.mirLoop.whileLetOptionHotPath()
+      && self.noHeapAllocation
+      && self.directBranches
+      && self.optionTagTestDirect
+      && self.optionPayloadExtractDirect
+      && self.localOptionScrutineeOnly
+      && self.noGeneratedFallback
+  }
+
+  pub fn isAsyncPollTimeout(self: NativeWhileLoopLowering) -> bool {
+    return self.kind == NativeWhileLoopLoweringKind.AwaitQuestionStatePoll
+      || self.kind == NativeWhileLoopLoweringKind.TimeoutDeadlineCheck
+      || self.kind == NativeWhileLoopLoweringKind.PollReadyState
+  }
+
+  pub fn asyncPollTimeoutDirect(self: NativeWhileLoopLowering) -> bool {
+    return self.isAsyncPollTimeout()
+      && self.mirLoop.asyncPollTimeoutHotPath()
+      && self.noHeapAllocation
+      && self.directBranches
+      && self.asyncStatePollDirect
+      && self.timeoutDeadlineDirect
+      && self.pollReadyDirect
+      && self.cancellationCheckDirect
+      && self.cleanupOnExit
+      && self.noGeneratedFallback
+  }
+
+  pub fn qwhileQirDirect(self: NativeWhileLoopLowering) -> bool {
+    return self.kind == NativeWhileLoopLoweringKind.QirProfileLoop
+      && self.mirLoop.qwhileQirHotPath()
+      && self.noHeapAllocation
+      && self.directBranches
+      && self.qirProfileLoopDirect
+      && self.qirBoundCheckDirect
+      && self.qirBridgeHandoffDirect
+      && self.cleanupOnExit
+      && self.noGeneratedFallback
+  }
+}
+
+impl NativeWhileBuild {
+  pub fn complete(self: NativeWhileBuild) -> bool {
+    return self.lowering.complete()
+      && self.emittedInstruction > 0
+      && self.runtimeSafeFailureReady
+  }
+}

@@ -1,0 +1,33 @@
+pub struct TlsStream {
+  handle: u64,
+  verified: bool,
+  alpnSelected: string,
+}
+
+impl TlsStream {
+  pub fn safe(self: TlsStream) -> bool {
+    return self.handle > 0 && self.verified
+  }
+
+  pub async fn read(self: TlsStream, into: IoSliceMut) -> NetResult<usize> {
+    if !self.safe() {
+      return Err(NetError {
+        kind: NetErrorKind.TlsFailure,
+        message: "tls stream is not verified",
+        retryable: false,
+      })
+    }
+    return Ok(into.len)
+  }
+
+  pub async fn write(self: TlsStream, bytes: IoSlice) -> NetResult<usize> {
+    if !self.safe() {
+      return Err(NetError {
+        kind: NetErrorKind.TlsFailure,
+        message: "tls stream is not verified",
+        retryable: false,
+      })
+    }
+    return Ok(bytes.len)
+  }
+}

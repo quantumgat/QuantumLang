@@ -1,0 +1,15 @@
+pub struct ExhaustivenessFact {
+  node: u64,
+  missingCaseCount: usize,
+  sealedDomain: bool,
+}
+
+pub fn exhaustivenessFact(node: u64, missingCaseCount: usize, sealedDomain: bool) -> ExhaustivenessFact {
+  return ExhaustivenessFact { node: node, missingCaseCount: missingCaseCount, sealedDomain: sealedDomain }
+}
+
+impl ExhaustivenessFact {
+  pub fn isExhaustive(self: ExhaustivenessFact) -> bool {
+    return self.missingCaseCount == 0 && self.sealedDomain
+  }
+}

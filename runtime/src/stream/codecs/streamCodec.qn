@@ -1,0 +1,21 @@
+pub enum StreamCodecKind {
+  BinaryCodec
+  TextCodec
+  JsonCodec
+}
+
+pub struct StreamCodec {
+  kind: StreamCodecKind,
+  name: string,
+  deterministic: bool,
+}
+
+pub fn streamCodec(kind: StreamCodecKind, name: string) -> StreamCodec {
+  return StreamCodec { kind: kind, name: name, deterministic: true }
+}
+
+impl StreamCodec {
+  pub fn canReplay(self: StreamCodec) -> bool {
+    return self.deterministic
+  }
+}

@@ -1,0 +1,11 @@
+pub enum CommandMode {
+  BuildCommand,
+  RunCommand,
+  CheckCommand,
+  PluginCommand,
+  UnknownCommand,
+}
+
+pub fn defaultCommandMode() -> CommandMode {
+  return CommandMode.BuildCommand
+}

@@ -1,0 +1,314 @@
+pub struct CachePut<K, V> {
+  cache: Cache<K, V>,
+  updated: bool,
+  evicted: Option<(K, V)>,
+}
+
+pub struct CacheGet<K, V> {
+  cache: Cache<K, V>,
+  value: Option<V>,
+}
+
+pub struct Cache<K, V> {
+  entries: Map<K, CacheEntry<K, V>>,
+  order: LinkedList<CacheOrderKey<K>>,
+  len: usize,
+  capacity: usize,
+  policy: CacheEvictionPolicy,
+  generation: usize,
+}
+
+impl<K, V> Cache<K, V> {
+  pub fn init() -> Cache<K, V> requires(alloc) {
+    return Cache<K, V>.withCapacity(0)
+  }
+
+  pub fn empty() -> Cache<K, V> requires(alloc) {
+    return Cache<K, V>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Cache<K, V> requires(alloc) {
+    return Cache<K, V> {
+      entries: Map<K, CacheEntry<K, V>>.withCapacity(capacity),
+      order: LinkedList<CacheOrderKey<K>>.withCapacity(capacity),
+      len: 0,
+      capacity: capacity,
+      policy: CacheEvictionPolicy.default(),
+      generation: 0,
+    }
+  }
+
+  pub fn withPolicy(capacity: usize, policy: CacheEvictionPolicy) -> Cache<K, V> requires(alloc) {
+    return Cache<K, V>.withCapacity(capacity).withEvictionPolicy(policy)
+  }
+
+  pub fn builder() -> CacheBuilder<K, V> {
+    return CacheBuilder<K, V>.init()
+  }
+
+  pub fn len(self: Cache<K, V>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Cache<K, V>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Cache<K, V>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn isFull(self: Cache<K, V>) -> bool {
+    return self.capacity > 0 && self.len >= self.capacity
+  }
+
+  pub fn containsKey(self: Cache<K, V>, key: K) -> bool {
+    return self.entries.containsKey(key)
+  }
+
+  pub fn has(self: Cache<K, V>, key: K) -> bool {
+    return self.containsKey(key)
+  }
+
+  pub fn get(self: Cache<K, V>, key: K) -> Option<V> {
+    let entry = self.entries.get(key)
+    match entry {
+      Some(found) => {
+        return Some(found.value)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn access(self: Cache<K, V>, key: K) -> CacheGet<K, V> requires(alloc) {
+    let entry = self.entries.get(key)
+    match entry {
+      Some(found) => {
+        if self.policy.touchesOnRead() {
+          let touched = self.touchEntry(found)
+          return CacheGet<K, V> {
+            cache: touched,
+            value: Some(found.value),
+          }
+        }
+        return CacheGet<K, V> {
+          cache: self,
+          value: Some(found.value),
+        }
+      }
+      None => {
+        return CacheGet<K, V> {
+          cache: self,
+          value: None,
+        }
+      }
+    }
+  }
+
+  pub fn getOrPut(self: Cache<K, V>, key: K, fallback: fn() -> V) -> CacheGet<K, V> requires(alloc) {
+    let found = self.access(key)
+    match found.value {
+      Some(value) => {
+        return found
+      }
+      None => {
+        let value = fallback()
+        let inserted = found.cache.putResult(key, value)
+        return CacheGet<K, V> {
+          cache: inserted.cache,
+          value: Some(value),
+        }
+      }
+    }
+  }
+
+  pub fn put(self: Cache<K, V>, key: K, value: V) -> Cache<K, V> requires(alloc) {
+    return self.putResult(key, value).cache
+  }
+
+  pub fn set(self: Cache<K, V>, key: K, value: V) -> Cache<K, V> requires(alloc) {
+    return self.put(key, value)
+  }
+
+  pub fn putResult(self: Cache<K, V>, key: K, value: V) -> CachePut<K, V> requires(alloc) {
+    let existing = self.entries.get(key)
+    match existing {
+      Some(found) => {
+        let generation = self.generation + 1
+        let entry = found.withValue(value, generation)
+        let next = self.writeEntry(entry)
+        return CachePut<K, V> {
+          cache: next,
+          updated: true,
+          evicted: None,
+        }
+      }
+      None => {
+        let generation = self.generation + 1
+        let entry = CacheEntry<K, V>.new(key, value, generation)
+        let next = self.writeEntry(entry).withLen(self.len + 1)
+        let evicted = next.evictIfNeeded()
+        return CachePut<K, V> {
+          cache: evicted.0,
+          updated: false,
+          evicted: evicted.1,
+        }
+      }
+    }
+  }
+
+  pub fn remove(self: Cache<K, V>, key: K) -> (Cache<K, V>, Option<V>) requires(alloc) {
+    let removed = self.entries.remove(key)
+    let entries = removed.0
+    match removed.1 {
+      Some(entry) => {
+        return (
+          Cache<K, V> {
+            entries: entries,
+            order: self.order,
+            len: self.len - 1,
+            capacity: self.capacity,
+            policy: self.policy,
+            generation: self.generation + 1,
+          },
+          Some(entry.value)
+        )
+      }
+      None => {
+        return (self, None)
+      }
+    }
+  }
+
+  pub fn clear(self: Cache<K, V>) -> Cache<K, V> requires(alloc) {
+    return Cache<K, V>.withPolicy(self.capacity, self.policy).withGeneration(self.generation + 1)
+  }
+
+  pub fn iter(self: Cache<K, V>) -> CacheIter<K, V> {
+    return CacheIter<K, V>.fromCache(self)
+  }
+
+  pub fn cursor(self: Cache<K, V>) -> CacheCursor<K, V> {
+    return CacheCursor<K, V>.fromCache(self)
+  }
+
+  pub fn forEach(self: Cache<K, V>, action: fn(K, V) -> ()) -> () {
+    let mut cursor = self.cursor()
+    while cursor.hasNext() {
+      let pair = cursor.entryUnchecked()
+      action(pair.0, pair.1)
+      cursor = cursor.next()
+    }
+  }
+
+  pub fn find(self: Cache<K, V>, predicate: fn(K, V) -> bool) -> Option<(K, V)> {
+    let mut cursor = self.cursor()
+    while cursor.hasNext() {
+      let pair = cursor.entryUnchecked()
+      if predicate(pair.0, pair.1) {
+        return Some(pair)
+      }
+      cursor = cursor.next()
+    }
+    return None
+  }
+
+  pub fn toVec(self: Cache<K, V>) -> Vec<(K, V)> requires(alloc) {
+    let mut result = Vec<(K, V)>.withCapacity(self.len)
+    let mut cursor = self.cursor()
+    while cursor.hasNext() {
+      result = result.push(cursor.entryUnchecked())
+      cursor = cursor.next()
+    }
+    return result
+  }
+
+  pub fn evictOne(self: Cache<K, V>) -> (Cache<K, V>, Option<(K, V)>) requires(alloc) {
+    let mut cursor = self.cursor()
+    if cursor.hasNext() {
+      let pair = cursor.entryUnchecked()
+      let removed = self.remove(pair.0)
+      return (removed.0, Some(pair))
+    }
+    return (self.compactOrder(), None)
+  }
+
+  pub fn evictIfNeeded(self: Cache<K, V>) -> (Cache<K, V>, Option<(K, V)>) requires(alloc) {
+    if self.capacity == 0 {
+      return (self, None)
+    }
+    if self.len <= self.capacity {
+      return (self, None)
+    }
+    return self.evictOne()
+  }
+
+  pub fn touchEntry(self: Cache<K, V>, entry: CacheEntry<K, V>) -> Cache<K, V> requires(alloc) {
+    let generation = self.generation + 1
+    return self.writeEntry(entry.touched(generation))
+  }
+
+  pub fn writeEntry(self: Cache<K, V>, entry: CacheEntry<K, V>) -> Cache<K, V> requires(alloc) {
+    return Cache<K, V> {
+      entries: self.entries.put(entry.key, entry),
+      order: self.order.pushBack(CacheOrderKey<K>.new(entry.key, entry.generation)),
+      len: self.len,
+      capacity: self.capacity,
+      policy: self.policy,
+      generation: entry.generation,
+    }
+  }
+
+  pub fn compactOrder(self: Cache<K, V>) -> Cache<K, V> requires(alloc) {
+    let mut order = LinkedList<CacheOrderKey<K>>.withCapacity(self.len)
+    let mut cursor = self.cursor()
+    while cursor.hasNext() {
+      let orderKey = cursor.orderKeyUnchecked()
+      order = order.pushBack(orderKey)
+      cursor = cursor.next()
+    }
+    return Cache<K, V> {
+      entries: self.entries,
+      order: order,
+      len: self.len,
+      capacity: self.capacity,
+      policy: self.policy,
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn withEvictionPolicy(self: Cache<K, V>, policy: CacheEvictionPolicy) -> Cache<K, V> {
+    return Cache<K, V> {
+      entries: self.entries,
+      order: self.order,
+      len: self.len,
+      capacity: self.capacity,
+      policy: policy,
+      generation: self.generation,
+    }
+  }
+
+  pub fn withLen(self: Cache<K, V>, len: usize) -> Cache<K, V> {
+    return Cache<K, V> {
+      entries: self.entries,
+      order: self.order,
+      len: len,
+      capacity: self.capacity,
+      policy: self.policy,
+      generation: self.generation,
+    }
+  }
+
+  pub fn withGeneration(self: Cache<K, V>, generation: usize) -> Cache<K, V> {
+    return Cache<K, V> {
+      entries: self.entries,
+      order: self.order,
+      len: self.len,
+      capacity: self.capacity,
+      policy: self.policy,
+      generation: generation,
+    }
+  }
+}

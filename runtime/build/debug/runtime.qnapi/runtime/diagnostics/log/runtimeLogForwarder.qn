@@ -1,0 +1,20 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeLogForwarder {
+  observerCount: usize
+  transport: RuntimeLogTransport
+  backpressure: RuntimeLogBackpressure
+  dropPolicy: RuntimeLogDropPolicy
+  dropsWhenBackpressured: bool
+  boundedQueue: bool
+  sinkCount: usize
+  forwardsToConsole: bool
+  forwardsToFile: bool
+  forwardsToRingBuffer: bool
+  forwardsToMemory: bool
+  forwardsToJson: bool
+  forwardsToTest: bool
+  forwardsToIncident: bool
+  redactsBeforeForwarding: bool
+  observerDeliveryChecked: bool
+  panicSafeEmergencyPath: bool
+}

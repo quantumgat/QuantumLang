@@ -1,0 +1,27 @@
+pub enum HirTaskScopeKind {
+  Spawn
+  JoinHandle
+  TaskScope
+  TaskGroup
+  DetachPolicy
+  BlockingBoundary
+}
+
+pub struct HirTaskScopeHandoff {
+  sourceNode: u64,
+  kind: HirTaskScopeKind,
+  structured: bool,
+  cancellationLinked: bool,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+}
+
+impl HirTaskScopeHandoff {
+  pub fn complete(self: HirTaskScopeHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.structured
+      && self.cancellationLinked
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+}

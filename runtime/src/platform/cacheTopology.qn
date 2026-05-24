@@ -1,0 +1,19 @@
+pub struct RuntimeCacheTopology {
+  cacheLineBytes: usize,
+  numaNodes: usize,
+  prefetchSupported: bool,
+}
+
+impl RuntimeCacheTopology {
+  pub fn init(cacheLineBytes: usize, numaNodes: usize, prefetchSupported: bool) -> RuntimeCacheTopology {
+    return RuntimeCacheTopology {
+      cacheLineBytes: cacheLineBytes,
+      numaNodes: numaNodes,
+      prefetchSupported: prefetchSupported,
+    }
+  }
+
+  pub fn usable(self: RuntimeCacheTopology) -> bool {
+    return self.cacheLineBytes > 0 && self.numaNodes > 0
+  }
+}

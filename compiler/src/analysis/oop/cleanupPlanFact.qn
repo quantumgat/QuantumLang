@@ -1,0 +1,47 @@
+pub enum CleanupPlanKind {
+  DeterministicDrop
+  PartialConstructionFailure
+  ExplicitCleanup
+  CancellationCleanup
+  InterfaceErasedCleanup
+}
+
+pub struct CleanupPlanFact {
+  planId: u64,
+  ownerTypeId: u64,
+  kind: CleanupPlanKind,
+  initializedPartCount: usize,
+  cleanupStepCount: usize,
+  cancellationSafe: bool,
+  panicPolicyBound: bool,
+}
+
+pub fn cleanupPlanFact(
+  planId: u64,
+  ownerTypeId: u64,
+  kind: CleanupPlanKind,
+  initializedPartCount: usize,
+  cleanupStepCount: usize,
+  cancellationSafe: bool,
+  panicPolicyBound: bool,
+) -> CleanupPlanFact {
+  return CleanupPlanFact {
+    planId: planId,
+    ownerTypeId: ownerTypeId,
+    kind: kind,
+    initializedPartCount: initializedPartCount,
+    cleanupStepCount: cleanupStepCount,
+    cancellationSafe: cancellationSafe,
+    panicPolicyBound: panicPolicyBound,
+  }
+}
+
+impl CleanupPlanFact {
+  pub fn coversInitializedParts(self: CleanupPlanFact) -> bool {
+    return self.cleanupStepCount >= self.initializedPartCount
+  }
+
+  pub fn valid(self: CleanupPlanFact) -> bool {
+    return self.panicPolicyBound && self.coversInitializedParts()
+  }
+}

@@ -1,0 +1,19 @@
+pub struct ConstantTimeEqualityLowering {
+  emitsBranchlessCompare: bool,
+  preventsEarlyExit: bool,
+  preservesFixedLength: bool,
+}
+
+impl ConstantTimeEqualityLowering {
+  pub fn init(emitsBranchlessCompare: bool, preventsEarlyExit: bool, preservesFixedLength: bool) -> ConstantTimeEqualityLowering {
+    return ConstantTimeEqualityLowering {
+      emitsBranchlessCompare: emitsBranchlessCompare,
+      preventsEarlyExit: preventsEarlyExit,
+      preservesFixedLength: preservesFixedLength,
+    }
+  }
+
+  pub fn accepted(self: ConstantTimeEqualityLowering) -> bool {
+    return self.emitsBranchlessCompare && self.preventsEarlyExit && self.preservesFixedLength
+  }
+}

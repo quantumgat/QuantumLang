@@ -1,0 +1,57 @@
+pub enum DynamicTypeDiagnosticKind {
+  ImplicitAnyRejected
+  ClassicalQuantumMixRejected
+  UnnarrowedDynamicAccess
+  NonExhaustiveUnionMatch
+  UnsupportedQAnyLowering
+  HotPathDynamicCost
+}
+
+pub struct DynamicTypeDiagnostic {
+  kind: DynamicTypeDiagnosticKind,
+  code: DiagnosticCode,
+  range: SourceRange,
+  message: string,
+  fixAvailable: bool,
+  redacted: bool,
+}
+
+pub fn dynamicTypeDiagnostic(
+  kind: DynamicTypeDiagnosticKind,
+  file: u32,
+  start: usize,
+  end: usize,
+  message: string,
+) -> DynamicTypeDiagnostic {
+  return DynamicTypeDiagnostic {
+    kind: kind,
+    code: diagnosticCode("QLDYN", kind.codeNumber()),
+    range: SourceRange.init(file, start, end),
+    message: message,
+    fixAvailable: true,
+    redacted: true,
+  }
+}
+
+impl DynamicTypeDiagnosticKind {
+  pub fn codeNumber(self: DynamicTypeDiagnosticKind) -> u32 {
+    match self {
+      DynamicTypeDiagnosticKind.ImplicitAnyRejected => { return 1001 }
+      DynamicTypeDiagnosticKind.ClassicalQuantumMixRejected => { return 1002 }
+      DynamicTypeDiagnosticKind.UnnarrowedDynamicAccess => { return 1003 }
+      DynamicTypeDiagnosticKind.NonExhaustiveUnionMatch => { return 1004 }
+      DynamicTypeDiagnosticKind.UnsupportedQAnyLowering => { return 1005 }
+      DynamicTypeDiagnosticKind.HotPathDynamicCost => { return 1006 }
+    }
+  }
+}
+
+impl DynamicTypeDiagnostic {
+  pub fn complete(self: DynamicTypeDiagnostic) -> bool {
+    return self.code.valid()
+      && self.range.exact()
+      && self.message != ""
+      && self.fixAvailable
+      && self.redacted
+  }
+}

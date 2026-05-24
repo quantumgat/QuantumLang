@@ -1,0 +1,206 @@
+pub struct RequestMetadataTrustedProxyProof {
+  trustedProxyPolicy: bool,
+  clientAddress: bool,
+  forwardedHeaders: bool,
+  requestHeaders: bool,
+  bodyParsing: bool,
+  contentNegotiation: bool,
+  observability: bool,
+  tlsProtocol: bool,
+  safetyDiagnostics: bool,
+  appPlan: bool,
+}
+
+impl RequestMetadataTrustedProxyProof {
+  pub fn complete(self: RequestMetadataTrustedProxyProof) -> bool {
+    return self.trustedProxyPolicy
+      && self.clientAddress
+      && self.forwardedHeaders
+      && self.requestHeaders
+      && self.bodyParsing
+      && self.contentNegotiation
+      && self.observability
+      && self.tlsProtocol
+      && self.safetyDiagnostics
+      && self.appPlan
+  }
+}
+
+pub struct MetadataUser {
+  id: string,
+}
+
+pub struct MetadataLoginForm {
+  email: string,
+}
+
+pub type MetadataCtx = HttpCtx<AuthenticatedUser, TenantContext, TraceContext>
+
+pub fn metadataRequest() -> HttpRequest {
+  return HttpRequest
+    .get("/products/42")
+    .withHeader("host", "api.example.com")
+    .withHeader("forwarded", "for=203.0.113.10;proto=https;host=api.example.com")
+    .withHeader("x-forwarded-for", "203.0.113.10, 10.0.0.5")
+    .withHeader("x-forwarded-host", "api.example.com")
+    .withHeader("x-forwarded-proto", "https")
+    .withHeader("x-forwarded-port", "443")
+    .withHeader("x-forwarded-prefix", "/edge")
+    .withHeader("x-real-ip", "203.0.113.10")
+    .withHeader("cf-connecting-ip", "203.0.113.10")
+    .withHeader("true-client-ip", "203.0.113.10")
+    .withHeader("fastly-client-ip", "203.0.113.10")
+    .withHeader("fly-client-ip", "203.0.113.10")
+    .withHeader("user-agent", "qtlc-test")
+    .withHeader("referer", "https://app.example.com/products")
+    .withHeader("origin", "https://app.example.com")
+    .withHeader("accept", "application/json")
+    .withHeader("accept-language", "en-US")
+    .withHeader("accept-encoding", "br,gzip")
+    .withHeader("content-type", "application/json")
+    .withHeader("content-length", "13")
+    .withHeader("cache-control", "no-cache")
+    .withHeader("authorization", "Bearer token")
+    .withHeader("cookie", "sid=abc")
+    .withHeader("sec-fetch-site", "same-origin")
+    .withHeader("sec-fetch-mode", "cors")
+    .withHeader("sec-fetch-dest", "empty")
+    .withHeader("sec-fetch-user", "?1")
+    .withHeader("x-csrf-token", "csrf")
+    .withHeader("x-request-id", "req-1")
+    .withHeader("x-correlation-id", "corr-1")
+    .withHeader("traceparent", "00-trace-span-01")
+    .withHeader("tracestate", "vendor=value")
+    .withHeader("baggage", "tenant=main")
+    .withBody(HttpBody.json("{\"id\":\"u1\"}"))
+}
+
+pub fn requestMetadataTrustedProxyProof() -> RequestMetadataTrustedProxyProof {
+  let policy = TrustedProxy.cloudflare().withMaxHops(8)
+  let request = metadataRequest()
+  let peer = HttpPeerAddress.init("10.0.0.5", 443, "10.0.0.10", 8080)
+  let chain = Forwarded.parse(request.headers(), peer, policy)?
+  let metadata = RequestMetadata.from(request, peer, policy)?
+  let ctx = MetadataCtx
+    .fromRequest(request)
+    .withClientIp("10.0.0.5")
+    .set<AuthenticatedUser>(AuthenticatedUser.init("u1", "salam", ["admin"]))
+    .set<TenantContext>(TenantContext.init("tenant-a", "edge"))
+    .set<TraceContext>(TraceContext.init("trace-1", "span-1", true))
+
+  let user = ctx.json<MetadataUser>()?
+  let form = ctx.form<MetadataLoginForm>()?
+  let multipart = ctx.multipart()?
+  let uploaded = ctx.file("avatar")?
+  let files = ctx.files()?
+  let negotiation = ContentNegotiation.from(request.headers())
+  let safety = ctx.safetyReport()
+  let parsePlan = BodyParsePlan.json(1024)
+  let app = App()
+    .trustedProxies(policy)
+    .controller<MetadataUser>()
+    .plan(8080)
+
+  return RequestMetadataTrustedProxyProof {
+    trustedProxyPolicy: policy.complete()
+      && policy.parsesProxyHeaders()
+      && policy.rejectsSpoofedHeaders()
+      && policy.requiresTrustedRemote()
+      && policy.maxHopCount() == 8
+      && policy.vendorName() == "cloudflare",
+    clientAddress: ctx.realIp() != ""
+      && ctx.remoteAddr() != ""
+      && ctx.remotePort() > 0
+      && ctx.localAddr() != ""
+      && ctx.localPort() > 0
+      && ctx.ipChain().len() > 0
+      && ctx.isPrivateIp()
+      && !ctx.isPublicIp(),
+    forwardedHeaders: chain.client() != ""
+      && chain.originalHost() != ""
+      && chain.originalScheme() == "https"
+      && chain.forwardedPrefix() != ""
+      && chain.source() != ""
+      && !chain.proxySpoofed()
+      && chain.trustedChain()
+      && metadata.firstUntrustedIp() != ""
+      && !metadata.badForwardedChain(),
+    requestHeaders: ctx.scheme() == "https"
+      && ctx.host() == "api.example.com"
+      && ctx.port() > 0
+      && ctx.authority() != ""
+      && ctx.originalHost() != ""
+      && ctx.originalScheme() == "https"
+      && ctx.originalUri() != ""
+      && ctx.basePath() == "/edge"
+      && ctx.forwardedPrefix() == "/edge"
+      && ctx.fullUrl() != ""
+      && ctx.originUrl() != ""
+      && ctx.userAgent() == "qtlc-test"
+      && ctx.referer() != ""
+      && ctx.referrer() != ""
+      && ctx.origin() != ""
+      && ctx.accept() != ""
+      && ctx.acceptJson()
+      && ctx.acceptLanguage() != ""
+      && ctx.acceptEncoding() != ""
+      && ctx.contentType() != ""
+      && ctx.contentLength() > 0
+      && ctx.cacheControl() != ""
+      && ctx.authorization() != ""
+      && ctx.bearerToken() != ""
+      && ctx.cookie("sid") != None
+      && ctx.cookies().count() >= 0,
+    bodyParsing: typeName<MetadataUser>() != ""
+      && typeName<MetadataLoginForm>() != ""
+      && multipart.len() >= 0
+      && uploaded.name() != ""
+      && files.len() >= 0
+      && ctx.text()? != ""
+      && ctx.bytes()?.len() >= 0
+      && ctx.stream().backpressureAware()
+      && ctx.bodySize() > 0
+      && ctx.bodyHash() != ""
+      && parsePlan.safe(),
+    contentNegotiation: ctx.wantsJson()
+      && !ctx.wantsHtml()
+      && negotiation.wantsJson()
+      && ctx.bestContentType(["application/json", "text/plain"]) == "application/json"
+      && ctx.bestLanguage(["en-US", "bn-BD"]) == "en-US"
+      && ctx.bestEncoding(["br", "gzip"]) == "br",
+    observability: ctx.requestId() == "req-1"
+      && ctx.correlationId() == "corr-1"
+      && ctx.traceId() != ""
+      && ctx.spanId() != ""
+      && ctx.traceparent() != ""
+      && ctx.tracestate() != ""
+      && ctx.baggage() != ""
+      && ctx.startTime() > 0
+      && ctx.deadline() >= ctx.startTime()
+      && ctx.elapsed() >= 0,
+    tlsProtocol: ctx.protocol() != ""
+      && ctx.alpn() != ""
+      && ctx.tls().enabled()
+      && ctx.tlsVersion() != ""
+      && ctx.cipher() != ""
+      && ctx.sni() != ""
+      && ctx.clientCert().subjectName() != ""
+      && ctx.mtlsVerified(),
+    safetyDiagnostics: safety.safeToHandle()
+      && !ctx.duplicateContentLength()
+      && !ctx.contentLengthTransferEncodingConflict()
+      && !ctx.invalidHeaderBytes()
+      && !ctx.headerTooLarge()
+      && !ctx.tooManyHeaders()
+      && !ctx.uriTooLong()
+      && !ctx.proxySpoofed()
+      && !ctx.badForwardedChain()
+      && !ctx.requestSmugglingRisk()
+      && !ctx.slowlorisTimeout()
+      && !ctx.bodyLimitExceeded(),
+    appPlan: app.trustedProxyPolicyComplete()
+      && app.trustedProxyPreset() == "cloudflare"
+      && app.parsesForwardedHeaders()
+      && app.rejectsProxySpoofing(),
+  }
+}

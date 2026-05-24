@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimePointerControlBlock {
+  controlBlock: u64
+  allocationId: u64
+  generation: u64
+  strong: usize
+  weak: usize
+}

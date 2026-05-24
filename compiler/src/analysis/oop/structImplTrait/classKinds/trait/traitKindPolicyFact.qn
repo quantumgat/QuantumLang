@@ -1,0 +1,19 @@
+pub struct TraitKindPolicyFact {
+  ownerId: u64,
+  obligationSetBound: bool,
+  implCoherenceBound: bool,
+  monomorphizedWhenStatic: bool,
+  dynBoundaryExplicit: bool,
+  sourceMapBound: bool,
+}
+
+impl TraitKindPolicyFact {
+  pub fn complete(self: TraitKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.obligationSetBound
+      && self.implCoherenceBound
+      && self.monomorphizedWhenStatic
+      && self.dynBoundaryExplicit
+      && self.sourceMapBound
+  }
+}

@@ -1,0 +1,146 @@
+pub enum RequestSafetyIssue {
+  None,
+  DuplicateContentLength,
+  ContentLengthTransferEncodingConflict,
+  InvalidHeaderBytes,
+  HeaderTooLarge,
+  TooManyHeaders,
+  UriTooLong,
+  ProxySpoofing,
+  BadForwardedChain,
+  RequestSmugglingRisk,
+  SlowlorisTimeout,
+  BodyLimitExceeded,
+}
+
+pub struct RequestSafetyDiagnostic {
+  issue: RequestSafetyIssue,
+  message: string,
+  safeToHandle: bool,
+}
+
+impl RequestSafetyDiagnostic {
+  pub fn init(issue: RequestSafetyIssue, message: string, safeToHandle: bool) -> RequestSafetyDiagnostic {
+    return RequestSafetyDiagnostic {
+      issue: issue,
+      message: message,
+      safeToHandle: safeToHandle,
+    }
+  }
+
+  pub fn ok() -> RequestSafetyDiagnostic {
+    return RequestSafetyDiagnostic.init(RequestSafetyIssue.None, "", true)
+  }
+
+  pub fn reject(issue: RequestSafetyIssue, message: string) -> RequestSafetyDiagnostic {
+    return RequestSafetyDiagnostic.init(issue, message, false)
+  }
+
+  pub fn clean(self: RequestSafetyDiagnostic) -> bool {
+    return self.issue == RequestSafetyIssue.None && self.safeToHandle
+  }
+
+  pub fn issueKind(self: RequestSafetyDiagnostic) -> RequestSafetyIssue {
+    return self.issue
+  }
+
+  pub fn details(self: RequestSafetyDiagnostic) -> string {
+    return self.message
+  }
+
+  pub fn rejected(self: RequestSafetyDiagnostic) -> bool {
+    return !self.safeToHandle
+  }
+}
+
+pub struct RequestSafetyReport {
+  diagnostics: Vec<RequestSafetyDiagnostic>,
+}
+
+impl RequestSafetyReport {
+  pub fn empty() -> RequestSafetyReport {
+    return RequestSafetyReport {
+      diagnostics: [],
+    }
+  }
+
+  pub fn add(self: RequestSafetyReport, diagnostic: RequestSafetyDiagnostic) -> RequestSafetyReport {
+    return RequestSafetyReport {
+      diagnostics: self.diagnostics.push(diagnostic),
+    }
+  }
+
+  pub fn clean(self: RequestSafetyReport) -> bool {
+    let mut index: usize = 0
+    while index < self.diagnostics.len() {
+      if !self.diagnostics[index].clean() {
+        return false
+      }
+      index = index + 1
+    }
+    return true
+  }
+
+  pub fn count(self: RequestSafetyReport) -> usize {
+    return self.diagnostics.len()
+  }
+
+  pub fn safeToHandle(self: RequestSafetyReport) -> bool {
+    return self.clean()
+  }
+
+  pub fn has(self: RequestSafetyReport, issue: RequestSafetyIssue) -> bool {
+    let mut index: usize = 0
+    while index < self.diagnostics.len() {
+      if self.diagnostics[index].issueKind() == issue {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn duplicateContentLength(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.DuplicateContentLength)
+  }
+
+  pub fn contentLengthTransferEncodingConflict(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.ContentLengthTransferEncodingConflict)
+  }
+
+  pub fn invalidHeaderBytes(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.InvalidHeaderBytes)
+  }
+
+  pub fn headerTooLarge(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.HeaderTooLarge)
+  }
+
+  pub fn tooManyHeaders(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.TooManyHeaders)
+  }
+
+  pub fn uriTooLong(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.UriTooLong)
+  }
+
+  pub fn proxySpoofing(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.ProxySpoofing)
+  }
+
+  pub fn badForwardedChain(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.BadForwardedChain)
+  }
+
+  pub fn requestSmugglingRisk(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.RequestSmugglingRisk)
+  }
+
+  pub fn slowlorisTimeout(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.SlowlorisTimeout)
+  }
+
+  pub fn bodyLimitExceeded(self: RequestSafetyReport) -> bool {
+    return self.has(RequestSafetyIssue.BodyLimitExceeded)
+  }
+}

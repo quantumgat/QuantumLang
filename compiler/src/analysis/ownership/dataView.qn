@@ -1,0 +1,15 @@
+pub struct DataViewFact {
+  viewId: u64,
+  sourceSymbol: u64,
+  mutableView: bool,
+}
+
+pub fn dataViewFact(viewId: u64, sourceSymbol: u64, mutableView: bool) -> DataViewFact {
+  return DataViewFact { viewId: viewId, sourceSymbol: sourceSymbol, mutableView: mutableView }
+}
+
+impl DataViewFact {
+  pub fn canMutate(self: DataViewFact) -> bool {
+    return self.mutableView
+  }
+}

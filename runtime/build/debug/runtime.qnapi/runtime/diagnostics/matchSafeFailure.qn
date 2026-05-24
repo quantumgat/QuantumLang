@@ -1,0 +1,46 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum MatchSafeFailureKind {
+  NonExhaustive
+  UnreachableArm
+  InvalidGuard
+  TypeNarrowingFailure
+  CollectionShapeFailure
+  BinaryShapeFailure
+}
+pub struct MatchSafeFailure {
+  kind: MatchSafeFailureKind
+  sourceRangeReady: bool
+  fixitReady: bool
+  noCoredump: bool
+  recoverable: bool
+  executableNegativeCovered: bool
+}
+pub struct MatchRuntimeExecution {
+  failure: MatchSafeFailure
+  asyncHandoffReady: bool
+  channelHandoffReady: bool
+  actorMessageHandoffReady: bool
+  noCoredumpBoundaryReady: bool
+}
+pub extern "qnpkg" {
+  pub fn matchSafeFailure(
+  kind: MatchSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+  executableNegativeCovered: bool,
+) -> MatchSafeFailure
+}
+pub extern "qnpkg" {
+  pub fn matchRuntimeExecution(
+  failure: MatchSafeFailure,
+  asyncHandoffReady: bool,
+  channelHandoffReady: bool,
+  actorMessageHandoffReady: bool,
+  noCoredumpBoundaryReady: bool,
+) -> MatchRuntimeExecution
+}
+pub extern "qnpkg" {
+  pub fn matchDefaultSafeFailure(kind: MatchSafeFailureKind) -> MatchSafeFailure
+}

@@ -1,0 +1,21 @@
+pub enum InferenceVariableState {
+  Unsolved
+  Solved
+  Ambiguous
+}
+
+pub struct InferenceVariable {
+  variableId: u64,
+  state: InferenceVariableState,
+  resolvedTypeId: u64,
+}
+
+pub fn inferenceVariable(variableId: u64, state: InferenceVariableState, resolvedTypeId: u64) -> InferenceVariable {
+  return InferenceVariable { variableId: variableId, state: state, resolvedTypeId: resolvedTypeId }
+}
+
+impl InferenceVariable {
+  pub fn solved(self: InferenceVariable) -> bool {
+    return self.state == InferenceVariableState.Solved
+  }
+}

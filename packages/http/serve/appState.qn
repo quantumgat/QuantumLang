@@ -1,0 +1,538 @@
+pub enum AppStateFamily {
+  Value
+  Resource
+  Pool
+  Cache
+  Service
+  Scoped
+  TestOverride
+}
+
+impl AppStateFamily {
+  pub fn lifecycleOwned(self: AppStateFamily) -> bool {
+    return self == AppStateFamily.Resource
+      || self == AppStateFamily.Pool
+      || self == AppStateFamily.Cache
+      || self == AppStateFamily.Service
+  }
+
+  pub fn requestScoped(self: AppStateFamily) -> bool {
+    return self == AppStateFamily.Scoped
+  }
+}
+
+pub struct AppStateLifecycle {
+  lifecycleOwned: bool,
+  startRequired: bool,
+  shutdownRequired: bool,
+  dropRequired: bool,
+  healthCheckAvailable: bool,
+  reconnectAvailable: bool,
+  warmupAvailable: bool,
+}
+
+impl AppStateLifecycle {
+  pub fn init(
+    lifecycleOwned: bool,
+    startRequired: bool,
+    shutdownRequired: bool,
+    dropRequired: bool,
+    healthCheckAvailable: bool,
+    reconnectAvailable: bool,
+    warmupAvailable: bool,
+  ) -> AppStateLifecycle {
+    return AppStateLifecycle {
+      lifecycleOwned: lifecycleOwned,
+      startRequired: startRequired,
+      shutdownRequired: shutdownRequired,
+      dropRequired: dropRequired,
+      healthCheckAvailable: healthCheckAvailable,
+      reconnectAvailable: reconnectAvailable,
+      warmupAvailable: warmupAvailable,
+    }
+  }
+
+  pub fn none() -> AppStateLifecycle {
+    return AppStateLifecycle.init(false, false, false, false, false, false, false)
+  }
+
+  pub fn managed(startRequired: bool, shutdownRequired: bool, dropRequired: bool) -> AppStateLifecycle {
+    return AppStateLifecycle.init(true, startRequired, shutdownRequired, dropRequired, false, false, false)
+  }
+
+  pub fn withHealthCheck(self: AppStateLifecycle) -> AppStateLifecycle {
+    return AppStateLifecycle.init(
+      self.lifecycleOwned,
+      self.startRequired,
+      self.shutdownRequired,
+      self.dropRequired,
+      true,
+      self.reconnectAvailable,
+      self.warmupAvailable
+    )
+  }
+
+  pub fn withReconnect(self: AppStateLifecycle) -> AppStateLifecycle {
+    return AppStateLifecycle.init(
+      self.lifecycleOwned,
+      self.startRequired,
+      self.shutdownRequired,
+      self.dropRequired,
+      self.healthCheckAvailable,
+      true,
+      self.warmupAvailable
+    )
+  }
+
+  pub fn withWarmup(self: AppStateLifecycle) -> AppStateLifecycle {
+    return AppStateLifecycle.init(
+      self.lifecycleOwned,
+      self.startRequired,
+      self.shutdownRequired,
+      self.dropRequired,
+      self.healthCheckAvailable,
+      self.reconnectAvailable,
+      true
+    )
+  }
+
+  pub fn requiresManagedOrder(self: AppStateLifecycle) -> bool {
+    return self.startRequired || self.shutdownRequired || self.dropRequired
+  }
+
+  pub fn lifecycleOwned(self: AppStateLifecycle) -> bool {
+    return self.lifecycleOwned
+  }
+
+  pub fn startRequired(self: AppStateLifecycle) -> bool {
+    return self.startRequired
+  }
+
+  pub fn shutdownRequired(self: AppStateLifecycle) -> bool {
+    return self.shutdownRequired
+  }
+
+  pub fn dropRequired(self: AppStateLifecycle) -> bool {
+    return self.dropRequired
+  }
+
+  pub fn healthCheckAvailable(self: AppStateLifecycle) -> bool {
+    return self.healthCheckAvailable
+  }
+
+  pub fn reconnectAvailable(self: AppStateLifecycle) -> bool {
+    return self.reconnectAvailable
+  }
+
+  pub fn warmupAvailable(self: AppStateLifecycle) -> bool {
+    return self.warmupAvailable
+  }
+
+  pub fn complete(self: AppStateLifecycle) -> bool {
+    if !self.lifecycleOwned {
+      return !self.requiresManagedOrder()
+    }
+    return self.requiresManagedOrder()
+  }
+}
+
+pub struct AppStateDependency {
+  ownerId: u64,
+  dependsOnOwnerId: u64,
+  required: bool,
+  startupBeforeOwner: bool,
+  shutdownAfterOwner: bool,
+}
+
+impl AppStateDependency {
+  pub fn init(
+    ownerId: u64,
+    dependsOnOwnerId: u64,
+    required: bool,
+    startupBeforeOwner: bool,
+    shutdownAfterOwner: bool,
+  ) -> AppStateDependency {
+    return AppStateDependency {
+      ownerId: ownerId,
+      dependsOnOwnerId: dependsOnOwnerId,
+      required: required,
+      startupBeforeOwner: startupBeforeOwner,
+      shutdownAfterOwner: shutdownAfterOwner,
+    }
+  }
+
+  pub fn required(ownerId: u64, dependsOnOwnerId: u64) -> AppStateDependency {
+    return AppStateDependency.init(ownerId, dependsOnOwnerId, true, true, true)
+  }
+
+  pub fn optional(ownerId: u64, dependsOnOwnerId: u64) -> AppStateDependency {
+    return AppStateDependency.init(ownerId, dependsOnOwnerId, false, true, true)
+  }
+
+  pub fn valid(self: AppStateDependency) -> bool {
+    return self.ownerId > 0
+      && self.dependsOnOwnerId > 0
+      && self.ownerId != self.dependsOnOwnerId
+  }
+}
+
+pub struct AppStateFact {
+  typeName: string,
+  oopOwnerId: u64,
+  family: AppStateFamily,
+  lifecycle: AppStateLifecycle,
+  dependencyCount: usize,
+  scoped: bool,
+  testOverrideIsolated: bool,
+}
+
+impl AppStateFact {
+  pub fn init(
+    typeName: string,
+    oopOwnerId: u64,
+    family: AppStateFamily,
+    lifecycle: AppStateLifecycle,
+    dependencyCount: usize,
+    scoped: bool,
+    testOverrideIsolated: bool,
+  ) -> AppStateFact {
+    return AppStateFact {
+      typeName: typeName,
+      oopOwnerId: oopOwnerId,
+      family: family,
+      lifecycle: lifecycle,
+      dependencyCount: dependencyCount,
+      scoped: scoped,
+      testOverrideIsolated: testOverrideIsolated,
+    }
+  }
+
+  pub fn of<T>() -> AppStateFact {
+    return AppStateFact.init(
+      typeName<T>(),
+      oopOwnerId<T>(),
+      AppStateFamily.Value,
+      AppStateLifecycle.none(),
+      0,
+      false,
+      false
+    )
+  }
+
+  pub fn withOwnerId(self: AppStateFact, oopOwnerId: u64) -> AppStateFact {
+    return AppStateFact.init(
+      self.typeName,
+      oopOwnerId,
+      self.family,
+      self.lifecycle,
+      self.dependencyCount,
+      self.scoped,
+      self.testOverrideIsolated
+    )
+  }
+
+  pub fn withFamily(self: AppStateFact, family: AppStateFamily) -> AppStateFact {
+    return AppStateFact.init(
+      self.typeName,
+      self.oopOwnerId,
+      family,
+      self.lifecycle,
+      self.dependencyCount,
+      family.requestScoped() || self.scoped,
+      self.testOverrideIsolated
+    )
+  }
+
+  pub fn withLifecycle(self: AppStateFact, lifecycle: AppStateLifecycle) -> AppStateFact {
+    return AppStateFact.init(
+      self.typeName,
+      self.oopOwnerId,
+      self.family,
+      lifecycle,
+      self.dependencyCount,
+      self.scoped,
+      self.testOverrideIsolated
+    )
+  }
+
+  pub fn withDependencyCount(self: AppStateFact, dependencyCount: usize) -> AppStateFact {
+    return AppStateFact.init(
+      self.typeName,
+      self.oopOwnerId,
+      self.family,
+      self.lifecycle,
+      dependencyCount,
+      self.scoped,
+      self.testOverrideIsolated
+    )
+  }
+
+  pub fn withScoped(self: AppStateFact) -> AppStateFact {
+    return AppStateFact.init(
+      self.typeName,
+      self.oopOwnerId,
+      AppStateFamily.Scoped,
+      self.lifecycle,
+      self.dependencyCount,
+      true,
+      self.testOverrideIsolated
+    )
+  }
+
+  pub fn withTestOverrideIsolation(self: AppStateFact) -> AppStateFact {
+    return AppStateFact.init(
+      self.typeName,
+      self.oopOwnerId,
+      AppStateFamily.TestOverride,
+      self.lifecycle,
+      self.dependencyCount,
+      self.scoped,
+      true
+    )
+  }
+
+  pub fn typeName(self: AppStateFact) -> string {
+    return self.typeName
+  }
+
+  pub fn family(self: AppStateFact) -> AppStateFamily {
+    return self.family
+  }
+
+  pub fn lifecycle(self: AppStateFact) -> AppStateLifecycle {
+    return self.lifecycle
+  }
+
+  pub fn dependencyCount(self: AppStateFact) -> usize {
+    return self.dependencyCount
+  }
+
+  pub fn ownerId(self: AppStateFact) -> u64 {
+    return self.oopOwnerId
+  }
+
+  pub fn projectionComplete(self: AppStateFact) -> bool {
+    return self.oopOwnerId > 0
+  }
+
+  pub fn lifecycleOwned(self: AppStateFact) -> bool {
+    return self.family.lifecycleOwned() || self.lifecycle.lifecycleOwned()
+  }
+
+  pub fn requiresLifecyclePlan(self: AppStateFact) -> bool {
+    return self.lifecycle.requiresManagedOrder()
+  }
+
+  pub fn complete(self: AppStateFact) -> bool {
+    return self.typeName != "" && self.lifecycle.complete()
+  }
+
+  pub fn startRequired(self: AppStateFact) -> bool {
+    return self.lifecycle.startRequired()
+  }
+
+  pub fn shutdownRequired(self: AppStateFact) -> bool {
+    return self.lifecycle.shutdownRequired()
+  }
+
+  pub fn dropRequired(self: AppStateFact) -> bool {
+    return self.lifecycle.dropRequired()
+  }
+
+  pub fn healthCheckAvailable(self: AppStateFact) -> bool {
+    return self.lifecycle.healthCheckAvailable()
+  }
+
+  pub fn reconnectAvailable(self: AppStateFact) -> bool {
+    return self.lifecycle.reconnectAvailable()
+  }
+
+  pub fn warmupAvailable(self: AppStateFact) -> bool {
+    return self.lifecycle.warmupAvailable()
+  }
+
+  pub fn scoped(self: AppStateFact) -> bool {
+    return self.scoped
+  }
+
+  pub fn testOverrideIsolated(self: AppStateFact) -> bool {
+    return self.testOverrideIsolated
+  }
+}
+
+pub struct AppStateGraphSummary {
+  stateCount: usize,
+  dependencyCount: usize,
+  lifecycleOwnedCount: usize,
+  startRequiredCount: usize,
+  shutdownRequiredCount: usize,
+  dropRequiredCount: usize,
+  healthCheckCount: usize,
+  reconnectCount: usize,
+  warmupCount: usize,
+  scopedStateCount: usize,
+  testOverrideCount: usize,
+  projectionPendingCount: usize,
+}
+
+impl AppStateGraphSummary {
+  pub fn init(
+    stateCount: usize,
+    dependencyCount: usize,
+    lifecycleOwnedCount: usize,
+    startRequiredCount: usize,
+    shutdownRequiredCount: usize,
+    dropRequiredCount: usize,
+    healthCheckCount: usize,
+    reconnectCount: usize,
+    warmupCount: usize,
+    scopedStateCount: usize,
+    testOverrideCount: usize,
+    projectionPendingCount: usize,
+  ) -> AppStateGraphSummary {
+    return AppStateGraphSummary {
+      stateCount: stateCount,
+      dependencyCount: dependencyCount,
+      lifecycleOwnedCount: lifecycleOwnedCount,
+      startRequiredCount: startRequiredCount,
+      shutdownRequiredCount: shutdownRequiredCount,
+      dropRequiredCount: dropRequiredCount,
+      healthCheckCount: healthCheckCount,
+      reconnectCount: reconnectCount,
+      warmupCount: warmupCount,
+      scopedStateCount: scopedStateCount,
+      testOverrideCount: testOverrideCount,
+      projectionPendingCount: projectionPendingCount,
+    }
+  }
+
+  pub fn lifecycleFactCount(self: AppStateGraphSummary) -> usize {
+    return self.startRequiredCount + self.shutdownRequiredCount + self.dropRequiredCount
+  }
+
+  pub fn lifecycleOwnedCount(self: AppStateGraphSummary) -> usize {
+    return self.lifecycleOwnedCount
+  }
+
+  pub fn hasLifecycleWork(self: AppStateGraphSummary) -> bool {
+    return self.lifecycleOwnedCount > 0 || self.lifecycleFactCount() > 0
+  }
+
+  pub fn projectionComplete(self: AppStateGraphSummary) -> bool {
+    return self.projectionPendingCount == 0
+  }
+}
+
+pub struct AppStateGraph {
+  states: Vec<AppStateFact>,
+  dependencies: Vec<AppStateDependency>,
+}
+
+impl AppStateGraph {
+  pub fn empty() -> AppStateGraph {
+    return AppStateGraph {
+      states: [],
+      dependencies: [],
+    }
+  }
+
+  pub fn add(self: AppStateGraph, state: AppStateFact) -> AppStateGraph {
+    return AppStateGraph {
+      states: self.states.push(state),
+      dependencies: self.dependencies,
+    }
+  }
+
+  pub fn addDependency(self: AppStateGraph, dependency: AppStateDependency) -> AppStateGraph {
+    return AppStateGraph {
+      states: self.states,
+      dependencies: self.dependencies.push(dependency),
+    }
+  }
+
+  pub fn project<T>(self: AppStateGraph) -> AppStateGraph {
+    return self.add(AppStateFact.of<T>())
+  }
+
+  pub fn stateCount(self: AppStateGraph) -> usize {
+    return self.states.len()
+  }
+
+  pub fn dependencyCount(self: AppStateGraph) -> usize {
+    return self.dependencies.len()
+  }
+
+  pub fn summary(self: AppStateGraph) -> AppStateGraphSummary {
+    let mut lifecycleOwnedCount: usize = 0
+    let mut startRequiredCount: usize = 0
+    let mut shutdownRequiredCount: usize = 0
+    let mut dropRequiredCount: usize = 0
+    let mut healthCheckCount: usize = 0
+    let mut reconnectCount: usize = 0
+    let mut warmupCount: usize = 0
+    let mut scopedStateCount: usize = 0
+    let mut testOverrideCount: usize = 0
+    let mut projectionPendingCount: usize = 0
+    let mut index: usize = 0
+    while index < self.states.len() {
+      let state = self.states[index]
+      if state.lifecycleOwned() {
+        lifecycleOwnedCount = lifecycleOwnedCount + 1
+      }
+      if state.startRequired() {
+        startRequiredCount = startRequiredCount + 1
+      }
+      if state.shutdownRequired() {
+        shutdownRequiredCount = shutdownRequiredCount + 1
+      }
+      if state.dropRequired() {
+        dropRequiredCount = dropRequiredCount + 1
+      }
+      if state.healthCheckAvailable() {
+        healthCheckCount = healthCheckCount + 1
+      }
+      if state.reconnectAvailable() {
+        reconnectCount = reconnectCount + 1
+      }
+      if state.warmupAvailable() {
+        warmupCount = warmupCount + 1
+      }
+      if state.scoped() {
+        scopedStateCount = scopedStateCount + 1
+      }
+      if state.testOverrideIsolated() {
+        testOverrideCount = testOverrideCount + 1
+      }
+      if !state.projectionComplete() {
+        projectionPendingCount = projectionPendingCount + 1
+      }
+      index = index + 1
+    }
+    return AppStateGraphSummary.init(
+      self.states.len(),
+      self.dependencies.len(),
+      lifecycleOwnedCount,
+      startRequiredCount,
+      shutdownRequiredCount,
+      dropRequiredCount,
+      healthCheckCount,
+      reconnectCount,
+      warmupCount,
+      scopedStateCount,
+      testOverrideCount,
+      projectionPendingCount
+    )
+  }
+
+  pub fn lifecycleOwnedCount(self: AppStateGraph) -> usize {
+    return self.summary().lifecycleOwnedCount()
+  }
+
+  pub fn lifecycleFactCount(self: AppStateGraph) -> usize {
+    return self.summary().lifecycleFactCount()
+  }
+
+  pub fn projectionComplete(self: AppStateGraph) -> bool {
+    return self.summary().projectionComplete()
+  }
+}

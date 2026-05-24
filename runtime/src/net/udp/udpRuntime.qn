@@ -1,0 +1,19 @@
+pub struct RuntimeUdpContract {
+  connectedUdp: bool,
+  batchIo: bool,
+  multicast: bool,
+  truncationDiagnostic: bool,
+  zeroCopyDatagram: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeUdpContract {
+  pub fn accepted(self: RuntimeUdpContract) -> bool {
+    return self.connectedUdp
+      && self.batchIo
+      && self.multicast
+      && self.truncationDiagnostic
+      && self.zeroCopyDatagram
+      && self.noCoredump
+  }
+}

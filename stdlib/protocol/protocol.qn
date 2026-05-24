@@ -1,0 +1,6 @@
+pub struct ProtocolId {
+  name: string,
+}
+
+pub fn protocol(name: string) -> ProtocolId
+pub fn name(value: ProtocolId) -> string

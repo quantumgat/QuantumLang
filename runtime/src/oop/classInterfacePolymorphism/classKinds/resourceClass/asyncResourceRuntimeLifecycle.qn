@@ -1,0 +1,23 @@
+pub struct AsyncResourceRuntimeLifecycle {
+  typeId: u64,
+  handleGenerationBound: bool,
+  asyncInitRuntimeBound: bool,
+  startRuntimeBound: bool,
+  closeShutdownRuntimeBound: bool,
+  cancellationCleanupRuntimeBound: bool,
+  staleHandleDiagnosticBound: bool,
+  noCoredumpFailureBound: bool,
+}
+
+impl AsyncResourceRuntimeLifecycle {
+  pub fn complete(self: AsyncResourceRuntimeLifecycle) -> bool {
+    return self.typeId > 0
+      && self.handleGenerationBound
+      && self.asyncInitRuntimeBound
+      && self.startRuntimeBound
+      && self.closeShutdownRuntimeBound
+      && self.cancellationCleanupRuntimeBound
+      && self.staleHandleDiagnosticBound
+      && self.noCoredumpFailureBound
+  }
+}

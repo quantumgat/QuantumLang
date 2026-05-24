@@ -1,0 +1,90 @@
+pub enum RuntimeConcurrencyIncidentKind {
+  DataRacePrevented
+  SendBoundaryRejected
+  SyncBoundaryRejected
+  BorrowAcrossAwaitRejected
+  BlockingInAsyncRejected
+  OrphanTaskRejected
+  ActorMessageRejected
+  CloseAfterSendRejected
+}
+
+pub struct RuntimeConcurrencyIncident {
+  taskId: u64,
+  kind: RuntimeConcurrencyIncidentKind,
+  subject: string,
+  sourceMapped: bool,
+  fixItAvailable: bool,
+  noAllocationRequired: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeConcurrencyIncident {
+  pub fn init(
+    taskId: u64,
+    kind: RuntimeConcurrencyIncidentKind,
+    subject: string,
+    sourceMapped: bool,
+    fixItAvailable: bool,
+    noAllocationRequired: bool,
+    noCoredump: bool,
+  ) -> RuntimeConcurrencyIncident {
+    return RuntimeConcurrencyIncident {
+      taskId: taskId,
+      kind: kind,
+      subject: subject,
+      sourceMapped: sourceMapped,
+      fixItAvailable: fixItAvailable,
+      noAllocationRequired: noAllocationRequired,
+      noCoredump: noCoredump,
+    }
+  }
+
+  pub fn reportable(self: RuntimeConcurrencyIncident) -> bool {
+    return self.taskId > 0
+      && self.subject != ""
+      && self.sourceMapped
+      && self.noAllocationRequired
+      && self.noCoredump
+  }
+
+  pub fn canOfferFixIt(self: RuntimeConcurrencyIncident) -> bool {
+    return self.reportable() && self.fixItAvailable
+  }
+}
+
+pub struct RuntimeConcurrencyDiagnosticSnapshot {
+  incidentCount: usize,
+  dataRacePreventedCount: usize,
+  blockingInAsyncCount: usize,
+  orphanTaskRejectedCount: usize,
+  actorMessageRejectedCount: usize,
+  noCoredump: bool,
+}
+
+impl RuntimeConcurrencyDiagnosticSnapshot {
+  pub fn init(
+    incidentCount: usize,
+    dataRacePreventedCount: usize,
+    blockingInAsyncCount: usize,
+    orphanTaskRejectedCount: usize,
+    actorMessageRejectedCount: usize,
+  ) -> RuntimeConcurrencyDiagnosticSnapshot {
+    return RuntimeConcurrencyDiagnosticSnapshot {
+      incidentCount: incidentCount,
+      dataRacePreventedCount: dataRacePreventedCount,
+      blockingInAsyncCount: blockingInAsyncCount,
+      orphanTaskRejectedCount: orphanTaskRejectedCount,
+      actorMessageRejectedCount: actorMessageRejectedCount,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: RuntimeConcurrencyDiagnosticSnapshot) -> bool {
+    return self.noCoredump
+      && self.incidentCount >= self.dataRacePreventedCount
+      && self.incidentCount >= self.blockingInAsyncCount
+      && self.incidentCount >= self.orphanTaskRejectedCount
+      && self.incidentCount >= self.actorMessageRejectedCount
+  }
+}

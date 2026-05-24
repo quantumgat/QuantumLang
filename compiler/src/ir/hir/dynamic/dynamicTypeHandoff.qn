@@ -1,0 +1,43 @@
+pub enum HirDynamicTypeHandoffKind {
+  UnionType
+  AnyValue
+  QAnyValue
+  NarrowingMatch
+  IsCheck
+  AsCast
+}
+
+pub struct HirDynamicTypeHandoff {
+  node: HirNode,
+  kind: HirDynamicTypeHandoffKind,
+  typeFact: DynamicTypeFact,
+  narrowing: DynamicNarrowingFact,
+  mirHandoffReady: bool,
+  diagnosticsReady: bool,
+}
+
+pub fn hirDynamicTypeHandoff(
+  node: HirNode,
+  kind: HirDynamicTypeHandoffKind,
+  typeFact: DynamicTypeFact,
+  narrowing: DynamicNarrowingFact,
+) -> HirDynamicTypeHandoff {
+  return HirDynamicTypeHandoff {
+    node: node,
+    kind: kind,
+    typeFact: typeFact,
+    narrowing: narrowing,
+    mirHandoffReady: true,
+    diagnosticsReady: true,
+  }
+}
+
+impl HirDynamicTypeHandoff {
+  pub fn complete(self: HirDynamicTypeHandoff) -> bool {
+    return self.node.nodeId() > 0
+      && self.typeFact.valid()
+      && self.narrowing.safe()
+      && self.mirHandoffReady
+      && self.diagnosticsReady
+  }
+}

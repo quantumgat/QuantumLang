@@ -1,0 +1,15 @@
+pub struct UnsafeAuditFact {
+  node: u64,
+  audited: bool,
+  diagnosticCode: u32,
+}
+
+pub fn unsafeAuditFact(node: u64, audited: bool, diagnosticCode: u32) -> UnsafeAuditFact {
+  return UnsafeAuditFact { node: node, audited: audited, diagnosticCode: diagnosticCode }
+}
+
+impl UnsafeAuditFact {
+  pub fn accepted(self: UnsafeAuditFact) -> bool {
+    return self.audited
+  }
+}

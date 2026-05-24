@@ -1,0 +1,23 @@
+pub enum HirLiteralRangeHandoffKind {
+  VecLiteralLowering
+  MapLiteralLowering
+  RecordLiteralLowering
+  TupleLiteralLowering
+  RangeIteratorLowering
+  TypedEmptyLowering
+}
+
+pub struct HirLiteralRangeHandoff {
+  sourceNode: u64,
+  kind: HirLiteralRangeHandoffKind,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+}
+
+impl HirLiteralRangeHandoff {
+  pub fn complete(self: HirLiteralRangeHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+}

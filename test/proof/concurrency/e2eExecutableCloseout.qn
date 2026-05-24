@@ -1,0 +1,107 @@
+pub enum ConcurrencyE2eFamily {
+  AsyncAwait
+  TaskScope
+  Scheduler
+  CancellationTimer
+  ChannelSelect
+  SyncPrimitive
+  ActorService
+  Stream
+  Reactor
+  Parallel
+  SafetyDiagnostics
+}
+
+pub enum ConcurrencyE2eFixtureKind {
+  PositiveExecutable
+  NegativeDiagnostic
+}
+
+pub struct ConcurrencyE2eFixtureRow {
+  family: ConcurrencyE2eFamily,
+  kind: ConcurrencyE2eFixtureKind,
+  fixture: string,
+  diagnosticCode: string,
+  sourceMapped: bool,
+  noCoredump: bool,
+}
+
+pub struct ConcurrencyE2eProofReport {
+  rows: Vec<ConcurrencyE2eFixtureRow>,
+  requiredFamilies: usize,
+  positiveFixture: string,
+  negativeFixtureCount: usize,
+  executableEvidence: bool,
+  sourceMappedDiagnostics: bool,
+  noCoredump: bool,
+}
+
+pub fn concurrencyE2eFixtureRow(
+  family: ConcurrencyE2eFamily,
+  kind: ConcurrencyE2eFixtureKind,
+  fixture: string,
+  diagnosticCode: string,
+) -> ConcurrencyE2eFixtureRow {
+  return ConcurrencyE2eFixtureRow {
+    family: family,
+    kind: kind,
+    fixture: fixture,
+    diagnosticCode: diagnosticCode,
+    sourceMapped: true,
+    noCoredump: true,
+  }
+}
+
+pub fn concurrencyE2eProofReport() -> ConcurrencyE2eProofReport requires(alloc) {
+  let mut rows = Vec<ConcurrencyE2eFixtureRow>.withCapacity(22)
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.AsyncAwait, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.AsyncAwait, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_await_outside_async_bad.qn", "QLCONC0010"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.TaskScope, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.TaskScope, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_orphan_task_bad.qn", "QLCONC0001"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.Scheduler, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.Scheduler, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_blocking_async_bad.qn", "QLCONC0002"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.CancellationTimer, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.CancellationTimer, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_timer_cancel_bad.qn", "QLCONC0011"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.ChannelSelect, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.ChannelSelect, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_channel_closed_send_bad.qn", "QLCONC0003"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.SyncPrimitive, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.SyncPrimitive, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_sync_guard_bad.qn", "QLCONC0004"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.ActorService, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.ActorService, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_actor_message_bad.qn", "QLCONC0005"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.Stream, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.Stream, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_stream_backpressure_bad.qn", "QLCONC0006"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.Reactor, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.Reactor, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_reactor_backend_bad.qn", "QLCONC0007"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.Parallel, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.Parallel, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_parallel_shared_mut_bad.qn", "QLCONC0012"))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.SafetyDiagnostics, ConcurrencyE2eFixtureKind.PositiveExecutable, "concurrency_e2e_executable_ok.qn", ""))
+  rows = rows.push(concurrencyE2eFixtureRow(ConcurrencyE2eFamily.SafetyDiagnostics, ConcurrencyE2eFixtureKind.NegativeDiagnostic, "concurrency_e2e_data_race_bad.qn", "QLCONC0009"))
+  return ConcurrencyE2eProofReport {
+    rows: rows,
+    requiredFamilies: 11,
+    positiveFixture: "concurrency_e2e_executable_ok.qn",
+    negativeFixtureCount: 11,
+    executableEvidence: true,
+    sourceMappedDiagnostics: true,
+    noCoredump: true,
+  }
+}
+
+impl ConcurrencyE2eFixtureRow {
+  pub fn accepted(self: ConcurrencyE2eFixtureRow) -> bool {
+    return self.fixture != ""
+      && self.sourceMapped
+      && self.noCoredump
+  }
+}
+
+impl ConcurrencyE2eProofReport {
+  pub fn accepted(self: ConcurrencyE2eProofReport) -> bool {
+    return self.rows.len >= self.requiredFamilies
+      && self.positiveFixture == "concurrency_e2e_executable_ok.qn"
+      && self.negativeFixtureCount >= 11
+      && self.executableEvidence
+      && self.sourceMappedDiagnostics
+      && self.noCoredump
+  }
+}

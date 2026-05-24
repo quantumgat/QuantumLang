@@ -1,0 +1,42 @@
+pub struct PoolOccupiedCursorKernel {
+  cursorErased: bool,
+  hasNextUsesIndexCompare: bool,
+  nextUsesOccupiedScan: bool,
+  valueUncheckedUsesDirectSlotLoad: bool,
+  handleUncheckedUsesIndexGenerationPair: bool,
+  queryLoopsUseCursor: bool,
+  toVecUsesCursor: bool,
+  iteratorUsesCursor: bool,
+  forEachUsesCursor: bool,
+  optionMatchRemovedFromHotLoops: bool,
+}
+
+impl PoolOccupiedCursorKernel {
+  pub fn standard() -> PoolOccupiedCursorKernel {
+    return PoolOccupiedCursorKernel {
+      cursorErased: true,
+      hasNextUsesIndexCompare: true,
+      nextUsesOccupiedScan: true,
+      valueUncheckedUsesDirectSlotLoad: true,
+      handleUncheckedUsesIndexGenerationPair: true,
+      queryLoopsUseCursor: true,
+      toVecUsesCursor: true,
+      iteratorUsesCursor: true,
+      forEachUsesCursor: true,
+      optionMatchRemovedFromHotLoops: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: PoolOccupiedCursorKernel) -> bool {
+    return self.cursorErased
+      && self.hasNextUsesIndexCompare
+      && self.nextUsesOccupiedScan
+      && self.valueUncheckedUsesDirectSlotLoad
+      && self.handleUncheckedUsesIndexGenerationPair
+      && self.queryLoopsUseCursor
+      && self.toVecUsesCursor
+      && self.iteratorUsesCursor
+      && self.forEachUsesCursor
+      && self.optionMatchRemovedFromHotLoops
+  }
+}

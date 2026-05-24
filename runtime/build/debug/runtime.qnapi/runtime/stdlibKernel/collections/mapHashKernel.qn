@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct MapHashKernel {
+  rawTableBacked: bool
+  quadraticProbe: bool
+  cachedHash: bool
+  loadFactorGuarded: bool
+  entryApiSingleLookup: bool
+  insertSlotFastPath: bool
+  directBucketWrite: bool
+  uncheckedPayloadLoad: bool
+  valueHashLowered: bool
+  cachedHashReusedOnGrow: bool
+  singleLookupSetInsert: bool
+  sideEntryIndexElided: bool
+  tupleReturnErased: bool
+  orderedMapSeparated: bool
+}

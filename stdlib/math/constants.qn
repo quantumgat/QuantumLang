@@ -1,0 +1,17 @@
+pub struct MathConstants {
+  pi: f64,
+  e: f64,
+  tau: f64,
+  epsilon: f64,
+}
+
+impl MathConstants {
+  pub fn standard() -> MathConstants {
+    return MathConstants {
+      pi: 3.141592653589793,
+      e: 2.718281828459045,
+      tau: 6.283185307179586,
+      epsilon: 0.000000000000001,
+    }
+  }
+}

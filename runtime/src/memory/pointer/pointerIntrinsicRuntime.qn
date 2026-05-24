@@ -1,0 +1,37 @@
+pub struct RuntimePointerIntrinsicAccess {
+  intrinsic: string,
+  bytes: usize,
+  count: usize,
+  mutable: bool,
+  accessAccepted: bool,
+  diagnosticCode: string,
+}
+
+impl RuntimePointerIntrinsicAccess {
+  pub fn init(intrinsic: string, bytes: usize, count: usize, mutable: bool, accessAccepted: bool, diagnosticCode: string) -> RuntimePointerIntrinsicAccess {
+    return RuntimePointerIntrinsicAccess {
+      intrinsic: intrinsic,
+      bytes: bytes,
+      count: count,
+      mutable: mutable,
+      accessAccepted: accessAccepted,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn permitsRead(self: RuntimePointerIntrinsicAccess) -> bool {
+    return self.intrinsic != "" && self.bytes > 0 && self.count > 0 && self.accessAccepted && self.diagnosticCode != ""
+  }
+
+  pub fn permitsWrite(self: RuntimePointerIntrinsicAccess) -> bool {
+    return self.permitsRead() && self.mutable
+  }
+}
+
+pub fn runtimePtrReadIntrinsic(intrinsic: string, bytes: usize, count: usize) -> RuntimePointerIntrinsicAccess {
+  return RuntimePointerIntrinsicAccess.init(intrinsic, bytes, count, false, true, "Q_PTR_READ_OK")
+}
+
+pub fn runtimePtrWriteIntrinsic(intrinsic: string, bytes: usize, count: usize) -> RuntimePointerIntrinsicAccess {
+  return RuntimePointerIntrinsicAccess.init(intrinsic, bytes, count, true, true, "Q_PTR_WRITE_OK")
+}

@@ -1,0 +1,35 @@
+pub enum SimdRuntimeFallbackPolicy {
+  RejectScalarFallback
+  AllowDeterministicFallback
+  TargetFeatureDispatch
+}
+
+pub struct SimdMathKernel {
+  policy: SimdRuntimeFallbackPolicy,
+  targetFeatureChecked: bool,
+  laneShapeChecked: bool,
+  alignmentChecked: bool,
+  noHiddenAllocation: bool,
+  noCoredump: bool,
+}
+
+impl SimdMathKernel {
+  pub fn targetDispatch() -> SimdMathKernel {
+    return SimdMathKernel {
+      policy: SimdRuntimeFallbackPolicy.TargetFeatureDispatch,
+      targetFeatureChecked: true,
+      laneShapeChecked: true,
+      alignmentChecked: true,
+      noHiddenAllocation: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: SimdMathKernel) -> bool {
+    return self.targetFeatureChecked
+      && self.laneShapeChecked
+      && self.alignmentChecked
+      && self.noHiddenAllocation
+      && self.noCoredump
+  }
+}

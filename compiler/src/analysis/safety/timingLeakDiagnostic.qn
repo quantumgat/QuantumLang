@@ -1,0 +1,19 @@
+pub struct TimingLeakDiagnostic {
+  code: string,
+  hasRange: bool,
+  blocksSecretLeak: bool,
+}
+
+impl TimingLeakDiagnostic {
+  pub fn init(code: string, hasRange: bool, blocksSecretLeak: bool) -> TimingLeakDiagnostic {
+    return TimingLeakDiagnostic {
+      code: code,
+      hasRange: hasRange,
+      blocksSecretLeak: blocksSecretLeak,
+    }
+  }
+
+  pub fn reportable(self: TimingLeakDiagnostic) -> bool {
+    return self.code != "" && self.hasRange && self.blocksSecretLeak
+  }
+}

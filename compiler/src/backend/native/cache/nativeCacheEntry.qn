@@ -1,0 +1,28 @@
+pub struct NativeCacheEntry {
+  keyHash: string,
+  objectPath: string,
+  hit: bool,
+  validated: bool,
+}
+
+pub fn nativeCacheEntry(keyHash: string, objectPath: string, hit: bool, validated: bool) -> NativeCacheEntry {
+  return NativeCacheEntry { keyHash: keyHash, objectPath: objectPath, hit: hit, validated: validated }
+}
+
+impl NativeCacheEntry {
+  pub fn key(self: NativeCacheEntry) -> string {
+    return self.keyHash
+  }
+
+  pub fn object(self: NativeCacheEntry) -> string {
+    return self.objectPath
+  }
+
+  pub fn isHit(self: NativeCacheEntry) -> bool {
+    return self.hit
+  }
+
+  pub fn isValid(self: NativeCacheEntry) -> bool {
+    return self.validated
+  }
+}

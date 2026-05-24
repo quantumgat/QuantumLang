@@ -1,0 +1,32 @@
+pub enum MirStreamOpKind {
+  CreateStream
+  PollNext
+  FuseIterator
+  ApplyTransform
+  ApplyBackpressure
+  ArmTimeout
+  ApplyRetry
+  PreservePartialError
+}
+
+pub struct MirStreamOp {
+  instruction: u64,
+  kind: MirStreamOpKind,
+  runtimeCallRequired: bool,
+  fusionEligible: bool,
+}
+
+impl MirStreamOp {
+  pub fn init(instruction: u64, kind: MirStreamOpKind, runtimeCallRequired: bool, fusionEligible: bool) -> MirStreamOp {
+    return MirStreamOp {
+      instruction: instruction,
+      kind: kind,
+      runtimeCallRequired: runtimeCallRequired,
+      fusionEligible: fusionEligible,
+    }
+  }
+
+  pub fn accepted(self: MirStreamOp) -> bool {
+    return self.instruction > 0 && self.runtimeCallRequired && self.fusionEligible
+  }
+}

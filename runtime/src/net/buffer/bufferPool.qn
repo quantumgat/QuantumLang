@@ -1,0 +1,12 @@
+pub struct RuntimeNetBufferPool {
+  shard: usize,
+  capacityBytes: usize,
+  zeroCopyViews: bool,
+  returnsOnCancel: bool,
+}
+
+impl RuntimeNetBufferPool {
+  pub fn accepted(self: RuntimeNetBufferPool) -> bool {
+    return self.capacityBytes > 0 && self.zeroCopyViews && self.returnsOnCancel
+  }
+}

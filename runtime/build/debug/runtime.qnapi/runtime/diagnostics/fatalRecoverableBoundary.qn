@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct FatalRecoverableBoundary {
+  incident: RuntimeIncident
+  recoverable: bool
+  fatal: bool
+  resultReturned: bool
+  shutdownRequested: bool
+  incidentEmittedBeforeShutdown: bool
+  cleanupAttempted: bool
+  noAbortForRecoverable: bool
+  noCoredump: bool
+}

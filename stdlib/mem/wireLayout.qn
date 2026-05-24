@@ -1,0 +1,33 @@
+pub struct WireLayout {
+  endian: Endian,
+  packed: bool,
+  fieldAlignment: usize,
+}
+
+impl WireLayout {
+  pub fn init(endian: Endian, packed: bool, fieldAlignment: usize) -> WireLayout {
+    return WireLayout {
+      endian: endian,
+      packed: packed,
+      fieldAlignment: fieldAlignment,
+    }
+  }
+
+  pub fn endian(self: WireLayout) -> Endian {
+    return self.endian
+  }
+
+  pub fn packed(self: WireLayout) -> bool {
+    return self.packed
+  }
+
+  pub fn validFieldOffset(self: WireLayout, offset: usize) -> bool {
+    if self.packed {
+      return true
+    }
+    if self.fieldAlignment == 0 {
+      return false
+    }
+    return offset % self.fieldAlignment == 0
+  }
+}

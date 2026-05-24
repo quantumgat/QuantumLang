@@ -1,0 +1,21 @@
+pub enum CacheNumaIncidentKind {
+  FalseSharingRisk,
+  MissingCachePadding,
+  UnsupportedPrefetch,
+  RemoteNumaAccess,
+  PagePlacementRejected,
+}
+
+pub struct CacheNumaIncident {
+  kind: CacheNumaIncidentKind,
+  recoverable: bool,
+}
+
+impl CacheNumaIncident {
+  pub fn init(kind: CacheNumaIncidentKind) -> CacheNumaIncident {
+    return CacheNumaIncident {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+}

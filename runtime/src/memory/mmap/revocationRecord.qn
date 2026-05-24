@@ -1,0 +1,21 @@
+pub struct RuntimeRevocationRecord {
+  mappingId: u64,
+  previousGeneration: u64,
+  nextGeneration: u64,
+  leasesInvalidated: bool,
+}
+
+impl RuntimeRevocationRecord {
+  pub fn init(mappingId: u64, previousGeneration: u64, nextGeneration: u64, leasesInvalidated: bool) -> RuntimeRevocationRecord {
+    return RuntimeRevocationRecord {
+      mappingId: mappingId,
+      previousGeneration: previousGeneration,
+      nextGeneration: nextGeneration,
+      leasesInvalidated: leasesInvalidated,
+    }
+  }
+
+  pub fn accepted(self: RuntimeRevocationRecord) -> bool {
+    return self.mappingId > 0 && self.nextGeneration > self.previousGeneration && self.leasesInvalidated
+  }
+}

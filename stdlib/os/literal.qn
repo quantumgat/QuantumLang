@@ -1,0 +1,11 @@
+pub struct EnvLiteral {
+  name: EnvName,
+}
+
+pub fn envLiteral(value: string) -> Option<EnvLiteral>
+
+impl EnvLiteral {
+  pub fn name(self: EnvLiteral) -> EnvName {
+    return self.name
+  }
+}

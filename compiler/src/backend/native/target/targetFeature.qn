@@ -1,0 +1,23 @@
+pub struct TargetFeature {
+  name: string,
+  enabled: bool,
+  required: bool,
+}
+
+pub fn targetFeature(name: string, enabled: bool, required: bool) -> TargetFeature {
+  return TargetFeature { name: name, enabled: enabled, required: required }
+}
+
+impl TargetFeature {
+  pub fn featureName(self: TargetFeature) -> string {
+    return self.name
+  }
+
+  pub fn isEnabled(self: TargetFeature) -> bool {
+    return self.enabled
+  }
+
+  pub fn isRequired(self: TargetFeature) -> bool {
+    return self.required
+  }
+}

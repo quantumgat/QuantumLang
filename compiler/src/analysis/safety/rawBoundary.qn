@@ -1,0 +1,11 @@
+pub struct RawBoundary {
+  node: u64,
+  crossesSafeBoundary: bool,
+  audited: bool,
+}
+
+impl RawBoundary {
+  pub fn accepted(self: RawBoundary) -> bool {
+    return self.audited || self.crossesSafeBoundary == false
+  }
+}

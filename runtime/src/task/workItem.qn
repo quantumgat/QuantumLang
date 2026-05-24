@@ -1,0 +1,19 @@
+pub struct WorkItem {
+  task: TaskId,
+  priority: u32,
+  cancellable: bool,
+}
+
+pub fn workItem(task: TaskId, priority: u32, cancellable: bool) -> WorkItem {
+  return WorkItem { task: task, priority: priority, cancellable: cancellable }
+}
+
+impl WorkItem {
+  pub fn taskId(self: WorkItem) -> TaskId {
+    return self.task
+  }
+
+  pub fn isCancellable(self: WorkItem) -> bool {
+    return self.cancellable
+  }
+}

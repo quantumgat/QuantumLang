@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimePoisonPolicy {
+  Propagate
+  Recover
+  IgnoreUnsafe
+}
+pub struct RuntimePoisonState {
+  handle: SyncHandle
+  policy: RuntimePoisonPolicy
+  poisoned: bool
+  diagnosticReady: bool
+}

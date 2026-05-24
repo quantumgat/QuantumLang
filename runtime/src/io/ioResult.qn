@@ -1,0 +1,41 @@
+pub struct IoResult {
+  completed: bool,
+  byteCount: usize,
+  diagnosticCode: u32,
+  platformCode: i32,
+  retryable: bool,
+  interrupted: bool,
+  timedOut: bool,
+  cancelled: bool,
+  partialWritePreserved: bool,
+  resumeOffset: usize,
+  noCoredump: bool,
+}
+
+pub fn ioResult(completed: bool, byteCount: usize, diagnosticCode: u32) -> IoResult {
+  return IoResult {
+    completed: completed,
+    byteCount: byteCount,
+    diagnosticCode: diagnosticCode,
+    platformCode: 0,
+    retryable: false,
+    interrupted: false,
+    timedOut: false,
+    cancelled: false,
+    partialWritePreserved: true,
+    resumeOffset: byteCount,
+    noCoredump: true,
+  }
+}
+
+impl IoResult {
+  pub fn isOk(self: IoResult) -> bool {
+    return self.completed && self.diagnosticCode == 0
+  }
+
+  pub fn safeFailure(self: IoResult) -> bool {
+    return self.partialWritePreserved
+      && self.resumeOffset <= self.byteCount
+      && self.noCoredump
+  }
+}

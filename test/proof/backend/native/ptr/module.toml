@@ -1,0 +1,6 @@
+[module]
+name = "nativePtrProof"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-pointer-proof-evidence"

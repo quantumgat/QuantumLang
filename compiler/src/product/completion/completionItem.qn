@@ -1,0 +1,22 @@
+pub enum CompletionKind {
+  SymbolCompletion,
+  KeywordCompletion,
+  SnippetCompletion,
+  ImportCompletion,
+}
+
+pub struct CompletionItem {
+  label: string,
+  kind: CompletionKind,
+  sourceMapped: bool,
+  mutatesCompilerFacts: bool,
+}
+
+pub fn completionItem(label: string, kind: CompletionKind) -> CompletionItem {
+  return CompletionItem {
+    label: label,
+    kind: kind,
+    sourceMapped: true,
+    mutatesCompilerFacts: false,
+  }
+}

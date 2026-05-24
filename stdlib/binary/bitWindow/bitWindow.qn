@@ -1,0 +1,23 @@
+pub struct BitWindow {
+  bitOffset: u8,
+  bitWidth: u8,
+}
+
+impl BitWindow {
+  pub fn init(bitOffset: u8, bitWidth: u8) -> Result<BitWindow, BinaryError> {
+    if bitWidth == 0 || bitWidth > 64 || bitOffset >= 8 {
+      return Err(BinaryError.init(BinaryErrorKind.Bitfield, 0, "invalid bit window"))
+    }
+    return Ok(BitWindow { bitOffset: bitOffset, bitWidth: bitWidth })
+  }
+
+  pub fn accepted(self: BitWindow) -> bool {
+    return self.bitWidth > 0 && self.bitWidth <= 64 && self.bitOffset < 8
+  }
+}
+
+pub fn readBits(cursor: BinaryCursor, window: BitWindow) -> Result<(BinaryCursor, u64), BinaryError> {
+  return binaryReadBits(cursor, window)
+}
+
+fn binaryReadBits(cursor: BinaryCursor, window: BitWindow) -> Result<(BinaryCursor, u64), BinaryError>

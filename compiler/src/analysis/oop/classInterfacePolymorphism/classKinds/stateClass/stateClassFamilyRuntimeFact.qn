@@ -1,0 +1,57 @@
+pub struct StateClassFamilyRuntimeFact {
+  ownerId: u64,
+  appStateFactBound: bool,
+  lifecycleFactBound: bool,
+  scopedStateBound: bool,
+  dependencyOrderBound: bool,
+  startupOrderBound: bool,
+  shutdownOrderBound: bool,
+  reconnectPolicyBound: bool,
+  healthCheckBound: bool,
+  testOverrideIsolated: bool,
+  runtimeHandoffBound: bool,
+}
+
+pub fn stateClassFamilyRuntimeFact(
+  ownerId: u64,
+  appStateFactBound: bool,
+  lifecycleFactBound: bool,
+  scopedStateBound: bool,
+  dependencyOrderBound: bool,
+  startupOrderBound: bool,
+  shutdownOrderBound: bool,
+  reconnectPolicyBound: bool,
+  healthCheckBound: bool,
+  testOverrideIsolated: bool,
+  runtimeHandoffBound: bool,
+) -> StateClassFamilyRuntimeFact {
+  return StateClassFamilyRuntimeFact {
+    ownerId: ownerId,
+    appStateFactBound: appStateFactBound,
+    lifecycleFactBound: lifecycleFactBound,
+    scopedStateBound: scopedStateBound,
+    dependencyOrderBound: dependencyOrderBound,
+    startupOrderBound: startupOrderBound,
+    shutdownOrderBound: shutdownOrderBound,
+    reconnectPolicyBound: reconnectPolicyBound,
+    healthCheckBound: healthCheckBound,
+    testOverrideIsolated: testOverrideIsolated,
+    runtimeHandoffBound: runtimeHandoffBound,
+  }
+}
+
+impl StateClassFamilyRuntimeFact {
+  pub fn complete(self: StateClassFamilyRuntimeFact) -> bool {
+    return self.ownerId > 0
+      && self.appStateFactBound
+      && self.lifecycleFactBound
+      && self.scopedStateBound
+      && self.dependencyOrderBound
+      && self.startupOrderBound
+      && self.shutdownOrderBound
+      && self.reconnectPolicyBound
+      && self.healthCheckBound
+      && self.testOverrideIsolated
+      && self.runtimeHandoffBound
+  }
+}

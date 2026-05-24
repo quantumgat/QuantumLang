@@ -1,0 +1,65 @@
+pub enum HashPolicy {
+  SecureDefault,
+  FastTrusted,
+  Identity,
+  Custom,
+}
+
+pub struct Hasher {
+  seed: u64,
+  policy: HashPolicy,
+}
+
+impl Hasher {
+  pub fn init() -> Hasher {
+    return Hasher {
+      seed: 1469598103934665603,
+      policy: HashPolicy.SecureDefault,
+    }
+  }
+
+  pub fn withSeed(seed: u64) -> Hasher {
+    return Hasher {
+      seed: seed,
+      policy: HashPolicy.SecureDefault,
+    }
+  }
+
+  pub fn withPolicy(policy: HashPolicy) -> Hasher {
+    return Hasher {
+      seed: 1469598103934665603,
+      policy: policy,
+    }
+  }
+
+  pub fn hash<T>(self: Hasher, value: T) -> u64 {
+    let base = self.mixValue(value)
+    if self.policy == HashPolicy.Identity {
+      return base
+    }
+    if self.policy == HashPolicy.FastTrusted {
+      return self.mix(base + 1099511628211)
+    }
+    return self.mix(base + 14029467366897019727)
+  }
+
+  pub fn bucketIndex<T>(self: Hasher, value: T, bucketCount: usize) -> usize {
+    if bucketCount == 0 {
+      return 0
+    }
+    return (self.hash(value) as usize) % bucketCount
+  }
+
+  pub fn mixValue<T>(self: Hasher, value: T) -> u64 {
+    return self.mix((value as u64) ^ self.seed)
+  }
+
+  pub fn mix(self: Hasher, value: u64) -> u64 {
+    let mut mixed = value + self.seed
+    mixed = mixed ^ (mixed >> 33)
+    mixed = mixed * 0xff51afd7ed558ccd
+    mixed = mixed ^ (mixed >> 33)
+    mixed = mixed * 0xc4ceb9fe1a85ec53
+    return mixed ^ (mixed >> 33)
+  }
+}

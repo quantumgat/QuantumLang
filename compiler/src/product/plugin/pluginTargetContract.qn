@@ -1,0 +1,42 @@
+pub struct PluginTargetContract {
+  osCount: usize,
+  archCount: usize,
+  featureCount: usize,
+  anyOsAllowed: bool,
+  anyArchAllowed: bool,
+  targetGateRequired: bool,
+}
+
+impl PluginTargetContract {
+  pub fn any() -> PluginTargetContract {
+    return PluginTargetContract {
+      osCount: 1,
+      archCount: 1,
+      featureCount: 0,
+      anyOsAllowed: true,
+      anyArchAllowed: true,
+      targetGateRequired: true,
+    }
+  }
+
+  pub fn gated(osCount: usize, archCount: usize, featureCount: usize) -> PluginTargetContract {
+    return PluginTargetContract {
+      osCount: osCount,
+      archCount: archCount,
+      featureCount: featureCount,
+      anyOsAllowed: false,
+      anyArchAllowed: false,
+      targetGateRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginTargetContract) -> bool {
+    return self.osCount > 0
+      && self.archCount > 0
+      && self.targetGateRequired
+  }
+
+  pub fn portable(self: PluginTargetContract) -> bool {
+    return self.anyOsAllowed && self.anyArchAllowed && self.featureCount == 0
+  }
+}

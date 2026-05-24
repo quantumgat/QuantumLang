@@ -1,0 +1,60 @@
+pub struct MapHashKernel {
+  rawTableBacked: bool,
+  quadraticProbe: bool,
+  cachedHash: bool,
+  loadFactorGuarded: bool,
+  entryApiSingleLookup: bool,
+  insertSlotFastPath: bool,
+  directBucketWrite: bool,
+  uncheckedPayloadLoad: bool,
+  valueHashLowered: bool,
+  cachedHashReusedOnGrow: bool,
+  singleLookupSetInsert: bool,
+  sideEntryIndexElided: bool,
+  tupleReturnErased: bool,
+  orderedMapSeparated: bool,
+}
+
+impl MapHashKernel {
+  pub fn standard() -> MapHashKernel {
+    return MapHashKernel {
+      rawTableBacked: true,
+      quadraticProbe: true,
+      cachedHash: true,
+      loadFactorGuarded: true,
+      entryApiSingleLookup: true,
+      insertSlotFastPath: true,
+      directBucketWrite: true,
+      uncheckedPayloadLoad: true,
+      valueHashLowered: true,
+      cachedHashReusedOnGrow: true,
+      singleLookupSetInsert: true,
+      sideEntryIndexElided: true,
+      tupleReturnErased: true,
+      orderedMapSeparated: true,
+    }
+  }
+
+  pub fn canRunFastLookup(self: MapHashKernel) -> bool {
+    return self.rawTableBacked
+      && self.quadraticProbe
+      && self.cachedHash
+      && self.loadFactorGuarded
+      && self.tupleReturnErased
+  }
+
+  pub fn canRunFastEntry(self: MapHashKernel) -> bool {
+    return self.canRunFastLookup() && self.entryApiSingleLookup
+  }
+
+  pub fn canRunFastInsert(self: MapHashKernel) -> bool {
+    return self.canRunFastLookup()
+      && self.insertSlotFastPath
+      && self.directBucketWrite
+      && self.uncheckedPayloadLoad
+      && self.valueHashLowered
+      && self.cachedHashReusedOnGrow
+      && self.singleLookupSetInsert
+      && self.sideEntryIndexElided
+  }
+}

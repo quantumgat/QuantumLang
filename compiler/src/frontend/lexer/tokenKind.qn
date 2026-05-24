@@ -1,0 +1,24 @@
+pub enum TokenKind {
+  End
+  Error
+  Identifier
+  Keyword
+  Integer
+  Float
+  String
+  InterpolatedString
+  Char
+  Operator
+  OpenParen
+  CloseParen
+  OpenBrace
+  CloseBrace
+  OpenBracket
+  CloseBracket
+  Comma
+  Colon
+  Semicolon
+  Dot
+  Arrow
+  Newline
+}

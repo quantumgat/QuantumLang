@@ -1,0 +1,40 @@
+pub enum ArtifactFlowKind {
+  ObjectCacheEntry
+  ArchiveCacheEntry
+  LinkActionEntry
+  ExecutableCacheEntry
+}
+
+pub struct ArtifactFlowRef {
+  kind: ArtifactFlowKind,
+  path: string,
+  hidden: bool,
+  hash: string,
+}
+
+pub fn artifactFlowRef(kind: ArtifactFlowKind, path: string, hidden: bool, hash: string) -> ArtifactFlowRef {
+  return ArtifactFlowRef {
+    kind: kind,
+    path: path,
+    hidden: hidden,
+    hash: hash,
+  }
+}
+
+impl ArtifactFlowRef {
+  pub fn flowKind(self: ArtifactFlowRef) -> ArtifactFlowKind {
+    return self.kind
+  }
+
+  pub fn artifactPath(self: ArtifactFlowRef) -> string {
+    return self.path
+  }
+
+  pub fn isHidden(self: ArtifactFlowRef) -> bool {
+    return self.hidden
+  }
+
+  pub fn artifactHash(self: ArtifactFlowRef) -> string {
+    return self.hash
+  }
+}

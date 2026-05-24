@@ -1,0 +1,45 @@
+pub struct Frame {
+  opcode: usize,
+  payloadBytes: usize,
+}
+
+impl Frame {
+  pub fn init(opcode: usize, payloadBytes: usize) -> Frame {
+    return Frame {
+      opcode: opcode,
+      payloadBytes: payloadBytes,
+    }
+  }
+
+  pub fn text(payloadBytes: usize) -> Frame {
+    return Frame.init(1, payloadBytes)
+  }
+
+  pub fn binary(payloadBytes: usize) -> Frame {
+    return Frame.init(2, payloadBytes)
+  }
+
+  pub fn close() -> Frame {
+    return Frame.init(8, 0)
+  }
+
+  pub fn ping(payloadBytes: usize) -> Frame {
+    return Frame.init(9, payloadBytes)
+  }
+
+  pub fn pong(payloadBytes: usize) -> Frame {
+    return Frame.init(10, payloadBytes)
+  }
+
+  pub fn opcode(self: Frame) -> usize {
+    return self.opcode
+  }
+
+  pub fn payloadBytes(self: Frame) -> usize {
+    return self.payloadBytes
+  }
+
+  pub fn control(self: Frame) -> bool {
+    return self.opcode >= 8
+  }
+}

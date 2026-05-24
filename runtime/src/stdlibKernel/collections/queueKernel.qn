@@ -1,0 +1,42 @@
+pub struct QueueKernel {
+  ringBufferBacked: bool,
+  headTailDirect: bool,
+  moduloIndexLowered: bool,
+  pushUsesTailStore: bool,
+  popUsesHeadLoadAndHeadInc: bool,
+  peekUsesHeadLoad: bool,
+  growRepackLinearized: bool,
+  zeroCopyFromVec: bool,
+  iteratorRingCursorStable: bool,
+  callableLoopsInlineable: bool,
+}
+
+impl QueueKernel {
+  pub fn standard() -> QueueKernel {
+    return QueueKernel {
+      ringBufferBacked: true,
+      headTailDirect: true,
+      moduloIndexLowered: true,
+      pushUsesTailStore: true,
+      popUsesHeadLoadAndHeadInc: true,
+      peekUsesHeadLoad: true,
+      growRepackLinearized: true,
+      zeroCopyFromVec: true,
+      iteratorRingCursorStable: true,
+      callableLoopsInlineable: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: QueueKernel) -> bool {
+    return self.ringBufferBacked
+      && self.headTailDirect
+      && self.moduloIndexLowered
+      && self.pushUsesTailStore
+      && self.popUsesHeadLoadAndHeadInc
+      && self.peekUsesHeadLoad
+      && self.growRepackLinearized
+      && self.zeroCopyFromVec
+      && self.iteratorRingCursorStable
+      && self.callableLoopsInlineable
+  }
+}

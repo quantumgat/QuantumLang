@@ -1,0 +1,81 @@
+pub enum BreakContinueSyntaxKind {
+  Break
+  BreakValue
+  Continue
+  LabeledBreak
+  LabeledContinue
+}
+
+pub struct BreakContinueParseInput {
+  node: u64,
+  kind: BreakContinueSyntaxKind,
+  tokenStart: usize,
+  tokenEnd: usize,
+  labelToken: u64,
+  valueExpr: u64,
+  insideLoop: bool,
+}
+
+pub struct BreakContinueParseResult {
+  input: BreakContinueParseInput,
+  stmtNode: u64,
+  labelResolvedByParser: bool,
+  valueCaptured: bool,
+  recoveryPoint: bool,
+}
+
+pub fn breakContinueParseInput(
+  node: u64,
+  kind: BreakContinueSyntaxKind,
+  tokenStart: usize,
+  tokenEnd: usize,
+  labelToken: u64,
+  valueExpr: u64,
+  insideLoop: bool,
+) -> BreakContinueParseInput {
+  return BreakContinueParseInput {
+    node: node,
+    kind: kind,
+    tokenStart: tokenStart,
+    tokenEnd: tokenEnd,
+    labelToken: labelToken,
+    valueExpr: valueExpr,
+    insideLoop: insideLoop,
+  }
+}
+
+pub fn parseBreakContinue(input: BreakContinueParseInput) -> BreakContinueParseResult {
+  let hasSpan = input.tokenEnd > input.tokenStart
+  let isBreakValue = input.kind == BreakContinueSyntaxKind.BreakValue
+  let hasValue = input.valueExpr > 0
+  let hasLabel = input.labelToken > 0
+  let labelAllowed = input.kind == BreakContinueSyntaxKind.LabeledBreak
+    || input.kind == BreakContinueSyntaxKind.LabeledContinue
+
+  return BreakContinueParseResult {
+    input: input,
+    stmtNode: input.node,
+    labelResolvedByParser: labelAllowed && hasLabel,
+    valueCaptured: isBreakValue && hasValue,
+    recoveryPoint: !hasSpan || !input.insideLoop,
+  }
+}
+
+impl BreakContinueParseResult {
+  pub fn complete(self: BreakContinueParseResult) -> bool {
+    return self.stmtNode > 0
+      && self.input.tokenEnd > self.input.tokenStart
+      && self.input.insideLoop
+      && !self.recoveryPoint
+  }
+
+  pub fn needsValueCarrier(self: BreakContinueParseResult) -> bool {
+    return self.input.kind == BreakContinueSyntaxKind.BreakValue
+      && self.valueCaptured
+  }
+
+  pub fn labelledJump(self: BreakContinueParseResult) -> bool {
+    return self.input.kind == BreakContinueSyntaxKind.LabeledBreak
+      || self.input.kind == BreakContinueSyntaxKind.LabeledContinue
+  }
+}

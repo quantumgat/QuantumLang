@@ -1,0 +1,15 @@
+pub struct CapabilityFact {
+  symbol: u64,
+  capability: string,
+  granted: bool,
+}
+
+pub fn capabilityFact(symbol: u64, capability: string, granted: bool) -> CapabilityFact {
+  return CapabilityFact { symbol: symbol, capability: capability, granted: granted }
+}
+
+impl CapabilityFact {
+  pub fn isGranted(self: CapabilityFact) -> bool {
+    return self.granted
+  }
+}

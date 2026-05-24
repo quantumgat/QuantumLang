@@ -1,0 +1,35 @@
+pub enum PluginRootConflictKind {
+  None,
+  DuplicatePublicRoot,
+  StdRootWithoutPermission,
+  PrivateRootExported,
+}
+
+pub struct PluginRootConflict {
+  kind: PluginRootConflictKind,
+  rejected: bool,
+  diagnosticSourceMapped: bool,
+  existingOwnerVisible: bool,
+}
+
+impl PluginRootConflict {
+  pub fn none() -> PluginRootConflict {
+    return PluginRootConflict {
+      kind: PluginRootConflictKind.None,
+      rejected: false,
+      diagnosticSourceMapped: true,
+      existingOwnerVisible: true,
+    }
+  }
+
+  pub fn accepted(self: PluginRootConflict) -> bool {
+    return self.kind == PluginRootConflictKind.None
+      && !self.rejected
+      && self.diagnosticSourceMapped
+      && self.existingOwnerVisible
+  }
+
+  pub fn rejectsConflict(self: PluginRootConflict) -> bool {
+    return self.kind != PluginRootConflictKind.None && self.rejected
+  }
+}

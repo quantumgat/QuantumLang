@@ -1,0 +1,295 @@
+pub struct AppPlan {
+  bindAddress: HttpBindAddress,
+  port: usize,
+  states: AppStateGraph,
+  controllers: ControllerGraph,
+  apis: ApiGraph,
+  dependencies: AppDependencyGraph,
+  policies: MiddlewarePolicyGraph,
+  serverPolicy: ServerPolicy,
+  lifecycleHooks: LifecycleHooks,
+  lifecyclePlan: AppLifecyclePlan,
+  errorPolicy: HttpErrorPolicy,
+  responsePolicy: ResponsePolicy,
+  defaultMiddleware: HttpDefaultMiddlewarePolicy,
+  trustedProxyPolicy: TrustedProxyPolicy,
+}
+
+impl AppPlan {
+  pub fn init(
+    port: usize,
+    states: AppStateGraph,
+    controllers: ControllerGraph,
+    apis: ApiGraph,
+    dependencies: AppDependencyGraph,
+    policies: MiddlewarePolicyGraph,
+    serverPolicy: ServerPolicy,
+    lifecycleHooks: LifecycleHooks,
+    errorPolicy: HttpErrorPolicy,
+    responsePolicy: ResponsePolicy,
+    defaultMiddleware: HttpDefaultMiddlewarePolicy,
+    trustedProxyPolicy: TrustedProxyPolicy,
+  ) -> AppPlan {
+    return AppPlan.withBind(
+      HttpBindAddress.local(port),
+      states,
+      controllers,
+      apis,
+      dependencies,
+      policies,
+      serverPolicy,
+      lifecycleHooks,
+      errorPolicy,
+      responsePolicy,
+      defaultMiddleware,
+      trustedProxyPolicy
+    )
+  }
+
+  pub fn withBind(
+    bindAddress: HttpBindAddress,
+    states: AppStateGraph,
+    controllers: ControllerGraph,
+    apis: ApiGraph,
+    dependencies: AppDependencyGraph,
+    policies: MiddlewarePolicyGraph,
+    serverPolicy: ServerPolicy,
+    lifecycleHooks: LifecycleHooks,
+    errorPolicy: HttpErrorPolicy,
+    responsePolicy: ResponsePolicy,
+    defaultMiddleware: HttpDefaultMiddlewarePolicy,
+    trustedProxyPolicy: TrustedProxyPolicy,
+  ) -> AppPlan {
+    return AppPlan {
+      bindAddress: bindAddress,
+      port: bindAddress.port(),
+      states: states,
+      controllers: controllers,
+      apis: apis,
+      dependencies: dependencies,
+      policies: policies,
+      serverPolicy: serverPolicy,
+      lifecycleHooks: lifecycleHooks,
+      lifecyclePlan: AppLifecyclePlan.from(states, lifecycleHooks),
+      errorPolicy: errorPolicy,
+      responsePolicy: responsePolicy,
+      defaultMiddleware: defaultMiddleware,
+      trustedProxyPolicy: trustedProxyPolicy,
+    }
+  }
+
+  pub fn valid(self: AppPlan) -> bool {
+    return self.bindAddress.valid()
+      && self.hasPublicHttpSurface()
+      && self.dependenciesComplete()
+      && self.apiGraphComplete()
+      && self.errorPolicyComplete()
+      && self.responsePolicyComplete()
+      && self.defaultMiddlewareComplete()
+      && self.trustedProxyPolicyComplete()
+      && self.serverPolicy.transportModeValid()
+      && self.serverPolicy.workersCount() > 0
+      && self.lifecyclePlanComplete()
+  }
+
+  pub fn hasPublicHttpSurface(self: AppPlan) -> bool {
+    return self.controllers.controllerCount() > 0 || self.apis.hasApis()
+  }
+
+  pub fn bindAddress(self: AppPlan) -> HttpBindAddress {
+    return self.bindAddress
+  }
+
+  pub fn bindText(self: AppPlan) -> string {
+    return self.bindAddress.text()
+  }
+
+  pub fn bindHost(self: AppPlan) -> string {
+    return self.bindAddress.host()
+  }
+
+  pub fn bindPort(self: AppPlan) -> usize {
+    return self.bindAddress.port()
+  }
+
+  pub fn loopbackBind(self: AppPlan) -> bool {
+    return self.bindAddress.loopback()
+  }
+
+  pub fn publicBind(self: AppPlan) -> bool {
+    return self.bindAddress.publicBind()
+  }
+
+  pub fn controllerCount(self: AppPlan) -> usize {
+    return self.controllers.controllerCount()
+  }
+
+  pub fn apiCount(self: AppPlan) -> usize {
+    return self.apis.apiCount()
+  }
+
+  pub fn apiControllerCount(self: AppPlan) -> usize {
+    return self.apis.controllerCount()
+  }
+
+  pub fn nestedApiCount(self: AppPlan) -> usize {
+    return self.apis.nestedApiCount()
+  }
+
+  pub fn apiGraphComplete(self: AppPlan) -> bool {
+    return self.apis.complete()
+  }
+
+  pub fn policyCount(self: AppPlan) -> usize {
+    return self.policies.policyCount()
+  }
+
+  pub fn contextPolicyCount(self: AppPlan) -> usize {
+    return self.policies.appContextPolicies()
+  }
+
+  pub fn globalPolicyCount(self: AppPlan) -> usize {
+    return self.policies.globalPolicies()
+  }
+
+  pub fn defaultContextChainReady(self: AppPlan) -> bool {
+    return self.policies.defaultContextChainReady()
+  }
+
+  pub fn errorPolicyComplete(self: AppPlan) -> bool {
+    return self.errorPolicy.complete()
+  }
+
+  pub fn customErrorMapper(self: AppPlan) -> bool {
+    return self.errorPolicy.customEnabled()
+  }
+
+  pub fn errorMapperType(self: AppPlan) -> string {
+    return self.errorPolicy.mapperType()
+  }
+
+  pub fn responsePolicyComplete(self: AppPlan) -> bool {
+    return self.responsePolicy.complete()
+  }
+
+  pub fn responsePolicyName(self: AppPlan) -> string {
+    return self.responsePolicy.name()
+  }
+
+  pub fn wrapsTypedResponses(self: AppPlan) -> bool {
+    return self.responsePolicy.wrapsTypedReturns()
+  }
+
+  pub fn rawHttpResponseBypassesPolicy(self: AppPlan) -> bool {
+    return self.responsePolicy.rawBypasses()
+  }
+
+  pub fn defaultMiddlewareComplete(self: AppPlan) -> bool {
+    return self.defaultMiddleware.complete()
+  }
+
+  pub fn defaultMiddlewareMagic(self: AppPlan) -> bool {
+    return self.defaultMiddleware.autoMagic()
+  }
+
+  pub fn defaultMiddlewarePreset(self: AppPlan) -> string {
+    return self.defaultMiddleware.presetName()
+  }
+
+  pub fn trustedProxyPolicyComplete(self: AppPlan) -> bool {
+    return self.trustedProxyPolicy.complete()
+  }
+
+  pub fn trustedProxyPreset(self: AppPlan) -> string {
+    return self.trustedProxyPolicy.vendorName()
+  }
+
+  pub fn parsesForwardedHeaders(self: AppPlan) -> bool {
+    return self.trustedProxyPolicy.parsesProxyHeaders()
+  }
+
+  pub fn rejectsProxySpoofing(self: AppPlan) -> bool {
+    return self.trustedProxyPolicy.rejectsSpoofedHeaders()
+  }
+
+  pub fn appStateGraph(self: AppPlan) -> AppStateGraph {
+    return self.states
+  }
+
+  pub fn dependencyGraph(self: AppPlan) -> AppDependencyGraph {
+    return self.dependencies
+  }
+
+  pub fn dependenciesComplete(self: AppPlan) -> bool {
+    return self.dependencies.complete()
+  }
+
+  pub fn dependencyEdgeCount(self: AppPlan) -> usize {
+    return self.dependencies.edgeCount()
+  }
+
+  pub fn lifecycle(self: AppPlan) -> AppLifecyclePlan {
+    return self.lifecyclePlan
+  }
+
+  pub fn transportModePlan(self: AppPlan) -> HttpTransportModePlan {
+    return self.serverPolicy.transportModePlan()
+  }
+
+  pub fn transportModeName(self: AppPlan) -> string {
+    return self.transportModePlan().modeName()
+  }
+
+  pub fn noThreadPerConnection(self: AppPlan) -> bool {
+    return self.transportModePlan().noThreadPerConnection()
+  }
+
+  pub fn productionTransportRecommended(self: AppPlan) -> bool {
+    return self.transportModePlan().productionRecommended()
+  }
+
+  pub fn asyncTransportPlan(self: AppPlan) -> HttpAsyncTransportPlan {
+    return HttpAsyncTransportPlan.fromPolicy(self.serverPolicy)
+  }
+
+  pub fn transportPlan(self: AppPlan) -> HttpTransportPlan {
+    return HttpTransportPlan.init(
+      self.bindText(),
+      self.serverPolicy.workersCount(),
+      self.serverPolicy.transportMode(),
+      self.serverPolicy.blockingPoolWorkers(),
+      true
+    )
+  }
+
+  pub fn schedulerWorkerCount(self: AppPlan) -> usize {
+    return self.asyncTransportPlan().schedulerWorkerCount()
+  }
+
+  pub fn perCoreReactorShards(self: AppPlan) -> usize {
+    return self.schedulerWorkerCount()
+  }
+
+  pub fn asyncLifecyclePlan(self: AppPlan) -> AppAsyncLifecyclePlan {
+    return AppAsyncLifecyclePlan.from(self.lifecyclePlan)
+  }
+
+  pub fn asyncLifecycleReady(self: AppPlan) -> bool {
+    return self.transportModePlan().accepted()
+      && self.asyncLifecyclePlan().complete()
+  }
+
+  pub fn lifecyclePlanComplete(self: AppPlan) -> bool {
+    return self.lifecyclePlan.complete()
+  }
+
+  pub fn lifecycleStepCount(self: AppPlan) -> usize {
+    return self.lifecyclePlan.startupStepCount
+      + self.lifecyclePlan.shutdownStepCount
+      + self.lifecyclePlan.dropStepCount
+  }
+
+  pub fn hasLifecycleRuntimeWork(self: AppPlan) -> bool {
+    return self.lifecyclePlan.hasRuntimeWork()
+  }
+}

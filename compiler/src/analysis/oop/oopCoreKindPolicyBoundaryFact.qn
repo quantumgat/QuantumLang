@@ -1,0 +1,53 @@
+pub enum OopPolicyCapability {
+  Lifecycle
+  State
+  AppState
+  ScopedState
+  Resource
+  Callable
+  Contract
+  Profile
+  Persistent
+  Reactive
+  PluginBoundary
+  Delegation
+  CodecDerive
+  CapabilityEffect
+  DataRegion
+  BuilderTypestate
+  ActorService
+}
+
+pub enum OopPolicyOwner {
+  CompilerFact
+  RuntimeGenericEngine
+  PackageFact
+  PluginBoundary
+  DeriveLowering
+}
+
+pub struct OopCoreKindPolicyBoundaryFact {
+  coreKindCount: usize,
+  policyCapabilityCount: usize,
+  removedSeparateClassKindCount: usize,
+  classKindsIndexOnly: bool,
+  policyFactsStayOutsideClassKinds: bool,
+  compilerDiagnosticsRequired: bool,
+  runtimeGenericEngineOnly: bool,
+  packagePluginBoundariesExplicit: bool,
+  hotPathProofRequired: bool,
+}
+
+impl OopCoreKindPolicyBoundaryFact {
+  pub fn complete(self: OopCoreKindPolicyBoundaryFact) -> bool {
+    return self.coreKindCount == 14
+      && self.policyCapabilityCount >= 17
+      && self.removedSeparateClassKindCount == 16
+      && self.classKindsIndexOnly
+      && self.policyFactsStayOutsideClassKinds
+      && self.compilerDiagnosticsRequired
+      && self.runtimeGenericEngineOnly
+      && self.packagePluginBoundariesExplicit
+      && self.hotPathProofRequired
+  }
+}

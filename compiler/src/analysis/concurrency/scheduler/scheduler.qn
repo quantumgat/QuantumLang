@@ -1,0 +1,52 @@
+pub enum SchedulerDiagnosticKind {
+  None
+  QueueFull
+  WakeStorm
+  Starvation
+  BlockingBoundaryViolation
+  StaleHandle
+  PollBudgetOverrun
+  PriorityPolicyInvalid
+}
+
+pub struct SchedulerRuntimeSafety {
+  nodeId: u64,
+  queueBounded: bool,
+  wakeCoalesced: bool,
+  blockingIsolated: bool,
+  incidentReady: bool,
+  diagnostic: SchedulerDiagnosticKind,
+}
+
+impl SchedulerRuntimeSafety {
+  pub fn init(
+    nodeId: u64,
+    queueBounded: bool,
+    wakeCoalesced: bool,
+    blockingIsolated: bool,
+    incidentReady: bool,
+    diagnostic: SchedulerDiagnosticKind,
+  ) -> SchedulerRuntimeSafety {
+    return SchedulerRuntimeSafety {
+      nodeId: nodeId,
+      queueBounded: queueBounded,
+      wakeCoalesced: wakeCoalesced,
+      blockingIsolated: blockingIsolated,
+      incidentReady: incidentReady,
+      diagnostic: diagnostic,
+    }
+  }
+
+  pub fn accepted(self: SchedulerRuntimeSafety) -> bool {
+    return self.nodeId > 0
+      && self.queueBounded
+      && self.wakeCoalesced
+      && self.blockingIsolated
+      && self.incidentReady
+      && self.diagnostic == SchedulerDiagnosticKind.None
+  }
+
+  pub fn rejectsUnsafeScheduler(self: SchedulerRuntimeSafety) -> bool {
+    return self.diagnostic != SchedulerDiagnosticKind.None
+  }
+}

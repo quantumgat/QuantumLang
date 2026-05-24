@@ -1,0 +1,6 @@
+pub mod random
+
+pub use random.Rng
+pub use random.seeded
+pub use random.nextU64
+pub use random.fill

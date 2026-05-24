@@ -1,0 +1,47 @@
+pub struct StdlibLogLowering {
+  disabledLevelErased: bool,
+  staticLevelFiltering: bool,
+  messageTemplateChecked: bool,
+  sinkNeutralRecord: bool,
+  fieldsLowered: bool,
+  typedFieldsChecked: bool,
+  stableFieldKeysChecked: bool,
+  compactFieldEncoding: bool,
+  noAllocationFieldCommonCase: bool,
+  spanContextLowered: bool,
+  taskActorContextLowered: bool,
+  asyncContextPropagated: bool,
+  cancellationMarkersLowered: bool,
+  causalChainsPreserved: bool,
+  sinkSelectionLowered: bool,
+  backpressurePolicyChecked: bool,
+  runtimeIncidentSinkChecked: bool,
+  jsonSinkChecked: bool,
+  redactionChecked: bool,
+  allocationFreeWhenDisabled: bool,
+}
+
+impl StdlibLogLowering {
+  pub fn hotPath(self: StdlibLogLowering) -> bool {
+    return self.disabledLevelErased
+      && self.staticLevelFiltering
+      && self.messageTemplateChecked
+      && self.sinkNeutralRecord
+      && self.fieldsLowered
+      && self.typedFieldsChecked
+      && self.stableFieldKeysChecked
+      && self.compactFieldEncoding
+      && self.noAllocationFieldCommonCase
+      && self.spanContextLowered
+      && self.taskActorContextLowered
+      && self.asyncContextPropagated
+      && self.cancellationMarkersLowered
+      && self.causalChainsPreserved
+      && self.sinkSelectionLowered
+      && self.backpressurePolicyChecked
+      && self.runtimeIncidentSinkChecked
+      && self.jsonSinkChecked
+      && self.redactionChecked
+      && self.allocationFreeWhenDisabled
+  }
+}

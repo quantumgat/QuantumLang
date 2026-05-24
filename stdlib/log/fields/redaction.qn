@@ -1,0 +1,6 @@
+pub enum Redaction {
+  Public,
+  Secret,
+  Path,
+  Token,
+}

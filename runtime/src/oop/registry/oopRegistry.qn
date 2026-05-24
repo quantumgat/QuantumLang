@@ -1,0 +1,15 @@
+pub struct OopRegistry {
+  classCount: usize,
+  interfaceCount: usize,
+  ownsCompilerAnalysis: bool,
+}
+
+pub fn oopRegistry(classCount: usize, interfaceCount: usize) -> OopRegistry {
+  return OopRegistry { classCount: classCount, interfaceCount: interfaceCount, ownsCompilerAnalysis: false }
+}
+
+impl OopRegistry {
+  pub fn isBoundaryOnly(self: OopRegistry) -> bool {
+    return self.ownsCompilerAnalysis == false
+  }
+}

@@ -1,0 +1,51 @@
+pub enum MirBreakContinueOpKind {
+  BreakJump
+  BreakValueStore
+  ContinueJump
+  CleanupBeforeJump
+}
+
+pub struct MirBreakContinueOp {
+  instruction: u64,
+  kind: MirBreakContinueOpKind,
+  sourceBlock: u64,
+  targetBlock: u64,
+  valueSlot: u64,
+  directJump: bool,
+  safeFailureReady: bool,
+}
+
+pub fn mirBreakContinueOp(
+  instruction: u64,
+  kind: MirBreakContinueOpKind,
+  sourceBlock: u64,
+  targetBlock: u64,
+  valueSlot: u64,
+  directJump: bool,
+  safeFailureReady: bool,
+) -> MirBreakContinueOp {
+  return MirBreakContinueOp {
+    instruction: instruction,
+    kind: kind,
+    sourceBlock: sourceBlock,
+    targetBlock: targetBlock,
+    valueSlot: valueSlot,
+    directJump: directJump,
+    safeFailureReady: safeFailureReady,
+  }
+}
+
+impl MirBreakContinueOp {
+  pub fn lowerable(self: MirBreakContinueOp) -> bool {
+    return self.instruction > 0
+      && self.sourceBlock > 0
+      && self.targetBlock > 0
+      && self.directJump
+      && self.safeFailureReady
+  }
+
+  pub fn valueBreak(self: MirBreakContinueOp) -> bool {
+    return self.kind == MirBreakContinueOpKind.BreakValueStore
+      && self.valueSlot > 0
+  }
+}

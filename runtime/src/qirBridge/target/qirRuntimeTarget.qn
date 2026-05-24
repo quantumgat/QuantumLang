@@ -1,0 +1,15 @@
+pub struct QirRuntimeTargetContract {
+  target: string,
+  providerAbi: string,
+  qubitHandleStable: bool,
+  resultHandleStable: bool,
+}
+
+impl QirRuntimeTargetContract {
+  pub fn accepted(self: QirRuntimeTargetContract) -> bool {
+    return self.target != ""
+      && self.providerAbi != ""
+      && self.qubitHandleStable
+      && self.resultHandleStable
+  }
+}

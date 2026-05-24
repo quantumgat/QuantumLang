@@ -1,0 +1,40 @@
+pub enum HttpMethod {
+  Get,
+  Post,
+  Put,
+  Patch,
+  Delete,
+  Head,
+  Options,
+  Trace,
+  Connect,
+}
+
+impl HttpMethod {
+  pub fn text(self: HttpMethod) -> string {
+    match self {
+      HttpMethod.Get => return "GET"
+      HttpMethod.Post => return "POST"
+      HttpMethod.Put => return "PUT"
+      HttpMethod.Patch => return "PATCH"
+      HttpMethod.Delete => return "DELETE"
+      HttpMethod.Head => return "HEAD"
+      HttpMethod.Options => return "OPTIONS"
+      HttpMethod.Trace => return "TRACE"
+      HttpMethod.Connect => return "CONNECT"
+    }
+  }
+
+  pub fn safe(self: HttpMethod) -> bool {
+    return self == HttpMethod.Get
+      || self == HttpMethod.Head
+      || self == HttpMethod.Options
+      || self == HttpMethod.Trace
+  }
+
+  pub fn idempotent(self: HttpMethod) -> bool {
+    return self.safe()
+      || self == HttpMethod.Put
+      || self == HttpMethod.Delete
+  }
+}

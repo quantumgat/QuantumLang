@@ -1,0 +1,34 @@
+pub struct QRegShapeFact {
+  node: u64,
+  elementTypeId: u64,
+  length: usize,
+  compileTimeKnown: bool,
+}
+
+pub fn qregShapeFact(
+  node: u64,
+  elementTypeId: u64,
+  length: usize,
+  compileTimeKnown: bool
+) -> QRegShapeFact {
+  return QRegShapeFact {
+    node: node,
+    elementTypeId: elementTypeId,
+    length: length,
+    compileTimeKnown: compileTimeKnown,
+  }
+}
+
+impl QRegShapeFact {
+  pub fn nodeId(self: QRegShapeFact) -> u64 {
+    return self.node
+  }
+
+  pub fn size(self: QRegShapeFact) -> usize {
+    return self.length
+  }
+
+  pub fn isStaticShape(self: QRegShapeFact) -> bool {
+    return self.compileTimeKnown
+  }
+}

@@ -1,0 +1,29 @@
+pub enum AstTryResultFlowKind {
+  QuestionResult
+  QuestionOption
+  TryBlock
+  TryQuestion
+  AwaitQuestion
+  ErrorConversion
+  ControlFlowArm
+  ClosureBody
+  AsyncLoopBody
+}
+
+pub struct AstTryResultFlow {
+  node: AstNode,
+  kind: AstTryResultFlowKind,
+  expressionId: u64,
+  successTypeId: u64,
+  errorTypeId: u64,
+  returnTypeId: u64,
+  sourceRangeReady: bool,
+}
+
+impl AstTryResultFlow {
+  pub fn complete(self: AstTryResultFlow) -> bool {
+    return self.node.nodeId() > 0
+      && self.expressionId > 0
+      && self.sourceRangeReady
+  }
+}

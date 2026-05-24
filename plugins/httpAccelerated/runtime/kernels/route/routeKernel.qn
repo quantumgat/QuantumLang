@@ -1,0 +1,116 @@
+pub struct HttpRouteKernel {
+  symbol: string,
+  staticTrie: bool,
+  branchCompressed: bool,
+  sourceMapped: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+}
+
+pub struct HttpRouteEntry {
+  method: string,
+  path: string,
+  handlerId: u64,
+}
+
+impl HttpRouteEntry {
+  pub fn exact(method: string, path: string, handlerId: u64) -> HttpRouteEntry {
+    return HttpRouteEntry {
+      method: method,
+      path: path,
+      handlerId: handlerId,
+    }
+  }
+
+  pub fn matches(self: HttpRouteEntry, method: string, path: string) -> bool {
+    return self.method == method && self.path == path && self.handlerId > 0
+  }
+}
+
+pub struct HttpRouteRuntimeResult {
+  handlerId: u64,
+  matched: bool,
+  failure: Option<HttpAcceleratedFailure>,
+  probes: usize,
+}
+
+impl HttpRouteRuntimeResult {
+  pub fn ok(handlerId: u64, probes: usize) -> HttpRouteRuntimeResult {
+    return HttpRouteRuntimeResult {
+      handlerId: handlerId,
+      matched: true,
+      failure: None,
+      probes: probes,
+    }
+  }
+
+  pub fn miss(probes: usize) -> HttpRouteRuntimeResult {
+    return HttpRouteRuntimeResult {
+      handlerId: 0,
+      matched: false,
+      failure: Some(HttpAcceleratedFailure.routeMiss("route not found")),
+      probes: probes,
+    }
+  }
+
+  pub fn safe(self: HttpRouteRuntimeResult) -> bool {
+    if self.matched {
+      return self.handlerId > 0
+    }
+    match self.failure {
+      Some(failure) => {
+        return failure.safe()
+      }
+      None => {
+        return false
+      }
+    }
+  }
+}
+
+impl HttpRouteKernel {
+  pub fn trie() -> HttpRouteKernel {
+    return HttpRouteKernel {
+      symbol: "http.route.trie",
+      staticTrie: true,
+      branchCompressed: true,
+      sourceMapped: true,
+      typedFailure: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: HttpRouteKernel) -> bool {
+    return self.symbol == "http.route.trie"
+      && self.staticTrie
+      && self.branchCompressed
+      && self.sourceMapped
+      && self.typedFailure
+      && self.noCoredump
+  }
+
+  pub fn lookup(
+    self: HttpRouteKernel,
+    method: string,
+    path: string,
+    routes: Vec<HttpRouteEntry>,
+  ) -> HttpRouteRuntimeResult {
+    if !self.accepted() {
+      return HttpRouteRuntimeResult {
+        handlerId: 0,
+        matched: false,
+        failure: Some(HttpAcceleratedFailure.kernelUnavailable()),
+        probes: 0,
+      }
+    }
+    let mut index: usize = 0
+    while index < routes.len {
+      let route = routes[index]
+      if route.matches(method, path) {
+        return HttpRouteRuntimeResult.ok(route.handlerId, index + 1)
+      }
+      index = index + 1
+    }
+    return HttpRouteRuntimeResult.miss(routes.len)
+  }
+}

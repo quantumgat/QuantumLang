@@ -1,0 +1,39 @@
+pub enum DiagnosticCategory {
+  Syntax
+  Type
+  Ownership
+  Memory
+  Unsafe
+  Atomic
+  Simd
+  Layout
+  Ffi
+  Format
+  Log
+  Runtime
+  Backend
+  Target
+  Internal
+}
+
+impl DiagnosticCategory {
+  pub fn stableName(self: DiagnosticCategory) -> string {
+    match self {
+      DiagnosticCategory.Syntax => { return "syntax" }
+      DiagnosticCategory.Type => { return "type" }
+      DiagnosticCategory.Ownership => { return "ownership" }
+      DiagnosticCategory.Memory => { return "memory" }
+      DiagnosticCategory.Unsafe => { return "unsafe" }
+      DiagnosticCategory.Atomic => { return "atomic" }
+      DiagnosticCategory.Simd => { return "simd" }
+      DiagnosticCategory.Layout => { return "layout" }
+      DiagnosticCategory.Ffi => { return "ffi" }
+      DiagnosticCategory.Format => { return "format" }
+      DiagnosticCategory.Log => { return "log" }
+      DiagnosticCategory.Runtime => { return "runtime" }
+      DiagnosticCategory.Backend => { return "backend" }
+      DiagnosticCategory.Target => { return "target" }
+      DiagnosticCategory.Internal => { return "internal" }
+    }
+  }
+}

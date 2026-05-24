@@ -1,0 +1,68 @@
+pub enum GenericExtensionDispatch {
+  StaticSpecialized
+  DynamicRejected
+}
+
+pub struct GenericExtensionBoundFact {
+  extensionName: string,
+  typeParameter: string,
+  traitBound: string,
+  receiverShape: string,
+  dispatch: GenericExtensionDispatch,
+  monomorphized: bool,
+  methodTableRequired: bool,
+  allocationRequired: bool,
+  diagnosticReady: bool,
+}
+
+pub fn genericExtensionBoundFact(
+  extensionName: string,
+  typeParameter: string,
+  traitBound: string,
+  receiverShape: string,
+  dispatch: GenericExtensionDispatch,
+  monomorphized: bool,
+  methodTableRequired: bool,
+  allocationRequired: bool,
+  diagnosticReady: bool,
+) -> GenericExtensionBoundFact {
+  return GenericExtensionBoundFact {
+    extensionName: extensionName,
+    typeParameter: typeParameter,
+    traitBound: traitBound,
+    receiverShape: receiverShape,
+    dispatch: dispatch,
+    monomorphized: monomorphized,
+    methodTableRequired: methodTableRequired,
+    allocationRequired: allocationRequired,
+    diagnosticReady: diagnosticReady,
+  }
+}
+
+pub fn decimalNumberGenericExtensionFact() -> GenericExtensionBoundFact {
+  return genericExtensionBoundFact(
+    "extend<T: DecimalNumber<T>> T",
+    "T",
+    "DecimalNumber<T>",
+    "decimal|dec64|dec128|dec256",
+    GenericExtensionDispatch.StaticSpecialized,
+    true,
+    false,
+    false,
+    true,
+  )
+}
+
+impl GenericExtensionBoundFact {
+  pub fn accepted(self: GenericExtensionBoundFact) -> bool {
+    return self.extensionName != ""
+      && self.typeParameter != ""
+      && self.traitBound != ""
+      && self.receiverShape != ""
+      && self.dispatch == GenericExtensionDispatch.StaticSpecialized
+      && self.monomorphized
+      && !self.methodTableRequired
+      && !self.allocationRequired
+      && self.diagnosticReady
+  }
+}

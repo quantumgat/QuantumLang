@@ -1,0 +1,30 @@
+pub struct JsonConformanceFixtureProof {
+  dynamicParseFixtures: bool,
+  dynamicEncodeFixtures: bool,
+  typedCodecFixtures: bool,
+  fieldPolicyFixtures: bool,
+  roundTripFixtures: bool,
+  pathDiagnosticFixtures: bool,
+}
+
+impl JsonConformanceFixtureProof {
+  pub fn required() -> JsonConformanceFixtureProof {
+    return JsonConformanceFixtureProof {
+      dynamicParseFixtures: true,
+      dynamicEncodeFixtures: true,
+      typedCodecFixtures: true,
+      fieldPolicyFixtures: true,
+      roundTripFixtures: true,
+      pathDiagnosticFixtures: true,
+    }
+  }
+
+  pub fn accepted(self: JsonConformanceFixtureProof) -> bool {
+    return self.dynamicParseFixtures
+      && self.dynamicEncodeFixtures
+      && self.typedCodecFixtures
+      && self.fieldPolicyFixtures
+      && self.roundTripFixtures
+      && self.pathDiagnosticFixtures
+  }
+}

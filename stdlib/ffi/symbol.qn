@@ -1,0 +1,21 @@
+pub struct FfiSymbol {
+  name: string,
+  resolved: bool,
+}
+
+impl FfiSymbol {
+  pub fn init(name: string) -> FfiSymbol {
+    return FfiSymbol {
+      name: name,
+      resolved: name != "",
+    }
+  }
+
+  pub fn name(self: FfiSymbol) -> string {
+    return self.name
+  }
+
+  pub fn accepted(self: FfiSymbol) -> bool {
+    return self.name != "" && self.resolved
+  }
+}

@@ -1,0 +1,23 @@
+pub struct Crc32 {
+  value: u32,
+}
+
+impl Crc32 {
+  pub fn init(value: u32) -> Crc32 {
+    return Crc32 { value: value }
+  }
+
+  pub fn verify(self: Crc32, view: BinaryView) -> Result<Unit, BinaryError> {
+    let actual = crc32(view)
+    if actual.value != self.value {
+      return Err(BinaryError.init(BinaryErrorKind.Checksum, 0, "crc32 mismatch"))
+    }
+    return Ok(())
+  }
+}
+
+pub fn crc32(view: BinaryView) -> Crc32 {
+  return binaryCrc32(view)
+}
+
+fn binaryCrc32(view: BinaryView) -> Crc32

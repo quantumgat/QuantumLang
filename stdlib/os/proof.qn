@@ -1,0 +1,30 @@
+pub struct OsRuntimeProof {
+  targetChecked: bool,
+  capabilityChecked: bool,
+  handleGenerationChecked: bool,
+  platformDiagnosticMapped: bool,
+  noRawSyscallSurface: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl OsRuntimeProof {
+  pub fn safe() -> OsRuntimeProof {
+    return OsRuntimeProof {
+      targetChecked: true,
+      capabilityChecked: true,
+      handleGenerationChecked: true,
+      platformDiagnosticMapped: true,
+      noRawSyscallSurface: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: OsRuntimeProof) -> bool {
+    return self.targetChecked
+      && self.capabilityChecked
+      && self.handleGenerationChecked
+      && self.platformDiagnosticMapped
+      && self.noRawSyscallSurface
+      && self.noCoredumpDiagnostic
+  }
+}

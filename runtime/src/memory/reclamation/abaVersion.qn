@@ -1,0 +1,19 @@
+pub struct AbaVersion {
+  version: u64,
+  tagBits: usize,
+  wrapped: bool,
+}
+
+impl AbaVersion {
+  pub fn init(version: u64, tagBits: usize, wrapped: bool) -> AbaVersion {
+    return AbaVersion {
+      version: version,
+      tagBits: tagBits,
+      wrapped: wrapped,
+    }
+  }
+
+  pub fn accepted(self: AbaVersion) -> bool {
+    return self.tagBits > 0 && self.wrapped == false
+  }
+}

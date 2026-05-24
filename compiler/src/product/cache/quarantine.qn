@@ -1,0 +1,13 @@
+pub struct CacheQuarantine {
+  enabled: bool,
+  reasonRequired: bool,
+  preservesEvidence: bool,
+}
+
+pub fn cacheQuarantine() -> CacheQuarantine {
+  return CacheQuarantine {
+    enabled: true,
+    reasonRequired: true,
+    preservesEvidence: true,
+  }
+}

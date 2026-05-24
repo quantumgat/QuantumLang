@@ -1,0 +1,40 @@
+pub struct ParallelLoopHighLevelE2eProof {
+  parserAcceptsMemberKeyword: bool,
+  pipeBodyParsed: bool,
+  stopLowersToValueBreak: bool,
+  nativeMarkerEmitted: bool,
+  executableFixture: string,
+  exitCode: i64,
+  noGeneratedFallback: bool,
+}
+
+pub fn parallelLoopHighLevelE2eProof(
+  parserAcceptsMemberKeyword: bool,
+  pipeBodyParsed: bool,
+  stopLowersToValueBreak: bool,
+  nativeMarkerEmitted: bool,
+  exitCode: i64,
+) -> ParallelLoopHighLevelE2eProof {
+  return ParallelLoopHighLevelE2eProof {
+    parserAcceptsMemberKeyword: parserAcceptsMemberKeyword,
+    pipeBodyParsed: pipeBodyParsed,
+    stopLowersToValueBreak: stopLowersToValueBreak,
+    nativeMarkerEmitted: nativeMarkerEmitted,
+    executableFixture: "parallel_loop_highlevel_e2e_ok.qn",
+    exitCode: exitCode,
+    noGeneratedFallback: true,
+  }
+}
+
+impl ParallelLoopHighLevelE2eProof {
+  pub fn accepted(self: ParallelLoopHighLevelE2eProof) -> bool {
+    return self.parserAcceptsMemberKeyword
+      && self.pipeBodyParsed
+      && self.stopLowersToValueBreak
+      && self.nativeMarkerEmitted
+      && self.executableFixture == "parallel_loop_highlevel_e2e_ok.qn"
+      && self.exitCode == 7
+      && self.noGeneratedFallback
+  }
+}
+

@@ -1,0 +1,24 @@
+pub struct RuntimeIncidentLogSink {
+  incidentBacked: bool,
+  boundedQueue: bool,
+  redactsBeforeWrite: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeIncidentLogSink {
+  pub fn runtime() -> RuntimeIncidentLogSink {
+    return RuntimeIncidentLogSink {
+      incidentBacked: true,
+      boundedQueue: true,
+      redactsBeforeWrite: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeIncidentLogSink) -> bool {
+    return self.incidentBacked
+      && self.boundedQueue
+      && self.redactsBeforeWrite
+      && self.noCoredump
+  }
+}

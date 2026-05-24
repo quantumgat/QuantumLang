@@ -1,0 +1,11 @@
+pub struct StdlibImportPath {
+  canonicalPath: string,
+  publicPath: bool,
+  deepPathInternal: bool,
+}
+
+impl StdlibImportPath {
+  pub fn accepted(self: StdlibImportPath) -> bool {
+    return self.canonicalPath != "" && self.publicPath && self.deepPathInternal
+  }
+}

@@ -1,0 +1,26 @@
+pub enum ClassDispatchMode {
+  FinalDirect
+  SealedTable
+  OpenVtable
+  CachedDynamic
+  FullDynamic
+}
+
+pub struct ClassDispatchPlan {
+  mode: ClassDispatchMode,
+  hotPath: bool,
+}
+
+pub fn classDispatchPlan(mode: ClassDispatchMode, hotPath: bool) -> ClassDispatchPlan {
+  return ClassDispatchPlan { mode: mode, hotPath: hotPath }
+}
+
+impl ClassDispatchPlan {
+  pub fn dispatchMode(self: ClassDispatchPlan) -> ClassDispatchMode {
+    return self.mode
+  }
+
+  pub fn isHotPathSafe(self: ClassDispatchPlan) -> bool {
+    return !self.hotPath || !(self.mode == ClassDispatchMode.FullDynamic)
+  }
+}

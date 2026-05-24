@@ -1,0 +1,41 @@
+pub enum AtomicOperationKind {
+  Load,
+  Store,
+  ReadModifyWrite,
+  CompareExchange,
+  Wait,
+  Wake,
+  Fence,
+}
+
+pub struct MemoryOrderFact {
+  node: u64,
+  operation: AtomicOperationKind,
+  ordering: AtomicOrdering,
+}
+
+impl MemoryOrderFact {
+  pub fn init(node: u64, operation: AtomicOperationKind, ordering: AtomicOrdering) -> MemoryOrderFact {
+    return MemoryOrderFact {
+      node: node,
+      operation: operation,
+      ordering: ordering,
+    }
+  }
+
+  pub fn valid(self: MemoryOrderFact) -> bool {
+    if self.operation == AtomicOperationKind.Load {
+      return self.ordering != AtomicOrdering.Release && self.ordering != AtomicOrdering.AcqRel
+    }
+    if self.operation == AtomicOperationKind.Store {
+      return self.ordering != AtomicOrdering.Acquire && self.ordering != AtomicOrdering.AcqRel
+    }
+    if self.operation == AtomicOperationKind.Wait {
+      return self.ordering != AtomicOrdering.Release && self.ordering != AtomicOrdering.AcqRel
+    }
+    if self.operation == AtomicOperationKind.Fence {
+      return self.ordering != AtomicOrdering.Relaxed
+    }
+    return true
+  }
+}

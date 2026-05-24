@@ -1,0 +1,33 @@
+pub struct JsonScannerLowering {
+  simdTargetGated: bool,
+  scalarPathEmitted: bool,
+  avx2PathGated: bool,
+  sse42PathGated: bool,
+  neonPathGated: bool,
+  scalarFallback: bool,
+  structuralTapeEmission: bool,
+  quoteMaskEmission: bool,
+  escapeMaskEmission: bool,
+  utf8ValidationEmission: bool,
+  stringValidationPreserved: bool,
+  requiredSimdFailureBeforeArtifact: bool,
+  noGeneratedCppFallback: bool,
+}
+
+impl JsonScannerLowering {
+  pub fn accepted(self: JsonScannerLowering) -> bool {
+    return self.simdTargetGated
+      && self.scalarPathEmitted
+      && self.avx2PathGated
+      && self.sse42PathGated
+      && self.neonPathGated
+      && self.scalarFallback
+      && self.structuralTapeEmission
+      && self.quoteMaskEmission
+      && self.escapeMaskEmission
+      && self.utf8ValidationEmission
+      && self.stringValidationPreserved
+      && self.requiredSimdFailureBeforeArtifact
+      && self.noGeneratedCppFallback
+  }
+}

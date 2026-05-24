@@ -1,0 +1,48 @@
+pub enum DispatchCorrelationSource {
+  AnalysisTier
+  HandoffFact
+  VtableSlotLowering
+  InterfaceEntryLowering
+  DispatchTableProofRow
+}
+
+pub struct DispatchCallCorrelation {
+  callId: u64,
+  sourceCount: usize,
+  methodId: u64,
+  tableSymbolId: u64,
+  tierMatched: bool,
+  loweringMatched: bool,
+  proofRowMatched: bool,
+}
+
+pub fn dispatchCallCorrelation(
+  callId: u64,
+  sourceCount: usize,
+  methodId: u64,
+  tableSymbolId: u64,
+  tierMatched: bool,
+  loweringMatched: bool,
+  proofRowMatched: bool
+) -> DispatchCallCorrelation {
+  return DispatchCallCorrelation {
+    callId: callId,
+    sourceCount: sourceCount,
+    methodId: methodId,
+    tableSymbolId: tableSymbolId,
+    tierMatched: tierMatched,
+    loweringMatched: loweringMatched,
+    proofRowMatched: proofRowMatched,
+  }
+}
+
+impl DispatchCallCorrelation {
+  pub fn isComplete(self: DispatchCallCorrelation) -> bool {
+    return self.callId > 0 &&
+      self.sourceCount >= 3 &&
+      self.methodId > 0 &&
+      self.tierMatched &&
+      self.loweringMatched &&
+      self.proofRowMatched
+  }
+}

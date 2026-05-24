@@ -1,0 +1,48 @@
+pub enum ForSyntaxFamily {
+  Core
+  ShortForm
+  ControlFlow
+  Destructuring
+  CollectionIterator
+  AsyncConcurrent
+  DataBinary
+  DomainSpecific
+  Quantum
+  LowLevel
+  Text
+  ErrorHandling
+  ErgonomicUtility
+}
+
+pub struct ForSyntaxParse {
+  family: ForSyntaxFamily,
+  formCount: usize,
+  sourceRangeReady: bool,
+  patternAllowed: bool,
+  hotPathHintAllowed: bool,
+  cursorLoopParsed: bool,
+  zipEnumerateParsed: bool,
+  asyncParallelParsed: bool,
+  qforParsed: bool,
+  executableSourceRanges: bool,
+  recoveryReady: bool,
+}
+
+impl ForSyntaxParse {
+  pub fn complete(self: ForSyntaxParse) -> bool {
+    return self.formCount > 0
+      && self.sourceRangeReady
+      && self.recoveryReady
+  }
+
+  pub fn executableHotPathReady(self: ForSyntaxParse) -> bool {
+    return self.complete()
+      && self.patternAllowed
+      && self.hotPathHintAllowed
+      && self.cursorLoopParsed
+      && self.zipEnumerateParsed
+      && self.asyncParallelParsed
+      && self.qforParsed
+      && self.executableSourceRanges
+  }
+}

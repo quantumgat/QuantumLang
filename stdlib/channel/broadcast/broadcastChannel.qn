@@ -1,0 +1,15 @@
+pub struct BroadcastChannel<T> {
+  sender: Sender<T>,
+  subscriberCount: usize,
+  capacity: usize,
+}
+
+impl BroadcastChannel<T> {
+  pub fn send(self: BroadcastChannel<T>, value: T) -> Result<Unit, ChannelError>
+
+  pub fn subscribe(self: BroadcastChannel<T>) -> Result<Receiver<T>, ChannelError>
+
+  pub fn hasSubscribers(self: BroadcastChannel<T>) -> bool {
+    return self.subscriberCount > 0
+  }
+}

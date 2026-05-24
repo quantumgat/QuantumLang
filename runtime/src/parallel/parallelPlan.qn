@@ -1,0 +1,15 @@
+pub struct ParallelPlan {
+  workerCount: usize,
+  shardCount: usize,
+  capabilityChecked: bool,
+}
+
+pub fn parallelPlan(workerCount: usize, shardCount: usize) -> ParallelPlan {
+  return ParallelPlan { workerCount: workerCount, shardCount: shardCount, capabilityChecked: true }
+}
+
+impl ParallelPlan {
+  pub fn canRun(self: ParallelPlan) -> bool {
+    return self.workerCount > 0 && self.shardCount > 0 && self.capabilityChecked
+  }
+}

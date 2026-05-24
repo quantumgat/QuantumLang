@@ -1,0 +1,169 @@
+/**
+  Owned pointer buffer that can expose Slice and MutSlice views.
+
+  example:
+    unsafe {
+      let buf = SliceBuf<User>.fromOwnedParts(ptr, len, capacity)
+      let view = buf.asSlice()
+      let writable = buf.asMutSlice()
+    }
+
+  effects: pure for metadata operations; view methods expose memory access
+  complexity: O(1)
+  allocation: none in this wrapper
+  safety: ownership and deallocation are proven by compiler/runtime memory rules
+  stability: public since 0.1
+*/
+pub struct SliceBuf<T> {
+  ptr: NonNull<T>,
+  len: usize,
+  capacity: usize,
+  provenance: Provenance,
+}
+
+impl<T> SliceBuf<T> {
+  /**
+    Creates a buffer wrapper from owned pointer parts.
+
+    example:
+      unsafe {
+        let buf = SliceBuf<User>.fromOwnedParts(ptr, len, capacity)
+        let count = buf.len()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: ptr must own capacity elements and initialize len elements
+    stability: public since 0.1
+  */
+  pub fn fromOwnedParts(ptr: NonNull<T>, len: usize, capacity: usize) -> SliceBuf<T> requires(unsafe) {
+    return SliceBuf<T> {
+      ptr: ptr,
+      len: len,
+      capacity: capacity,
+      provenance: ptr.provenance(),
+    }
+  }
+
+  /**
+    Returns the number of initialized elements.
+
+    example:
+      let count = buf.len()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn len(self: SliceBuf<T>) -> usize {
+    return self.len
+  }
+
+  /**
+    Returns the reserved element capacity.
+
+    example:
+      if buf.capacity() < buf.len() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn capacity(self: SliceBuf<T>) -> usize {
+    return self.capacity
+  }
+
+  /**
+    Returns true when the buffer has no initialized elements.
+
+    example:
+      if buf.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: SliceBuf<T>) -> bool {
+    return self.len == 0
+  }
+
+  /**
+    Creates an immutable view over initialized elements.
+
+    example:
+      unsafe {
+        let users = buf.asSlice()
+        let first = users.first()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: buffer must still own readable initialized elements
+    stability: public since 0.1
+  */
+  pub fn asSlice(self: SliceBuf<T>) -> Slice<T> requires(unsafe) {
+    return Slice<T>.fromPtr(self.ptr, self.len)
+  }
+
+  /**
+    Creates a mutable view over initialized elements.
+
+    example:
+      unsafe {
+        let users = buf.asMutSlice()
+        users.fill(defaultUser)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: buffer must still own exclusive writable initialized elements
+    stability: public since 0.1
+  */
+  pub fn asMutSlice(self: SliceBuf<T>) -> MutSlice<T> requires(unsafe) {
+    return MutSlice<T>.fromPtr(self.ptr, self.len)
+  }
+
+  /**
+    Returns the owned start pointer.
+
+    example:
+      let ptr = buf.ptr()
+      let raw = ptr.rawAddress()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: returning the pointer does not transfer ownership
+    stability: public since 0.1
+  */
+  pub fn ptr(self: SliceBuf<T>) -> NonNull<T> {
+    return self.ptr
+  }
+
+  /**
+    Returns the provenance metadata for this buffer.
+
+    example:
+      if buf.provenance().valid() == false {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: metadata only; does not validate a new access
+    stability: public since 0.1
+  */
+  pub fn provenance(self: SliceBuf<T>) -> Provenance {
+    return self.provenance
+  }
+}

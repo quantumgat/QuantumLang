@@ -1,0 +1,6 @@
+pub struct RuntimeInfo {
+  name: string,
+}
+
+pub fn currentRuntime() -> RuntimeInfo
+pub fn name(info: RuntimeInfo) -> string

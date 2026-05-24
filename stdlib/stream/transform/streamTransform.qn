@@ -1,0 +1,15 @@
+pub struct StreamTransform<T, U> {
+  source: Stream<T>,
+  deterministic: bool,
+  preservesPartialErrors: bool,
+}
+
+impl StreamTransform<T, U> {
+  pub fn map(self: StreamTransform<T, U>, mapper: fn(T) -> U) -> Stream<U>
+
+  pub fn filter(self: StreamTransform<T, U>, predicate: fn(T) -> bool) -> Stream<T>
+
+  pub fn safe(self: StreamTransform<T, U>) -> bool {
+    return self.deterministic && self.preservesPartialErrors
+  }
+}

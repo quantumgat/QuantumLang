@@ -1,0 +1,33 @@
+pub struct RuntimePointerAllocation {
+  allocationId: u64,
+  generation: u64,
+  domainId: u64,
+  bytes: usize,
+  live: bool,
+}
+
+impl RuntimePointerAllocation {
+  pub fn init(allocationId: u64, generation: u64, domainId: u64, bytes: usize) -> RuntimePointerAllocation {
+    return RuntimePointerAllocation {
+      allocationId: allocationId,
+      generation: generation,
+      domainId: domainId,
+      bytes: bytes,
+      live: true,
+    }
+  }
+
+  pub fn accepted(self: RuntimePointerAllocation) -> bool {
+    return self.allocationId > 0 && self.generation > 0 && self.domainId > 0 && self.bytes > 0 && self.live
+  }
+
+  pub fn release(self: RuntimePointerAllocation) -> RuntimePointerAllocation {
+    return RuntimePointerAllocation {
+      allocationId: self.allocationId,
+      generation: self.generation + 1,
+      domainId: self.domainId,
+      bytes: self.bytes,
+      live: false,
+    }
+  }
+}

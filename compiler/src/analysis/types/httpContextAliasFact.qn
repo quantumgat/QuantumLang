@@ -1,0 +1,37 @@
+pub struct HttpContextAliasFact {
+  aliasSymbol: u64,
+  contextTypeSymbol: u64,
+  capabilityCount: usize,
+  namedProjectionCount: usize,
+  constructorGraphReady: bool,
+  hotPathErased: bool,
+}
+
+pub fn httpContextAliasFact(
+  aliasSymbol: u64,
+  contextTypeSymbol: u64,
+  capabilityCount: usize,
+  namedProjectionCount: usize,
+  constructorGraphReady: bool,
+  hotPathErased: bool,
+) -> HttpContextAliasFact {
+  return HttpContextAliasFact {
+    aliasSymbol: aliasSymbol,
+    contextTypeSymbol: contextTypeSymbol,
+    capabilityCount: capabilityCount,
+    namedProjectionCount: namedProjectionCount,
+    constructorGraphReady: constructorGraphReady,
+    hotPathErased: hotPathErased,
+  }
+}
+
+impl HttpContextAliasFact {
+  pub fn accepted(self: HttpContextAliasFact) -> bool {
+    return self.aliasSymbol > 0
+      && self.contextTypeSymbol > 0
+      && self.capabilityCount > 0
+      && self.namedProjectionCount == self.capabilityCount
+      && self.constructorGraphReady
+      && self.hotPathErased
+  }
+}

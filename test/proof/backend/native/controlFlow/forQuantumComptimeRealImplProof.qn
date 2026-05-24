@@ -1,0 +1,33 @@
+pub struct ForQuantumComptimeRealImplProof {
+  parserRows: usize,
+  analysisRows: usize,
+  hirRows: usize,
+  mirRows: usize,
+  nativeRows: usize,
+  qirRows: usize,
+  runtimeRows: usize,
+  stdlibRows: usize,
+  executableRows: usize,
+  negativeRows: usize,
+  comptimeRows: usize,
+  lowering: NativeForQuantumComptimeLowering,
+  qirProof: QforQifQirLoweringProof,
+}
+
+impl ForQuantumComptimeRealImplProof {
+  pub fn complete(self: ForQuantumComptimeRealImplProof) -> bool {
+    return self.parserRows >= 10
+      && self.analysisRows >= 10
+      && self.hirRows >= 10
+      && self.mirRows >= 10
+      && self.nativeRows >= 10
+      && self.qirRows >= 6
+      && self.runtimeRows >= 4
+      && self.stdlibRows >= 4
+      && self.executableRows >= 4
+      && self.negativeRows >= 3
+      && self.comptimeRows >= 4
+      && self.lowering.complete()
+      && self.qirProof.complete()
+  }
+}

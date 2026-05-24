@@ -1,0 +1,14 @@
+pub struct PatternParse {
+  parsedPatterns: usize,
+  errors: usize,
+}
+
+pub fn patternParse(parsedPatterns: usize, errors: usize) -> PatternParse {
+  return PatternParse { parsedPatterns: parsedPatterns, errors: errors }
+}
+
+impl PatternParse {
+  pub fn patternCount(self: PatternParse) -> usize {
+    return self.parsedPatterns
+  }
+}

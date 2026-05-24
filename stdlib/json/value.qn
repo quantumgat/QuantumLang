@@ -1,0 +1,808 @@
+pub enum JsonValueKind {
+  Null
+  Bool
+  Number
+  String
+  Array
+  Object
+}
+
+pub struct JsonMember {
+  name: string,
+  value: JsonValue,
+}
+
+pub struct JsonValue {
+  kind: JsonValueKind,
+  boolValue: bool,
+  numberText: string,
+  stringValue: string,
+  elements: Vec<JsonValue>,
+  members: Vec<JsonMember>,
+  path: string,
+}
+
+pub enum JsonMergeModeKind {
+  Right
+  Left
+  Error
+  Deep
+  Concat
+  Unique
+  UniqueBy
+}
+
+pub struct JsonMergeMode {
+  kind: JsonMergeModeKind,
+  key: string,
+}
+
+impl JsonMergeMode {
+  pub fn right() -> JsonMergeMode {
+    return JsonMergeMode {
+      kind: JsonMergeModeKind.Right,
+      key: "",
+    }
+  }
+
+  pub fn left() -> JsonMergeMode {
+    return JsonMergeMode {
+      kind: JsonMergeModeKind.Left,
+      key: "",
+    }
+  }
+
+  pub fn error() -> JsonMergeMode {
+    return JsonMergeMode {
+      kind: JsonMergeModeKind.Error,
+      key: "",
+    }
+  }
+
+  pub fn deep() -> JsonMergeMode {
+    return JsonMergeMode {
+      kind: JsonMergeModeKind.Deep,
+      key: "",
+    }
+  }
+
+  pub fn concat() -> JsonMergeMode {
+    return JsonMergeMode {
+      kind: JsonMergeModeKind.Concat,
+      key: "",
+    }
+  }
+
+  pub fn unique() -> JsonMergeMode {
+    return JsonMergeMode {
+      kind: JsonMergeModeKind.Unique,
+      key: "",
+    }
+  }
+
+  pub fn uniqueBy(key: string) -> JsonMergeMode {
+    return JsonMergeMode {
+      kind: JsonMergeModeKind.UniqueBy,
+      key: key,
+    }
+  }
+
+  pub fn field(self: JsonMergeMode) -> string {
+    return self.key
+  }
+}
+
+impl JsonValue {
+  /**
+    Creates a JSON null value.
+
+    example:
+      let value = JsonValue.null()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn null() -> JsonValue {
+    return JsonValue {
+      kind: JsonValueKind.Null,
+      boolValue: false,
+      numberText: "",
+      stringValue: "",
+      elements: Vec<JsonValue>(),
+      members: Vec<JsonMember>(),
+      path: "$",
+    }
+  }
+
+  pub fn bool(value: bool) -> JsonValue {
+    return JsonValue {
+      kind: JsonValueKind.Bool,
+      boolValue: value,
+      numberText: "",
+      stringValue: "",
+      elements: Vec<JsonValue>(),
+      members: Vec<JsonMember>(),
+      path: "$",
+    }
+  }
+
+  pub fn number(text: string) -> JsonValue {
+    return JsonValue {
+      kind: JsonValueKind.Number,
+      boolValue: false,
+      numberText: text,
+      stringValue: "",
+      elements: Vec<JsonValue>(),
+      members: Vec<JsonMember>(),
+      path: "$",
+    }
+  }
+
+  pub fn string(value: string) -> JsonValue {
+    return JsonValue {
+      kind: JsonValueKind.String,
+      boolValue: false,
+      numberText: "",
+      stringValue: value,
+      elements: Vec<JsonValue>(),
+      members: Vec<JsonMember>(),
+      path: "$",
+    }
+  }
+
+  pub fn array(elements: Vec<JsonValue>) -> JsonValue {
+    return JsonValue {
+      kind: JsonValueKind.Array,
+      boolValue: false,
+      numberText: "",
+      stringValue: "",
+      elements: elements,
+      members: Vec<JsonMember>(),
+      path: "$",
+    }
+  }
+
+  pub fn object(members: Vec<JsonMember>) -> JsonValue {
+    return JsonValue {
+      kind: JsonValueKind.Object,
+      boolValue: false,
+      numberText: "",
+      stringValue: "",
+      elements: Vec<JsonValue>(),
+      members: members,
+      path: "$",
+    }
+  }
+
+  pub fn isNull(self: JsonValue) -> bool {
+    return self.kind == JsonValueKind.Null
+  }
+
+  pub fn isBool(self: JsonValue) -> bool {
+    return self.kind == JsonValueKind.Bool
+  }
+
+  pub fn isNumber(self: JsonValue) -> bool {
+    return self.kind == JsonValueKind.Number
+  }
+
+  pub fn isString(self: JsonValue) -> bool {
+    return self.kind == JsonValueKind.String
+  }
+
+  pub fn isArray(self: JsonValue) -> bool {
+    return self.kind == JsonValueKind.Array
+  }
+
+  pub fn isObject(self: JsonValue) -> bool {
+    return self.kind == JsonValueKind.Object
+  }
+
+  pub fn asBool(self: JsonValue) -> Result<bool, JsonError> {
+    if self.kind != JsonValueKind.Bool {
+      return Err(JsonError.typeMismatch(self.path, "bool", self.kindName()))
+    }
+    return Ok(self.boolValue)
+  }
+
+  pub fn bool(self: JsonValue) -> Result<bool, JsonError> {
+    return self.asBool()
+  }
+
+  pub fn boolOr(self: JsonValue, defaultValue: bool) -> bool {
+    if self.kind != JsonValueKind.Bool {
+      return defaultValue
+    }
+    return self.boolValue
+  }
+
+  pub fn asString(self: JsonValue) -> Result<string, JsonError> {
+    if self.kind != JsonValueKind.String {
+      return Err(JsonError.typeMismatch(self.path, "string", self.kindName()))
+    }
+    return Ok(self.stringValue)
+  }
+
+  pub fn string(self: JsonValue) -> Result<string, JsonError> {
+    return self.asString()
+  }
+
+  pub fn stringOr(self: JsonValue, defaultValue: string) -> string {
+    if self.kind != JsonValueKind.String {
+      return defaultValue
+    }
+    return self.stringValue
+  }
+
+  pub fn asExactNumberString(self: JsonValue) -> Result<string, JsonError> {
+    if self.kind != JsonValueKind.Number {
+      return Err(JsonError.typeMismatch(self.path, "number", self.kindName()))
+    }
+    return Ok(self.numberText)
+  }
+
+  pub fn u64(self: JsonValue) -> Result<u64, JsonError> {
+    return jsonReadU64Kernel(self)
+  }
+
+  pub fn u64Or(self: JsonValue, defaultValue: u64) -> u64 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadU64OrKernel(self, defaultValue)
+  }
+
+  pub fn i8(self: JsonValue) -> Result<i8, JsonError> {
+    return jsonReadI8Kernel(self)
+  }
+
+  pub fn i8Or(self: JsonValue, defaultValue: i8) -> i8 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadI8OrKernel(self, defaultValue)
+  }
+
+  pub fn u8(self: JsonValue) -> Result<u8, JsonError> {
+    return jsonReadU8Kernel(self)
+  }
+
+  pub fn u8Or(self: JsonValue, defaultValue: u8) -> u8 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadU8OrKernel(self, defaultValue)
+  }
+
+  pub fn i16(self: JsonValue) -> Result<i16, JsonError> {
+    return jsonReadI16Kernel(self)
+  }
+
+  pub fn i16Or(self: JsonValue, defaultValue: i16) -> i16 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadI16OrKernel(self, defaultValue)
+  }
+
+  pub fn u16(self: JsonValue) -> Result<u16, JsonError> {
+    return jsonReadU16Kernel(self)
+  }
+
+  pub fn u16Or(self: JsonValue, defaultValue: u16) -> u16 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadU16OrKernel(self, defaultValue)
+  }
+
+  pub fn i32(self: JsonValue) -> Result<i32, JsonError> {
+    return jsonReadI32Kernel(self)
+  }
+
+  pub fn i32Or(self: JsonValue, defaultValue: i32) -> i32 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadI32OrKernel(self, defaultValue)
+  }
+
+  pub fn u32(self: JsonValue) -> Result<u32, JsonError> {
+    return jsonReadU32Kernel(self)
+  }
+
+  pub fn u32Or(self: JsonValue, defaultValue: u32) -> u32 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadU32OrKernel(self, defaultValue)
+  }
+
+  pub fn usize(self: JsonValue) -> Result<usize, JsonError> {
+    return jsonReadUsizeKernel(self)
+  }
+
+  pub fn usizeOr(self: JsonValue, defaultValue: usize) -> usize {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadUsizeOrKernel(self, defaultValue)
+  }
+
+  pub fn isize(self: JsonValue) -> Result<isize, JsonError> {
+    return jsonReadIsizeKernel(self)
+  }
+
+  pub fn isizeOr(self: JsonValue, defaultValue: isize) -> isize {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadIsizeOrKernel(self, defaultValue)
+  }
+
+  pub fn i64(self: JsonValue) -> Result<i64, JsonError> {
+    return jsonReadI64Kernel(self)
+  }
+
+  pub fn i64Or(self: JsonValue, defaultValue: i64) -> i64 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadI64OrKernel(self, defaultValue)
+  }
+
+  pub fn u128(self: JsonValue) -> Result<u128, JsonError> {
+    return jsonReadU128Kernel(self)
+  }
+
+  pub fn u128Or(self: JsonValue, defaultValue: u128) -> u128 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadU128OrKernel(self, defaultValue)
+  }
+
+  pub fn i128(self: JsonValue) -> Result<i128, JsonError> {
+    return jsonReadI128Kernel(self)
+  }
+
+  pub fn i128Or(self: JsonValue, defaultValue: i128) -> i128 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadI128OrKernel(self, defaultValue)
+  }
+
+  pub fn u256(self: JsonValue) -> Result<u256, JsonError> {
+    return jsonReadU256Kernel(self)
+  }
+
+  pub fn u256Or(self: JsonValue, defaultValue: u256) -> u256 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadU256OrKernel(self, defaultValue)
+  }
+
+  pub fn i256(self: JsonValue) -> Result<i256, JsonError> {
+    return jsonReadI256Kernel(self)
+  }
+
+  pub fn i256Or(self: JsonValue, defaultValue: i256) -> i256 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadI256OrKernel(self, defaultValue)
+  }
+
+  pub fn f16(self: JsonValue) -> Result<f16, JsonError> {
+    return jsonReadF16Kernel(self)
+  }
+
+  pub fn f16Or(self: JsonValue, defaultValue: f16) -> f16 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadF16OrKernel(self, defaultValue)
+  }
+
+  pub fn f32(self: JsonValue) -> Result<f32, JsonError> {
+    return jsonReadF32Kernel(self)
+  }
+
+  pub fn f32Or(self: JsonValue, defaultValue: f32) -> f32 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadF32OrKernel(self, defaultValue)
+  }
+
+  pub fn f64(self: JsonValue) -> Result<f64, JsonError> {
+    return jsonReadF64Kernel(self)
+  }
+
+  pub fn f64Or(self: JsonValue, defaultValue: f64) -> f64 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadF64OrKernel(self, defaultValue)
+  }
+
+  pub fn f128(self: JsonValue) -> Result<f128, JsonError> {
+    return jsonReadF128Kernel(self)
+  }
+
+  pub fn f128Or(self: JsonValue, defaultValue: f128) -> f128 {
+    if self.kind != JsonValueKind.Number {
+      return defaultValue
+    }
+    return jsonReadF128OrKernel(self, defaultValue)
+  }
+
+  pub fn char(self: JsonValue) -> Result<char, JsonError> {
+    return jsonReadCharKernel(self)
+  }
+
+  pub fn charOr(self: JsonValue, defaultValue: char) -> char {
+    if self.kind != JsonValueKind.String {
+      return defaultValue
+    }
+    return jsonReadCharOrKernel(self, defaultValue)
+  }
+
+  pub fn decimal(self: JsonValue) -> Result<decimal, JsonError> {
+    return jsonReadDecimalKernel(self)
+  }
+
+  pub fn bigint(self: JsonValue) -> Result<BigInt, JsonError> {
+    return jsonReadBigIntKernel(self)
+  }
+
+  pub fn biguint(self: JsonValue) -> Result<BigUint, JsonError> {
+    return jsonReadBigUintKernel(self)
+  }
+
+  pub fn complex64(self: JsonValue) -> Result<complex64, JsonError> {
+    return jsonReadComplex64Kernel(self)
+  }
+
+  pub fn complex128(self: JsonValue) -> Result<complex128, JsonError> {
+    return jsonReadComplex128Kernel(self)
+  }
+
+  pub fn complex256(self: JsonValue) -> Result<complex256, JsonError> {
+    return jsonReadComplex256Kernel(self)
+  }
+
+  pub fn array(self: JsonValue) -> Result<Vec<JsonValue>, JsonError> {
+    if self.kind != JsonValueKind.Array {
+      return Err(JsonError.typeMismatch(self.path, "array", self.kindName()))
+    }
+    return Ok(self.elements)
+  }
+
+  pub fn arrayOr(self: JsonValue, defaultValue: Vec<JsonValue>) -> Vec<JsonValue> {
+    if self.kind != JsonValueKind.Array {
+      return defaultValue
+    }
+    return self.elements
+  }
+
+  pub fn object(self: JsonValue) -> Result<Vec<JsonMember>, JsonError> {
+    if self.kind != JsonValueKind.Object {
+      return Err(JsonError.typeMismatch(self.path, "object", self.kindName()))
+    }
+    return Ok(self.members)
+  }
+
+  pub fn objectOr(self: JsonValue, defaultValue: Vec<JsonMember>) -> Vec<JsonMember> {
+    if self.kind != JsonValueKind.Object {
+      return defaultValue
+    }
+    return self.members
+  }
+
+  pub fn len(self: JsonValue) -> usize {
+    match self.kind {
+      JsonValueKind.Array => {
+        return self.elements.len
+      }
+      JsonValueKind.Object => {
+        return self.members.len
+      }
+      JsonValueKind.Null => {
+        return 0
+      }
+      JsonValueKind.Bool => {
+        return 0
+      }
+      JsonValueKind.Number => {
+        return 0
+      }
+      JsonValueKind.String => {
+        return 0
+      }
+    }
+  }
+
+  pub fn isEmpty(self: JsonValue) -> bool {
+    return self.len() == 0
+  }
+
+  pub fn keys(self: JsonValue) -> Result<Vec<string>, JsonError> {
+    if self.kind != JsonValueKind.Object {
+      return Err(JsonError.typeMismatch(self.path, "object", self.kindName()))
+    }
+    let mut result = Vec<string>.withCapacity(self.members.len)
+    let mut index: usize = 0
+    while index < self.members.len {
+      result = result.push(self.members[index].name)
+      index = index + 1
+    }
+    return Ok(result)
+  }
+
+  pub fn values(self: JsonValue) -> Result<Vec<JsonValue>, JsonError> {
+    if self.kind != JsonValueKind.Object {
+      return Err(JsonError.typeMismatch(self.path, "object", self.kindName()))
+    }
+    let mut result = Vec<JsonValue>.withCapacity(self.members.len)
+    let mut index: usize = 0
+    while index < self.members.len {
+      result = result.push(self.members[index].value)
+      index = index + 1
+    }
+    return Ok(result)
+  }
+
+  pub fn entries(self: JsonValue) -> Result<Vec<JsonMember>, JsonError> {
+    if self.kind != JsonValueKind.Object {
+      return Err(JsonError.typeMismatch(self.path, "object", self.kindName()))
+    }
+    return Ok(self.members)
+  }
+
+  pub fn at(self: JsonValue, index: usize) -> Result<JsonValue, JsonError> {
+    if self.kind != JsonValueKind.Array {
+      return Err(JsonError.typeMismatch(self.path, "array", self.kindName()))
+    }
+    if index >= self.elements.len {
+      return Err(JsonError.indexOutOfRange(self.path, index))
+    }
+    return Ok(self.elements[index])
+  }
+
+  pub fn atOr(self: JsonValue, index: usize, defaultValue: JsonValue) -> JsonValue {
+    match self.at(index) {
+      Ok(value) => {
+        return value
+      }
+      Err(_) => {
+        return defaultValue
+      }
+    }
+  }
+
+  pub fn get(self: JsonValue, name: string) -> Result<JsonValue, JsonError> {
+    if self.kind != JsonValueKind.Object {
+      return Err(JsonError.typeMismatch(self.path, "object", self.kindName()))
+    }
+    let mut index: usize = 0
+    while index < self.members.len {
+      let member = self.members[index]
+      if member.name == name {
+        return Ok(member.value)
+      }
+      index = index + 1
+    }
+    return Err(JsonError.missingField(self.path, name))
+  }
+
+  pub fn getOr(self: JsonValue, name: string, defaultValue: JsonValue) -> JsonValue {
+    match self.get(name) {
+      Ok(value) => {
+        return value
+      }
+      Err(_) => {
+        return defaultValue
+      }
+    }
+  }
+
+  pub fn has(self: JsonValue, name: string) -> bool {
+    if self.kind != JsonValueKind.Object {
+      return false
+    }
+    let mut index: usize = 0
+    while index < self.members.len {
+      if self.members[index].name == name {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn set(self: JsonValue, name: string, value: JsonValue) -> Result<JsonValue, JsonError> {
+    if self.kind != JsonValueKind.Object {
+      return Err(JsonError.typeMismatch(self.path, "object", self.kindName()))
+    }
+    return jsonSetFieldKernel(self, name, value)
+  }
+
+  pub fn set(self: JsonValue, fields: JsonValue) -> Result<JsonValue, JsonError> {
+    if self.kind != JsonValueKind.Object {
+      return Err(JsonError.typeMismatch(self.path, "object", self.kindName()))
+    }
+    if fields.kind != JsonValueKind.Object {
+      return Err(JsonError.typeMismatch(fields.path, "object", fields.kindName()))
+    }
+    return jsonMergeObjectKernel(self, fields, JsonMergeMode.right())
+  }
+
+  pub fn merge(self: JsonValue, fields: JsonValue) -> Result<JsonValue, JsonError> {
+    return self.merge(fields, JsonMergeMode.right())
+  }
+
+  pub fn merge(self: JsonValue, other: JsonValue, mode: JsonMergeMode) -> Result<JsonValue, JsonError> {
+    if self.kind == JsonValueKind.Object && other.kind == JsonValueKind.Object {
+      return jsonMergeObjectKernel(self, other, mode)
+    }
+    if self.kind == JsonValueKind.Array && other.kind == JsonValueKind.Array {
+      return jsonMergeArrayKernel(self, other, mode)
+    }
+    return Err(JsonError.typeMismatch(self.path, "object or array", self.kindName()))
+  }
+
+  pub fn remove(self: JsonValue, name: string) -> Result<JsonValue, JsonError> {
+    if self.kind != JsonValueKind.Object {
+      return Err(JsonError.typeMismatch(self.path, "object", self.kindName()))
+    }
+    return jsonRemoveFieldKernel(self, name)
+  }
+
+  pub fn removeOr(self: JsonValue, name: string, defaultValue: JsonValue) -> JsonValue {
+    match self.remove(name) {
+      Ok(value) => {
+        return value
+      }
+      Err(_) => {
+        return defaultValue
+      }
+    }
+  }
+
+  pub fn push(self: JsonValue, value: JsonValue) -> Result<JsonValue, JsonError> {
+    if self.kind != JsonValueKind.Array {
+      return Err(JsonError.typeMismatch(self.path, "array", self.kindName()))
+    }
+    return jsonPushElementKernel(self, value)
+  }
+
+  pub fn append(self: JsonValue, value: JsonValue) -> Result<JsonValue, JsonError> {
+    return self.push(value)
+  }
+
+  pub fn removeAt(self: JsonValue, index: usize) -> Result<JsonValue, JsonError> {
+    if self.kind != JsonValueKind.Array {
+      return Err(JsonError.typeMismatch(self.path, "array", self.kindName()))
+    }
+    if index >= self.elements.len {
+      return Err(JsonError.indexOutOfRange(self.path, index))
+    }
+    return jsonRemoveElementKernel(self, index)
+  }
+
+  pub fn path(self: JsonValue) -> string {
+    return self.path
+  }
+
+  pub fn hasPath(self: JsonValue, path: string) -> bool {
+    return jsonHasPathKernel(self, path)
+  }
+
+  pub fn getPath(self: JsonValue, path: string) -> Result<JsonValue, JsonError> {
+    return jsonGetPathKernel(self, path)
+  }
+
+  pub fn setPath(self: JsonValue, path: string, value: JsonValue) -> Result<JsonValue, JsonError> {
+    return jsonSetPathKernel(self, path, value)
+  }
+
+  pub fn removePath(self: JsonValue, path: string) -> Result<JsonValue, JsonError> {
+    return jsonRemovePathKernel(self, path)
+  }
+
+  pub fn kindName(self: JsonValue) -> string {
+    match self.kind {
+      JsonValueKind.Null => {
+        return "null"
+      }
+      JsonValueKind.Bool => {
+        return "bool"
+      }
+      JsonValueKind.Number => {
+        return "number"
+      }
+      JsonValueKind.String => {
+        return "string"
+      }
+      JsonValueKind.Array => {
+        return "array"
+      }
+      JsonValueKind.Object => {
+        return "object"
+      }
+    }
+  }
+
+  pub fn toString(self: JsonValue) -> Result<string, JsonError> {
+    return Json.stringifyText(self)
+  }
+}
+
+fn jsonReadU64Kernel(value: JsonValue) -> Result<u64, JsonError>
+fn jsonReadU64OrKernel(value: JsonValue, defaultValue: u64) -> u64
+fn jsonReadI8Kernel(value: JsonValue) -> Result<i8, JsonError>
+fn jsonReadI8OrKernel(value: JsonValue, defaultValue: i8) -> i8
+fn jsonReadU8Kernel(value: JsonValue) -> Result<u8, JsonError>
+fn jsonReadU8OrKernel(value: JsonValue, defaultValue: u8) -> u8
+fn jsonReadI16Kernel(value: JsonValue) -> Result<i16, JsonError>
+fn jsonReadI16OrKernel(value: JsonValue, defaultValue: i16) -> i16
+fn jsonReadU16Kernel(value: JsonValue) -> Result<u16, JsonError>
+fn jsonReadU16OrKernel(value: JsonValue, defaultValue: u16) -> u16
+fn jsonReadI32Kernel(value: JsonValue) -> Result<i32, JsonError>
+fn jsonReadI32OrKernel(value: JsonValue, defaultValue: i32) -> i32
+fn jsonReadU32Kernel(value: JsonValue) -> Result<u32, JsonError>
+fn jsonReadU32OrKernel(value: JsonValue, defaultValue: u32) -> u32
+fn jsonReadUsizeKernel(value: JsonValue) -> Result<usize, JsonError>
+fn jsonReadUsizeOrKernel(value: JsonValue, defaultValue: usize) -> usize
+fn jsonReadIsizeKernel(value: JsonValue) -> Result<isize, JsonError>
+fn jsonReadIsizeOrKernel(value: JsonValue, defaultValue: isize) -> isize
+fn jsonReadI64Kernel(value: JsonValue) -> Result<i64, JsonError>
+fn jsonReadI64OrKernel(value: JsonValue, defaultValue: i64) -> i64
+fn jsonReadU128Kernel(value: JsonValue) -> Result<u128, JsonError>
+fn jsonReadU128OrKernel(value: JsonValue, defaultValue: u128) -> u128
+fn jsonReadI128Kernel(value: JsonValue) -> Result<i128, JsonError>
+fn jsonReadI128OrKernel(value: JsonValue, defaultValue: i128) -> i128
+fn jsonReadU256Kernel(value: JsonValue) -> Result<u256, JsonError>
+fn jsonReadU256OrKernel(value: JsonValue, defaultValue: u256) -> u256
+fn jsonReadI256Kernel(value: JsonValue) -> Result<i256, JsonError>
+fn jsonReadI256OrKernel(value: JsonValue, defaultValue: i256) -> i256
+fn jsonReadF16Kernel(value: JsonValue) -> Result<f16, JsonError>
+fn jsonReadF16OrKernel(value: JsonValue, defaultValue: f16) -> f16
+fn jsonReadF32Kernel(value: JsonValue) -> Result<f32, JsonError>
+fn jsonReadF32OrKernel(value: JsonValue, defaultValue: f32) -> f32
+fn jsonReadF64Kernel(value: JsonValue) -> Result<f64, JsonError>
+fn jsonReadF64OrKernel(value: JsonValue, defaultValue: f64) -> f64
+fn jsonReadF128Kernel(value: JsonValue) -> Result<f128, JsonError>
+fn jsonReadF128OrKernel(value: JsonValue, defaultValue: f128) -> f128
+fn jsonReadCharKernel(value: JsonValue) -> Result<char, JsonError>
+fn jsonReadCharOrKernel(value: JsonValue, defaultValue: char) -> char
+fn jsonReadDecimalKernel(value: JsonValue) -> Result<decimal, JsonError>
+fn jsonReadBigIntKernel(value: JsonValue) -> Result<BigInt, JsonError>
+fn jsonReadBigUintKernel(value: JsonValue) -> Result<BigUint, JsonError>
+fn jsonReadComplex64Kernel(value: JsonValue) -> Result<complex64, JsonError>
+fn jsonReadComplex128Kernel(value: JsonValue) -> Result<complex128, JsonError>
+fn jsonReadComplex256Kernel(value: JsonValue) -> Result<complex256, JsonError>
+fn jsonSetFieldKernel(value: JsonValue, name: string, fieldValue: JsonValue) -> Result<JsonValue, JsonError>
+fn jsonMergeObjectKernel(value: JsonValue, fields: JsonValue, mode: JsonMergeMode) -> Result<JsonValue, JsonError>
+fn jsonMergeArrayKernel(value: JsonValue, elements: JsonValue, mode: JsonMergeMode) -> Result<JsonValue, JsonError>
+fn jsonRemoveFieldKernel(value: JsonValue, name: string) -> Result<JsonValue, JsonError>
+fn jsonPushElementKernel(value: JsonValue, element: JsonValue) -> Result<JsonValue, JsonError>
+fn jsonRemoveElementKernel(value: JsonValue, index: usize) -> Result<JsonValue, JsonError>
+fn jsonHasPathKernel(value: JsonValue, path: string) -> bool
+fn jsonGetPathKernel(value: JsonValue, path: string) -> Result<JsonValue, JsonError>
+fn jsonSetPathKernel(value: JsonValue, path: string, fieldValue: JsonValue) -> Result<JsonValue, JsonError>
+fn jsonRemovePathKernel(value: JsonValue, path: string) -> Result<JsonValue, JsonError>
+
+impl JsonMember {
+  pub fn new(name: string, value: JsonValue) -> JsonMember {
+    return JsonMember {
+      name: name,
+      value: value,
+    }
+  }
+}

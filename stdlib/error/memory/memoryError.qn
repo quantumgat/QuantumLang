@@ -1,0 +1,270 @@
+pub enum MemoryErrorKind {
+  OutOfMemory,
+  PressureDenied,
+  DoubleFree,
+  WrongAllocator,
+  StaleHandle,
+  Leak,
+  UseAfterFree,
+  InvalidAlignment,
+  BoundsFailure,
+}
+
+pub enum MemoryErrorSeverity {
+  Recoverable,
+  FatalBoundary,
+}
+
+pub struct MemoryErrorPayload {
+  requestedBytes: usize,
+  allocatedBytes: usize,
+  allocatorName: string,
+  expectedAllocator: string,
+  actualAllocator: string,
+  addressRedacted: bool,
+  allocationId: u64,
+  generation: u64,
+  expectedGeneration: u64,
+  actualGeneration: u64,
+  alignment: usize,
+  requiredAlignment: usize,
+  index: usize,
+  len: usize,
+}
+
+pub struct MemoryError {
+  kind: MemoryErrorKind,
+  severity: MemoryErrorSeverity,
+  allocationId: u64,
+  generation: u64,
+  payload: MemoryErrorPayload,
+  source: ErrorSource,
+  fields: ErrorFields,
+  noCoredump: bool,
+}
+
+impl MemoryError {
+  /**
+    Creates an out-of-memory error without exposing raw addresses.
+
+    example:
+      let err = MemoryError.oom(4096, "page")
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn oom(requestedBytes: usize, allocatorName: string) -> MemoryError {
+    let payload = MemoryErrorPayload.empty()
+    return MemoryError {
+      kind: MemoryErrorKind.OutOfMemory,
+      severity: MemoryErrorSeverity.Recoverable,
+      allocationId: 0,
+      generation: 0,
+      payload: payload.withRequest(requestedBytes, allocatorName),
+      source: ErrorSource.unknown(),
+      fields: ErrorFields.empty(),
+      noCoredump: true,
+    }
+  }
+
+  pub fn doubleFree(allocationId: u64, generation: u64) -> MemoryError {
+    return MemoryError.withPayload(
+      MemoryErrorKind.DoubleFree,
+      allocationId,
+      generation,
+      MemoryErrorPayload.empty()
+    )
+  }
+
+  pub fn staleHandle(allocationId: u64, expectedGeneration: u64, actualGeneration: u64) -> MemoryError {
+    return MemoryError.withPayload(
+      MemoryErrorKind.StaleHandle,
+      allocationId,
+      actualGeneration,
+      MemoryErrorPayload.empty().withGenerations(expectedGeneration, actualGeneration)
+    )
+  }
+
+  pub fn bounds(index: usize, len: usize) -> MemoryError {
+    return MemoryError.withPayload(
+      MemoryErrorKind.BoundsFailure,
+      0,
+      0,
+      MemoryErrorPayload.empty().withBounds(index, len)
+    )
+  }
+
+  pub fn invalidAlignment(alignment: usize, requiredAlignment: usize) -> MemoryError {
+    return MemoryError.withPayload(
+      MemoryErrorKind.InvalidAlignment,
+      0,
+      0,
+      MemoryErrorPayload.empty().withAlignment(alignment, requiredAlignment)
+    )
+  }
+
+  pub fn withPayload(
+    kind: MemoryErrorKind,
+    allocationId: u64,
+    generation: u64,
+    payload: MemoryErrorPayload,
+  ) -> MemoryError {
+    return MemoryError {
+      kind: kind,
+      severity: MemoryErrorSeverity.Recoverable,
+      allocationId: allocationId,
+      generation: generation,
+      payload: payload,
+      source: ErrorSource.unknown(),
+      fields: ErrorFields.empty(),
+      noCoredump: true,
+    }
+  }
+
+  pub fn safeReport(self: MemoryError) -> bool {
+    return self.noCoredump
+      && self.payload.safe()
+      && (self.allocationId > 0
+        || self.kind == MemoryErrorKind.OutOfMemory
+        || self.kind == MemoryErrorKind.BoundsFailure
+        || self.kind == MemoryErrorKind.InvalidAlignment)
+  }
+
+  pub fn toError(self: MemoryError) -> Error {
+    let code = ErrorCode.new(ErrorCategory.Memory, "QMEM", self.codeNumber())
+    return Error.new(code, self.message()).withFields(self.fields)
+  }
+
+  pub fn codeNumber(self: MemoryError) -> u32 {
+    match self.kind {
+      MemoryErrorKind.OutOfMemory => { return 1001 }
+      MemoryErrorKind.PressureDenied => { return 1002 }
+      MemoryErrorKind.DoubleFree => { return 1003 }
+      MemoryErrorKind.WrongAllocator => { return 1004 }
+      MemoryErrorKind.StaleHandle => { return 1005 }
+      MemoryErrorKind.Leak => { return 1006 }
+      MemoryErrorKind.UseAfterFree => { return 1007 }
+      MemoryErrorKind.InvalidAlignment => { return 1008 }
+      MemoryErrorKind.BoundsFailure => { return 1009 }
+    }
+  }
+
+  pub fn message(self: MemoryError) -> string {
+    match self.kind {
+      MemoryErrorKind.OutOfMemory => { return "out of memory" }
+      MemoryErrorKind.PressureDenied => { return "memory pressure denied allocation" }
+      MemoryErrorKind.DoubleFree => { return "double free detected" }
+      MemoryErrorKind.WrongAllocator => { return "wrong allocator used" }
+      MemoryErrorKind.StaleHandle => { return "stale memory handle" }
+      MemoryErrorKind.Leak => { return "memory leak detected" }
+      MemoryErrorKind.UseAfterFree => { return "use after free detected" }
+      MemoryErrorKind.InvalidAlignment => { return "invalid memory alignment" }
+      MemoryErrorKind.BoundsFailure => { return "memory bounds failure" }
+    }
+  }
+}
+
+impl MemoryErrorPayload {
+  pub fn empty() -> MemoryErrorPayload {
+    return MemoryErrorPayload {
+      requestedBytes: 0,
+      allocatedBytes: 0,
+      allocatorName: "",
+      expectedAllocator: "",
+      actualAllocator: "",
+      addressRedacted: true,
+      allocationId: 0,
+      generation: 0,
+      expectedGeneration: 0,
+      actualGeneration: 0,
+      alignment: 0,
+      requiredAlignment: 0,
+      index: 0,
+      len: 0,
+    }
+  }
+
+  pub fn withRequest(self: MemoryErrorPayload, requestedBytes: usize, allocatorName: string) -> MemoryErrorPayload {
+    return MemoryErrorPayload {
+      requestedBytes: requestedBytes,
+      allocatedBytes: self.allocatedBytes,
+      allocatorName: allocatorName,
+      expectedAllocator: self.expectedAllocator,
+      actualAllocator: self.actualAllocator,
+      addressRedacted: true,
+      allocationId: self.allocationId,
+      generation: self.generation,
+      expectedGeneration: self.expectedGeneration,
+      actualGeneration: self.actualGeneration,
+      alignment: self.alignment,
+      requiredAlignment: self.requiredAlignment,
+      index: self.index,
+      len: self.len,
+    }
+  }
+
+  pub fn withGenerations(self: MemoryErrorPayload, expectedGeneration: u64, actualGeneration: u64) -> MemoryErrorPayload {
+    return MemoryErrorPayload {
+      requestedBytes: self.requestedBytes,
+      allocatedBytes: self.allocatedBytes,
+      allocatorName: self.allocatorName,
+      expectedAllocator: self.expectedAllocator,
+      actualAllocator: self.actualAllocator,
+      addressRedacted: true,
+      allocationId: self.allocationId,
+      generation: actualGeneration,
+      expectedGeneration: expectedGeneration,
+      actualGeneration: actualGeneration,
+      alignment: self.alignment,
+      requiredAlignment: self.requiredAlignment,
+      index: self.index,
+      len: self.len,
+    }
+  }
+
+  pub fn withBounds(self: MemoryErrorPayload, index: usize, len: usize) -> MemoryErrorPayload {
+    return MemoryErrorPayload {
+      requestedBytes: self.requestedBytes,
+      allocatedBytes: self.allocatedBytes,
+      allocatorName: self.allocatorName,
+      expectedAllocator: self.expectedAllocator,
+      actualAllocator: self.actualAllocator,
+      addressRedacted: true,
+      allocationId: self.allocationId,
+      generation: self.generation,
+      expectedGeneration: self.expectedGeneration,
+      actualGeneration: self.actualGeneration,
+      alignment: self.alignment,
+      requiredAlignment: self.requiredAlignment,
+      index: index,
+      len: len,
+    }
+  }
+
+  pub fn withAlignment(self: MemoryErrorPayload, alignment: usize, requiredAlignment: usize) -> MemoryErrorPayload {
+    return MemoryErrorPayload {
+      requestedBytes: self.requestedBytes,
+      allocatedBytes: self.allocatedBytes,
+      allocatorName: self.allocatorName,
+      expectedAllocator: self.expectedAllocator,
+      actualAllocator: self.actualAllocator,
+      addressRedacted: true,
+      allocationId: self.allocationId,
+      generation: self.generation,
+      expectedGeneration: self.expectedGeneration,
+      actualGeneration: self.actualGeneration,
+      alignment: alignment,
+      requiredAlignment: requiredAlignment,
+      index: self.index,
+      len: self.len,
+    }
+  }
+
+  pub fn safe(self: MemoryErrorPayload) -> bool {
+    return self.addressRedacted
+      && (self.len == 0 || self.index <= self.len)
+      && (self.requiredAlignment == 0 || self.alignment > 0)
+  }
+}

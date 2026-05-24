@@ -1,0 +1,18 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum EndpointRouteSource {
+  Derived
+  ManualExact
+}
+pub struct EndpointRouteSpec {
+  source: EndpointRouteSource
+  method: HttpMethod
+  path: string
+  queryInPathRejected: bool
+  exactMatch: bool
+}
+pub struct EndpointManualRouteSyntax {
+  functionName: string
+  route: EndpointRouteSpec
+  queryTyped: bool
+  normalMethodSyntax: bool
+}

@@ -1,0 +1,9 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct AppAsyncLifecyclePlan {
+  startupAwaited: bool
+  reconnectAwaited: bool
+  shutdownAwaited: bool
+  cancellationSafeShutdown: bool
+  disconnectCleanup: bool
+  typedFailure: bool
+}

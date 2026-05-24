@@ -1,0 +1,26 @@
+pub struct LayoutObligation {
+  typeId: u64,
+  size: usize,
+  alignment: usize,
+  stride: usize,
+  sizeKnown: bool,
+  endianKnown: bool,
+  abiStable: bool,
+}
+
+impl LayoutObligation {
+  pub fn readyForBackend(self: LayoutObligation) -> bool {
+    return self.sizeKnown
+      && self.endianKnown
+      && self.alignment > 0
+      && self.stride >= self.size
+  }
+
+  pub fn readyForAbi(self: LayoutObligation) -> bool {
+    return self.readyForBackend() && self.abiStable
+  }
+
+  pub fn pointerAligned(self: LayoutObligation) -> bool {
+    return self.alignment > 0 && self.size % self.alignment == 0
+  }
+}

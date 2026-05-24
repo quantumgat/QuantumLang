@@ -1,0 +1,16 @@
+pub struct JsonPolicy {
+}
+
+impl JsonPolicy {
+  pub fn jsonDefault() -> SerdePolicy {
+    return SerdePolicy.jsonDefault()
+  }
+
+  pub fn strictNumbers() -> SerdePolicy {
+    return SerdePolicy.strictNumbers()
+  }
+
+  pub fn stringWideNumbers() -> SerdePolicy {
+    return SerdePolicy.jsonDefault()
+  }
+}

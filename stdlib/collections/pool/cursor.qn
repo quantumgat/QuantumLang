@@ -1,0 +1,90 @@
+pub struct PoolOccupiedCursor<T> {
+  pool: Pool<T>,
+  index: usize,
+  len: usize,
+  generation: usize,
+}
+
+impl<T> Pool<T> {
+  pub fn occupiedCursor(self: Pool<T>) -> PoolOccupiedCursor<T> {
+    return PoolOccupiedCursor<T>.fromPool(self)
+  }
+}
+
+impl<T> PoolSlot<T> {
+  pub fn valueUnchecked(self: PoolSlot<T>) -> T {
+    return poolOptionPayloadUnchecked(self.value, "Pool occupied slot missing value")
+  }
+}
+
+impl<T> PoolOccupiedCursor<T> {
+  pub fn fromPool(pool: Pool<T>) -> PoolOccupiedCursor<T> {
+    let len = pool.slots.len
+    let generation = pool.generation
+    return PoolOccupiedCursor<T> {
+      pool: pool,
+      index: 0,
+      len: len,
+      generation: generation,
+    }.seekOccupied()
+  }
+
+  pub fn hasNext(self: PoolOccupiedCursor<T>) -> bool {
+    return self.index < self.len
+  }
+
+  pub fn slotUnchecked(self: PoolOccupiedCursor<T>) -> PoolSlot<T> {
+    return self.pool.slots[self.index]
+  }
+
+  pub fn valueUnchecked(self: PoolOccupiedCursor<T>) -> T {
+    return self.slotUnchecked().valueUnchecked()
+  }
+
+  pub fn handleUnchecked(self: PoolOccupiedCursor<T>) -> PoolHandle<T> {
+    let slot = self.slotUnchecked()
+    return PoolHandle<T>.new(self.index, slot.generation)
+  }
+
+  pub fn next(self: PoolOccupiedCursor<T>) -> PoolOccupiedCursor<T> {
+    return PoolOccupiedCursor<T> {
+      pool: self.pool,
+      index: self.index + 1,
+      len: self.len,
+      generation: self.generation,
+    }.seekOccupied()
+  }
+
+  pub fn seekOccupied(self: PoolOccupiedCursor<T>) -> PoolOccupiedCursor<T> {
+    let mut index = self.index
+    while index < self.len {
+      let slot = self.pool.slots[index]
+      if slot.occupied {
+        return PoolOccupiedCursor<T> {
+          pool: self.pool,
+          index: index,
+          len: self.len,
+          generation: self.generation,
+        }
+      }
+      index = index + 1
+    }
+    return PoolOccupiedCursor<T> {
+      pool: self.pool,
+      index: self.len,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}
+
+fn poolOptionPayloadUnchecked<T>(value: Option<T>, message: string) -> T {
+  match value {
+    Some(payload) => {
+      return payload
+    }
+    None => {
+      return panic(message)
+    }
+  }
+}

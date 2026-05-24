@@ -1,0 +1,320 @@
+pub enum AppDependencyNodeKind {
+  Controller
+  Component
+  State
+  External
+}
+
+pub enum AppDependencySource {
+  Field
+  Constructor
+  AppState
+  ExplicitBinding
+  GeneratedFact
+}
+
+pub enum AppDependencyIssueKind {
+  MissingProvider
+  AmbiguousProvider
+  Cycle
+}
+
+pub struct AppDependencyNode {
+  typeName: string,
+  ownerId: u64,
+  kind: AppDependencyNodeKind,
+  stateBacked: bool,
+  lifecycleOwned: bool,
+}
+
+impl AppDependencyNode {
+  pub fn init(
+    typeName: string,
+    ownerId: u64,
+    kind: AppDependencyNodeKind,
+    stateBacked: bool,
+    lifecycleOwned: bool,
+  ) -> AppDependencyNode {
+    return AppDependencyNode {
+      typeName: typeName,
+      ownerId: ownerId,
+      kind: kind,
+      stateBacked: stateBacked,
+      lifecycleOwned: lifecycleOwned,
+    }
+  }
+
+  pub fn controller<T>() -> AppDependencyNode {
+    return AppDependencyNode.init(typeName<T>(), oopOwnerId<T>(), AppDependencyNodeKind.Controller, false, false)
+  }
+
+  pub fn controllerNamed(typeName: string, ownerId: u64) -> AppDependencyNode {
+    return AppDependencyNode.init(typeName, ownerId, AppDependencyNodeKind.Controller, false, false)
+  }
+
+  pub fn generatedComponent<T>() -> AppDependencyNode {
+    return AppDependencyNode.init(typeName<T>(), oopOwnerId<T>(), AppDependencyNodeKind.Component, false, false)
+  }
+
+  pub fn state<T>() -> AppDependencyNode {
+    return AppDependencyNode.init(typeName<T>(), oopOwnerId<T>(), AppDependencyNodeKind.State, true, false)
+  }
+
+  pub fn fromState(state: AppStateFact) -> AppDependencyNode {
+    return AppDependencyNode.init(
+      state.typeName(),
+      state.ownerId(),
+      AppDependencyNodeKind.State,
+      true,
+      state.lifecycleOwned()
+    )
+  }
+
+  pub fn providesTypeName(self: AppDependencyNode, providedTypeName: string) -> bool {
+    return self.typeName == providedTypeName
+  }
+
+  pub fn complete(self: AppDependencyNode) -> bool {
+    return self.typeName != "" && self.ownerId > 0
+  }
+}
+
+pub struct AppDependencyEdge {
+  ownerTypeName: string,
+  dependencyTypeName: string,
+  ownerId: u64,
+  dependencyOwnerId: u64,
+  source: AppDependencySource,
+  required: bool,
+  providerFound: bool,
+}
+
+impl AppDependencyEdge {
+  pub fn init(
+    ownerTypeName: string,
+    dependencyTypeName: string,
+    ownerId: u64,
+    dependencyOwnerId: u64,
+    source: AppDependencySource,
+    required: bool,
+    providerFound: bool,
+  ) -> AppDependencyEdge {
+    return AppDependencyEdge {
+      ownerTypeName: ownerTypeName,
+      dependencyTypeName: dependencyTypeName,
+      ownerId: ownerId,
+      dependencyOwnerId: dependencyOwnerId,
+      source: source,
+      required: required,
+      providerFound: providerFound,
+    }
+  }
+
+  pub fn field<Owner, Dependency>(providerFound: bool) -> AppDependencyEdge {
+    return AppDependencyEdge.init(
+      typeName<Owner>(),
+      typeName<Dependency>(),
+      oopOwnerId<Owner>(),
+      oopOwnerId<Dependency>(),
+      AppDependencySource.Field,
+      true,
+      providerFound
+    )
+  }
+
+  pub fn constructor<Owner, Dependency>(providerFound: bool) -> AppDependencyEdge {
+    return AppDependencyEdge.init(
+      typeName<Owner>(),
+      typeName<Dependency>(),
+      oopOwnerId<Owner>(),
+      oopOwnerId<Dependency>(),
+      AppDependencySource.Constructor,
+      true,
+      providerFound
+    )
+  }
+
+  pub fn valid(self: AppDependencyEdge) -> bool {
+    return self.ownerTypeName != ""
+      && self.dependencyTypeName != ""
+      && self.ownerId > 0
+      && self.dependencyOwnerId > 0
+      && self.ownerId != self.dependencyOwnerId
+      && (!self.required || self.providerFound)
+  }
+
+  pub fn ownerTypeName(self: AppDependencyEdge) -> string {
+    return self.ownerTypeName
+  }
+
+  pub fn dependencyTypeName(self: AppDependencyEdge) -> string {
+    return self.dependencyTypeName
+  }
+}
+
+pub struct AppDependencyIssue {
+  kind: AppDependencyIssueKind,
+  ownerTypeName: string,
+  dependencyTypeName: string,
+  message: string,
+  fix: string,
+}
+
+impl AppDependencyIssue {
+  pub fn init(
+    kind: AppDependencyIssueKind,
+    ownerTypeName: string,
+    dependencyTypeName: string,
+    message: string,
+    fix: string,
+  ) -> AppDependencyIssue {
+    return AppDependencyIssue {
+      kind: kind,
+      ownerTypeName: ownerTypeName,
+      dependencyTypeName: dependencyTypeName,
+      message: message,
+      fix: fix,
+    }
+  }
+
+  pub fn missing(edge: AppDependencyEdge) -> AppDependencyIssue {
+    return AppDependencyIssue.init(
+      AppDependencyIssueKind.MissingProvider,
+      edge.ownerTypeName(),
+      edge.dependencyTypeName(),
+      edge.ownerTypeName() + " requires " + edge.dependencyTypeName() + " but no provider is registered",
+      "add App.state(...) or make the dependency constructible from generated component facts"
+    )
+  }
+
+  pub fn complete(self: AppDependencyIssue) -> bool {
+    return self.message != "" && self.fix != ""
+  }
+}
+
+pub struct AppDependencyGraph {
+  nodes: Vec<AppDependencyNode>,
+  edges: Vec<AppDependencyEdge>,
+  issues: Vec<AppDependencyIssue>,
+}
+
+impl AppDependencyGraph {
+  pub fn empty() -> AppDependencyGraph {
+    return AppDependencyGraph {
+      nodes: [],
+      edges: [],
+      issues: [],
+    }
+  }
+
+  pub fn addNode(self: AppDependencyGraph, node: AppDependencyNode) -> AppDependencyGraph {
+    return AppDependencyGraph {
+      nodes: self.nodes.push(node),
+      edges: self.edges,
+      issues: self.issues,
+    }
+  }
+
+  pub fn addState<T>(self: AppDependencyGraph) -> AppDependencyGraph {
+    return self.addNode(AppDependencyNode.state<T>())
+  }
+
+  pub fn addController<T>(self: AppDependencyGraph) -> AppDependencyGraph {
+    return self.addNode(AppDependencyNode.controller<T>())
+  }
+
+  pub fn addControllerNamed(self: AppDependencyGraph, typeName: string, ownerId: u64) -> AppDependencyGraph {
+    return self.addNode(AppDependencyNode.controllerNamed(typeName, ownerId))
+  }
+
+  pub fn addGeneratedComponent<T>(self: AppDependencyGraph) -> AppDependencyGraph {
+    return self.addNode(AppDependencyNode.generatedComponent<T>())
+  }
+
+  pub fn hasProvider<T>(self: AppDependencyGraph) -> bool {
+    let mut index: usize = 0
+    while index < self.nodes.len() {
+      if self.nodes[index].providesTypeName(typeName<T>()) {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn addEdge(self: AppDependencyGraph, edge: AppDependencyEdge) -> AppDependencyGraph {
+    let mut issues = self.issues
+    if !edge.valid() {
+      issues = issues.push(AppDependencyIssue.missing(edge))
+    }
+    return AppDependencyGraph {
+      nodes: self.nodes,
+      edges: self.edges.push(edge),
+      issues: issues,
+    }
+  }
+
+  pub fn requireField<Owner, Dependency>(self: AppDependencyGraph) -> AppDependencyGraph {
+    return self.addEdge(AppDependencyEdge.field<Owner, Dependency>(self.hasProvider<Dependency>()))
+  }
+
+  pub fn requireConstructor<Owner, Dependency>(self: AppDependencyGraph) -> AppDependencyGraph {
+    return self.addEdge(AppDependencyEdge.constructor<Owner, Dependency>(self.hasProvider<Dependency>()))
+  }
+
+  pub fn fromApp(states: AppStateGraph, controllers: ControllerGraph) -> AppDependencyGraph {
+    let mut graph = AppDependencyGraph.empty()
+    let mut stateIndex: usize = 0
+    while stateIndex < states.states.len() {
+      graph = graph.addNode(AppDependencyNode.fromState(states.states[stateIndex]))
+      stateIndex = stateIndex + 1
+    }
+    let mut controllerIndex: usize = 0
+    while controllerIndex < controllers.controllers.len() {
+      graph = graph.addNode(AppDependencyNode.init(
+        controllers.controllers[controllerIndex].typeName(),
+        controllers.controllers[controllerIndex].ownerId(),
+        controllers.controllers[controllerIndex].nodeKind(),
+        false,
+        false
+      ))
+      controllerIndex = controllerIndex + 1
+    }
+    return graph
+  }
+
+  pub fn nodeCount(self: AppDependencyGraph) -> usize {
+    return self.nodes.len()
+  }
+
+  pub fn edgeCount(self: AppDependencyGraph) -> usize {
+    return self.edges.len()
+  }
+
+  pub fn issueCount(self: AppDependencyGraph) -> usize {
+    return self.issues.len()
+  }
+
+  pub fn complete(self: AppDependencyGraph) -> bool {
+    let mut nodeIndex: usize = 0
+    while nodeIndex < self.nodes.len() {
+      if !self.nodes[nodeIndex].complete() {
+        return false
+      }
+      nodeIndex = nodeIndex + 1
+    }
+    let mut edgeIndex: usize = 0
+    while edgeIndex < self.edges.len() {
+      if !self.edges[edgeIndex].valid() {
+        return false
+      }
+      edgeIndex = edgeIndex + 1
+    }
+    return self.issueCount() == 0
+  }
+
+  pub fn issueCountText(self: AppDependencyGraph) -> string {
+    let count = self.issueCount()
+    return count.toString()
+  }
+}

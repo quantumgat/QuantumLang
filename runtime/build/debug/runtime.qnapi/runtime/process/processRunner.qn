@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub interface ProcessRunner {
+  pub fn runnerName(self: &ProcessRunner) -> string
+  pub fn supportsSpawn(self: &ProcessRunner) -> bool
+  pub fn supportsPipes(self: &ProcessRunner) -> bool
+  pub fn supportsSignals(self: &ProcessRunner) -> bool
+  pub fn noCoredump(self: &ProcessRunner) -> bool
+}

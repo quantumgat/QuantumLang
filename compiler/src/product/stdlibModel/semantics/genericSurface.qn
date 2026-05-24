@@ -1,0 +1,11 @@
+pub struct StdlibGenericSurface {
+  symbolName: string,
+  genericCount: usize,
+  inferenceSupported: bool,
+}
+
+impl StdlibGenericSurface {
+  pub fn accepted(self: StdlibGenericSurface) -> bool {
+    return self.symbolName != "" && self.inferenceSupported
+  }
+}

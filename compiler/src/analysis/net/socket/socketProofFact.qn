@@ -1,0 +1,19 @@
+pub struct NetSocketProofFact {
+  handleTracked: bool,
+  generationChecked: bool,
+  doubleCloseRejected: bool,
+  staleHandleRejected: bool,
+  ownershipChecked: bool,
+  noCoredump: bool,
+}
+
+impl NetSocketProofFact {
+  pub fn accepted(self: NetSocketProofFact) -> bool {
+    return self.handleTracked
+      && self.generationChecked
+      && self.doubleCloseRejected
+      && self.staleHandleRejected
+      && self.ownershipChecked
+      && self.noCoredump
+  }
+}

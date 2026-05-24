@@ -1,0 +1,15 @@
+pub struct StreamFrame {
+  streamId: u64,
+  byteLength: usize,
+  hasBoundary: bool,
+}
+
+pub fn streamFrame(streamId: u64, byteLength: usize) -> StreamFrame {
+  return StreamFrame { streamId: streamId, byteLength: byteLength, hasBoundary: true }
+}
+
+impl StreamFrame {
+  pub fn isFramed(self: StreamFrame) -> bool {
+    return self.hasBoundary
+  }
+}

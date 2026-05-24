@@ -1,0 +1,20 @@
+pub struct SysUnsupported {
+  target: OsTarget,
+  feature: string,
+  diagnosticCode: string,
+  recoverable: bool,
+}
+
+pub fn unsupported(target: OsTarget, feature: string) -> SysUnsupported
+pub fn unsupportedWithCode(target: OsTarget, feature: string, diagnosticCode: string) -> SysUnsupported
+pub fn unsupportedError(value: SysUnsupported) -> OsError
+
+impl SysUnsupported {
+  pub fn reportable(self: SysUnsupported) -> bool {
+    return self.feature != "" && self.diagnosticCode != "" && self.recoverable
+  }
+
+  pub fn error(self: SysUnsupported) -> OsError {
+    return unsupportedError(self)
+  }
+}

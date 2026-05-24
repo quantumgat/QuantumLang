@@ -1,0 +1,138 @@
+import request::{HttpMethod}
+
+pub enum EndpointRouteSource {
+  Derived
+  ManualExact
+}
+
+pub struct EndpointRouteSpec {
+  source: EndpointRouteSource,
+  method: HttpMethod,
+  path: string,
+  queryInPathRejected: bool,
+  exactMatch: bool,
+}
+
+pub struct EndpointManualRouteSyntax {
+  functionName: string,
+  route: EndpointRouteSpec,
+  queryTyped: bool,
+  normalMethodSyntax: bool,
+}
+
+impl EndpointManualRouteSyntax {
+  pub fn init(
+    functionName: string,
+    route: EndpointRouteSpec,
+    queryTyped: bool,
+    normalMethodSyntax: bool,
+  ) -> EndpointManualRouteSyntax {
+    return EndpointManualRouteSyntax {
+      functionName: functionName,
+      route: route,
+      queryTyped: queryTyped,
+      normalMethodSyntax: normalMethodSyntax,
+    }
+  }
+
+  pub fn method(functionName: string, route: EndpointRouteSpec, queryTyped: bool) -> EndpointManualRouteSyntax {
+    return EndpointManualRouteSyntax.init(functionName, route, queryTyped, true)
+  }
+
+  pub fn complete(self: EndpointManualRouteSyntax) -> bool {
+    return self.functionName != ""
+      && self.route.valid()
+      && self.queryTyped
+      && self.normalMethodSyntax
+  }
+}
+
+impl EndpointRouteSpec {
+  pub fn init(
+    source: EndpointRouteSource,
+    method: HttpMethod,
+    path: string,
+    queryInPathRejected: bool,
+    exactMatch: bool,
+  ) -> EndpointRouteSpec {
+    return EndpointRouteSpec {
+      source: source,
+      method: method,
+      path: path,
+      queryInPathRejected: queryInPathRejected,
+      exactMatch: exactMatch,
+    }
+  }
+
+  pub fn derived(controllerName: string, method: EndpointMethod) -> EndpointRouteSpec {
+    let root = "/" + controllerName
+    if method.rootRoute() {
+      return EndpointRouteSpec.init(
+        EndpointRouteSource.Derived,
+        method.httpMethod(),
+        root,
+        true,
+        true
+      )
+    }
+    return EndpointRouteSpec.init(
+      EndpointRouteSource.Derived,
+      method.httpMethod(),
+      root + "/" + method.routeName(),
+      true,
+      true
+    )
+  }
+
+  pub fn manual(method: HttpMethod, path: string) -> EndpointRouteSpec {
+    return EndpointRouteSpec.init(
+      EndpointRouteSource.ManualExact,
+      method,
+      path,
+      contains(path, "?") == false,
+      true
+    )
+  }
+
+  pub fn get(path: string) -> EndpointRouteSpec {
+    return EndpointRouteSpec.manual(HttpMethod.Get, path)
+  }
+
+  pub fn post(path: string) -> EndpointRouteSpec {
+    return EndpointRouteSpec.manual(HttpMethod.Post, path)
+  }
+
+  pub fn put(path: string) -> EndpointRouteSpec {
+    return EndpointRouteSpec.manual(HttpMethod.Put, path)
+  }
+
+  pub fn patch(path: string) -> EndpointRouteSpec {
+    return EndpointRouteSpec.manual(HttpMethod.Patch, path)
+  }
+
+  pub fn delete(path: string) -> EndpointRouteSpec {
+    return EndpointRouteSpec.manual(HttpMethod.Delete, path)
+  }
+
+  pub fn path(self: EndpointRouteSpec) -> string {
+    return self.path
+  }
+
+  pub fn httpMethod(self: EndpointRouteSpec) -> HttpMethod {
+    return self.method
+  }
+
+  pub fn manual(self: EndpointRouteSpec) -> bool {
+    return self.source == EndpointRouteSource.ManualExact
+  }
+
+  pub fn queryInPath(self: EndpointRouteSpec) -> bool {
+    return self.queryInPathRejected == false
+  }
+
+  pub fn valid(self: EndpointRouteSpec) -> bool {
+    return self.path != ""
+      && self.queryInPathRejected
+      && self.exactMatch
+  }
+}

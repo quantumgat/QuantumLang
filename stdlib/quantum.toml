@@ -1,0 +1,44 @@
+[package]
+name = "stdlib"
+version = "0.1.0"
+edition = "2026"
+description = "Clean QuantumLang self-hosted public standard library"
+
+[library]
+type = "static"
+
+[source]
+root = "."
+include = ["**/*.qn"]
+exclude = ["build/**", ".qtlc/**", "**/target/**", "**/test/**", "**/*.bench.qn"]
+
+[stdlib]
+canonicalImport = "std"
+root = "."
+publicApiOwner = "qtlc/qtlang/stdlib"
+cleanMetadataRequired = true
+generatedSourceFallback = false
+generatedCppFallback = false
+generatedHeaderFallback = false
+
+[metadata]
+schema = "self-hosted-stdlib-v1"
+sourceOwned = true
+rejectOldQnmetaLowering = true
+rejectBootstrapExternBindings = true
+runtimeAbiContracts = "abi/runtimeSymbols.toml"
+effectContracts = "abi/capabilities.toml"
+
+[publicBinaryPolicy]
+command = "qtlc"
+role = "shipped-stdlib-artifacts"
+publicCompilerBinary = false
+embeddedInCompilerByDefault = false
+shippedArtifacts = ["stdlib-qnapi", "stdlib-qna", "stdlib-a"]
+consumedByQtlcBuild = true
+defaultAppOutput = "static-one-executable"
+extraRuntimeFilesInDefaultStaticMode = false
+nativeBackendOnly = true
+
+[modules]
+public = ["core", "option", "result", "error", "text", "bytes", "collections", "math", "io", "fs", "path", "process", "terminal", "os", "sys", "temp", "net", "http", "web", "async", "task", "thread", "parallel", "channel", "sync", "cancel", "actor", "stream", "time", "log", "observe", "report", "replay", "resilience", "random", "crypto", "quantum", "serde", "json", "bson", "binary", "protocol", "rpc", "sql", "db", "dataQuery", "distributed", "ffi", "ptr", "mem", "alloc", "arch", "runtime", "signal", "abi"]

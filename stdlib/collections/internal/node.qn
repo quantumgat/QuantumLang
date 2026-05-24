@@ -1,0 +1,9 @@
+pub struct Node {
+  index: usize,
+}
+
+impl Node {
+  pub fn init(index: usize) -> Node {
+    return Node { index: index }
+  }
+}

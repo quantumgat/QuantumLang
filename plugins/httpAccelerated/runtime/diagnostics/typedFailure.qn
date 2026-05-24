@@ -1,0 +1,77 @@
+pub enum HttpAcceleratedFailureKind {
+  BadRequestBytes,
+  RouteMiss,
+  SlowClient,
+  KernelUnavailable,
+  TargetUnsupported,
+}
+
+pub struct HttpAcceleratedFailure {
+  kind: HttpAcceleratedFailureKind,
+  code: string,
+  offset: usize,
+  detail: string,
+  typed: bool,
+  noCoredump: bool,
+}
+
+impl HttpAcceleratedFailure {
+  pub fn kernelUnavailable() -> HttpAcceleratedFailure {
+    return HttpAcceleratedFailure {
+      kind: HttpAcceleratedFailureKind.KernelUnavailable,
+      code: "HTTP_ACCEL_KERNEL_UNAVAILABLE",
+      offset: 0,
+      detail: "accelerated HTTP kernel is unavailable",
+      typed: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn badRequest(offset: usize, detail: string) -> HttpAcceleratedFailure {
+    return HttpAcceleratedFailure {
+      kind: HttpAcceleratedFailureKind.BadRequestBytes,
+      code: "HTTP_ACCEL_BAD_REQUEST",
+      offset: offset,
+      detail: detail,
+      typed: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn routeMiss(detail: string) -> HttpAcceleratedFailure {
+    return HttpAcceleratedFailure {
+      kind: HttpAcceleratedFailureKind.RouteMiss,
+      code: "HTTP_ACCEL_ROUTE_MISS",
+      offset: 0,
+      detail: detail,
+      typed: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn slowClient(detail: string) -> HttpAcceleratedFailure {
+    return HttpAcceleratedFailure {
+      kind: HttpAcceleratedFailureKind.SlowClient,
+      code: "HTTP_ACCEL_SLOW_CLIENT",
+      offset: 0,
+      detail: detail,
+      typed: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn targetUnsupported(detail: string) -> HttpAcceleratedFailure {
+    return HttpAcceleratedFailure {
+      kind: HttpAcceleratedFailureKind.TargetUnsupported,
+      code: "HTTP_ACCEL_TARGET_UNSUPPORTED",
+      offset: 0,
+      detail: detail,
+      typed: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: HttpAcceleratedFailure) -> bool {
+    return self.code != "" && self.detail != "" && self.typed && self.noCoredump
+  }
+}

@@ -1,0 +1,12 @@
+pub struct PlatformAddressSpaceFact {
+  target: string,
+  genericSpace: bool,
+  deviceSpace: bool,
+  mmioSpace: bool,
+}
+
+impl PlatformAddressSpaceFact {
+  pub fn accepted(self: PlatformAddressSpaceFact) -> bool {
+    return self.target != "" && self.genericSpace
+  }
+}

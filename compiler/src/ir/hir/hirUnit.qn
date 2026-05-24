@@ -1,0 +1,31 @@
+pub struct HirUnit {
+  moduleId: u64,
+  nodeCount: usize,
+  diagnosticCount: usize,
+}
+
+pub fn hirUnit(moduleId: u64, nodeCount: usize, diagnosticCount: usize) -> HirUnit {
+  return HirUnit {
+    moduleId: moduleId,
+    nodeCount: nodeCount,
+    diagnosticCount: diagnosticCount,
+  }
+}
+
+impl HirUnit {
+  pub fn module(self: HirUnit) -> u64 {
+    return self.moduleId
+  }
+
+  pub fn nodes(self: HirUnit) -> usize {
+    return self.nodeCount
+  }
+
+  pub fn diagnostics(self: HirUnit) -> usize {
+    return self.diagnosticCount
+  }
+
+  pub fn isClean(self: HirUnit) -> bool {
+    return self.diagnosticCount == 0
+  }
+}

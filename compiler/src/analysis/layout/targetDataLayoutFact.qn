@@ -1,0 +1,25 @@
+pub enum TargetEndianFact {
+  Little,
+  Big,
+}
+
+pub struct TargetDataLayoutFact {
+  pointerSize: usize,
+  pointerAlignment: usize,
+  endian: TargetEndianFact,
+  maxScalarAlignment: usize,
+  aggregateAlignment: usize,
+}
+
+impl TargetDataLayoutFact {
+  pub fn valid(self: TargetDataLayoutFact) -> bool {
+    return self.pointerSize > 0
+      && self.pointerAlignment > 0
+      && self.maxScalarAlignment >= self.pointerAlignment
+      && self.aggregateAlignment > 0
+  }
+
+  pub fn pointerStride(self: TargetDataLayoutFact) -> usize {
+    return self.pointerSize
+  }
+}

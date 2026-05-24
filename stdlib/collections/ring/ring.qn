@@ -1,0 +1,336 @@
+pub enum RingOverflowPolicy {
+  Reject,
+  OverwriteOldest,
+}
+
+pub struct RingBuffer<T> {
+  items: Vec<T>,
+  head: usize,
+  tail: usize,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+  overflowPolicy: RingOverflowPolicy,
+}
+
+impl<T> RingBuffer<T> {
+  pub fn init() -> RingBuffer<T> {
+    return RingBuffer<T> {
+      items: Vec<T>.empty(),
+      head: 0,
+      tail: 0,
+      len: 0,
+      capacity: 0,
+      generation: 0,
+      overflowPolicy: RingOverflowPolicy.OverwriteOldest,
+    }
+  }
+
+  pub fn empty() -> RingBuffer<T> {
+    return RingBuffer<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> RingBuffer<T> requires(alloc) {
+    return RingBuffer<T> {
+      items: Vec<T>.withCapacity(capacity),
+      head: 0,
+      tail: 0,
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+      overflowPolicy: RingOverflowPolicy.OverwriteOldest,
+    }
+  }
+
+  pub fn withRejectPolicy(capacity: usize) -> RingBuffer<T> requires(alloc) {
+    return RingBuffer<T>.withCapacity(capacity).withOverflowPolicy(RingOverflowPolicy.Reject)
+  }
+
+  pub fn withOverwritePolicy(capacity: usize) -> RingBuffer<T> requires(alloc) {
+    return RingBuffer<T>.withCapacity(capacity).withOverflowPolicy(RingOverflowPolicy.OverwriteOldest)
+  }
+
+  pub fn fromVec(items: Vec<T>) -> RingBuffer<T> {
+    return RingBuffer<T> {
+      items: items,
+      head: 0,
+      tail: 0,
+      len: items.len,
+      capacity: items.len,
+      generation: 0,
+      overflowPolicy: RingOverflowPolicy.OverwriteOldest,
+    }
+  }
+
+  pub fn builder() -> RingBufferBuilder<T> {
+    return RingBufferBuilder<T> {
+      capacity: 0,
+      overflowPolicy: RingOverflowPolicy.OverwriteOldest,
+    }
+  }
+
+  pub fn len(self: RingBuffer<T>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: RingBuffer<T>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: RingBuffer<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn isFull(self: RingBuffer<T>) -> bool {
+    return self.capacity > 0 && self.len == self.capacity
+  }
+
+  pub fn physicalIndex(self: RingBuffer<T>, logicalIndex: usize) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (self.head + logicalIndex) % self.capacity
+  }
+
+  pub fn push(self: RingBuffer<T>, value: T) -> RingBuffer<T> requires(alloc) {
+    return self.pushBack(value)
+  }
+
+  pub fn pushBack(self: RingBuffer<T>, value: T) -> RingBuffer<T> requires(alloc) {
+    if self.capacity == 0 {
+      return self
+    }
+    if self.isFull() {
+      if self.overflowPolicy == RingOverflowPolicy.Reject {
+        return self
+      }
+      let items = self.writeSlot(self.tail, value)
+      return RingBuffer<T> {
+        items: items,
+        head: self.nextHead(),
+        tail: self.nextTail(),
+        len: self.len,
+        capacity: self.capacity,
+        generation: self.generation + 1,
+        overflowPolicy: self.overflowPolicy,
+      }
+    }
+    let items = self.writeSlot(self.tail, value)
+    return RingBuffer<T> {
+      items: items,
+      head: self.head,
+      tail: self.nextTail(),
+      len: self.len + 1,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+      overflowPolicy: self.overflowPolicy,
+    }
+  }
+
+  pub fn pushFront(self: RingBuffer<T>, value: T) -> RingBuffer<T> requires(alloc) {
+    if self.capacity == 0 {
+      return self
+    }
+    let head = self.prevHead()
+    if self.isFull() {
+      if self.overflowPolicy == RingOverflowPolicy.Reject {
+        return self
+      }
+      let items = self.writeSlot(head, value)
+      return RingBuffer<T> {
+        items: items,
+        head: head,
+        tail: self.prevTail(),
+        len: self.len,
+        capacity: self.capacity,
+        generation: self.generation + 1,
+        overflowPolicy: self.overflowPolicy,
+      }
+    }
+    let items = self.writeSlot(head, value)
+    return RingBuffer<T> {
+      items: items,
+      head: head,
+      tail: self.tail,
+      len: self.len + 1,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+      overflowPolicy: self.overflowPolicy,
+    }
+  }
+
+  pub fn pop(self: RingBuffer<T>) -> (RingBuffer<T>, Option<T>) {
+    return self.popFront()
+  }
+
+  pub fn popFront(self: RingBuffer<T>) -> (RingBuffer<T>, Option<T>) {
+    if self.len == 0 {
+      return (self, None)
+    }
+    let value = self.items[self.head]
+    return (
+      RingBuffer<T> {
+        items: self.items,
+        head: self.nextHead(),
+        tail: self.tail,
+        len: self.len - 1,
+        capacity: self.capacity,
+        generation: self.generation + 1,
+        overflowPolicy: self.overflowPolicy,
+      },
+      Some(value)
+    )
+  }
+
+  pub fn popBack(self: RingBuffer<T>) -> (RingBuffer<T>, Option<T>) {
+    if self.len == 0 {
+      return (self, None)
+    }
+    let tail = self.prevTail()
+    let value = self.items[tail]
+    return (
+      RingBuffer<T> {
+        items: self.items,
+        head: self.head,
+        tail: tail,
+        len: self.len - 1,
+        capacity: self.capacity,
+        generation: self.generation + 1,
+        overflowPolicy: self.overflowPolicy,
+      },
+      Some(value)
+    )
+  }
+
+  pub fn front(self: RingBuffer<T>) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    return Some(self.items[self.head])
+  }
+
+  pub fn back(self: RingBuffer<T>) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    return Some(self.items[self.prevTail()])
+  }
+
+  pub fn peekFront(self: RingBuffer<T>) -> Option<T> {
+    return self.front()
+  }
+
+  pub fn peekBack(self: RingBuffer<T>) -> Option<T> {
+    return self.back()
+  }
+
+  pub fn clear(self: RingBuffer<T>) -> RingBuffer<T> requires(alloc) {
+    return RingBuffer<T>.withCapacity(self.capacity)
+      .withOverflowPolicy(self.overflowPolicy)
+      .withGeneration(self.generation + 1)
+  }
+
+  pub fn iter(self: RingBuffer<T>) -> RingBufferIter<T> {
+    return RingBufferIter<T> {
+      ring: self,
+      index: 0,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+
+  pub fn forEach(self: RingBuffer<T>, action: fn(T) -> ()) -> () {
+    let mut index: usize = 0
+    while index < self.len {
+      action(self.items[self.physicalIndex(index)])
+      index = index + 1
+    }
+  }
+
+  pub fn find(self: RingBuffer<T>, predicate: fn(T) -> bool) -> Option<T> {
+    let mut index: usize = 0
+    while index < self.len {
+      let value = self.items[self.physicalIndex(index)]
+      if predicate(value) {
+        return Some(value)
+      }
+      index = index + 1
+    }
+    return None
+  }
+
+  pub fn toVec(self: RingBuffer<T>) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.len {
+      result = result.push(self.items[self.physicalIndex(index)])
+      index = index + 1
+    }
+    return result
+  }
+
+  pub fn writeSlot(self: RingBuffer<T>, index: usize, value: T) -> Vec<T> requires(alloc) {
+    if index >= self.items.len {
+      return self.items.push(value)
+    }
+    return self.items.set(index, value)
+  }
+
+  pub fn nextHead(self: RingBuffer<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (self.head + 1) % self.capacity
+  }
+
+  pub fn prevHead(self: RingBuffer<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    if self.head == 0 {
+      return self.capacity - 1
+    }
+    return self.head - 1
+  }
+
+  pub fn nextTail(self: RingBuffer<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    return (self.tail + 1) % self.capacity
+  }
+
+  pub fn prevTail(self: RingBuffer<T>) -> usize {
+    if self.capacity == 0 {
+      return 0
+    }
+    if self.tail == 0 {
+      return self.capacity - 1
+    }
+    return self.tail - 1
+  }
+
+  pub fn withOverflowPolicy(self: RingBuffer<T>, overflowPolicy: RingOverflowPolicy) -> RingBuffer<T> {
+    return RingBuffer<T> {
+      items: self.items,
+      head: self.head,
+      tail: self.tail,
+      len: self.len,
+      capacity: self.capacity,
+      generation: self.generation,
+      overflowPolicy: overflowPolicy,
+    }
+  }
+
+  pub fn withGeneration(self: RingBuffer<T>, generation: usize) -> RingBuffer<T> {
+    return RingBuffer<T> {
+      items: self.items,
+      head: self.head,
+      tail: self.tail,
+      len: self.len,
+      capacity: self.capacity,
+      generation: generation,
+      overflowPolicy: self.overflowPolicy,
+    }
+  }
+}

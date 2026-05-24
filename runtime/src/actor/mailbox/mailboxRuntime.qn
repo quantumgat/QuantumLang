@@ -1,0 +1,36 @@
+pub enum RuntimeMailboxPolicy {
+  Bounded
+  DropNewest
+  DropOldest
+  Fail
+}
+
+pub struct RuntimeMailbox {
+  actorId: ActorId,
+  capacity: usize,
+  depth: usize,
+  policy: RuntimeMailboxPolicy,
+  backpressureReady: bool,
+}
+
+impl RuntimeMailbox {
+  pub fn init(
+    actorId: ActorId,
+    capacity: usize,
+    depth: usize,
+    policy: RuntimeMailboxPolicy,
+    backpressureReady: bool,
+  ) -> RuntimeMailbox {
+    return RuntimeMailbox {
+      actorId: actorId,
+      capacity: capacity,
+      depth: depth,
+      policy: policy,
+      backpressureReady: backpressureReady,
+    }
+  }
+
+  pub fn canEnqueue(self: RuntimeMailbox) -> bool {
+    return self.capacity == 0 || self.depth < self.capacity
+  }
+}

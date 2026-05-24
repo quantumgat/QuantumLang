@@ -1,0 +1,39 @@
+pub enum OopHandleKind {
+  None
+  TypeMetadata
+  Vtable
+  InterfaceObject
+  DispatchEntry
+  ReflectionCatalog
+  RuntimeResource
+}
+
+pub struct OopHandleLifecycle {
+  slot: u64,
+  generation: u64,
+  kind: OopHandleKind,
+  retired: bool,
+  staleDiagnosticBound: bool,
+}
+
+pub fn oopHandleLifecycle(
+  slot: u64,
+  generation: u64,
+  kind: OopHandleKind,
+  retired: bool,
+  staleDiagnosticBound: bool,
+) -> OopHandleLifecycle {
+  return OopHandleLifecycle {
+    slot: slot,
+    generation: generation,
+    kind: kind,
+    retired: retired,
+    staleDiagnosticBound: staleDiagnosticBound,
+  }
+}
+
+impl OopHandleLifecycle {
+  pub fn valid(self: OopHandleLifecycle) -> bool {
+    return self.slot > 0 && self.generation > 0 && self.kind != OopHandleKind.None && self.retired == false
+  }
+}

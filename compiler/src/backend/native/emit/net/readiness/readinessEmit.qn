@@ -1,0 +1,11 @@
+pub struct NativeNetReadinessEmit {
+  reactorRegistration: bool,
+  cancellationCleanupEdge: bool,
+  wakeupCoalescing: bool,
+}
+
+impl NativeNetReadinessEmit {
+  pub fn accepted(self: NativeNetReadinessEmit) -> bool {
+    return self.reactorRegistration && self.cancellationCleanupEdge && self.wakeupCoalescing
+  }
+}

@@ -1,0 +1,22 @@
+pub enum CallableFlowProofKind {
+  ClosureSignatureProof
+  CaptureLifetimeProof
+  InlineHotCallbackProof
+  AsyncCallableProof
+  NoGeneratedFallback
+}
+
+pub struct CallableFlowProof {
+  kind: CallableFlowProofKind,
+  fixture: string,
+  nativeLowering: NativeCallableFlowLowering,
+  negativeFixtureCaptured: bool,
+}
+
+impl CallableFlowProof {
+  pub fn complete(self: CallableFlowProof) -> bool {
+    return self.fixture != ""
+      && self.nativeLowering.complete()
+      && self.negativeFixtureCaptured
+  }
+}

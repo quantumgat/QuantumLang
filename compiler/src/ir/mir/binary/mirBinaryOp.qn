@@ -1,0 +1,67 @@
+pub enum MirBinaryOpKind {
+  LoadFixedWidth,
+  StoreFixedWidth,
+  LoadBytes,
+  StoreBytes,
+  ReadVarU64,
+  WriteVarU64,
+  FinishWriter,
+}
+
+pub struct MirBinaryOp {
+  instruction: u64,
+  kind: MirBinaryOpKind,
+  widthBits: u16,
+  endian: BinaryEndian,
+  directPointerAccess: bool,
+  wrapperErasureEligible: bool,
+  resultBranchNoAllocation: bool,
+}
+
+pub fn mirBinaryOp(instruction: u64, kind: MirBinaryOpKind, widthBits: u16, endian: BinaryEndian) -> MirBinaryOp {
+  return MirBinaryOp {
+    instruction: instruction,
+    kind: kind,
+    widthBits: widthBits,
+    endian: endian,
+    directPointerAccess: true,
+    wrapperErasureEligible: true,
+    resultBranchNoAllocation: true,
+  }
+}
+
+pub fn lowerHirBinaryCallToMir(call: HirBinaryCallLowering, instruction: u64) -> MirBinaryOp {
+  match call.kind {
+    HirBinaryCallKind.CursorRead => {
+      return mirBinaryOp(instruction, MirBinaryOpKind.LoadFixedWidth, call.widthBits, call.endian)
+    }
+    HirBinaryCallKind.CursorReadBytes => {
+      return mirBinaryOp(instruction, MirBinaryOpKind.LoadBytes, 0, call.endian)
+    }
+    HirBinaryCallKind.CursorReadVarU64 => {
+      return mirBinaryOp(instruction, MirBinaryOpKind.ReadVarU64, 64, call.endian)
+    }
+    HirBinaryCallKind.WriterWrite => {
+      return mirBinaryOp(instruction, MirBinaryOpKind.StoreFixedWidth, call.widthBits, call.endian)
+    }
+    HirBinaryCallKind.WriterWriteBytes => {
+      return mirBinaryOp(instruction, MirBinaryOpKind.StoreBytes, 0, call.endian)
+    }
+    HirBinaryCallKind.WriterWriteVarU64 => {
+      return mirBinaryOp(instruction, MirBinaryOpKind.WriteVarU64, 64, call.endian)
+    }
+    HirBinaryCallKind.WriterFinish => {
+      return mirBinaryOp(instruction, MirBinaryOpKind.FinishWriter, 0, call.endian)
+    }
+  }
+}
+
+impl MirBinaryOp {
+  pub fn hotPathEligible(self: MirBinaryOp) -> bool {
+    return self.instruction > 0
+      && self.widthBits <= 256
+      && self.directPointerAccess
+      && self.wrapperErasureEligible
+      && self.resultBranchNoAllocation
+  }
+}

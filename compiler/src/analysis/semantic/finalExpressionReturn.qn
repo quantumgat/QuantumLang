@@ -1,0 +1,85 @@
+pub enum FinalExpressionReturnDiagnostic {
+  None
+  MissingFinalExpression
+  SemicolonSuppressedFinalExpression
+  TypeMismatch
+  QuestionMarkReturnMismatch
+}
+
+pub struct FinalExpressionReturnConversion {
+  traitName: string,
+  targetTypeName: string,
+  errorTypeName: string,
+  wrapsResultOk: bool,
+}
+
+impl FinalExpressionReturnConversion {
+  pub fn none() -> FinalExpressionReturnConversion {
+    return FinalExpressionReturnConversion {
+      traitName: "",
+      targetTypeName: "",
+      errorTypeName: "",
+      wrapsResultOk: false,
+    }
+  }
+
+  pub fn into(traitName: string, targetTypeName: string, errorTypeName: string, wrapsResultOk: bool) -> FinalExpressionReturnConversion {
+    return FinalExpressionReturnConversion {
+      traitName: traitName,
+      targetTypeName: targetTypeName,
+      errorTypeName: errorTypeName,
+      wrapsResultOk: wrapsResultOk,
+    }
+  }
+
+  pub fn required(self: FinalExpressionReturnConversion) -> bool {
+    return self.traitName != ""
+  }
+}
+
+pub struct FinalExpressionReturnFact {
+  functionId: u64,
+  expectedTypeId: u64,
+  expressionTypeId: u64,
+  usesQuestionMark: bool,
+  diagnostic: FinalExpressionReturnDiagnostic,
+  conversion: FinalExpressionReturnConversion,
+}
+
+pub fn finalExpressionReturnFact(
+  functionId: u64,
+  expectedTypeId: u64,
+  expressionTypeId: u64,
+  usesQuestionMark: bool,
+  diagnostic: FinalExpressionReturnDiagnostic,
+  conversion: FinalExpressionReturnConversion,
+) -> FinalExpressionReturnFact {
+  return FinalExpressionReturnFact {
+    functionId: functionId,
+    expectedTypeId: expectedTypeId,
+    expressionTypeId: expressionTypeId,
+    usesQuestionMark: usesQuestionMark,
+    diagnostic: diagnostic,
+    conversion: conversion,
+  }
+}
+
+impl FinalExpressionReturnFact {
+  pub fn isValidReturn(self: FinalExpressionReturnFact) -> bool {
+    return (self.expectedTypeId == self.expressionTypeId || self.conversion.required()) &&
+      self.diagnostic == FinalExpressionReturnDiagnostic.None
+  }
+
+  pub fn propagatesQuestionMark(self: FinalExpressionReturnFact) -> bool {
+    return self.usesQuestionMark &&
+      self.diagnostic != FinalExpressionReturnDiagnostic.QuestionMarkReturnMismatch
+  }
+
+  pub fn usesImplicitConversion(self: FinalExpressionReturnFact) -> bool {
+    return self.conversion.required()
+  }
+
+  pub fn wrapsResultOk(self: FinalExpressionReturnFact) -> bool {
+    return self.conversion.wrapsResultOk
+  }
+}

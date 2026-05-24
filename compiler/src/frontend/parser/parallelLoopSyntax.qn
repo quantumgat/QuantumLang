@@ -1,0 +1,51 @@
+pub enum ParallelLoopSyntaxKind {
+  Loop
+  StopValue
+  BreakAll
+  ContinueWorker
+}
+
+pub struct ParallelLoopSyntax {
+  node: u64,
+  kind: ParallelLoopSyntaxKind,
+  threadsArg: u64,
+  batchArg: u64,
+  workArg: u64,
+  workerBinding: u64,
+  bodyNode: u64,
+  stopAllowed: bool,
+}
+
+pub fn parallelLoopSyntax(
+  node: u64,
+  kind: ParallelLoopSyntaxKind,
+  threadsArg: u64,
+  batchArg: u64,
+  workArg: u64,
+  workerBinding: u64,
+  bodyNode: u64,
+  stopAllowed: bool,
+) -> ParallelLoopSyntax {
+  return ParallelLoopSyntax {
+    node: node,
+    kind: kind,
+    threadsArg: threadsArg,
+    batchArg: batchArg,
+    workArg: workArg,
+    workerBinding: workerBinding,
+    bodyNode: bodyNode,
+    stopAllowed: stopAllowed,
+  }
+}
+
+impl ParallelLoopSyntax {
+  pub fn complete(self: ParallelLoopSyntax) -> bool {
+    return self.node > 0
+      && self.threadsArg > 0
+      && self.batchArg > 0
+      && self.workArg > 0
+      && self.workerBinding > 0
+      && self.bodyNode > 0
+      && self.stopAllowed
+  }
+}

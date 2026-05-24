@@ -1,0 +1,30 @@
+pub enum ArenaErrorKind {
+  Released,
+  ResetGeneration,
+  WrongRegion,
+  CapacityExceeded,
+  InvalidLayout,
+  DanglingReference,
+}
+
+pub struct ArenaError {
+  kind: ArenaErrorKind,
+  recoverable: bool,
+}
+
+impl ArenaError {
+  pub fn init(kind: ArenaErrorKind) -> ArenaError {
+    return ArenaError {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+
+  pub fn kind(self: ArenaError) -> ArenaErrorKind {
+    return self.kind
+  }
+
+  pub fn recoverable(self: ArenaError) -> bool {
+    return self.recoverable
+  }
+}

@@ -1,0 +1,21 @@
+pub struct PoolAllocator {
+  pool: MemoryPool,
+  allocator: Allocator,
+}
+
+impl PoolAllocator {
+  pub fn fromPool(pool: MemoryPool) -> PoolAllocator {
+    return PoolAllocator {
+      pool: pool,
+      allocator: Allocator.inDomain(pool.domain()),
+    }
+  }
+
+  pub fn allocator(self: PoolAllocator) -> Allocator {
+    return self.allocator
+  }
+
+  pub fn pool(self: PoolAllocator) -> MemoryPool {
+    return self.pool
+  }
+}

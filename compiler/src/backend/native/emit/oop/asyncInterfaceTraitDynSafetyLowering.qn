@@ -1,0 +1,39 @@
+pub struct OopAsyncInterfaceTraitDynNativeLowering {
+  mirOpId: u64,
+  ownerTypeName: string,
+  methodName: string,
+  emitsStaticDirectCall: bool,
+  emitsSealedInterfaceCall: bool,
+  emitsDynAdapterBoundary: bool,
+  emitsFutureAbiObject: bool,
+  emitsVtablePollEntry: bool,
+  emitsObjectSafetyDiagnostic: bool,
+  erasesAllocationWhenStatic: bool,
+  emitsTypedFailurePath: bool,
+  noCoredumpFailure: bool,
+  sourceMapBound: bool,
+}
+
+impl OopAsyncInterfaceTraitDynNativeLowering {
+  pub fn complete(self: OopAsyncInterfaceTraitDynNativeLowering) -> bool {
+    return self.mirOpId > 0
+      && self.ownerTypeName != ""
+      && self.methodName != ""
+      && self.emitsStaticDirectCall
+      && self.emitsSealedInterfaceCall
+      && self.emitsDynAdapterBoundary
+      && self.emitsFutureAbiObject
+      && self.emitsVtablePollEntry
+      && self.emitsObjectSafetyDiagnostic
+      && self.erasesAllocationWhenStatic
+      && self.emitsTypedFailurePath
+      && self.noCoredumpFailure
+      && self.sourceMapBound
+  }
+
+  pub fn staticHotPathReady(self: OopAsyncInterfaceTraitDynNativeLowering) -> bool {
+    return self.complete()
+      && self.emitsStaticDirectCall
+      && self.erasesAllocationWhenStatic
+  }
+}

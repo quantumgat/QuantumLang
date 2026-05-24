@@ -1,0 +1,49 @@
+pub struct CacheEntry<K, V> {
+  key: K,
+  value: V,
+  generation: usize,
+  hits: usize,
+}
+
+pub struct CacheOrderKey<K> {
+  key: K,
+  generation: usize,
+}
+
+impl<K, V> CacheEntry<K, V> {
+  pub fn new(key: K, value: V, generation: usize) -> CacheEntry<K, V> {
+    return CacheEntry<K, V> {
+      key: key,
+      value: value,
+      generation: generation,
+      hits: 0,
+    }
+  }
+
+  pub fn withValue(self: CacheEntry<K, V>, value: V, generation: usize) -> CacheEntry<K, V> {
+    return CacheEntry<K, V> {
+      key: self.key,
+      value: value,
+      generation: generation,
+      hits: self.hits,
+    }
+  }
+
+  pub fn touched(self: CacheEntry<K, V>, generation: usize) -> CacheEntry<K, V> {
+    return CacheEntry<K, V> {
+      key: self.key,
+      value: self.value,
+      generation: generation,
+      hits: self.hits + 1,
+    }
+  }
+}
+
+impl<K> CacheOrderKey<K> {
+  pub fn new(key: K, generation: usize) -> CacheOrderKey<K> {
+    return CacheOrderKey<K> {
+      key: key,
+      generation: generation,
+    }
+  }
+}

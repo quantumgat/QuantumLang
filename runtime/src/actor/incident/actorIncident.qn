@@ -1,0 +1,35 @@
+pub enum RuntimeActorIncidentKind {
+  MailboxFull
+  AskTimeout
+  RestartLimit
+  StaleActor
+  HandlerFailure
+  SupervisionFailure
+}
+
+pub struct RuntimeActorIncident {
+  actorId: ActorId,
+  kind: RuntimeActorIncidentKind,
+  diagnosticCode: string,
+  noAllocationRequired: bool,
+}
+
+impl RuntimeActorIncident {
+  pub fn init(
+    actorId: ActorId,
+    kind: RuntimeActorIncidentKind,
+    diagnosticCode: string,
+    noAllocationRequired: bool,
+  ) -> RuntimeActorIncident {
+    return RuntimeActorIncident {
+      actorId: actorId,
+      kind: kind,
+      diagnosticCode: diagnosticCode,
+      noAllocationRequired: noAllocationRequired,
+    }
+  }
+
+  pub fn reportable(self: RuntimeActorIncident) -> bool {
+    return self.actorId.raw() > 0 && self.diagnosticCode != "" && self.noAllocationRequired
+  }
+}

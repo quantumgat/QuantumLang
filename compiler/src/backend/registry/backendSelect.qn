@@ -1,0 +1,19 @@
+pub struct BackendSelection {
+  requested: BackendId,
+  selected: BackendId,
+  diagnosticRequired: bool,
+}
+
+pub fn backendSelection(requested: BackendId, selected: BackendId, diagnosticRequired: bool) -> BackendSelection {
+  return BackendSelection {
+    requested: requested,
+    selected: selected,
+    diagnosticRequired: diagnosticRequired,
+  }
+}
+
+impl BackendSelection {
+  pub fn accepted(self: BackendSelection) -> bool {
+    return self.diagnosticRequired == false
+  }
+}

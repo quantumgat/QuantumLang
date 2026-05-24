@@ -1,0 +1,26 @@
+pub enum TargetEnvironmentKind {
+  Gnu,
+  Musl,
+  Gnueabihf,
+  Msvc,
+  Apple,
+  AndroidNdk,
+  EspIdf,
+  Wasi,
+  Browser,
+  Emscripten,
+  Freestanding,
+  UnknownEnvironment,
+}
+
+pub struct TargetEnvironmentModel {
+  kind: TargetEnvironmentKind,
+  libcAvailable: bool,
+  hostedRuntime: bool,
+}
+
+impl TargetEnvironmentModel {
+  pub fn accepted(self: TargetEnvironmentModel) -> bool {
+    return self.kind != TargetEnvironmentKind.UnknownEnvironment
+  }
+}

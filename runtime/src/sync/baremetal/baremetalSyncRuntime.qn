@@ -1,0 +1,12 @@
+pub struct BaremetalSyncRuntime {
+  target: string,
+  criticalSection: bool,
+  interruptsMasked: bool,
+  blockingForbidden: bool,
+}
+
+impl BaremetalSyncRuntime {
+  pub fn accepted(self: BaremetalSyncRuntime) -> bool {
+    return self.target != "" && self.criticalSection && self.blockingForbidden
+  }
+}

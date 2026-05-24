@@ -1,0 +1,50 @@
+pub enum ForDomainDataLowLevelSyntaxKind {
+  TableScan
+  BinaryView
+  ColumnBlock
+  RowDelta
+  SimdLane
+  PageLoop
+  DecodeLoop
+  BitWindow
+  ProbeLoop
+  MergeLoop
+  PipelineLoop
+  PointerRange
+  CheckedSlice
+  MemoryRegion
+  AtomicRetry
+  MmioRange
+  FileLine
+  TokenLoop
+  GraphemeLoop
+  RetryBatch
+  ThrottleDebounce
+  GroupWindowTime
+  ResourceTransaction
+}
+
+pub struct ForDomainDataLowLevelSyntax {
+  kind: ForDomainDataLowLevelSyntaxKind,
+  loopHeaderParsed: bool,
+  domainClauseParsed: bool,
+  iterableParsed: bool,
+  capabilityClauseParsed: bool,
+  safetyClauseParsed: bool,
+  bodyParsed: bool,
+  sourceRangeReady: bool,
+  recoveryReady: bool,
+}
+
+impl ForDomainDataLowLevelSyntax {
+  pub fn parsed(self: ForDomainDataLowLevelSyntax) -> bool {
+    return self.loopHeaderParsed
+      && self.domainClauseParsed
+      && self.iterableParsed
+      && self.capabilityClauseParsed
+      && self.safetyClauseParsed
+      && self.bodyParsed
+      && self.sourceRangeReady
+      && self.recoveryReady
+  }
+}

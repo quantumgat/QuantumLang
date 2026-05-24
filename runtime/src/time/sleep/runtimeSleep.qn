@@ -1,0 +1,21 @@
+pub struct RuntimeSleep {
+  timerId: u64,
+  durationNanos: u128,
+  tokenId: u64,
+  wakeScheduled: bool,
+}
+
+impl RuntimeSleep {
+  pub fn init(timerId: u64, durationNanos: u128, tokenId: u64, wakeScheduled: bool) -> RuntimeSleep {
+    return RuntimeSleep {
+      timerId: timerId,
+      durationNanos: durationNanos,
+      tokenId: tokenId,
+      wakeScheduled: wakeScheduled,
+    }
+  }
+
+  pub fn accepted(self: RuntimeSleep) -> bool {
+    return self.timerId > 0 && self.durationNanos > 0 && self.tokenId > 0 && self.wakeScheduled
+  }
+}

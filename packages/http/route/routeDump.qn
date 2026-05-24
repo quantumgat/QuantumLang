@@ -1,0 +1,27 @@
+pub struct HttpRouteDump {
+  routeCount: usize,
+  conflictCount: usize,
+  acceleratorReady: bool,
+}
+
+impl HttpRouteDump {
+  pub fn init(routeCount: usize, conflictCount: usize, acceleratorReady: bool) -> HttpRouteDump {
+    return HttpRouteDump {
+      routeCount: routeCount,
+      conflictCount: conflictCount,
+      acceleratorReady: acceleratorReady,
+    }
+  }
+
+  pub fn fromTable(table: HttpRouteTable) -> HttpRouteDump {
+    return HttpRouteDump.init(table.len(), 0, true)
+  }
+
+  pub fn routeCount(self: HttpRouteDump) -> usize {
+    return self.routeCount
+  }
+
+  pub fn acceleratorReady(self: HttpRouteDump) -> bool {
+    return self.acceleratorReady
+  }
+}

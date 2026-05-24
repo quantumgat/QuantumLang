@@ -1,0 +1,46 @@
+pub enum InterpolatedStringSegmentKind {
+  Text
+  Expr
+  FormatSpec
+  EscapedBrace
+}
+
+pub struct InterpolatedStringSegment {
+  kind: InterpolatedStringSegmentKind,
+  expressionId: u64,
+  sourceOrder: usize,
+  hasFormatSpec: bool,
+}
+
+pub fn interpolatedStringSegment(kind: InterpolatedStringSegmentKind, expressionId: u64, sourceOrder: usize, hasFormatSpec: bool) -> InterpolatedStringSegment {
+  return InterpolatedStringSegment {
+    kind: kind,
+    expressionId: expressionId,
+    sourceOrder: sourceOrder,
+    hasFormatSpec: hasFormatSpec,
+  }
+}
+
+pub struct InterpolatedStringExpr {
+  segmentCount: usize,
+  expressionCount: usize,
+  preservesSourceRanges: bool,
+}
+
+pub fn interpolatedStringExpr(segmentCount: usize, expressionCount: usize) -> InterpolatedStringExpr {
+  return InterpolatedStringExpr {
+    segmentCount: segmentCount,
+    expressionCount: expressionCount,
+    preservesSourceRanges: true,
+  }
+}
+
+impl InterpolatedStringExpr {
+  pub fn isStringTyped(self: InterpolatedStringExpr) -> bool {
+    return self.segmentCount > 0 && self.preservesSourceRanges
+  }
+
+  pub fn interpolatedExpressionCount(self: InterpolatedStringExpr) -> usize {
+    return self.expressionCount
+  }
+}

@@ -1,0 +1,87 @@
+pub struct Bytes {
+  data: usize,
+  len: usize,
+}
+
+pub struct BytesMut {
+  data: usize,
+  len: usize,
+  capacity: usize,
+}
+
+pub struct NetSlice {
+  data: usize,
+  len: usize,
+  ownerGeneration: u64,
+}
+
+pub struct NetBuffer {
+  data: BytesMut,
+  pooled: bool,
+}
+
+pub struct IoSlice {
+  data: usize,
+  len: usize,
+}
+
+pub struct IoSliceMut {
+  data: usize,
+  len: usize,
+}
+
+pub struct IoVec {
+  base: usize,
+  len: usize,
+  count: usize,
+}
+
+impl Bytes {
+  pub fn isEmpty(self: Bytes) -> bool {
+    return self.len == 0
+  }
+
+  pub fn count(self: Bytes) -> usize {
+    return self.len
+  }
+
+  pub fn slice(self: Bytes, offset: usize, count: usize) -> NetResult<NetSlice> {
+    if offset + count > self.len {
+      return Err(NetError {
+        kind: NetErrorKind.PlatformFailure,
+        message: "net buffer slice out of bounds",
+        retryable: false,
+      })
+    }
+    return Ok(NetSlice {
+      data: self.data + offset,
+      len: count,
+      ownerGeneration: 1,
+    })
+  }
+}
+
+impl NetSlice {
+  pub fn accepted(self: NetSlice) -> bool {
+    return self.len == 0 || (self.data > 0 && self.ownerGeneration > 0)
+  }
+
+  pub fn count(self: NetSlice) -> usize {
+    return self.len
+  }
+}
+
+impl BytesMut {
+  pub fn spare(self: BytesMut) -> usize {
+    if self.capacity < self.len {
+      return 0
+    }
+    return self.capacity - self.len
+  }
+}
+
+impl NetBuffer {
+  pub fn zeroCopyEligible(self: NetBuffer) -> bool {
+    return self.pooled && self.data.capacity >= self.data.len
+  }
+}

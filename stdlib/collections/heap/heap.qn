@@ -1,0 +1,287 @@
+pub struct HeapEntry<T, P> {
+  value: T,
+  priority: P,
+  sequence: usize,
+}
+
+pub struct Heap<T, P> {
+  entries: Vec<HeapEntry<T, P>>,
+  comparator: Comparator<P>,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+  nextSequence: usize,
+}
+
+impl<T, P> Heap<T, P> {
+  pub fn init() -> Heap<T, P> {
+    return Heap<T, P> {
+      entries: Vec<HeapEntry<T, P>>.empty(),
+      comparator: Comparator<P>.init(),
+      len: 0,
+      capacity: 0,
+      generation: 0,
+      nextSequence: 0,
+    }
+  }
+
+  pub fn empty() -> Heap<T, P> {
+    return Heap<T, P>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Heap<T, P> requires(alloc) {
+    return Heap<T, P> {
+      entries: Vec<HeapEntry<T, P>>.withCapacity(capacity),
+      comparator: Comparator<P>.init(),
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+      nextSequence: 0,
+    }
+  }
+
+  pub fn withComparator(comparator: Comparator<P>) -> Heap<T, P> {
+    return Heap<T, P> {
+      entries: Vec<HeapEntry<T, P>>.empty(),
+      comparator: comparator,
+      len: 0,
+      capacity: 0,
+      generation: 0,
+      nextSequence: 0,
+    }
+  }
+
+  pub fn fromEntries(entries: Vec<HeapEntry<T, P>>, comparator: Comparator<P>) -> Heap<T, P> requires(alloc) {
+    let heap = Heap<T, P> {
+      entries: entries,
+      comparator: comparator,
+      len: entries.len,
+      capacity: entries.capacity,
+      generation: 0,
+      nextSequence: entries.len,
+    }
+    return heap.heapify()
+  }
+
+  pub fn builder() -> HeapBuilder<T, P> {
+    return HeapBuilder<T, P> {
+      capacity: 0,
+      comparator: Comparator<P>.init(),
+    }
+  }
+
+  pub fn len(self: Heap<T, P>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Heap<T, P>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Heap<T, P>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn push(self: Heap<T, P>, value: T, priority: P) -> Heap<T, P> requires(alloc) {
+    let entry = HeapEntry<T, P> {
+      value: value,
+      priority: priority,
+      sequence: self.nextSequence,
+    }
+    let entries = self.entries.push(entry)
+    return Heap<T, P> {
+      entries: entries,
+      comparator: self.comparator,
+      len: self.len + 1,
+      capacity: entries.capacity,
+      generation: self.generation + 1,
+      nextSequence: self.nextSequence + 1,
+    }.siftUp(self.len)
+  }
+
+  pub fn pop(self: Heap<T, P>) -> (Heap<T, P>, Option<HeapEntry<T, P>>) requires(alloc) {
+    if self.len == 0 {
+      return (self, None)
+    }
+    let top = self.entries[0]
+    if self.len == 1 {
+      return (
+        Heap<T, P> {
+          entries: Vec<HeapEntry<T, P>>.withCapacity(self.capacity),
+          comparator: self.comparator,
+          len: 0,
+          capacity: self.capacity,
+          generation: self.generation + 1,
+          nextSequence: self.nextSequence,
+        },
+        Some(top)
+      )
+    }
+    let lastIndex = self.len - 1
+    let last = self.entries[lastIndex]
+    let entries = self.entries.set(0, last)
+    return (
+      Heap<T, P> {
+        entries: entries,
+        comparator: self.comparator,
+        len: lastIndex,
+        capacity: self.capacity,
+        generation: self.generation + 1,
+        nextSequence: self.nextSequence,
+      }.siftDown(0),
+      Some(top)
+    )
+  }
+
+  pub fn peek(self: Heap<T, P>) -> Option<HeapEntry<T, P>> {
+    if self.len == 0 {
+      return None
+    }
+    return Some(self.entries[0])
+  }
+
+  pub fn replaceTop(self: Heap<T, P>, value: T, priority: P) -> (Heap<T, P>, Option<HeapEntry<T, P>>) requires(alloc) {
+    if self.len == 0 {
+      return (self.push(value, priority), None)
+    }
+    let old = self.entries[0]
+    let entry = HeapEntry<T, P> {
+      value: value,
+      priority: priority,
+      sequence: self.nextSequence,
+    }
+    let entries = self.entries.set(0, entry)
+    return (
+      Heap<T, P> {
+        entries: entries,
+        comparator: self.comparator,
+        len: self.len,
+        capacity: self.capacity,
+        generation: self.generation + 1,
+        nextSequence: self.nextSequence + 1,
+      }.siftDown(0),
+      Some(old)
+    )
+  }
+
+  pub fn clear(self: Heap<T, P>) -> Heap<T, P> requires(alloc) {
+    return Heap<T, P> {
+      entries: Vec<HeapEntry<T, P>>.withCapacity(self.capacity),
+      comparator: self.comparator,
+      len: 0,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+      nextSequence: self.nextSequence,
+    }
+  }
+
+  pub fn iter(self: Heap<T, P>) -> HeapIter<T, P> {
+    return HeapIter<T, P> {
+      heap: self,
+      index: 0,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+
+  pub fn intoSortedVec(self: Heap<T, P>) -> Vec<T> requires(alloc) {
+    let mut heap = self
+    let mut result = Vec<T>.withCapacity(self.len)
+    while heap.len > 0 {
+      let popped = heap.pop()
+      heap = popped.0
+      match popped.1 {
+        Some(entry) => {
+          result = result.push(entry.value)
+        }
+        None => {
+        }
+      }
+    }
+    return result
+  }
+
+  pub fn heapify(self: Heap<T, P>) -> Heap<T, P> requires(alloc) {
+    if self.len < 2 {
+      return self
+    }
+    let mut heap = self
+    let mut index: usize = heap.parentIndex(heap.len - 1) + 1
+    while index > 0 {
+      index = index - 1
+      heap = heap.siftDown(index)
+    }
+    return heap
+  }
+
+  pub fn siftUp(self: Heap<T, P>, index: usize) -> Heap<T, P> requires(alloc) {
+    let mut heap = self
+    let mut child = index
+    while child > 0 {
+      let parent = heap.parentIndex(child)
+      if heap.higherPriority(child, parent) == false {
+        return heap
+      }
+      heap = heap.swapEntries(child, parent)
+      child = parent
+    }
+    return heap
+  }
+
+  pub fn siftDown(self: Heap<T, P>, index: usize) -> Heap<T, P> requires(alloc) {
+    let mut heap = self
+    let mut parent = index
+    while heap.leftChild(parent) < heap.len {
+      let left = heap.leftChild(parent)
+      let right = left + 1
+      let mut best = left
+      if right < heap.len && heap.higherPriority(right, left) {
+        best = right
+      }
+      if heap.higherPriority(best, parent) == false {
+        return heap
+      }
+      heap = heap.swapEntries(parent, best)
+      parent = best
+    }
+    return heap
+  }
+
+  pub fn higherPriority(self: Heap<T, P>, leftIndex: usize, rightIndex: usize) -> bool {
+    let left = self.entries[leftIndex]
+    let right = self.entries[rightIndex]
+    let order = self.comparator.compare(left.priority, right.priority)
+    if order == Ordering.Greater {
+      return true
+    }
+    if order == Ordering.Less {
+      return false
+    }
+    return left.sequence < right.sequence
+  }
+
+  pub fn swapEntries(self: Heap<T, P>, leftIndex: usize, rightIndex: usize) -> Heap<T, P> requires(alloc) {
+    if leftIndex == rightIndex {
+      return self
+    }
+    let left = self.entries[leftIndex]
+    let right = self.entries[rightIndex]
+    let entries = self.entries.set(leftIndex, right).set(rightIndex, left)
+    return Heap<T, P> {
+      entries: entries,
+      comparator: self.comparator,
+      len: self.len,
+      capacity: self.capacity,
+      generation: self.generation,
+      nextSequence: self.nextSequence,
+    }
+  }
+
+  pub fn parentIndex(self: Heap<T, P>, index: usize) -> usize {
+    return (index - 1) / 2
+  }
+
+  pub fn leftChild(self: Heap<T, P>, index: usize) -> usize {
+    return index * 2 + 1
+  }
+}

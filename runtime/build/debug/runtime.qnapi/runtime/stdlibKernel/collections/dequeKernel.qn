@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct DequeKernel {
+  circularBufferBacked: bool
+  headTailDirect: bool
+  moduloIndexLowered: bool
+  pushFrontUsesHeadDecAndStore: bool
+  pushBackUsesTailStore: bool
+  popFrontUsesHeadLoadAndHeadInc: bool
+  popBackUsesTailDecAndLoad: bool
+  peekFrontBackUsesDirectLoad: bool
+  rotateUsesHeadTailMove: bool
+  growRepackLinearized: bool
+  zeroCopyFromVec: bool
+  iteratorRingCursorStable: bool
+  callableLoopsInlineable: bool
+}

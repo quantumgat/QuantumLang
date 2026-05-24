@@ -1,0 +1,49 @@
+pub enum MirForLoopOpKind {
+  CountedLoop
+  DirectIndexLoop
+  PointerLengthLoop
+  CursorLoop
+  FusedPipelineLoop
+  EarlyExitLoop
+  AsyncPollLoop
+  ParallelForkJoin
+  ParallelReduction
+  QuantumRegisterLoop
+  UnsafeVolatileLoop
+  ComptimeUnrolledLoop
+}
+
+pub struct MirForLoopOp {
+  instruction: u64,
+  kind: MirForLoopOpKind,
+  allocationFree: bool,
+  boundsHoisted: bool,
+  directCounterLowering: bool,
+  cursorErased: bool,
+  zipEnumerateFused: bool,
+  asyncPollDirect: bool,
+  parallelShardDirect: bool,
+  qforQirDirect: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirForLoopOp {
+  pub fn hotLowerable(self: MirForLoopOp) -> bool {
+    return self.instruction > 0
+      && self.allocationFree
+      && self.boundsHoisted
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+
+  pub fn executableHotPathReady(self: MirForLoopOp) -> bool {
+    return self.hotLowerable()
+      && self.directCounterLowering
+      && self.cursorErased
+      && self.zipEnumerateFused
+      && self.asyncPollDirect
+      && self.parallelShardDirect
+      && self.qforQirDirect
+  }
+}

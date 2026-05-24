@@ -1,0 +1,47 @@
+pub enum AstSpecializedLoopFormKind {
+  AsyncFor
+  ForAwait
+  Select
+  Join
+  Timeout
+  Cancel
+  ParallelReduce
+  DeterministicParallelReduce
+  ParallelErrorAggregation
+  StreamLoop
+  CursorLoop
+  DecodeLoop
+  PageChunkLoop
+  ScanLoop
+  PointerRangeLoop
+  CheckedSliceLoop
+  AtomicRetryLoop
+  QforLoweringAudit
+  QwhileRestricted
+  QifNestedQforProof
+  ComptimeLoop
+  StaticFor
+}
+
+pub struct AstSpecializedLoopForm {
+  node: AstNode,
+  kind: AstSpecializedLoopFormKind,
+  sourceId: u64,
+  bodyId: u64,
+  reducerId: u64,
+  errorPolicyId: u64,
+  profileId: u64,
+  hotPathCandidate: bool,
+}
+
+impl AstSpecializedLoopForm {
+  pub fn complete(self: AstSpecializedLoopForm) -> bool {
+    return self.node.nodeId() > 0
+      && self.sourceId > 0
+      && self.bodyId > 0
+  }
+
+  pub fn parallel(self: AstSpecializedLoopForm) -> bool {
+    return self.reducerId > 0 || self.errorPolicyId > 0
+  }
+}

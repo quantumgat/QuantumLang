@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PluginRuntimeDynamicLoadResult {
+  plan: PluginRuntimeDynamicLoadPlan
+  loadedKernel: PluginLoadedKernel
+  runtimeLoad: PluginRuntimeLoadResult
+  failure: PluginKernelFailure
+  typedFailureOnly: bool
+  noCoredump: bool
+  deterministicDispatch: bool
+}

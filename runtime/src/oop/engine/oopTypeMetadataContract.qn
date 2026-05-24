@@ -1,0 +1,35 @@
+pub struct OopTypeMetadataContract {
+  typeId: u64,
+  baseTypeId: u64,
+  implementedInterfaceCount: usize,
+  version: string,
+  dynamicPolymorphic: bool,
+  exactTypeIdentity: bool,
+  deterministicOrder: bool,
+  retired: bool,
+}
+
+pub fn oopTypeMetadataContract(
+  typeId: u64,
+  baseTypeId: u64,
+  implementedInterfaceCount: usize,
+  version: string,
+  dynamicPolymorphic: bool,
+) -> OopTypeMetadataContract {
+  return OopTypeMetadataContract {
+    typeId: typeId,
+    baseTypeId: baseTypeId,
+    implementedInterfaceCount: implementedInterfaceCount,
+    version: version,
+    dynamicPolymorphic: dynamicPolymorphic,
+    exactTypeIdentity: true,
+    deterministicOrder: true,
+    retired: false,
+  }
+}
+
+impl OopTypeMetadataContract {
+  pub fn active(self: OopTypeMetadataContract) -> bool {
+    return self.typeId > 0 && self.version != "" && self.retired == false
+  }
+}

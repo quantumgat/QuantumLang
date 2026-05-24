@@ -1,0 +1,42 @@
+pub enum ExactNumericKernelFamily {
+  CheckedInteger
+  WideInteger
+  Decimal
+  BigInt
+  BigUint
+  Rational
+  Fixed
+}
+
+pub struct ExactNumericKernel {
+  family: ExactNumericKernelFamily,
+  overflowChecked: bool,
+  divideByZeroChecked: bool,
+  invalidShiftChecked: bool,
+  resourceLimitChecked: bool,
+  noHiddenFloatFallback: bool,
+  noCoredump: bool,
+}
+
+impl ExactNumericKernel {
+  pub fn checked(family: ExactNumericKernelFamily) -> ExactNumericKernel {
+    return ExactNumericKernel {
+      family: family,
+      overflowChecked: true,
+      divideByZeroChecked: true,
+      invalidShiftChecked: true,
+      resourceLimitChecked: true,
+      noHiddenFloatFallback: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: ExactNumericKernel) -> bool {
+    return self.overflowChecked
+      && self.divideByZeroChecked
+      && self.invalidShiftChecked
+      && self.resourceLimitChecked
+      && self.noHiddenFloatFallback
+      && self.noCoredump
+  }
+}

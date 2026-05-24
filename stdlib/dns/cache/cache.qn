@@ -1,0 +1,11 @@
+pub struct DnsCachePolicy {
+  enabled: bool,
+  maxEntries: usize,
+  maxTtlSeconds: u32,
+}
+
+impl DnsCachePolicy {
+  pub fn accepted(self: DnsCachePolicy) -> bool {
+    return !self.enabled || (self.maxEntries > 0 && self.maxTtlSeconds > 0)
+  }
+}

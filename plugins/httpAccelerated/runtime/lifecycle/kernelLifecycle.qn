@@ -1,0 +1,24 @@
+pub struct HttpAcceleratedKernelLifecycle {
+  loadRequired: bool,
+  targetProbeRequired: bool,
+  unloadRequired: bool,
+  failureCleanupRequired: bool,
+}
+
+impl HttpAcceleratedKernelLifecycle {
+  pub fn required() -> HttpAcceleratedKernelLifecycle {
+    return HttpAcceleratedKernelLifecycle {
+      loadRequired: true,
+      targetProbeRequired: true,
+      unloadRequired: true,
+      failureCleanupRequired: true,
+    }
+  }
+
+  pub fn complete(self: HttpAcceleratedKernelLifecycle) -> bool {
+    return self.loadRequired
+      && self.targetProbeRequired
+      && self.unloadRequired
+      && self.failureCleanupRequired
+  }
+}

@@ -1,0 +1,95 @@
+pub struct HttpAcceleratedE2eRequest {
+  method: string,
+  path: string,
+  bodyBytes: usize,
+}
+
+impl HttpAcceleratedE2eRequest {
+  pub fn usersGet() -> HttpAcceleratedE2eRequest {
+    return HttpAcceleratedE2eRequest {
+      method: "GET",
+      path: "/users",
+      bodyBytes: 0,
+    }
+  }
+}
+
+pub struct HttpAcceleratedE2eResponse {
+  status: u16,
+  handlerId: u64,
+  bodyBytes: usize,
+  writtenBytes: usize,
+}
+
+impl HttpAcceleratedE2eResponse {
+  pub fn ok(self: HttpAcceleratedE2eResponse) -> bool {
+    return self.status == 200
+      && self.handlerId == 2
+      && self.bodyBytes > 0
+      && self.writtenBytes == self.bodyBytes
+  }
+}
+
+pub struct HttpAcceleratedE2eServerProof {
+  loadPath: HttpAcceleratorExecutablePath,
+  packageFacts: HttpPackageFactSet,
+  pipeline: HttpAcceleratedHotPathPipeline,
+  parsed: HttpParserRuntimeResult,
+  routed: HttpRouteRuntimeResult,
+  written: HttpWriterRuntimeResult,
+  response: HttpAcceleratedE2eResponse,
+  noCoreHttp: bool,
+  targetMatrixComplete: bool,
+}
+
+impl HttpAcceleratedE2eServerProof {
+  pub fn complete(self: HttpAcceleratedE2eServerProof) -> bool {
+    return self.loadPath.executable()
+      && self.packageFacts.ready()
+      && self.pipeline.complete()
+      && self.parsed.safe()
+      && self.routed.safe()
+      && self.written.safe()
+      && self.response.ok()
+      && self.targetMatrixComplete
+      && self.noCoreHttp
+  }
+}
+
+pub fn httpAcceleratedE2eServerProof() -> HttpAcceleratedE2eServerProof {
+  let request = HttpAcceleratedE2eRequest.usersGet()
+  let loadPath = HttpAcceleratorExecutablePath.fromLoadPlan(HttpAcceleratorLoadPlan.accelerated())
+  let facts = HttpPackageFactSet.complete(true, true, true, true, true, true, true)
+  let pipeline = HttpAcceleratedHotPathPipeline.fromPackageGraphs(
+    httpAcceleratedProofRoutes(),
+    httpAcceleratedProofExtractors(),
+    httpAcceleratedProofCapabilities(),
+    httpAcceleratedProofThunks(),
+    httpAcceleratedProofSourceMap(),
+    httpAcceleratedProofTransport()
+  )
+  let parsed = HttpParserKernel.simd().parseFast(HttpParserInput.simpleGet(64, 4), HttpParserTarget.avx2())
+  let routes = Vec<HttpRouteEntry>()
+    .push(HttpRouteEntry.exact("GET", "/health", 1))
+    .push(HttpRouteEntry.exact(request.method, request.path, 2))
+  let routed = HttpRouteKernel.trie().lookup(request.method, request.path, routes)
+  let headers = Vec<HttpResponseHeader>()
+    .push(HttpResponseHeader.new("content-type", "application/json"))
+  let written = HttpWriterKernel.response().write(200, headers, 27)
+  return HttpAcceleratedE2eServerProof {
+    loadPath: loadPath,
+    packageFacts: facts,
+    pipeline: pipeline,
+    parsed: parsed,
+    routed: routed,
+    written: written,
+    response: HttpAcceleratedE2eResponse {
+      status: 200,
+      handlerId: routed.handlerId,
+      bodyBytes: 27,
+      writtenBytes: written.totalBytes,
+    },
+    targetMatrixComplete: HttpAcceleratedTargetKernelMatrix.required().complete(),
+    noCoreHttp: true,
+  }
+}

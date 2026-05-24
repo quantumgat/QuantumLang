@@ -1,0 +1,9 @@
+pub struct Storage {
+  len: usize,
+}
+
+impl Storage {
+  pub fn init(len: usize) -> Storage {
+    return Storage { len: len }
+  }
+}

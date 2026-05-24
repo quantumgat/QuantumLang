@@ -1,0 +1,26 @@
+pub struct RuntimeBroadcastChannel {
+  channelId: u64,
+  subscriberCount: usize,
+  capacity: usize,
+  laggedReceivers: usize,
+}
+
+impl RuntimeBroadcastChannel {
+  pub fn init(
+    channelId: u64,
+    subscriberCount: usize,
+    capacity: usize,
+    laggedReceivers: usize,
+  ) -> RuntimeBroadcastChannel {
+    return RuntimeBroadcastChannel {
+      channelId: channelId,
+      subscriberCount: subscriberCount,
+      capacity: capacity,
+      laggedReceivers: laggedReceivers,
+    }
+  }
+
+  pub fn backpressureVisible(self: RuntimeBroadcastChannel) -> bool {
+    return self.capacity > 0 && self.laggedReceivers > 0
+  }
+}

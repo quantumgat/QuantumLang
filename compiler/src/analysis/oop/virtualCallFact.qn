@@ -1,0 +1,39 @@
+pub enum VirtualCallKind {
+  DirectMethodCall
+  VirtualMethodCall
+  InterfaceMethodCall
+}
+
+pub struct VirtualCallFact {
+  receiverTypeId: u64,
+  methodId: u64,
+  kind: VirtualCallKind,
+  hotPath: bool,
+}
+
+pub fn virtualCallFact(receiverTypeId: u64, methodId: u64, kind: VirtualCallKind, hotPath: bool) -> VirtualCallFact {
+  return VirtualCallFact {
+    receiverTypeId: receiverTypeId,
+    methodId: methodId,
+    kind: kind,
+    hotPath: hotPath,
+  }
+}
+
+impl VirtualCallFact {
+  pub fn receiver(self: VirtualCallFact) -> u64 {
+    return self.receiverTypeId
+  }
+
+  pub fn method(self: VirtualCallFact) -> u64 {
+    return self.methodId
+  }
+
+  pub fn callKind(self: VirtualCallFact) -> VirtualCallKind {
+    return self.kind
+  }
+
+  pub fn isHotPath(self: VirtualCallFact) -> bool {
+    return self.hotPath
+  }
+}

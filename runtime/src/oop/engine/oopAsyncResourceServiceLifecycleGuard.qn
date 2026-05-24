@@ -1,0 +1,35 @@
+pub struct OopAsyncResourceServiceLifecycleGuard {
+  objectId: u64,
+  ownerTypeName: string,
+  generation: u64,
+  started: bool,
+  ready: bool,
+  healthy: bool,
+  shutdownRequested: bool,
+  shutdownCompleted: bool,
+  reconnectInFlight: bool,
+  typedFailureBound: bool,
+  noCoredumpFailure: bool,
+}
+
+impl OopAsyncResourceServiceLifecycleGuard {
+  pub fn accepted(self: OopAsyncResourceServiceLifecycleGuard) -> bool {
+    return self.objectId > 0
+      && self.ownerTypeName != ""
+      && self.generation > 0
+      && self.typedFailureBound
+      && self.noCoredumpFailure
+      && (!self.ready || self.started)
+      && (!self.ready || self.healthy)
+      && (!self.shutdownRequested || self.shutdownCompleted)
+      && (!self.shutdownCompleted || !self.reconnectInFlight)
+  }
+
+  pub fn canServe(self: OopAsyncResourceServiceLifecycleGuard) -> bool {
+    return self.accepted()
+      && self.started
+      && self.ready
+      && self.healthy
+      && !self.shutdownRequested
+  }
+}

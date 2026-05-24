@@ -1,0 +1,12 @@
+pub struct QirArtifactPlan {
+  moduleName: string,
+  emitsBitcode: bool,
+  emitsMetadata: bool,
+  reproducible: bool,
+}
+
+impl QirArtifactPlan {
+  pub fn accepted(self: QirArtifactPlan) -> bool {
+    return self.moduleName != "" && self.emitsBitcode && self.reproducible
+  }
+}

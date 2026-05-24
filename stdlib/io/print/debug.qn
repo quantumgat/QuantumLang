@@ -1,0 +1,17 @@
+pub struct DebugPrintPolicy {
+  redactsSecrets: bool,
+  includesSourceLocation: bool,
+  safeInRelease: bool,
+}
+
+pub fn dbg<T>(value: T) -> Result<T, PrintError>
+
+impl DebugPrintPolicy {
+  pub fn default() -> DebugPrintPolicy {
+    return DebugPrintPolicy {
+      redactsSecrets: true,
+      includesSourceLocation: true,
+      safeInRelease: true,
+    }
+  }
+}

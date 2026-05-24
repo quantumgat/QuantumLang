@@ -1,0 +1,29 @@
+pub struct ActorMailboxLifecycleRuntime {
+  actorId: ActorId,
+  mailboxBound: bool,
+  acceptingMessages: bool,
+  draining: bool,
+  drained: bool,
+  shutdownRequested: bool,
+  backpressureReady: bool,
+  serializedStateAccess: bool,
+  noCoredumpFailure: bool,
+}
+
+impl ActorMailboxLifecycleRuntime {
+  pub fn complete(self: ActorMailboxLifecycleRuntime) -> bool {
+    return self.actorId.raw() > 0
+      && self.mailboxBound
+      && self.backpressureReady
+      && self.serializedStateAccess
+      && self.noCoredumpFailure
+      && (!self.shutdownRequested || self.draining)
+      && (!self.drained || !self.acceptingMessages)
+  }
+
+  pub fn canEnqueue(self: ActorMailboxLifecycleRuntime) -> bool {
+    return self.complete()
+      && self.acceptingMessages
+      && !self.shutdownRequested
+  }
+}

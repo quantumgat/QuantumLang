@@ -1,0 +1,39 @@
+pub struct SnapshotReportFact {
+  memoryRowsCovered: bool,
+  syncRowsCovered: bool,
+  reclamationRowsCovered: bool,
+  platformThreadRowsCovered: bool,
+  replayCovered: bool,
+  queryCovered: bool,
+  redacted: bool,
+  emergencyNoAllocation: bool,
+  noCoredump: bool,
+}
+
+impl SnapshotReportFact {
+  pub fn init() -> SnapshotReportFact {
+    return SnapshotReportFact {
+      memoryRowsCovered: true,
+      syncRowsCovered: true,
+      reclamationRowsCovered: true,
+      platformThreadRowsCovered: true,
+      replayCovered: true,
+      queryCovered: true,
+      redacted: true,
+      emergencyNoAllocation: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: SnapshotReportFact) -> bool {
+    return self.memoryRowsCovered
+      && self.syncRowsCovered
+      && self.reclamationRowsCovered
+      && self.platformThreadRowsCovered
+      && self.replayCovered
+      && self.queryCovered
+      && self.redacted
+      && self.emergencyNoAllocation
+      && self.noCoredump
+  }
+}

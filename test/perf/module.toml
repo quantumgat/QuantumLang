@@ -1,0 +1,6 @@
+[module]
+name = "test.perf"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "benchmark-proof"

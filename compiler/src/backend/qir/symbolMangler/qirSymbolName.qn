@@ -1,0 +1,12 @@
+pub struct QirSymbolName {
+  qnPath: string,
+  qirName: string,
+  stable: bool,
+  collisionChecked: bool,
+}
+
+impl QirSymbolName {
+  pub fn accepted(self: QirSymbolName) -> bool {
+    return self.qnPath != "" && self.qirName != "" && self.stable && self.collisionChecked
+  }
+}

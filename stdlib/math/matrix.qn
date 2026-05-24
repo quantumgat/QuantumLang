@@ -1,0 +1,18 @@
+pub struct Matrix<T> {
+  rows: usize,
+  cols: usize,
+}
+
+impl<T> Matrix<T> {
+  pub fn rowCount(self: Matrix<T>) -> usize {
+    return self.rows
+  }
+
+  pub fn colCount(self: Matrix<T>) -> usize {
+    return self.cols
+  }
+
+  pub fn transpose(self: Matrix<T>) -> Matrix<T>
+  pub fn det(self: Matrix<T>) -> Result<T, string>
+  pub fn mul(self: Matrix<T>, other: Matrix<T>) -> Result<Matrix<T>, string>
+}

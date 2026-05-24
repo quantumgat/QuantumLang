@@ -1,0 +1,11 @@
+pub struct Condvar {
+  waiterCount: usize,
+}
+
+impl Condvar {
+  pub fn wait<T>(self: Condvar, guard: MutexGuard<T>) -> Result<MutexGuard<T>, SyncError>
+
+  pub fn notifyOne(self: Condvar) -> Result<Unit, SyncError>
+
+  pub fn notifyAll(self: Condvar) -> Result<Unit, SyncError>
+}

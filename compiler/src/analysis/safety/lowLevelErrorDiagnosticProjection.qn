@@ -1,0 +1,51 @@
+pub struct LowLevelErrorDiagnosticProjection {
+  memoryDiagnostic: LowLevelErrorDiagnostic,
+  pointerDiagnostic: LowLevelErrorDiagnostic,
+  unsafeDiagnostic: LowLevelErrorDiagnostic,
+  atomicDiagnostic: LowLevelErrorDiagnostic,
+  simdDiagnostic: LowLevelErrorDiagnostic,
+  layoutDiagnostic: LowLevelErrorDiagnostic,
+  ffiDiagnostic: LowLevelErrorDiagnostic,
+  coredumpDiagnostic: LowLevelErrorDiagnostic,
+  doubleFreeDiagnostic: LowLevelErrorDiagnostic,
+  memoryFact: MemoryDiagnosticFact,
+  coverageFact: DiagnosticCoverageFact,
+  doubleFreeFactRejected: bool,
+  machineOutputConnected: bool,
+}
+
+impl LowLevelErrorDiagnosticProjection {
+  pub fn init(file: u32) -> LowLevelErrorDiagnosticProjection {
+    return LowLevelErrorDiagnosticProjection {
+      memoryDiagnostic: memoryErrorDiagnostic(file, 1, 2, "memory operation is not proven safe"),
+      pointerDiagnostic: pointerErrorDiagnostic(file, 3, 4, "pointer operation may read invalid memory"),
+      unsafeDiagnostic: unsafeErrorDiagnostic(file, 5, 6, "unsafe operation has no proof obligation"),
+      atomicDiagnostic: atomicErrorDiagnostic(file, 7, 8, "atomic ordering is invalid for this operation"),
+      simdDiagnostic: simdErrorDiagnostic(file, 9, 10, "SIMD operation is not supported by the target"),
+      layoutDiagnostic: layoutErrorDiagnostic(file, 11, 12, "layout is not stable for this memory operation"),
+      ffiDiagnostic: ffiErrorDiagnostic(file, 13, 14, "foreign call can escape typed failure handling"),
+      coredumpDiagnostic: coredumpRiskDiagnostic(file, 15, 16, "failure path can abort instead of reporting"),
+      doubleFreeDiagnostic: doubleFreeRiskDiagnostic(file, 17, 18, "allocation can be released twice"),
+      memoryFact: MemoryDiagnosticFact.init(1),
+      coverageFact: DiagnosticCoverageFact.init(),
+      doubleFreeFactRejected: true,
+      machineOutputConnected: true,
+    }
+  }
+
+  pub fn complete(self: LowLevelErrorDiagnosticProjection) -> bool {
+    return self.memoryDiagnostic.reportable()
+      && self.pointerDiagnostic.reportable()
+      && self.unsafeDiagnostic.reportable()
+      && self.atomicDiagnostic.reportable()
+      && self.simdDiagnostic.reportable()
+      && self.layoutDiagnostic.reportable()
+      && self.ffiDiagnostic.reportable()
+      && self.coredumpDiagnostic.reportable()
+      && self.doubleFreeDiagnostic.reportable()
+      && self.memoryFact.accepted()
+      && self.coverageFact.complete()
+      && self.doubleFreeFactRejected
+      && self.machineOutputConnected
+  }
+}

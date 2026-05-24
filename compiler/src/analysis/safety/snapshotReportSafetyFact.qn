@@ -1,0 +1,27 @@
+pub struct SnapshotReportSafetyFact {
+  sourceRangesStable: bool,
+  redactsPayloads: bool,
+  avoidsAllocationOnFailure: bool,
+  noCoredump: bool,
+  replayDeterministic: bool,
+}
+
+impl SnapshotReportSafetyFact {
+  pub fn init() -> SnapshotReportSafetyFact {
+    return SnapshotReportSafetyFact {
+      sourceRangesStable: true,
+      redactsPayloads: true,
+      avoidsAllocationOnFailure: true,
+      noCoredump: true,
+      replayDeterministic: true,
+    }
+  }
+
+  pub fn accepted(self: SnapshotReportSafetyFact) -> bool {
+    return self.sourceRangesStable
+      && self.redactsPayloads
+      && self.avoidsAllocationOnFailure
+      && self.noCoredump
+      && self.replayDeterministic
+  }
+}

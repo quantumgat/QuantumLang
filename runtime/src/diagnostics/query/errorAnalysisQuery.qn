@@ -1,0 +1,26 @@
+pub struct RuntimeErrorAnalysisQuery {
+  subsystem: string,
+  correlationId: string,
+  includeSourceRanges: bool,
+  includeRecovery: bool,
+  redactedOnly: bool,
+}
+
+impl RuntimeErrorAnalysisQuery {
+  pub fn forSubsystem(subsystem: string) -> RuntimeErrorAnalysisQuery {
+    return RuntimeErrorAnalysisQuery {
+      subsystem: subsystem,
+      correlationId: "",
+      includeSourceRanges: true,
+      includeRecovery: true,
+      redactedOnly: true,
+    }
+  }
+
+  pub fn privacySafe(self: RuntimeErrorAnalysisQuery) -> bool {
+    return self.subsystem != ""
+      && self.includeSourceRanges
+      && self.includeRecovery
+      && self.redactedOnly
+  }
+}

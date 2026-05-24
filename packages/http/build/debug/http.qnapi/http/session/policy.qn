@@ -1,0 +1,22 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum SessionRotationPolicy {
+  Never
+  Login
+  EveryRequest
+  Interval
+}
+pub struct SessionCookiePolicy {
+  name: string
+  secure: bool
+  httpOnly: bool
+  sameSite: SameSite
+  ttlSeconds: usize
+  signedValue: bool
+  encryptedValue: bool
+}
+pub struct SessionPolicy {
+  cookie: SessionCookiePolicy
+  rotation: SessionRotationPolicy
+  csrfRequired: bool
+  rolling: bool
+}

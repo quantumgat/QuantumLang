@@ -1,0 +1,12 @@
+pub struct WasmAbiContract {
+  target: string,
+  linearMemory: bool,
+  wasm32: bool,
+  hostImportsRequired: bool,
+}
+
+impl WasmAbiContract {
+  pub fn accepted(self: WasmAbiContract) -> bool {
+    return self.target != "" && self.linearMemory && self.wasm32
+  }
+}

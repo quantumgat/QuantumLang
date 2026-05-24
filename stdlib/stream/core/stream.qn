@@ -1,0 +1,21 @@
+pub enum StreamError {
+  Closed
+  Cancelled
+  Timeout
+  Backpressure
+  Partial
+  RetryLimit
+}
+
+pub struct Stream<T> {
+  id: u64,
+  backpressureAware: bool,
+}
+
+impl Stream<T> {
+  pub async fn next(self: Stream<T>) -> Result<Option<T>, StreamError>
+
+  pub fn isBackpressureAware(self: Stream<T>) -> bool {
+    return self.backpressureAware
+  }
+}

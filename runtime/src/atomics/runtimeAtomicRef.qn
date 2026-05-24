@@ -1,0 +1,25 @@
+pub struct RuntimeAtomicRef {
+  address: usize,
+  generation: u64,
+  targetSupported: bool,
+}
+
+impl RuntimeAtomicRef {
+  pub fn init(address: usize, generation: u64, targetSupported: bool) -> RuntimeAtomicRef {
+    return RuntimeAtomicRef {
+      address: address,
+      generation: generation,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn validate(self: RuntimeAtomicRef, generation: u64) -> Result<RuntimeAtomicRef, RuntimeAtomicError> {
+    if self.targetSupported == false {
+      return Err(RuntimeAtomicError.init(RuntimeAtomicErrorKind.UnsupportedTarget))
+    }
+    if self.generation != generation {
+      return Err(RuntimeAtomicError.init(RuntimeAtomicErrorKind.InvalidReference))
+    }
+    return Ok(self)
+  }
+}

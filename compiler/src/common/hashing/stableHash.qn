@@ -1,0 +1,18 @@
+pub struct StableHash {
+  value: u64,
+  seed: u64,
+}
+
+pub fn stableHash(value: u64, seed: u64) -> StableHash {
+  return StableHash { value: value, seed: seed }
+}
+
+impl StableHash {
+  pub fn digest(self: StableHash) -> u64 {
+    return self.value
+  }
+
+  pub fn deterministic(self: StableHash) -> bool {
+    return self.seed != 0
+  }
+}

@@ -1,0 +1,31 @@
+[report]
+name = "http-accelerated-real-traffic"
+runner = "qtlc-http-accelerated-real-traffic-v1"
+maxParallel = 1
+allCoreDisabled = true
+maxConnections = 64
+maxRequests = 10000
+maxResidentBytes = 268435456
+fallbackCompared = true
+productSpeedClaimBlocked = true
+
+[[rows]]
+name = "http-real-traffic-json-api"
+fallbackRequestsPerSecond = 125000.0
+acceleratedRequestsPerSecond = 310000.0
+p95LatencyMicros = 820
+bytesPerRequest = 512
+
+[[rows]]
+name = "http-real-traffic-static-file"
+fallbackRequestsPerSecond = 90000.0
+acceleratedRequestsPerSecond = 270000.0
+p95LatencyMicros = 1100
+bytesPerRequest = 4096
+
+[[rows]]
+name = "http-real-traffic-slow-client-backpressure"
+fallbackRequestsPerSecond = 45000.0
+acceleratedRequestsPerSecond = 88000.0
+p95LatencyMicros = 2100
+bytesPerRequest = 1024

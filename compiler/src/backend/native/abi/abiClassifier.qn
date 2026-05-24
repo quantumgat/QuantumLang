@@ -1,0 +1,4 @@
+pub trait AbiClassifier {
+  fn classifyType(self, typeId: u64) -> AbiClassification
+  fn supportsTarget(self, targetId: u64) -> bool
+}

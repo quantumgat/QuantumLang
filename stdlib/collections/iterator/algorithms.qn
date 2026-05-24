@@ -1,0 +1,120 @@
+impl<T> Iterator<T> {
+  /**
+    Folds all remaining iterator items without materializing a collection.
+
+    example:
+      let total = users.iter().reduce(0, (sum, user) => sum + user.score)
+
+    effects: pure unless reducer has effects
+    complexity: O(n)
+    allocation: none when lowered as a fused hot path
+    stability: public since 0.1
+  */
+  pub fn reduce<U>(self: &mut Self, seed: U, reducer: fn(U, T) -> U) -> U {
+    let mut total: U = seed
+    while let Some(value) = self.next() {
+      total = reducer(total, value)
+    }
+    return total
+  }
+
+  /**
+    Returns the first item accepted by predicate.
+
+    example:
+      let user = users.iter().find(user => user.id == wanted)
+
+    effects: pure unless predicate has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn find(self: &mut Self, predicate: fn(T) -> bool) -> Option<T> {
+    while let Some(value) = self.next() {
+      if predicate(value) {
+        return Some(value)
+      }
+    }
+    return None
+  }
+
+  /**
+    Returns true when any item is accepted by predicate.
+
+    example:
+      let hasAdmin = users.iter().any(user => user.role == "admin")
+
+    effects: pure unless predicate has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn any(self: &mut Self, predicate: fn(T) -> bool) -> bool {
+    while let Some(value) = self.next() {
+      if predicate(value) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+    Returns true when every item is accepted by predicate.
+
+    example:
+      let valid = users.iter().all(user => user.valid)
+
+    effects: pure unless predicate has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn all(self: &mut Self, predicate: fn(T) -> bool) -> bool {
+    while let Some(value) = self.next() {
+      if !predicate(value) {
+        return false
+      }
+    }
+    return true
+  }
+
+  /**
+    Counts items accepted by predicate.
+
+    example:
+      let active = users.iter().countWhere(user => user.active)
+
+    effects: pure unless predicate has effects
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn countWhere(self: &mut Self, predicate: fn(T) -> bool) -> usize {
+    let mut count: usize = 0
+    while let Some(value) = self.next() {
+      if predicate(value) {
+        count = count + 1
+      }
+    }
+    return count
+  }
+
+  /**
+    Materializes remaining items into a Vec.
+
+    example:
+      let rows = cursor.iter<User>().collect()
+
+    effects: alloc
+    complexity: O(n)
+    allocation: allocates result storage
+    stability: public since 0.1
+  */
+  pub fn collect(self: &mut Self) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>()
+    while let Some(value) = self.next() {
+      result = result.push(value)
+    }
+    return result
+  }
+}

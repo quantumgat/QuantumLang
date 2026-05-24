@@ -1,0 +1,12 @@
+pub struct BaremetalRuntime {
+  target: string,
+  noOs: bool,
+  fixedHeap: bool,
+  interrupts: bool,
+}
+
+impl BaremetalRuntime {
+  pub fn accepted(self: BaremetalRuntime) -> bool {
+    return self.target != "" && self.noOs && self.fixedHeap
+  }
+}

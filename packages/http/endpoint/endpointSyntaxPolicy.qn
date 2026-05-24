@@ -1,0 +1,136 @@
+pub enum EndpointControllerKind {
+  Struct
+  Class
+}
+
+pub enum EndpointSyntaxStyle {
+  MagicDerived
+  ManualExact
+}
+
+pub enum EndpointActionInference {
+  Keyword
+  BodyMeansPost
+  QueryMeansGet
+  ManualRoute
+}
+
+pub struct EndpointKeywordPolicy {
+ pub keyword: string,
+ pub method: HttpMethod,
+  style: EndpointSyntaxStyle,
+  reservedInController: bool,
+  importRequired: bool,
+  explicitPubFnRequired: bool,
+}
+
+impl EndpointKeywordPolicy {
+  pub fn init(
+    keyword: string,
+    method: HttpMethod,
+    style: EndpointSyntaxStyle,
+    reservedInController: bool,
+    importRequired: bool,
+    explicitPubFnRequired: bool,
+  ) -> EndpointKeywordPolicy {
+    return EndpointKeywordPolicy {
+      keyword: keyword,
+      method: method,
+      style: style,
+      reservedInController: reservedInController,
+      importRequired: importRequired,
+      explicitPubFnRequired: explicitPubFnRequired,
+    }
+  }
+
+  pub fn magic(keyword: string, method: HttpMethod) -> EndpointKeywordPolicy {
+    return EndpointKeywordPolicy.init(keyword, method, EndpointSyntaxStyle.MagicDerived, true, false, false)
+  }
+
+  pub fn manual(keyword: string, method: HttpMethod) -> EndpointKeywordPolicy {
+    return EndpointKeywordPolicy.init(keyword, method, EndpointSyntaxStyle.ManualExact, true, false, true)
+  }
+
+  pub fn complete(self: EndpointKeywordPolicy) -> bool {
+    return self.keyword != ""
+      && self.reservedInController
+      && !self.importRequired
+  }
+
+  pub fn magicComplete(self: EndpointKeywordPolicy) -> bool {
+    return self.complete()
+      && self.style == EndpointSyntaxStyle.MagicDerived
+      && !self.explicitPubFnRequired
+  }
+
+  pub fn manualComplete(self: EndpointKeywordPolicy) -> bool {
+    return self.complete()
+      && self.style == EndpointSyntaxStyle.ManualExact
+      && self.explicitPubFnRequired
+  }
+}
+
+pub struct EndpointControllerSyntaxPolicy {
+  controllerKind: EndpointControllerKind,
+  magicEndpointsAllowed: bool,
+  manualExactRoutesAllowed: bool,
+  endpointKeywordImportRequired: bool,
+  staticHandlerThunkRequired: bool,
+  dynamicDispatchForbidden: bool,
+}
+
+impl EndpointControllerSyntaxPolicy {
+  pub fn init(controllerKind: EndpointControllerKind) -> EndpointControllerSyntaxPolicy {
+    return EndpointControllerSyntaxPolicy {
+      controllerKind: controllerKind,
+      magicEndpointsAllowed: true,
+      manualExactRoutesAllowed: true,
+      endpointKeywordImportRequired: false,
+      staticHandlerThunkRequired: true,
+      dynamicDispatchForbidden: true,
+    }
+  }
+
+  pub fn structController() -> EndpointControllerSyntaxPolicy {
+    return EndpointControllerSyntaxPolicy.init(EndpointControllerKind.Struct)
+  }
+
+  pub fn classController() -> EndpointControllerSyntaxPolicy {
+    return EndpointControllerSyntaxPolicy.init(EndpointControllerKind.Class)
+  }
+
+  pub fn complete(self: EndpointControllerSyntaxPolicy) -> bool {
+    return self.magicEndpointsAllowed
+      && self.manualExactRoutesAllowed
+      && !self.endpointKeywordImportRequired
+      && self.staticHandlerThunkRequired
+      && self.dynamicDispatchForbidden
+  }
+}
+
+pub struct EndpointDerivedActionPolicy {
+  inference: EndpointActionInference,
+  arbitraryActionNamesAllowed: bool,
+  bodyParamInfersPost: bool,
+  queryParamInfersGet: bool,
+  endpointKeywordImportRequired: bool,
+}
+
+impl EndpointDerivedActionPolicy {
+  pub fn init(inference: EndpointActionInference) -> EndpointDerivedActionPolicy {
+    return EndpointDerivedActionPolicy {
+      inference: inference,
+      arbitraryActionNamesAllowed: true,
+      bodyParamInfersPost: true,
+      queryParamInfersGet: true,
+      endpointKeywordImportRequired: false,
+    }
+  }
+
+  pub fn complete(self: EndpointDerivedActionPolicy) -> bool {
+    return self.arbitraryActionNamesAllowed
+      && self.bodyParamInfersPost
+      && self.queryParamInfersGet
+      && !self.endpointKeywordImportRequired
+  }
+}

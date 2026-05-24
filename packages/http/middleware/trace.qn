@@ -1,0 +1,32 @@
+pub struct TracePolicy {
+  traceparent: bool,
+  tracestate: bool,
+  requestId: bool,
+}
+
+pub struct Trace {
+}
+
+impl TracePolicy {
+  pub fn init(traceparent: bool, tracestate: bool, requestId: bool) -> TracePolicy {
+    return TracePolicy {
+      traceparent: traceparent,
+      tracestate: tracestate,
+      requestId: requestId,
+    }
+  }
+
+  pub fn complete(self: TracePolicy) -> bool {
+    return self.traceparent && self.requestId
+  }
+}
+
+impl Trace {
+  pub fn headers() -> TracePolicy {
+    return TracePolicy.init(true, true, true)
+  }
+
+  pub fn disabled() -> TracePolicy {
+    return TracePolicy.init(false, false, false)
+  }
+}

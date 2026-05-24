@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeActorIncidentKind {
+  MailboxFull
+  AskTimeout
+  RestartLimit
+  StaleActor
+  HandlerFailure
+  SupervisionFailure
+}
+pub struct RuntimeActorIncident {
+  actorId: ActorId
+  kind: RuntimeActorIncidentKind
+  diagnosticCode: string
+  noAllocationRequired: bool
+}

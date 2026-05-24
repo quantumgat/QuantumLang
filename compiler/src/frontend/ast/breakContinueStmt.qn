@@ -1,0 +1,46 @@
+pub enum AstBreakContinueKind {
+  Break
+  BreakValue
+  Continue
+  LabeledBreak
+  LabeledContinue
+}
+
+pub struct AstBreakContinueStmt {
+  node: AstNode,
+  kind: AstBreakContinueKind,
+  labelId: u64,
+  valueExpr: u64,
+  nearestLoopId: u64,
+}
+
+pub fn astBreakContinueStmt(
+  node: AstNode,
+  kind: AstBreakContinueKind,
+  labelId: u64,
+  valueExpr: u64,
+  nearestLoopId: u64,
+) -> AstBreakContinueStmt {
+  return AstBreakContinueStmt {
+    node: node,
+    kind: kind,
+    labelId: labelId,
+    valueExpr: valueExpr,
+    nearestLoopId: nearestLoopId,
+  }
+}
+
+impl AstBreakContinueStmt {
+  pub fn labelled(self: AstBreakContinueStmt) -> bool {
+    return self.labelId > 0
+  }
+
+  pub fn carriesValue(self: AstBreakContinueStmt) -> bool {
+    return self.kind == AstBreakContinueKind.BreakValue
+      && self.valueExpr > 0
+  }
+
+  pub fn targetResolved(self: AstBreakContinueStmt) -> bool {
+    return self.nearestLoopId > 0
+  }
+}

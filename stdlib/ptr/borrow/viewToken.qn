@@ -1,0 +1,59 @@
+pub struct ViewToken {
+  sourceId: u64,
+  start: usize,
+  len: usize,
+  generation: u64,
+  mutationEpoch: u64,
+  mutable: bool,
+}
+
+impl ViewToken {
+  pub fn init(sourceId: u64, start: usize, len: usize, generation: u64, mutationEpoch: u64, mutable: bool) -> ViewToken {
+    return ViewToken {
+      sourceId: sourceId,
+      start: start,
+      len: len,
+      generation: generation,
+      mutationEpoch: mutationEpoch,
+      mutable: mutable,
+    }
+  }
+
+  pub fn shared(sourceId: u64, len: usize, generation: u64, mutationEpoch: u64) -> ViewToken {
+    return ViewToken.init(sourceId, 0, len, generation, mutationEpoch, false)
+  }
+
+  pub fn exclusive(sourceId: u64, len: usize, generation: u64, mutationEpoch: u64) -> ViewToken {
+    return ViewToken.init(sourceId, 0, len, generation, mutationEpoch, true)
+  }
+
+  pub fn overlaps(self: ViewToken, other: ViewToken) -> bool {
+    if self.sourceId != other.sourceId {
+      return false
+    }
+    return self.start < other.end() && other.start < self.end()
+  }
+
+  pub fn conflicts(self: ViewToken, other: ViewToken) -> bool {
+    return self.overlaps(other) && (self.mutable || other.mutable)
+  }
+
+  pub fn validates(self: ViewToken, generation: u64, mutationEpoch: u64) -> bool {
+    return self.generation == generation && self.mutationEpoch == mutationEpoch
+  }
+
+  pub fn afterMutation(self: ViewToken) -> ViewToken {
+    return ViewToken {
+      sourceId: self.sourceId,
+      start: self.start,
+      len: self.len,
+      generation: self.generation,
+      mutationEpoch: self.mutationEpoch + 1,
+      mutable: self.mutable,
+    }
+  }
+
+  pub fn end(self: ViewToken) -> usize {
+    return self.start + self.len
+  }
+}

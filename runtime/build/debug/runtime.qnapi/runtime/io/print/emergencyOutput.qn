@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeEmergencyOutput {
+  target: RuntimePrintTarget
+  boundedBytes: usize
+  allocationFree: bool
+  writesPlainText: bool
+  redactsSecrets: bool
+  preservesIncidentOrdering: bool
+  ignoresTerminalStyling: bool
+  returnsBestEffortResult: bool
+  noPanic: bool
+  noCoredump: bool
+}

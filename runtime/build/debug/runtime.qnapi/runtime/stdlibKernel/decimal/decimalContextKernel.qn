@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum DecimalTrapKind {
+  Overflow
+  DivisionByZero
+  Inexact
+  InvalidOperation
+  ResourceLimit
+}
+pub struct DecimalContextKernel {
+  precisionChecked: bool
+  scaleChecked: bool
+  roundingDeterministic: bool
+  trapsTyped: bool
+  noBinaryFloatFallback: bool
+  noCoredump: bool
+}

@@ -1,0 +1,19 @@
+pub struct RuntimeDeviceMemory {
+  coherent: bool,
+  cacheable: bool,
+  mmioBacked: bool,
+}
+
+impl RuntimeDeviceMemory {
+  pub fn init(coherent: bool, cacheable: bool, mmioBacked: bool) -> RuntimeDeviceMemory {
+    return RuntimeDeviceMemory {
+      coherent: coherent,
+      cacheable: cacheable,
+      mmioBacked: mmioBacked,
+    }
+  }
+
+  pub fn accepted(self: RuntimeDeviceMemory) -> bool {
+    return self.coherent && self.mmioBacked
+  }
+}

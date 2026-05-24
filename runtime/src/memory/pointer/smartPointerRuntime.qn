@@ -1,0 +1,55 @@
+pub struct RuntimeSmartPointerAllocation {
+  allocationId: u64,
+  controlBlock: u64,
+  generation: u64,
+  strong: usize,
+  weak: usize,
+  pinned: bool,
+  live: bool,
+}
+
+impl RuntimeSmartPointerAllocation {
+  pub fn init(allocationId: u64, controlBlock: u64, generation: u64, pinned: bool) -> RuntimeSmartPointerAllocation {
+    return RuntimeSmartPointerAllocation {
+      allocationId: allocationId,
+      controlBlock: controlBlock,
+      generation: generation,
+      strong: 1,
+      weak: 1,
+      pinned: pinned,
+      live: true,
+    }
+  }
+
+  pub fn cloneStrong(self: RuntimeSmartPointerAllocation) -> RuntimeSmartPointerAllocation {
+    return RuntimeSmartPointerAllocation {
+      allocationId: self.allocationId,
+      controlBlock: self.controlBlock,
+      generation: self.generation,
+      strong: self.strong + 1,
+      weak: self.weak,
+      pinned: self.pinned,
+      live: self.live,
+    }
+  }
+
+  pub fn downgrade(self: RuntimeSmartPointerAllocation) -> RuntimeSmartPointerAllocation {
+    return RuntimeSmartPointerAllocation {
+      allocationId: self.allocationId,
+      controlBlock: self.controlBlock,
+      generation: self.generation,
+      strong: self.strong,
+      weak: self.weak + 1,
+      pinned: self.pinned,
+      live: self.live,
+    }
+  }
+
+  pub fn upgradeAllowed(self: RuntimeSmartPointerAllocation, generation: u64) -> bool {
+    return self.live && self.generation == generation && self.strong > 0
+  }
+
+  pub fn accepted(self: RuntimeSmartPointerAllocation) -> bool {
+    return self.allocationId > 0 && self.controlBlock > 0 && self.generation > 0 && self.strong > 0 && self.weak > 0 && self.live
+  }
+}

@@ -1,0 +1,21 @@
+pub struct AtomicReferenceFact {
+  node: u64,
+  lifetimeChecked: bool,
+  aliasChecked: bool,
+  generationChecked: bool,
+}
+
+impl AtomicReferenceFact {
+  pub fn init(node: u64, lifetimeChecked: bool, aliasChecked: bool, generationChecked: bool) -> AtomicReferenceFact {
+    return AtomicReferenceFact {
+      node: node,
+      lifetimeChecked: lifetimeChecked,
+      aliasChecked: aliasChecked,
+      generationChecked: generationChecked,
+    }
+  }
+
+  pub fn accepted(self: AtomicReferenceFact) -> bool {
+    return self.lifetimeChecked && self.aliasChecked && self.generationChecked
+  }
+}

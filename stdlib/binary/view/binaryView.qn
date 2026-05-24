@@ -1,0 +1,80 @@
+pub struct BinaryView {
+  bytes: BytesView,
+  len: usize,
+}
+
+pub struct BinaryMutView {
+  bytes: BytesMutView,
+  len: usize,
+}
+
+impl BinaryView {
+  pub fn init(bytes: BytesView, len: usize) -> BinaryView {
+    return BinaryView { bytes: bytes, len: len }
+  }
+
+  pub fn len(self: BinaryView) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: BinaryView) -> bool {
+    return self.len == 0
+  }
+
+  pub fn accepted(self: BinaryView) -> bool {
+    return self.len > 0
+  }
+
+  pub fn bytes(self: BinaryView) -> BytesView {
+    return self.bytes
+  }
+
+  pub fn slice(self: BinaryView, start: usize, len: usize) -> Result<BinaryView, BinaryError> {
+    if start > self.len {
+      return Err(BinaryError.init(BinaryErrorKind.Eof, start, "binary view slice starts past end"))
+    }
+    if len > self.len - start {
+      return Err(BinaryError.init(BinaryErrorKind.Eof, start + len, "binary view slice exceeds length"))
+    }
+    return Ok(BinaryView {
+      bytes: binaryBytesViewSlice(self.bytes, start, len),
+      len: len,
+    })
+  }
+
+  pub fn toOwned(self: BinaryView) -> Result<BinaryRawBytes, BinaryError> {
+    return binaryViewToOwnedBytes(self)
+  }
+}
+
+impl BinaryMutView {
+  pub fn init(bytes: BytesMutView, len: usize) -> BinaryMutView {
+    return BinaryMutView { bytes: bytes, len: len }
+  }
+
+  pub fn len(self: BinaryMutView) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: BinaryMutView) -> bool {
+    return self.len == 0
+  }
+
+  pub fn accepted(self: BinaryMutView) -> bool {
+    return self.len > 0
+  }
+
+  pub fn bytes(self: BinaryMutView) -> BytesMutView {
+    return self.bytes
+  }
+
+  pub fn asView(self: BinaryMutView) -> BinaryView {
+    return BinaryView {
+      bytes: self.bytes.asView(),
+      len: self.len,
+    }
+  }
+}
+
+fn binaryBytesViewSlice(bytes: BytesView, start: usize, len: usize) -> BytesView
+fn binaryViewToOwnedBytes(view: BinaryView) -> Result<BinaryRawBytes, BinaryError>

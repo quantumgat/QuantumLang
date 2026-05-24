@@ -1,0 +1,17 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct AppPlan {
+  bindAddress: HttpBindAddress
+  port: usize
+  states: AppStateGraph
+  controllers: ControllerGraph
+  apis: ApiGraph
+  dependencies: AppDependencyGraph
+  policies: MiddlewarePolicyGraph
+  serverPolicy: ServerPolicy
+  lifecycleHooks: LifecycleHooks
+  lifecyclePlan: AppLifecyclePlan
+  errorPolicy: HttpErrorPolicy
+  responsePolicy: ResponsePolicy
+  defaultMiddleware: HttpDefaultMiddlewarePolicy
+  trustedProxyPolicy: TrustedProxyPolicy
+}

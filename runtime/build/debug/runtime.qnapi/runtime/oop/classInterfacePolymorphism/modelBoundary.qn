@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeClassInterfacePolymorphismBoundary {
+  dispatchTablesOwned: bool
+  interfaceObjectsOwned: bool
+  downcastOwned: bool
+  lifecycleHandlesOwned: bool
+  reflectionBoundaryOwned: bool
+  noRequestLoopReflection: bool
+}

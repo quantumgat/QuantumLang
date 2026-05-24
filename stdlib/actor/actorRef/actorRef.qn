@@ -1,0 +1,16 @@
+pub struct ActorRef<T> {
+  id: ActorId,
+  typed: bool,
+}
+
+impl ActorRef<T> {
+  pub fn tell(self: ActorRef<T>, message: T) -> Result<Unit, ActorError>
+
+  pub fn ask<R>(self: ActorRef<T>, message: T) -> Result<Future<R>, ActorError>
+
+  pub fn stop(self: ActorRef<T>) -> Result<Unit, ActorError>
+
+  pub fn isTyped(self: ActorRef<T>) -> bool {
+    return self.typed
+  }
+}

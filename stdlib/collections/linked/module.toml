@@ -1,0 +1,6 @@
+[module]
+name = "collections.linked"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "linked"

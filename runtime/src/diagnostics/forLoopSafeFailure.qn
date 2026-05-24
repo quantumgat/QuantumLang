@@ -1,0 +1,31 @@
+pub enum ForLoopSafeFailureKind {
+  NonIterable
+  InvalidPattern
+  InvalidStep
+  ParallelCaptureViolation
+  AsyncAwaitRequired
+  UnsafeRequired
+  QuantumProfileViolation
+}
+
+pub struct ForLoopSafeFailure {
+  kind: ForLoopSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+  executableNegativeCovered: bool,
+}
+
+impl ForLoopSafeFailure {
+  pub fn safe(self: ForLoopSafeFailure) -> bool {
+    return self.sourceRangeReady
+      && self.fixitReady
+      && self.noCoredump
+      && self.recoverable
+  }
+
+  pub fn executableReady(self: ForLoopSafeFailure) -> bool {
+    return self.safe() && self.executableNegativeCovered
+  }
+}

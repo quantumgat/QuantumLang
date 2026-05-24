@@ -1,0 +1,29 @@
+pub struct OopDropShutdownNativeLowering {
+  mirOpId: u64,
+  ownerTypeName: string,
+  emitsDirectDropGlue: bool,
+  emitsReverseFieldDrop: bool,
+  emitsBaseCleanupAfterFields: bool,
+  emitsShutdownAwaitState: bool,
+  emitsDoubleDropCheck: bool,
+  emitsUseAfterDropCheck: bool,
+  emitsTypedFailurePath: bool,
+  noCoredumpFailure: bool,
+  sourceMapBound: bool,
+}
+
+impl OopDropShutdownNativeLowering {
+  pub fn complete(self: OopDropShutdownNativeLowering) -> bool {
+    return self.mirOpId > 0
+      && self.ownerTypeName != ""
+      && self.emitsDirectDropGlue
+      && self.emitsReverseFieldDrop
+      && self.emitsBaseCleanupAfterFields
+      && self.emitsShutdownAwaitState
+      && self.emitsDoubleDropCheck
+      && self.emitsUseAfterDropCheck
+      && self.emitsTypedFailurePath
+      && self.noCoredumpFailure
+      && self.sourceMapBound
+  }
+}

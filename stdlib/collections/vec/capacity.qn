@@ -1,0 +1,91 @@
+impl<T> Vec<T> {
+  /**
+    Reserves room for additional elements.
+
+    example:
+      users = users.reserve(128)
+
+    effects: alloc when required capacity exceeds current capacity
+    complexity: O(n) when storage moves; O(1) when capacity is already enough
+    allocation: grows the contiguous Vec buffer
+    stability: public since 0.1
+  */
+  pub fn reserve(self: Vec<T>, additional: usize) -> Vec<T> requires(alloc) {
+    let nextCapacity = self.nextCapacity(additional)
+    return Vec<T> {
+      data: self.data,
+      len: self.len,
+      capacity: nextCapacity,
+      generation: self.generation,
+    }
+  }
+
+  /**
+    Shrinks reserved capacity to the current length.
+
+    example:
+      users = users.shrinkToFit()
+
+    effects: alloc
+    complexity: O(n)
+    allocation: reallocates storage to len-sized capacity
+    stability: public since 0.1
+  */
+  pub fn shrinkToFit(self: Vec<T>) -> Vec<T> requires(alloc) {
+    return Vec<T> {
+      data: self.data,
+      len: self.len,
+      capacity: self.len,
+      generation: self.generation + 1,
+    }
+  }
+
+  /**
+    Keeps only the first len elements.
+
+    example:
+      users = users.truncate(10)
+
+    effects: drop effects follow removed element ownership
+    complexity: O(n - len) when removed elements need drop
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn truncate(self: Vec<T>, len: usize) -> Vec<T> requires(alloc) {
+    if len >= self.len {
+      return self
+    }
+    return Vec<T> {
+      data: self.data,
+      len: len,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+    }
+  }
+
+  /**
+    Calculates the capacity needed for a growth step.
+
+    example:
+      let capacity = users.nextCapacity(1)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn nextCapacity(self: Vec<T>, additional: usize) -> usize {
+    let required = self.len + additional
+    if required <= self.capacity {
+      return self.capacity
+    }
+    if self.capacity == 0 {
+      return required
+    }
+    let doubled = self.capacity * 2
+    if doubled < required {
+      return required
+    }
+    return doubled
+  }
+}

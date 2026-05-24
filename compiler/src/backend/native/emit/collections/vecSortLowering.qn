@@ -1,0 +1,57 @@
+pub enum VecSortLoweringKind {
+  PdqIntrosort
+  ComparatorPdqIntrosort
+  TimSort
+  ComparatorTimSort
+  NumericRadix
+}
+
+pub struct VecSortLowering {
+  kind: VecSortLoweringKind,
+  directIndexLoads: bool,
+  directIndexStores: bool,
+  boundsProofRequired: bool,
+  smallRangeInsertion: bool,
+  worstCaseGuarded: bool,
+  stable: bool,
+  numericRadix: bool,
+}
+
+pub fn vecSortLowering(kind: VecSortLoweringKind) -> VecSortLowering {
+  return VecSortLowering {
+    kind: kind,
+    directIndexLoads: true,
+    directIndexStores: true,
+    boundsProofRequired: true,
+    smallRangeInsertion: true,
+    worstCaseGuarded: true,
+    stable: kind == VecSortLoweringKind.TimSort
+      || kind == VecSortLoweringKind.ComparatorTimSort,
+    numericRadix: kind == VecSortLoweringKind.NumericRadix,
+  }
+}
+
+impl VecSortLowering {
+  pub fn canLowerGeneralFastSort(self: VecSortLowering) -> bool {
+    return self.kind == VecSortLoweringKind.PdqIntrosort
+      && self.directIndexLoads
+      && self.directIndexStores
+      && self.boundsProofRequired
+      && self.smallRangeInsertion
+      && self.worstCaseGuarded
+  }
+
+  pub fn canLowerStableSort(self: VecSortLowering) -> bool {
+    return self.stable
+      && self.directIndexLoads
+      && self.directIndexStores
+      && self.boundsProofRequired
+  }
+
+  pub fn canLowerNumericRadixSort(self: VecSortLowering) -> bool {
+    return self.numericRadix
+      && self.directIndexLoads
+      && self.directIndexStores
+      && self.boundsProofRequired
+  }
+}

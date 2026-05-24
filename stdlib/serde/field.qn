@@ -1,0 +1,118 @@
+pub enum FieldPolicy {
+  Required
+  Optional
+  Default
+  Skip
+  Rename
+  Alias
+  Flatten
+  PreserveUnknown
+  RejectUnknown
+}
+
+pub struct FieldMeta {
+  sourceName: string,
+  wireName: string,
+  aliases: Vec<string>,
+  policy: FieldPolicy,
+  ordinal: usize,
+  defaultProvider: string,
+  skipEncode: bool,
+  skipDecode: bool,
+  flatten: bool,
+  preserveUnknown: bool,
+  exactNumberRequired: bool,
+}
+
+impl FieldMeta {
+  pub fn required(sourceName: string, wireName: string, ordinal: usize) -> FieldMeta {
+    return FieldMeta {
+      sourceName: sourceName,
+      wireName: wireName,
+      aliases: Vec<string>(),
+      policy: FieldPolicy.Required,
+      ordinal: ordinal,
+      defaultProvider: "",
+      skipEncode: false,
+      skipDecode: false,
+      flatten: false,
+      preserveUnknown: false,
+      exactNumberRequired: true,
+    }
+  }
+
+  pub fn optional(sourceName: string, wireName: string, ordinal: usize) -> FieldMeta {
+    let field = FieldMeta.required(sourceName, wireName, ordinal)
+    return field.withPolicy(FieldPolicy.Optional)
+  }
+
+  pub fn withPolicy(self: FieldMeta, policy: FieldPolicy) -> FieldMeta {
+    return FieldMeta {
+      sourceName: self.sourceName,
+      wireName: self.wireName,
+      aliases: self.aliases,
+      policy: policy,
+      ordinal: self.ordinal,
+      defaultProvider: self.defaultProvider,
+      skipEncode: self.skipEncode,
+      skipDecode: self.skipDecode,
+      flatten: policy == FieldPolicy.Flatten,
+      preserveUnknown: policy == FieldPolicy.PreserveUnknown,
+      exactNumberRequired: self.exactNumberRequired,
+    }
+  }
+
+  pub fn withAlias(self: FieldMeta, alias: string) -> FieldMeta requires(alloc) {
+    return FieldMeta {
+      sourceName: self.sourceName,
+      wireName: self.wireName,
+      aliases: self.aliases.push(alias),
+      policy: FieldPolicy.Alias,
+      ordinal: self.ordinal,
+      defaultProvider: self.defaultProvider,
+      skipEncode: self.skipEncode,
+      skipDecode: self.skipDecode,
+      flatten: self.flatten,
+      preserveUnknown: self.preserveUnknown,
+      exactNumberRequired: self.exactNumberRequired,
+    }
+  }
+
+  pub fn withDefault(self: FieldMeta, defaultProvider: string) -> FieldMeta {
+    return FieldMeta {
+      sourceName: self.sourceName,
+      wireName: self.wireName,
+      aliases: self.aliases,
+      policy: FieldPolicy.Default,
+      ordinal: self.ordinal,
+      defaultProvider: defaultProvider,
+      skipEncode: self.skipEncode,
+      skipDecode: self.skipDecode,
+      flatten: self.flatten,
+      preserveUnknown: self.preserveUnknown,
+      exactNumberRequired: self.exactNumberRequired,
+    }
+  }
+
+  pub fn skippable(self: FieldMeta) -> FieldMeta {
+    return FieldMeta {
+      sourceName: self.sourceName,
+      wireName: self.wireName,
+      aliases: self.aliases,
+      policy: FieldPolicy.Skip,
+      ordinal: self.ordinal,
+      defaultProvider: self.defaultProvider,
+      skipEncode: true,
+      skipDecode: true,
+      flatten: false,
+      preserveUnknown: false,
+      exactNumberRequired: self.exactNumberRequired,
+    }
+  }
+
+  pub fn valid(self: FieldMeta) -> bool {
+    return self.sourceName != ""
+      && self.wireName != ""
+      && self.exactNumberRequired
+  }
+}

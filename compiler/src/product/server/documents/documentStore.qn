@@ -1,0 +1,12 @@
+pub struct DocumentStore {
+  workspaceRoot: string,
+  openDocuments: usize,
+  versioned: bool,
+  incrementalSync: bool,
+}
+
+impl DocumentStore {
+  pub fn accepted(self: DocumentStore) -> bool {
+    return self.workspaceRoot != "" && self.versioned && self.incrementalSync
+  }
+}

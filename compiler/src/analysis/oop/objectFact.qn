@@ -1,0 +1,15 @@
+pub struct ObjectFact {
+  typeId: u64,
+  fieldCount: usize,
+  methodCount: usize,
+}
+
+pub fn objectFact(typeId: u64, fieldCount: usize, methodCount: usize) -> ObjectFact {
+  return ObjectFact { typeId: typeId, fieldCount: fieldCount, methodCount: methodCount }
+}
+
+impl ObjectFact {
+  pub fn hasBehavior(self: ObjectFact) -> bool {
+    return self.methodCount > 0
+  }
+}

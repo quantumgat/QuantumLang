@@ -1,0 +1,29 @@
+pub fn httpGeneratedFactsHandlerSourceMapProof() -> HttpGeneratedFactsProof {
+  let endpoint = EndpointFact
+    .simple("UsersApi", EndpointMethod.get("get"), EndpointReturn.json("User"))
+    .withParam(EndpointParam.path("id", "UserId"))
+
+  let endpoints = EndpointGraph.empty().add(endpoint)
+  let routes = RouteGraph.fromEndpoints(endpoints)?
+  let extractors = ExtractorGraph
+    .empty()
+    .add(ExtractorFact.init("UsersApi.get", EndpointParam.path("id", "UserId")))
+  let capabilities = CapabilityGraph
+    .empty()
+    .add(CapabilityFact.authenticated("UsersApi.get"))
+  let thunk = HandlerThunk.fromEndpoint(endpoint, extractors, capabilities)
+  let thunks = HandlerThunkGraph.empty().add(thunk)
+  let sourceMap = HttpSourceMap
+    .empty()
+    .add(HttpSourceMapEntry.handler(thunk, "users_api.qn", 12))
+
+  return HttpGeneratedFactsProof.fromGraphs(
+    endpoints,
+    routes,
+    extractors,
+    capabilities,
+    thunks,
+    sourceMap
+  )
+}
+

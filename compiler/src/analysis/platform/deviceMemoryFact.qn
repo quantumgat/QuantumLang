@@ -1,0 +1,19 @@
+pub struct DeviceMemoryFact {
+  addressSpaceDevice: bool,
+  coherent: bool,
+  mmioBacked: bool,
+}
+
+impl DeviceMemoryFact {
+  pub fn init(addressSpaceDevice: bool, coherent: bool, mmioBacked: bool) -> DeviceMemoryFact {
+    return DeviceMemoryFact {
+      addressSpaceDevice: addressSpaceDevice,
+      coherent: coherent,
+      mmioBacked: mmioBacked,
+    }
+  }
+
+  pub fn accepted(self: DeviceMemoryFact) -> bool {
+    return self.addressSpaceDevice && self.coherent && self.mmioBacked
+  }
+}

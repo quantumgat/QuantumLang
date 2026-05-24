@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct CacheKernel {
+  mapBackedLookup: bool
+  linkedOrderBackedRecency: bool
+  generationStampedOrder: bool
+  getUsesMapProbe: bool
+  putUsesMapInsertAndOrderAppend: bool
+  removeUsesMapRemove: bool
+  evictionUsesLiveOrderCursor: bool
+  cursorErased: bool
+  cursorSkipsStaleOrderKeys: bool
+  iteratorUsesCursor: bool
+  toVecUsesCursor: bool
+  forEachUsesCursor: bool
+  callableLoopsInlineable: bool
+  zeroCopyEntryLoadWherePossible: bool
+}

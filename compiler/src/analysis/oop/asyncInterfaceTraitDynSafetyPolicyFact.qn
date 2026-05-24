@@ -1,0 +1,41 @@
+pub struct AsyncInterfaceTraitDynSafetyPolicyFact {
+  ownerId: u64,
+  interfaceSafetyBound: bool,
+  traitSafetyBound: bool,
+  dynSafetyBound: bool,
+  asyncMethodLoweringBound: bool,
+  objectSafetyDiagnosticBound: bool,
+  dynFutureAbiBound: bool,
+  staticDirectLoweringBound: bool,
+  explicitAdapterBoundaryBound: bool,
+  runtimeGuardBound: bool,
+  nativeLoweringBound: bool,
+  noHiddenAllocation: bool,
+  typedFailureNoCoredumpBound: bool,
+  sourceMapBound: bool,
+}
+
+impl AsyncInterfaceTraitDynSafetyPolicyFact {
+  pub fn complete(self: AsyncInterfaceTraitDynSafetyPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.interfaceSafetyBound
+      && self.traitSafetyBound
+      && self.dynSafetyBound
+      && self.asyncMethodLoweringBound
+      && self.objectSafetyDiagnosticBound
+      && self.dynFutureAbiBound
+      && self.staticDirectLoweringBound
+      && self.explicitAdapterBoundaryBound
+      && self.runtimeGuardBound
+      && self.nativeLoweringBound
+      && self.noHiddenAllocation
+      && self.typedFailureNoCoredumpBound
+      && self.sourceMapBound
+  }
+
+  pub fn hotPathReady(self: AsyncInterfaceTraitDynSafetyPolicyFact) -> bool {
+    return self.complete()
+      && self.staticDirectLoweringBound
+      && self.noHiddenAllocation
+  }
+}

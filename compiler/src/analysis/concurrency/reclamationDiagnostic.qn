@@ -1,0 +1,19 @@
+pub struct ReclamationDiagnostic {
+  code: string,
+  hasRange: bool,
+  rejectsUnsafeReclaim: bool,
+}
+
+impl ReclamationDiagnostic {
+  pub fn init(code: string, hasRange: bool, rejectsUnsafeReclaim: bool) -> ReclamationDiagnostic {
+    return ReclamationDiagnostic {
+      code: code,
+      hasRange: hasRange,
+      rejectsUnsafeReclaim: rejectsUnsafeReclaim,
+    }
+  }
+
+  pub fn reportable(self: ReclamationDiagnostic) -> bool {
+    return self.code != "" && self.hasRange && self.rejectsUnsafeReclaim
+  }
+}

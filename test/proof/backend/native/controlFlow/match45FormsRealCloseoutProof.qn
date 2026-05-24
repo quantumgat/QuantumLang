@@ -1,0 +1,27 @@
+pub struct Match45FormsRealCloseoutProof {
+  fixtureForms: usize,
+  negativeFixtureRows: usize,
+  parserAstRows: usize,
+  analysisDiagnosticRows: usize,
+  hirMirRows: usize,
+  nativeRuntimeRows: usize,
+  statusProofComplete: bool,
+  sliceDocsComplete: bool,
+  sliceGatesRegistered: bool,
+  noGeneratedFallback: bool,
+}
+
+impl Match45FormsRealCloseoutProof {
+  pub fn complete(self: Match45FormsRealCloseoutProof) -> bool {
+    return self.fixtureForms == 45
+      && self.negativeFixtureRows >= 6
+      && self.parserAstRows > 0
+      && self.analysisDiagnosticRows > 0
+      && self.hirMirRows > 0
+      && self.nativeRuntimeRows > 0
+      && self.statusProofComplete
+      && self.sliceDocsComplete
+      && self.sliceGatesRegistered
+      && self.noGeneratedFallback
+  }
+}

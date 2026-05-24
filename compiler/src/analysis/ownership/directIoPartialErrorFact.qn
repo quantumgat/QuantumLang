@@ -1,0 +1,19 @@
+pub struct DirectIoPartialErrorFact {
+  requestedBytes: usize,
+  completedBytes: usize,
+  partialErrorPreserved: bool,
+}
+
+impl DirectIoPartialErrorFact {
+  pub fn init(requestedBytes: usize, completedBytes: usize, partialErrorPreserved: bool) -> DirectIoPartialErrorFact {
+    return DirectIoPartialErrorFact {
+      requestedBytes: requestedBytes,
+      completedBytes: completedBytes,
+      partialErrorPreserved: partialErrorPreserved,
+    }
+  }
+
+  pub fn accepted(self: DirectIoPartialErrorFact) -> bool {
+    return self.completedBytes <= self.requestedBytes && self.partialErrorPreserved
+  }
+}

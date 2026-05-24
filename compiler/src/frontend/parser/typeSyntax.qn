@@ -1,0 +1,14 @@
+pub struct TypeSyntaxParse {
+  parsedTypes: usize,
+  errors: usize,
+}
+
+pub fn typeSyntaxParse(parsedTypes: usize, errors: usize) -> TypeSyntaxParse {
+  return TypeSyntaxParse { parsedTypes: parsedTypes, errors: errors }
+}
+
+impl TypeSyntaxParse {
+  pub fn typeCount(self: TypeSyntaxParse) -> usize {
+    return self.parsedTypes
+  }
+}

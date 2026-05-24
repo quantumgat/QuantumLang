@@ -1,0 +1,21 @@
+pub enum MirPointerCheckKind {
+  NonNull,
+  Bounds,
+  Alignment,
+  Provenance,
+  Mutability,
+  Generation,
+}
+
+pub struct MirPointerCheck {
+  instruction: u64,
+  kind: MirPointerCheckKind,
+  diagnosticCode: string,
+  canElideWhenProven: bool,
+}
+
+impl MirPointerCheck {
+  pub fn accepted(self: MirPointerCheck) -> bool {
+    return self.instruction > 0 && self.diagnosticCode != ""
+  }
+}

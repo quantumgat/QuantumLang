@@ -1,0 +1,19 @@
+pub struct NonblockingFact {
+  callable: u64,
+  blocksThread: bool,
+  requiresOffload: bool,
+}
+
+pub fn nonblockingFact(callable: u64, blocksThread: bool, requiresOffload: bool) -> NonblockingFact {
+  return NonblockingFact {
+    callable: callable,
+    blocksThread: blocksThread,
+    requiresOffload: requiresOffload,
+  }
+}
+
+impl NonblockingFact {
+  pub fn isNonblocking(self: NonblockingFact) -> bool {
+    return self.blocksThread == false
+  }
+}

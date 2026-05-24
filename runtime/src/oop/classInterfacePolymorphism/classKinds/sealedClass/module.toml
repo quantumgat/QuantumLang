@@ -1,0 +1,6 @@
+[module]
+name = "sealedClass"
+visibility = "internal"
+owner = "runtime"
+role = "oop-class-interface-polymorphism-class-kind"
+root = "mod.qn"

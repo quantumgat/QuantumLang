@@ -1,0 +1,20 @@
+pub struct CallableClassRuntimeContract {
+  typeId: u64,
+  signatureBound: bool,
+  captureStorageBound: bool,
+  dispatchThunkBound: bool,
+  allocationFreeWhenHot: bool,
+}
+
+impl CallableClassRuntimeContract {
+  pub fn complete(self: CallableClassRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.signatureBound
+      && self.captureStorageBound
+      && self.dispatchThunkBound
+  }
+
+  pub fn hotPathSafe(self: CallableClassRuntimeContract) -> bool {
+    return self.complete() && self.allocationFreeWhenHot
+  }
+}

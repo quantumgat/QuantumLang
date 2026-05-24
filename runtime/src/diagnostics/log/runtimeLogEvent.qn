@@ -1,0 +1,91 @@
+pub struct RuntimeLogEvent {
+  eventId: u64,
+  transportSequence: u64,
+  level: string,
+  target: string,
+  loggerName: string,
+  template: string,
+  fieldCount: usize,
+  typedFields: bool,
+  stableFieldKeys: bool,
+  compactFieldEncoding: bool,
+  inlineFieldCount: usize,
+  allocationFreeFields: bool,
+  traceId: u64,
+  spanId: u64,
+  taskId: u64,
+  actorId: u64,
+  requestId: string,
+  correlationId: string,
+  cancellationId: u64,
+  asyncContextPropagated: bool,
+  causalChainPreserved: bool,
+  redacted: bool,
+  sinkNeutral: bool,
+  transportReady: bool,
+  observerReady: bool,
+  backpressureChecked: bool,
+  dropPolicyChecked: bool,
+  emergencyFallbackReady: bool,
+  staticLevelChecked: bool,
+  disabledErased: bool,
+}
+
+impl RuntimeLogEvent {
+  pub fn event(eventId: u64, level: string, target: string, loggerName: string, template: string) -> RuntimeLogEvent {
+    return RuntimeLogEvent {
+      eventId: eventId,
+      transportSequence: eventId,
+      level: level,
+      target: target,
+      loggerName: loggerName,
+      template: template,
+      fieldCount: 0,
+      typedFields: true,
+      stableFieldKeys: true,
+      compactFieldEncoding: true,
+      inlineFieldCount: 0,
+      allocationFreeFields: true,
+      traceId: 0,
+      spanId: 0,
+      taskId: 0,
+      actorId: 0,
+      requestId: "",
+      correlationId: "",
+      cancellationId: 0,
+      asyncContextPropagated: true,
+      causalChainPreserved: true,
+      redacted: true,
+      sinkNeutral: true,
+      transportReady: true,
+      observerReady: true,
+      backpressureChecked: true,
+      dropPolicyChecked: true,
+      emergencyFallbackReady: true,
+      staticLevelChecked: true,
+      disabledErased: true,
+    }
+  }
+
+  pub fn ready(self: RuntimeLogEvent) -> bool {
+    return self.eventId > 0
+      && self.transportSequence > 0
+      && self.level != ""
+      && self.target != ""
+      && self.loggerName != ""
+      && self.template != ""
+      && self.typedFields
+      && self.stableFieldKeys
+      && self.compactFieldEncoding
+      && self.asyncContextPropagated
+      && self.causalChainPreserved
+      && self.redacted
+      && self.sinkNeutral
+      && self.transportReady
+      && self.observerReady
+      && self.backpressureChecked
+      && self.dropPolicyChecked
+      && self.emergencyFallbackReady
+      && self.staticLevelChecked
+  }
+}

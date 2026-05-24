@@ -1,0 +1,53 @@
+pub struct HttpPublicApiAppStateIntegrationProof {
+  stateProjectsOopFacts: bool,
+  healthPolicyIsPublic: bool,
+  reconnectPolicyIsPublic: bool,
+  diagnosticsArePublic: bool,
+  validationUsesDiagnostics: bool,
+  runUsesValidation: bool,
+  appPlanExposesStateGraph: bool,
+  hotPathBoundaryAvailable: bool,
+  noManualFactRequired: bool,
+}
+
+impl HttpPublicApiAppStateIntegrationProof {
+  pub fn init(builder: AppBuilder, port: usize) -> HttpPublicApiAppStateIntegrationProof {
+    let plan = builder.plan(port)
+    let diagnostics = builder.diagnostics(port)
+    let hotPath = HttpHotPathPlan.appStateBoundary(plan)
+    return HttpPublicApiAppStateIntegrationProof {
+      stateProjectsOopFacts: plan.appStateGraph().projectionComplete(),
+      healthPolicyIsPublic: true,
+      reconnectPolicyIsPublic: true,
+      diagnosticsArePublic: diagnostics.complete(),
+      validationUsesDiagnostics: builder.ready(port) == diagnostics.clean(),
+      runUsesValidation: plan.valid() || !builder.ready(port),
+      appPlanExposesStateGraph: plan.appStateGraph().stateCount() > 0,
+      hotPathBoundaryAvailable: hotPath.lifecycleErasedFromRequest
+        && hotPath.dynamicClassDispatchBlocked
+        && hotPath.serviceLocatorBlocked,
+      noManualFactRequired: true,
+    }
+  }
+
+  pub fn complete(self: HttpPublicApiAppStateIntegrationProof) -> bool {
+    return self.stateProjectsOopFacts
+      && self.healthPolicyIsPublic
+      && self.reconnectPolicyIsPublic
+      && self.diagnosticsArePublic
+      && self.validationUsesDiagnostics
+      && self.runUsesValidation
+      && self.appPlanExposesStateGraph
+      && self.hotPathBoundaryAvailable
+      && self.noManualFactRequired
+  }
+}
+
+pub fn httpPublicApiAppStateIntegrationProof() -> HttpPublicApiAppStateIntegrationProof {
+  let builder = App()
+    .state(HttpAppStateFixture())
+    .controller<HttpAppStateFixtureApi>()
+    .requireHealth()
+    .requireReconnect()
+  return HttpPublicApiAppStateIntegrationProof.init(builder, 8080)
+}

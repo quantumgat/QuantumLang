@@ -1,0 +1,127 @@
+pub enum LimbArithmeticFamily {
+  BigInt
+  BigUint
+  I256
+  U256
+}
+
+pub struct LimbArithmeticKernel {
+  family: LimbArithmeticFamily,
+  canonicalLimbOrder: bool,
+  carryChecked: bool,
+  borrowChecked: bool,
+  divisionChecked: bool,
+  resourceLimitChecked: bool,
+  noCoredump: bool,
+}
+
+impl LimbArithmeticKernel {
+  pub fn checked(family: LimbArithmeticFamily) -> LimbArithmeticKernel {
+    return LimbArithmeticKernel {
+      family: family,
+      canonicalLimbOrder: true,
+      carryChecked: true,
+      borrowChecked: true,
+      divisionChecked: true,
+      resourceLimitChecked: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: LimbArithmeticKernel) -> bool {
+    return self.canonicalLimbOrder
+      && self.carryChecked
+      && self.borrowChecked
+      && self.divisionChecked
+      && self.resourceLimitChecked
+      && self.noCoredump
+  }
+
+  pub fn addLimbs(self: LimbArithmeticKernel, left: Vec<u64>, right: Vec<u64>) -> Result<Vec<u64>, MathRuntimeError> requires(alloc) {
+    let maxLen: usize = if left.len > right.len { left.len } else { right.len }
+    let mut result = Vec<u64>.withCapacity(maxLen + 1)
+    let mut carry: u128 = 0
+    let mut index: usize = 0
+    while index < maxLen {
+      let leftValue: u128 = if index < left.len { left[index] as u128 } else { 0 }
+      let rightValue: u128 = if index < right.len { right[index] as u128 } else { 0 }
+      let sum = leftValue + rightValue + carry
+      result = result.push(sum as u64)
+      carry = sum >> 64
+      index = index + 1
+    }
+    if carry != 0 {
+      result = result.push(carry as u64)
+    }
+    return Ok(result)
+  }
+
+  pub fn subLimbs(self: LimbArithmeticKernel, left: Vec<u64>, right: Vec<u64>) -> Result<Vec<u64>, MathRuntimeError> requires(alloc) {
+    if self.compareLimbs(left, right) < 0 {
+      return Err(MathRuntimeError.Overflow)
+    }
+    let mut result = Vec<u64>.withCapacity(left.len)
+    let mut borrow: u64 = 0
+    let mut index: usize = 0
+    while index < left.len {
+      let leftValue = left[index]
+      let rightValue: u64 = if index < right.len { right[index] } else { 0 }
+      let needed: u64 = rightValue + borrow
+      if leftValue < needed {
+        result = result.push((18446744073709551615 - needed) + leftValue + 1)
+        borrow = 1
+      } else {
+        result = result.push(leftValue - needed)
+        borrow = 0
+      }
+      index = index + 1
+    }
+    return Ok(self.trimLeadingZeroLimbs(result))
+  }
+
+  pub fn compareLimbs(self: LimbArithmeticKernel, left: Vec<u64>, right: Vec<u64>) -> i32 {
+    let leftTop = self.topNonZeroIndex(left)
+    let rightTop = self.topNonZeroIndex(right)
+    if leftTop < rightTop {
+      return -1
+    }
+    if leftTop > rightTop {
+      return 1
+    }
+    let mut index = leftTop
+    while index > 0 {
+      let cursor = index - 1
+      if left[cursor] < right[cursor] {
+        return -1
+      }
+      if left[cursor] > right[cursor] {
+        return 1
+      }
+      index = cursor
+    }
+    return 0
+  }
+
+  pub fn topNonZeroIndex(self: LimbArithmeticKernel, limbs: Vec<u64>) -> usize {
+    let mut index = limbs.len
+    while index > 0 {
+      let cursor = index - 1
+      if limbs[cursor] != 0 {
+        return cursor + 1
+      }
+      index = cursor
+    }
+    return 0
+  }
+
+  pub fn trimLeadingZeroLimbs(self: LimbArithmeticKernel, limbs: Vec<u64>) -> Vec<u64> requires(alloc) {
+    let top = self.topNonZeroIndex(limbs)
+    let mut result = Vec<u64>.withCapacity(top)
+    let mut index: usize = 0
+    while index < top {
+      result = result.push(limbs[index])
+      index = index + 1
+    }
+    return result
+  }
+}

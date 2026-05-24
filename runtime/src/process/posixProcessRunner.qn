@@ -1,0 +1,53 @@
+import processRunner::{ProcessRunner}
+
+pub class PosixProcessRunner {
+  providerName: string,
+  active: bool,
+
+  pub init() {
+    self.providerName = "posix"
+    self.active = true
+  }
+
+  pub fn runnerName(self: &PosixProcessRunner) -> string {
+    return self.providerName
+  }
+
+  pub fn supportsSpawn(self: &PosixProcessRunner) -> bool {
+    return self.active
+  }
+
+  pub fn supportsPipes(self: &PosixProcessRunner) -> bool {
+    return self.active
+  }
+
+  pub fn supportsSignals(self: &PosixProcessRunner) -> bool {
+    return self.active
+  }
+
+  pub fn noCoredump(self: &PosixProcessRunner) -> bool {
+    return self.active
+  }
+}
+
+impl ProcessRunner for PosixProcessRunner {
+  pub fn runnerName(self: &PosixProcessRunner) -> string {
+    return self.providerName
+  }
+
+  pub fn supportsSpawn(self: &PosixProcessRunner) -> bool {
+    return self.active
+  }
+
+  pub fn supportsPipes(self: &PosixProcessRunner) -> bool {
+    return self.active
+  }
+
+  pub fn supportsSignals(self: &PosixProcessRunner) -> bool {
+    return self.active
+  }
+
+  pub fn noCoredump(self: &PosixProcessRunner) -> bool {
+    return self.active
+  }
+}

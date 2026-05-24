@@ -1,0 +1,19 @@
+pub struct SimdReductionLowering {
+  emitsReduction: bool,
+  preservesOperation: bool,
+  fallbackAvailable: bool,
+}
+
+impl SimdReductionLowering {
+  pub fn init(emitsReduction: bool, preservesOperation: bool, fallbackAvailable: bool) -> SimdReductionLowering {
+    return SimdReductionLowering {
+      emitsReduction: emitsReduction,
+      preservesOperation: preservesOperation,
+      fallbackAvailable: fallbackAvailable,
+    }
+  }
+
+  pub fn accepted(self: SimdReductionLowering) -> bool {
+    return self.emitsReduction && self.preservesOperation || self.fallbackAvailable
+  }
+}

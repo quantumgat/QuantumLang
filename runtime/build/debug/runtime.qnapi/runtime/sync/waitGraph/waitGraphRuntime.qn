@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeWaitGraphIncidentKind {
+  DeadlockRisk
+  StaleWaiter
+  MissedWake
+  CancelledWaiter
+  TimeoutExpired
+}
+pub struct RuntimeWaitGraph {
+  nodeCount: usize
+  edgeCount: usize
+  incident: RuntimeWaitGraphIncidentKind
+  diagnosticReady: bool
+}

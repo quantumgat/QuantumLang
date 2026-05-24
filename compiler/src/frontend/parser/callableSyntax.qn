@@ -1,0 +1,24 @@
+pub enum CallableSyntaxFamily {
+  ShortLambda
+  TypedLambda
+  ClosureBlock
+  MethodReference
+  CallableObject
+  AsyncClosure
+  HotCallback
+}
+
+pub struct CallableSyntaxParse {
+  family: CallableSyntaxFamily,
+  sourceRangeReady: bool,
+  captureSyntaxReady: bool,
+  recoveryReady: bool,
+}
+
+impl CallableSyntaxParse {
+  pub fn complete(self: CallableSyntaxParse) -> bool {
+    return self.sourceRangeReady
+      && self.captureSyntaxReady
+      && self.recoveryReady
+  }
+}

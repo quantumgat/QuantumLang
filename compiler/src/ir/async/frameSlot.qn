@@ -1,0 +1,34 @@
+pub enum AsyncFrameSlotKind {
+  State
+  Suspension
+  CapturedLocal
+  ChannelWait
+  CancellationToken
+  Cleanup
+}
+
+pub struct AsyncFrameSlot {
+  index: usize,
+  kind: AsyncFrameSlotKind,
+  sourceNode: u64,
+  sourceMapId: u64,
+  cleanupEdgeId: u64,
+}
+
+impl AsyncFrameSlot {
+  pub fn valid(self: AsyncFrameSlot) -> bool {
+    return self.sourceNode > 0
+      && self.sourceMapId > 0
+  }
+
+  pub fn needsCleanup(self: AsyncFrameSlot) -> bool {
+    return self.kind == AsyncFrameSlotKind.Suspension
+      || self.kind == AsyncFrameSlotKind.ChannelWait
+      || self.kind == AsyncFrameSlotKind.CancellationToken
+      || self.kind == AsyncFrameSlotKind.Cleanup
+  }
+
+  pub fn cleanupReady(self: AsyncFrameSlot) -> bool {
+    return !self.needsCleanup() || self.cleanupEdgeId > 0
+  }
+}

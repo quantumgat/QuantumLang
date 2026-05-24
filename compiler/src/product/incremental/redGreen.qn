@@ -1,0 +1,16 @@
+pub enum RedGreenState {
+  RedChanged,
+  GreenClean,
+}
+
+pub struct RedGreenResult {
+  state: RedGreenState,
+  reused: bool,
+}
+
+pub fn greenResult() -> RedGreenResult {
+  return RedGreenResult {
+    state: RedGreenState.GreenClean,
+    reused: true,
+  }
+}

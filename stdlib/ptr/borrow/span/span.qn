@@ -1,0 +1,127 @@
+/**
+  Raw pointer plus element length that can be checked into Slice or MutSlice.
+
+  example:
+    unsafe {
+      let span = ptr.asSpan(count)
+      let slice = span.asSlice()?
+      let first = slice.first()?
+    }
+
+  effects: pure until converted into a checked view
+  complexity: O(1)
+  allocation: none
+  safety: stores raw range metadata; asSlice/asMutSlice perform access checks
+  stability: public since 0.1
+*/
+pub struct Span<T> {
+  ptr: Ptr<T>,
+  len: usize,
+}
+
+impl<T> Span<T> {
+  /**
+    Creates a raw span from a pointer and length.
+
+    example:
+      unsafe {
+        let span = Span<User>.fromPtr(ptr, count)
+        let count = span.len()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove ptr and len describe one intended range
+    stability: public since 0.1
+  */
+  pub fn fromPtr(ptr: Ptr<T>, len: usize) -> Span<T> requires(unsafe) {
+    return Span<T> {
+      ptr: ptr,
+      len: len,
+    }
+  }
+
+  /**
+    Returns the number of elements in the span.
+
+    example:
+      let count = span.len()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn len(self: Span<T>) -> usize {
+    return self.len
+  }
+
+  /**
+    Returns true when the span length is zero.
+
+    example:
+      if span.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: Span<T>) -> bool {
+    return self.len == 0
+  }
+
+  /**
+    Returns the raw start pointer.
+
+    example:
+      let ptr = span.asPtr()
+      let raw = ptr.rawAddress()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: returned pointer still requires checked access before use
+    stability: public since 0.1
+  */
+  pub fn asPtr(self: Span<T>) -> Ptr<T> {
+    return self.ptr
+  }
+
+  /**
+    Checks the span as an immutable slice.
+
+    example:
+      let slice = span.asSlice()?
+      let first = slice.first()?
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: validates readable access for the stored length
+    stability: public since 0.1
+  */
+  pub fn asSlice(self: Span<T>) -> Result<Slice<T>, PtrError> {
+    return self.ptr.checkSlice(self.len)
+  }
+
+  /**
+    Checks the span as a mutable slice.
+
+    example:
+      let slice = span.asMutSlice()?
+      slice.fill(defaultUser)
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: validates exclusive writable access for the stored length
+    stability: public since 0.1
+  */
+  pub fn asMutSlice(self: Span<T>) -> Result<MutSlice<T>, PtrError> {
+    return self.ptr.checkMutSlice(self.len)
+  }
+}

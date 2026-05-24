@@ -1,0 +1,42 @@
+pub struct TrieKernel {
+  prefixNodeBacked: bool,
+  childMapEdges: bool,
+  insertUsesPrefixWalk: bool,
+  getUsesPrefixWalk: bool,
+  prefixSearchUsesNodeWalk: bool,
+  startsWithUsesSubtreeCollect: bool,
+  iteratorTerminalNodeCursorStable: bool,
+  terminalValueDirectLoad: bool,
+  keyCharsDirectIndexed: bool,
+  callableLoopsInlineable: bool,
+}
+
+impl TrieKernel {
+  pub fn standard() -> TrieKernel {
+    return TrieKernel {
+      prefixNodeBacked: true,
+      childMapEdges: true,
+      insertUsesPrefixWalk: true,
+      getUsesPrefixWalk: true,
+      prefixSearchUsesNodeWalk: true,
+      startsWithUsesSubtreeCollect: true,
+      iteratorTerminalNodeCursorStable: true,
+      terminalValueDirectLoad: true,
+      keyCharsDirectIndexed: true,
+      callableLoopsInlineable: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: TrieKernel) -> bool {
+    return self.prefixNodeBacked
+      && self.childMapEdges
+      && self.insertUsesPrefixWalk
+      && self.getUsesPrefixWalk
+      && self.prefixSearchUsesNodeWalk
+      && self.startsWithUsesSubtreeCollect
+      && self.iteratorTerminalNodeCursorStable
+      && self.terminalValueDirectLoad
+      && self.keyCharsDirectIndexed
+      && self.callableLoopsInlineable
+  }
+}

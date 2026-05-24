@@ -1,0 +1,34 @@
+pub struct PluginRuntimeDynamicLoadResult {
+  plan: PluginRuntimeDynamicLoadPlan,
+  loadedKernel: PluginLoadedKernel,
+  runtimeLoad: PluginRuntimeLoadResult,
+  failure: PluginKernelFailure,
+  typedFailureOnly: bool,
+  noCoredump: bool,
+  deterministicDispatch: bool,
+}
+
+impl PluginRuntimeDynamicLoadResult {
+  pub fn load(path: string, symbol: string) -> PluginRuntimeDynamicLoadResult {
+    let library = PluginDynamicLibrary.shared(path)
+    return PluginRuntimeDynamicLoadResult {
+      plan: PluginRuntimeDynamicLoadPlan.forLibrary(path, 1),
+      loadedKernel: PluginLoadedKernel.fromLibrary(library, symbol),
+      runtimeLoad: PluginRuntimeLoadResult.acceptedKernel(symbol),
+      failure: PluginKernelFailure.trapped(PluginKernelFailureKind.KernelPanicTrapped),
+      typedFailureOnly: true,
+      noCoredump: true,
+      deterministicDispatch: true,
+    }
+  }
+
+  pub fn accepted(self: PluginRuntimeDynamicLoadResult) -> bool {
+    return self.plan.accepted()
+      && self.loadedKernel.accepted()
+      && self.runtimeLoad.accepted()
+      && self.failure.accepted()
+      && self.typedFailureOnly
+      && self.noCoredump
+      && self.deterministicDispatch
+  }
+}

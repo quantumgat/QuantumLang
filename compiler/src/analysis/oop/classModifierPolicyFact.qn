@@ -1,0 +1,46 @@
+pub enum ClassModifierPolicy {
+  Concrete
+  Abstract
+  Open
+  Final
+  SealedModule
+  SealedPackage
+  SealedWorkspace
+  Foreign
+  Generated
+}
+
+pub struct ClassModifierPolicyFact {
+  typeId: u64,
+  policy: ClassModifierPolicy,
+  canBeBase: bool,
+  canOverride: bool,
+  vtableAllowed: bool,
+  sealedImplementationsKnown: bool,
+}
+
+pub fn classModifierPolicyFact(
+  typeId: u64,
+  policy: ClassModifierPolicy,
+  canBeBase: bool,
+  canOverride: bool,
+  vtableAllowed: bool,
+  sealedImplementationsKnown: bool,
+) -> ClassModifierPolicyFact {
+  return ClassModifierPolicyFact {
+    typeId: typeId,
+    policy: policy,
+    canBeBase: canBeBase,
+    canOverride: canOverride,
+    vtableAllowed: vtableAllowed,
+    sealedImplementationsKnown: sealedImplementationsKnown,
+  }
+}
+
+impl ClassModifierPolicyFact {
+  pub fn hotPathDispatchSafe(self: ClassModifierPolicyFact) -> bool {
+    return self.policy == ClassModifierPolicy.Final
+      || (self.policy == ClassModifierPolicy.SealedModule && self.sealedImplementationsKnown)
+      || (self.vtableAllowed == false)
+  }
+}

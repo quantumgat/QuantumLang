@@ -1,0 +1,6 @@
+pub struct Url {
+  value: string,
+}
+
+pub fn url(value: string) -> Url
+pub fn value(url: Url) -> string

@@ -1,0 +1,49 @@
+pub struct PlatformHandle {
+  rawHandle: u64,
+  generation: usize,
+  ownerSubsystem: string,
+  state: HandleState,
+  owned: bool,
+}
+
+pub fn platformHandle(rawHandle: u64, owned: bool) -> PlatformHandle {
+  return PlatformHandle {
+    rawHandle: rawHandle,
+    generation: 1,
+    ownerSubsystem: "platform",
+    state: HandleState.Open,
+    owned: owned,
+  }
+}
+
+impl PlatformHandle {
+  pub fn ownsHandle(self: PlatformHandle) -> bool {
+    return self.owned
+  }
+
+  pub fn validate(self: PlatformHandle, generation: usize, ownerSubsystem: string) -> Result<PlatformHandle, HandleError> {
+    if self.state != HandleState.Open {
+      return Err(HandleError.ClosedHandle)
+    }
+    if self.generation != generation {
+      return Err(HandleError.WrongGeneration)
+    }
+    if self.ownerSubsystem != ownerSubsystem {
+      return Err(HandleError.WrongSubsystem)
+    }
+    return Ok(self)
+  }
+
+  pub fn close(self: PlatformHandle) -> Result<PlatformHandle, HandleError> {
+    if self.state == HandleState.Closed {
+      return Err(HandleError.DoubleClose)
+    }
+    return Ok(PlatformHandle {
+      rawHandle: self.rawHandle,
+      generation: self.generation + 1,
+      ownerSubsystem: self.ownerSubsystem,
+      state: HandleState.Closed,
+      owned: false,
+    })
+  }
+}

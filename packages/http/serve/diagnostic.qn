@@ -1,0 +1,376 @@
+pub struct AppBuilderDiagnostic {
+  message: string,
+}
+
+impl AppBuilderDiagnostic {
+  pub fn init(message: string) -> AppBuilderDiagnostic {
+    return AppBuilderDiagnostic { message: message }
+  }
+
+  pub fn invalidAppPlan() -> AppBuilderDiagnostic {
+    return AppBuilderDiagnostic.init("invalid HTTP app plan")
+  }
+
+  pub fn invalidAppState(report: AppStateDiagnosticReport) -> AppBuilderDiagnostic {
+    return AppBuilderDiagnostic.init(
+      "invalid HTTP app-state plan: "
+        + report.errorCountText()
+        + " errors, "
+        + report.warningCountText()
+        + " warnings"
+    )
+  }
+
+  pub fn invalidDependencyGraph(graph: AppDependencyGraph) -> AppBuilderDiagnostic {
+    return AppBuilderDiagnostic.init(
+      "invalid HTTP dependency graph: " + graph.issueCountText() + " unresolved dependencies"
+    )
+  }
+
+  pub fn message(self: AppBuilderDiagnostic) -> string {
+    return self.message
+  }
+}
+
+pub enum AppStateDiagnosticKind {
+  MissingRequiredStart
+  MissingRequiredShutdown
+  MissingRequiredDrop
+  DependencyCycle
+  HealthUnavailable
+  ReconnectUnavailable
+  HiddenStaticState
+  ServiceLocatorLeak
+  TestOverrideLeak
+  HotPathClassDispatch
+}
+
+pub enum AppStateDiagnosticSeverity {
+  Warning
+  Error
+}
+
+pub struct AppStateDiagnostic {
+  kind: AppStateDiagnosticKind,
+  severity: AppStateDiagnosticSeverity,
+  typeName: string,
+  ownerId: u64,
+  message: string,
+  fix: string,
+}
+
+impl AppStateDiagnostic {
+  pub fn init(
+    kind: AppStateDiagnosticKind,
+    severity: AppStateDiagnosticSeverity,
+    typeName: string,
+    ownerId: u64,
+    message: string,
+    fix: string,
+  ) -> AppStateDiagnostic {
+    return AppStateDiagnostic {
+      kind: kind,
+      severity: severity,
+      typeName: typeName,
+      ownerId: ownerId,
+      message: message,
+      fix: fix,
+    }
+  }
+
+  pub fn error(
+    kind: AppStateDiagnosticKind,
+    typeName: string,
+    ownerId: u64,
+    message: string,
+    fix: string,
+  ) -> AppStateDiagnostic {
+    return AppStateDiagnostic.init(kind, AppStateDiagnosticSeverity.Error, typeName, ownerId, message, fix)
+  }
+
+  pub fn warning(
+    kind: AppStateDiagnosticKind,
+    typeName: string,
+    ownerId: u64,
+    message: string,
+    fix: string,
+  ) -> AppStateDiagnostic {
+    return AppStateDiagnostic.init(kind, AppStateDiagnosticSeverity.Warning, typeName, ownerId, message, fix)
+  }
+
+  pub fn isError(self: AppStateDiagnostic) -> bool {
+    return self.severity == AppStateDiagnosticSeverity.Error
+  }
+
+  pub fn complete(self: AppStateDiagnostic) -> bool {
+    return self.message != "" && self.fix != ""
+  }
+}
+
+pub struct AppStateDiagnosticPolicy {
+  productionPlan: bool,
+  healthRequired: bool,
+  reconnectRequired: bool,
+  hiddenStaticStateDetected: bool,
+  serviceLocatorDetected: bool,
+}
+
+impl AppStateDiagnosticPolicy {
+  pub fn init(
+    productionPlan: bool,
+    healthRequired: bool,
+    reconnectRequired: bool,
+    hiddenStaticStateDetected: bool,
+    serviceLocatorDetected: bool,
+  ) -> AppStateDiagnosticPolicy {
+    return AppStateDiagnosticPolicy {
+      productionPlan: productionPlan,
+      healthRequired: healthRequired,
+      reconnectRequired: reconnectRequired,
+      hiddenStaticStateDetected: hiddenStaticStateDetected,
+      serviceLocatorDetected: serviceLocatorDetected,
+    }
+  }
+
+  pub fn production() -> AppStateDiagnosticPolicy {
+    return AppStateDiagnosticPolicy.init(true, false, false, false, false)
+  }
+
+  pub fn requireHealth(self: AppStateDiagnosticPolicy) -> AppStateDiagnosticPolicy {
+    return AppStateDiagnosticPolicy.init(
+      self.productionPlan,
+      true,
+      self.reconnectRequired,
+      self.hiddenStaticStateDetected,
+      self.serviceLocatorDetected
+    )
+  }
+
+  pub fn requireReconnect(self: AppStateDiagnosticPolicy) -> AppStateDiagnosticPolicy {
+    return AppStateDiagnosticPolicy.init(
+      self.productionPlan,
+      self.healthRequired,
+      true,
+      self.hiddenStaticStateDetected,
+      self.serviceLocatorDetected
+    )
+  }
+
+  pub fn withHiddenStaticState(self: AppStateDiagnosticPolicy) -> AppStateDiagnosticPolicy {
+    return AppStateDiagnosticPolicy.init(
+      self.productionPlan,
+      self.healthRequired,
+      self.reconnectRequired,
+      true,
+      self.serviceLocatorDetected
+    )
+  }
+
+  pub fn withServiceLocator(self: AppStateDiagnosticPolicy) -> AppStateDiagnosticPolicy {
+    return AppStateDiagnosticPolicy.init(
+      self.productionPlan,
+      self.healthRequired,
+      self.reconnectRequired,
+      self.hiddenStaticStateDetected,
+      true
+    )
+  }
+
+  pub fn productionPlan(self: AppStateDiagnosticPolicy) -> bool {
+    return self.productionPlan
+  }
+
+  pub fn healthRequired(self: AppStateDiagnosticPolicy) -> bool {
+    return self.healthRequired
+  }
+
+  pub fn reconnectRequired(self: AppStateDiagnosticPolicy) -> bool {
+    return self.reconnectRequired
+  }
+
+  pub fn hiddenStaticStateDetected(self: AppStateDiagnosticPolicy) -> bool {
+    return self.hiddenStaticStateDetected
+  }
+
+  pub fn serviceLocatorDetected(self: AppStateDiagnosticPolicy) -> bool {
+    return self.serviceLocatorDetected
+  }
+}
+
+pub struct AppStateDiagnosticReport {
+  diagnostics: Vec<AppStateDiagnostic>,
+  errorCount: usize,
+  warningCount: usize,
+}
+
+impl AppStateDiagnosticReport {
+  pub fn empty() -> AppStateDiagnosticReport {
+    return AppStateDiagnosticReport {
+      diagnostics: [],
+      errorCount: 0,
+      warningCount: 0,
+    }
+  }
+
+  pub fn add(self: AppStateDiagnosticReport, diagnostic: AppStateDiagnostic) -> AppStateDiagnosticReport {
+    let mut errorCount = self.errorCount
+    let mut warningCount = self.warningCount
+    if diagnostic.isError() {
+      errorCount = errorCount + 1
+    } else {
+      warningCount = warningCount + 1
+    }
+    return AppStateDiagnosticReport {
+      diagnostics: self.diagnostics.push(diagnostic),
+      errorCount: errorCount,
+      warningCount: warningCount,
+    }
+  }
+
+  pub fn from(
+    graph: AppStateGraph,
+    lifecycle: AppLifecyclePlan,
+    hotPath: HttpHotPathPlan,
+    policy: AppStateDiagnosticPolicy,
+  ) -> AppStateDiagnosticReport {
+    let mut report = AppStateDiagnosticReport.empty()
+    let summary = graph.summary()
+
+    let mut stateIndex: usize = 0
+    while stateIndex < graph.states.len() {
+      let state = graph.states[stateIndex]
+      if state.lifecycleOwned() && !state.startRequired() {
+        report = report.add(AppStateDiagnostic.error(
+          AppStateDiagnosticKind.MissingRequiredStart,
+          state.typeName(),
+          state.ownerId(),
+          "HTTP app state owns lifecycle but has no start plan",
+          "add init/start lifecycle method or register as value state"
+        ))
+      }
+      if state.lifecycleOwned() && !state.shutdownRequired() {
+        report = report.add(AppStateDiagnostic.error(
+          AppStateDiagnosticKind.MissingRequiredShutdown,
+          state.typeName(),
+          state.ownerId(),
+          "HTTP app state owns lifecycle but has no shutdown plan",
+          "add shutdown lifecycle method or prove ownership is external"
+        ))
+      }
+      if state.lifecycleOwned() && !state.dropRequired() {
+        report = report.add(AppStateDiagnostic.warning(
+          AppStateDiagnosticKind.MissingRequiredDrop,
+          state.typeName(),
+          state.ownerId(),
+          "HTTP app state owns lifecycle but has no drop cleanup proof",
+          "add drop cleanup or prove shutdown releases every resource"
+        ))
+      }
+      stateIndex = stateIndex + 1
+    }
+
+    let mut dependencyIndex: usize = 0
+    while dependencyIndex < graph.dependencies.len() {
+      let dependency = graph.dependencies[dependencyIndex]
+      if !dependency.valid() {
+        report = report.add(AppStateDiagnostic.error(
+          AppStateDiagnosticKind.DependencyCycle,
+          "AppStateDependency",
+          dependency.ownerId,
+          "HTTP app-state dependency graph has a cycle or self dependency",
+          "break the cycle or split startup/shutdown ownership"
+        ))
+      }
+      dependencyIndex = dependencyIndex + 1
+    }
+
+    if policy.healthRequired() && summary.healthCheckCount == 0 {
+      report = report.add(AppStateDiagnostic.error(
+        AppStateDiagnosticKind.HealthUnavailable,
+        "AppStateGraph",
+        0,
+        "HTTP app requires health checks but no state exposes health",
+        "add health() on a lifecycle owner or remove the health requirement"
+      ))
+    }
+    if policy.reconnectRequired() && summary.reconnectCount == 0 {
+      report = report.add(AppStateDiagnostic.error(
+        AppStateDiagnosticKind.ReconnectUnavailable,
+        "AppStateGraph",
+        0,
+        "HTTP app requires reconnect but no state exposes reconnect",
+        "add reconnect() on the resource owner or remove the reconnect policy"
+      ))
+    }
+    if policy.hiddenStaticStateDetected() {
+      report = report.add(AppStateDiagnostic.error(
+        AppStateDiagnosticKind.HiddenStaticState,
+        "AppStateGraph",
+        0,
+        "hidden static state bypasses AppBuilder.state<T>() lifecycle tracking",
+        "register the state through AppBuilder.state<T>()"
+      ))
+    }
+    if policy.serviceLocatorDetected() {
+      report = report.add(AppStateDiagnostic.error(
+        AppStateDiagnosticKind.ServiceLocatorLeak,
+        "AppStateGraph",
+        0,
+        "service locator lookup bypasses typed app-state injection",
+        "inject the dependency through state/controller construction"
+      ))
+    }
+    if policy.productionPlan() && summary.testOverrideCount > 0 {
+      report = report.add(AppStateDiagnostic.error(
+        AppStateDiagnosticKind.TestOverrideLeak,
+        "AppStateGraph",
+        0,
+        "test override state is present in a production HTTP app plan",
+        "move the override behind the test profile or remove it"
+      ))
+    }
+    if !lifecycle.complete() || !hotPath.lifecycleErasedFromRequest || !hotPath.dynamicClassDispatchBlocked {
+      report = report.add(AppStateDiagnostic.error(
+        AppStateDiagnosticKind.HotPathClassDispatch,
+        "HttpHotPathPlan",
+        0,
+        "request hot path still depends on class lifecycle or dynamic dispatch",
+        "generate route/extractor/handler tables and keep classes in setup lifecycle only"
+      ))
+    }
+    return report
+  }
+
+  pub fn fromAppPlan(plan: AppPlan, policy: AppStateDiagnosticPolicy) -> AppStateDiagnosticReport {
+    let hotPath = HttpHotPathPlan.appStateBoundary(plan)
+    return AppStateDiagnosticReport.from(
+      plan.appStateGraph(),
+      plan.lifecycle(),
+      hotPath,
+      policy
+    )
+  }
+
+  pub fn complete(self: AppStateDiagnosticReport) -> bool {
+    let mut index: usize = 0
+    while index < self.diagnostics.len() {
+      if !self.diagnostics[index].complete() {
+        return false
+      }
+      index = index + 1
+    }
+    return true
+  }
+
+  pub fn clean(self: AppStateDiagnosticReport) -> bool {
+    return self.errorCount == 0 && self.complete()
+  }
+
+  pub fn errorCountText(self: AppStateDiagnosticReport) -> string {
+    return self.errorCount.toString()
+  }
+
+  pub fn warningCountText(self: AppStateDiagnosticReport) -> string {
+    return self.warningCount.toString()
+  }
+}

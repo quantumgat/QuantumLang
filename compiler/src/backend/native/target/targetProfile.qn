@@ -1,0 +1,34 @@
+pub enum TargetProfileKind {
+  DebugProfile
+  ReleaseProfile
+  TestProfile
+}
+
+pub struct TargetProfile {
+  name: string,
+  kind: TargetProfileKind,
+  optimized: bool,
+  debugInfo: bool,
+}
+
+pub fn targetProfile(name: string, kind: TargetProfileKind, optimized: bool, debugInfo: bool) -> TargetProfile {
+  return TargetProfile { name: name, kind: kind, optimized: optimized, debugInfo: debugInfo }
+}
+
+impl TargetProfile {
+  pub fn profileName(self: TargetProfile) -> string {
+    return self.name
+  }
+
+  pub fn profileKind(self: TargetProfile) -> TargetProfileKind {
+    return self.kind
+  }
+
+  pub fn usesOptimization(self: TargetProfile) -> bool {
+    return self.optimized
+  }
+
+  pub fn emitsDebugInfo(self: TargetProfile) -> bool {
+    return self.debugInfo
+  }
+}

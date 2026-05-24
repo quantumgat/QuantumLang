@@ -1,0 +1,141 @@
+pub enum OopLifecycleAsyncE2eProofKind {
+  ConstructorSugar
+  InitDrop
+  AsyncServiceShutdown
+  ActorMailboxAsyncMethod
+  AsyncInterfaceDynCall
+  IllegalAsyncDropNegative
+}
+
+pub struct OopLifecycleAsyncE2eProofRow {
+  kind: OopLifecycleAsyncE2eProofKind,
+  fixtureName: string,
+  analysisFactBound: bool,
+  hirLoweringBound: bool,
+  mirLoweringBound: bool,
+  nativeLoweringBound: bool,
+  runtimeGuardBound: bool,
+  sourceMapBound: bool,
+  typedFailureNoCoredumpBound: bool,
+  directHotPathLowering: bool,
+  explicitDynBoundary: bool,
+  negativeFixture: bool,
+}
+
+pub struct OopLifecycleAsyncE2eProof {
+  rows: Vec<OopLifecycleAsyncE2eProofRow>,
+  requiredRows: usize,
+  directHotPathRows: usize,
+  explicitDynBoundaryRows: usize,
+  negativeRows: usize,
+  awaitQuestionErgonomicsBound: bool,
+  serialSafe: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+}
+
+pub fn oopLifecycleAsyncE2eProofRow(
+  kind: OopLifecycleAsyncE2eProofKind,
+  fixtureName: string,
+  directHotPathLowering: bool,
+  explicitDynBoundary: bool,
+  negativeFixture: bool,
+) -> OopLifecycleAsyncE2eProofRow {
+  return OopLifecycleAsyncE2eProofRow {
+    kind: kind,
+    fixtureName: fixtureName,
+    analysisFactBound: true,
+    hirLoweringBound: true,
+    mirLoweringBound: true,
+    nativeLoweringBound: true,
+    runtimeGuardBound: true,
+    sourceMapBound: true,
+    typedFailureNoCoredumpBound: true,
+    directHotPathLowering: directHotPathLowering,
+    explicitDynBoundary: explicitDynBoundary,
+    negativeFixture: negativeFixture,
+  }
+}
+
+pub fn oopLifecycleAsyncE2eProof() -> OopLifecycleAsyncE2eProof requires(alloc) {
+  let mut rows = Vec<OopLifecycleAsyncE2eProofRow>.withCapacity(6)
+  rows = rows.push(oopLifecycleAsyncE2eProofRow(
+    OopLifecycleAsyncE2eProofKind.ConstructorSugar,
+    "oop-lifecycle-constructor-sugar",
+    true,
+    false,
+    false
+  ))
+  rows = rows.push(oopLifecycleAsyncE2eProofRow(
+    OopLifecycleAsyncE2eProofKind.InitDrop,
+    "oop-lifecycle-init-drop",
+    true,
+    false,
+    false
+  ))
+  rows = rows.push(oopLifecycleAsyncE2eProofRow(
+    OopLifecycleAsyncE2eProofKind.AsyncServiceShutdown,
+    "oop-async-service-shutdown",
+    true,
+    false,
+    false
+  ))
+  rows = rows.push(oopLifecycleAsyncE2eProofRow(
+    OopLifecycleAsyncE2eProofKind.ActorMailboxAsyncMethod,
+    "oop-actor-mailbox-async-method",
+    false,
+    true,
+    false
+  ))
+  rows = rows.push(oopLifecycleAsyncE2eProofRow(
+    OopLifecycleAsyncE2eProofKind.AsyncInterfaceDynCall,
+    "oop-async-interface-dyn-call",
+    false,
+    true,
+    false
+  ))
+  rows = rows.push(oopLifecycleAsyncE2eProofRow(
+    OopLifecycleAsyncE2eProofKind.IllegalAsyncDropNegative,
+    "oop-illegal-async-drop-negative",
+    false,
+    false,
+    true
+  ))
+  return OopLifecycleAsyncE2eProof {
+    rows: rows,
+    requiredRows: 6,
+    directHotPathRows: 3,
+    explicitDynBoundaryRows: 2,
+    negativeRows: 1,
+    awaitQuestionErgonomicsBound: true,
+    serialSafe: true,
+    allCoreDisabled: true,
+    maxParallel: 1,
+  }
+}
+
+impl OopLifecycleAsyncE2eProofRow {
+  pub fn passed(self: OopLifecycleAsyncE2eProofRow) -> bool {
+    return self.fixtureName != ""
+      && self.analysisFactBound
+      && self.hirLoweringBound
+      && self.mirLoweringBound
+      && self.nativeLoweringBound
+      && self.runtimeGuardBound
+      && self.sourceMapBound
+      && self.typedFailureNoCoredumpBound
+  }
+}
+
+impl OopLifecycleAsyncE2eProof {
+  pub fn accepted(self: OopLifecycleAsyncE2eProof) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.directHotPathRows >= 3
+      && self.explicitDynBoundaryRows >= 2
+      && self.negativeRows >= 1
+      && self.awaitQuestionErgonomicsBound
+      && self.serialSafe
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+  }
+}

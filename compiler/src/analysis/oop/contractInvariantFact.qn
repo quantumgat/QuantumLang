@@ -1,0 +1,50 @@
+pub enum ContractCheckMode {
+  RuntimeOrProof
+  Boundary
+  Certified
+}
+
+pub struct ContractInvariantFact {
+  contractId: u64,
+  invariantCount: usize,
+  preconditionCount: usize,
+  postconditionCount: usize,
+  checkMode: ContractCheckMode,
+  proofWitnessBound: bool,
+  optimizerTrustBound: bool,
+  backendAssumptionBound: bool,
+  boundaryRevalidationRequired: bool,
+}
+
+pub fn contractInvariantFact(
+  contractId: u64,
+  invariantCount: usize,
+  preconditionCount: usize,
+  postconditionCount: usize,
+  checkMode: ContractCheckMode,
+  proofWitnessBound: bool,
+  optimizerTrustBound: bool,
+  backendAssumptionBound: bool,
+  boundaryRevalidationRequired: bool,
+) -> ContractInvariantFact {
+  return ContractInvariantFact {
+    contractId: contractId,
+    invariantCount: invariantCount,
+    preconditionCount: preconditionCount,
+    postconditionCount: postconditionCount,
+    checkMode: checkMode,
+    proofWitnessBound: proofWitnessBound,
+    optimizerTrustBound: optimizerTrustBound,
+    backendAssumptionBound: backendAssumptionBound,
+    boundaryRevalidationRequired: boundaryRevalidationRequired,
+  }
+}
+
+impl ContractInvariantFact {
+  pub fn complete(self: ContractInvariantFact) -> bool {
+    return self.invariantCount + self.preconditionCount + self.postconditionCount > 0
+      && self.proofWitnessBound
+      && self.optimizerTrustBound
+      && self.backendAssumptionBound
+  }
+}

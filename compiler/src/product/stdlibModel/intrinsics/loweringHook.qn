@@ -1,0 +1,11 @@
+pub struct StdlibLoweringHook {
+  symbolName: string,
+  hookName: string,
+  proofRequired: bool,
+}
+
+impl StdlibLoweringHook {
+  pub fn accepted(self: StdlibLoweringHook) -> bool {
+    return self.symbolName != "" && self.hookName != "" && self.proofRequired
+  }
+}

@@ -1,0 +1,113 @@
+pub enum MemoryIncidentKind {
+  Leak,
+  DoubleFree,
+  UseAfterFree,
+  StaleHandle,
+  WrongAllocator,
+  OutOfMemory,
+  PressureDenied,
+  InvalidLayout,
+  AllocatorStopped,
+  ArenaUseAfterReset,
+  ArenaDoubleRelease,
+  ArenaEscape,
+  WrongRegion,
+  DanglingArenaBox,
+  DanglingArenaSlice,
+  ZeroCopyDanglingView,
+  ZeroCopyMutationConflict,
+  ZeroCopyOverlappingMutableBorrow,
+  ZeroCopyReadAfterMutation,
+  ZeroCopyInvalidRange,
+}
+
+pub struct MemoryIncident {
+  incidentId: u64,
+  kind: MemoryIncidentKind,
+  allocationId: u64,
+  handleId: u64,
+  requestedBytes: usize,
+  allocatedBytes: usize,
+  expectedGeneration: u64,
+  actualGeneration: u64,
+  expectedAllocator: string,
+  actualAllocator: string,
+  alignment: usize,
+  requiredAlignment: usize,
+  boundsIndex: usize,
+  boundsLen: usize,
+  recoverable: bool,
+  redacted: bool,
+  coredump: bool,
+}
+
+impl MemoryIncident {
+  pub fn init(
+    incidentId: u64,
+    kind: MemoryIncidentKind,
+    allocationId: u64,
+    handleId: u64,
+  ) -> MemoryIncident {
+    return MemoryIncident {
+      incidentId: incidentId,
+      kind: kind,
+      allocationId: allocationId,
+      handleId: handleId,
+      requestedBytes: 0,
+      allocatedBytes: 0,
+      expectedGeneration: 0,
+      actualGeneration: 0,
+      expectedAllocator: "",
+      actualAllocator: "",
+      alignment: 0,
+      requiredAlignment: 0,
+      boundsIndex: 0,
+      boundsLen: 0,
+      recoverable: true,
+      redacted: true,
+      coredump: false,
+    }
+  }
+
+  pub fn productionSafe(self: MemoryIncident) -> bool {
+    return self.redacted && self.coredump == false
+  }
+
+  pub fn noCoredump(self: MemoryIncident) -> bool {
+    return self.coredump == false
+  }
+
+  pub fn incidentKind(self: MemoryIncident) -> MemoryIncidentKind {
+    return self.kind
+  }
+
+  pub fn redactedForReport(self: MemoryIncident) -> MemoryIncident {
+    return MemoryIncident {
+      incidentId: self.incidentId,
+      kind: self.kind,
+      allocationId: self.allocationId,
+      handleId: self.handleId,
+      requestedBytes: self.requestedBytes,
+      allocatedBytes: self.allocatedBytes,
+      expectedGeneration: self.expectedGeneration,
+      actualGeneration: self.actualGeneration,
+      expectedAllocator: self.expectedAllocator,
+      actualAllocator: self.actualAllocator,
+      alignment: self.alignment,
+      requiredAlignment: self.requiredAlignment,
+      boundsIndex: self.boundsIndex,
+      boundsLen: self.boundsLen,
+      recoverable: self.recoverable,
+      redacted: true,
+      coredump: false,
+    }
+  }
+
+  pub fn hasTypedPayload(self: MemoryIncident) -> bool {
+    return self.kind == MemoryIncidentKind.OutOfMemory
+      || self.allocationId > 0
+      || self.requestedBytes > 0
+      || self.requiredAlignment > 0
+      || self.boundsLen > 0
+  }
+}

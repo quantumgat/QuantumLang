@@ -1,0 +1,11 @@
+pub struct StdlibAsyncSurfaceLowering {
+  symbolName: string,
+  taskLoweringRequired: bool,
+  cancellationAware: bool,
+}
+
+impl StdlibAsyncSurfaceLowering {
+  pub fn accepted(self: StdlibAsyncSurfaceLowering) -> bool {
+    return self.symbolName != "" && self.taskLoweringRequired
+  }
+}

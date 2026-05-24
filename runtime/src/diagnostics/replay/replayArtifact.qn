@@ -1,0 +1,39 @@
+pub struct ReplayArtifact {
+  path: string,
+  incidentId: u64,
+  logEventSequence: u64,
+  schemaName: string,
+  deterministic: bool,
+  redacted: bool,
+  retained: bool,
+  testReady: bool,
+  noCompilerDependency: bool,
+}
+
+pub fn replayArtifact(path: string) -> ReplayArtifact {
+  return ReplayArtifact {
+    path: path,
+    incidentId: 1,
+    logEventSequence: 1,
+    schemaName: "qtreplay",
+    deterministic: true,
+    redacted: true,
+    retained: true,
+    testReady: true,
+    noCompilerDependency: true,
+  }
+}
+
+impl ReplayArtifact {
+  pub fn canReplayToTest(self: ReplayArtifact) -> bool {
+    return self.path != ""
+      && self.incidentId > 0
+      && self.logEventSequence > 0
+      && self.schemaName != ""
+      && self.deterministic
+      && self.redacted
+      && self.retained
+      && self.testReady
+      && self.noCompilerDependency
+  }
+}

@@ -1,0 +1,12 @@
+pub mod backendError
+pub mod proofError
+pub mod unsupported
+
+pub use backendError.BackendError
+pub use backendError.BackendErrorKind
+pub use backendError.backendError
+pub use proofError.ProofError
+pub use proofError.ProofErrorKind
+pub use proofError.proofError
+pub use unsupported.UnsupportedBackendFeature
+pub use unsupported.unsupportedBackendFeature

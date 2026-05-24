@@ -1,0 +1,31 @@
+pub struct RingBufferIter<T> {
+  ring: RingBuffer<T>,
+  index: usize,
+  len: usize,
+  generation: usize,
+}
+
+impl<T> RingBufferIter<T> {
+  pub fn isEmpty(self: RingBufferIter<T>) -> bool {
+    return self.index >= self.len
+  }
+
+  pub fn next(self: RingBufferIter<T>) -> Option<T> {
+    if self.isEmpty() {
+      return None
+    }
+    return Some(self.ring.items[self.ring.physicalIndex(self.index)])
+  }
+
+  pub fn advance(self: RingBufferIter<T>) -> RingBufferIter<T> {
+    if self.isEmpty() {
+      return self
+    }
+    return RingBufferIter<T> {
+      ring: self.ring,
+      index: self.index + 1,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}

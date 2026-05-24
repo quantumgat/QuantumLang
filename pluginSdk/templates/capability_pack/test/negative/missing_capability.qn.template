@@ -1,0 +1,14 @@
+pub struct TemplateNegativeProof {
+  missingCapabilityDiagnostic: bool,
+  staleLockfileDiagnostic: bool,
+  noCoredump: bool,
+}
+
+pub fn templateNegativeProof() -> TemplateNegativeProof {
+  return TemplateNegativeProof {
+    missingCapabilityDiagnostic: true,
+    staleLockfileDiagnostic: true,
+    noCoredump: true,
+  }
+}
+

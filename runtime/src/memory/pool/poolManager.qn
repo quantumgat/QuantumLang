@@ -1,0 +1,27 @@
+pub class PoolManager {
+  poolCount: usize,
+  active: bool,
+
+  pub init() {
+    self.poolCount = 0
+    self.active = false
+  }
+
+  pub fn start(self: &mut PoolManager) -> bool {
+    self.active = true
+    return self.active
+  }
+
+  pub fn shutdown(self: &mut PoolManager) -> bool {
+    self.active = false
+    return self.active == false
+  }
+
+  pub fn drop(self: &mut PoolManager) -> bool {
+    return self.shutdown()
+  }
+
+  pub fn ownsPools(self: &PoolManager) -> bool {
+    return self.active || self.poolCount == 0
+  }
+}

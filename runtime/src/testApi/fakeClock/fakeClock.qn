@@ -1,0 +1,15 @@
+pub struct FakeClock {
+  nowMillis: u64,
+  deterministic: bool,
+  publicRuntimeApi: bool,
+}
+
+pub fn fakeClock(nowMillis: u64) -> FakeClock {
+  return FakeClock { nowMillis: nowMillis, deterministic: true, publicRuntimeApi: false }
+}
+
+impl FakeClock {
+  pub fn canUseInTests(self: FakeClock) -> bool {
+    return self.deterministic && self.publicRuntimeApi == false
+  }
+}

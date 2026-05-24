@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ConcreteClassRuntimeContract {
+  typeId: u64
+  metadataBound: bool
+  layoutBound: bool
+  lifecycleGuardBound: bool
+  directDispatchBound: bool
+}

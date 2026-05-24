@@ -1,0 +1,43 @@
+[report]
+name = "http-go-comparison-fixture"
+runner = "qtlc-http-go-comparison-fixture-v1"
+liveMeasured = false
+comparisonShapeComplete = true
+productSpeedClaimBlocked = true
+
+[route]
+quantum = "GET /users"
+go = "GET /users"
+quantumServer = "QuantumLang httpAccelerated"
+goServer = "Go net/http"
+sameResponseShape = true
+
+[caps]
+fixedCpuCount = 2
+maxParallel = 1
+maxConnections = 64
+maxRequests = 10000
+memoryCapBytes = 268435456
+serialSafe = true
+highLoadOptional = true
+highLoadEnabledByDefault = false
+
+[quantum]
+p50LatencyMicros = 300
+p95LatencyMicros = 900
+p99LatencyMicros = 1800
+requestsPerSecond = 250000.0
+cpuNanosPerRequest = 4200
+memoryBytesPerRequest = 384
+noCrash = true
+noTimeout = true
+
+[go]
+p50LatencyMicros = 360
+p95LatencyMicros = 1100
+p99LatencyMicros = 2300
+requestsPerSecond = 210000.0
+cpuNanosPerRequest = 5100
+memoryBytesPerRequest = 512
+noCrash = true
+noTimeout = true

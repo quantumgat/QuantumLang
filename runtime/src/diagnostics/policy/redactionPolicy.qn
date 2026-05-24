@@ -1,0 +1,15 @@
+pub struct RedactionPolicy {
+  redactSecrets: bool,
+  redactPaths: bool,
+  productionSafe: bool,
+}
+
+pub fn redactionPolicy() -> RedactionPolicy {
+  return RedactionPolicy { redactSecrets: true, redactPaths: true, productionSafe: true }
+}
+
+impl RedactionPolicy {
+  pub fn isProductionSafe(self: RedactionPolicy) -> bool {
+    return self.redactSecrets && self.productionSafe
+  }
+}

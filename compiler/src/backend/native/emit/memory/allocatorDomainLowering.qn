@@ -1,0 +1,30 @@
+pub struct AllocatorDomainLowering {
+  allocationNode: u64,
+  domainCheckedBeforeAlloc: bool,
+  domainCheckedBeforeFree: bool,
+  ownershipTransferPreserved: bool,
+  wrongDomainDiagnostic: bool,
+  noCoredumpFailure: bool,
+}
+
+impl AllocatorDomainLowering {
+  pub fn init(allocationNode: u64) -> AllocatorDomainLowering {
+    return AllocatorDomainLowering {
+      allocationNode: allocationNode,
+      domainCheckedBeforeAlloc: true,
+      domainCheckedBeforeFree: true,
+      ownershipTransferPreserved: true,
+      wrongDomainDiagnostic: true,
+      noCoredumpFailure: true,
+    }
+  }
+
+  pub fn accepted(self: AllocatorDomainLowering) -> bool {
+    return self.allocationNode > 0
+      && self.domainCheckedBeforeAlloc
+      && self.domainCheckedBeforeFree
+      && self.ownershipTransferPreserved
+      && self.wrongDomainDiagnostic
+      && self.noCoredumpFailure
+  }
+}

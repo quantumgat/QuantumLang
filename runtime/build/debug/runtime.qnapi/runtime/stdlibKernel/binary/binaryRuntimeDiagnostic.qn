@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum BinaryRuntimeDiagnosticKind {
+  Eof,
+  WriterOverflow,
+  InvalidAlignment,
+  WideIntMismatch,
+}
+pub struct BinaryRuntimeDiagnostic {
+  kind: BinaryRuntimeDiagnosticKind
+  code: string
+  offset: usize
+  requiredBytes: usize
+  availableBytes: usize
+  coredump: bool
+}

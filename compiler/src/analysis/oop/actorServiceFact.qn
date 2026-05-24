@@ -1,0 +1,51 @@
+pub struct ActorServiceFact {
+  ownerId: u64,
+  actorClassCount: usize,
+  serviceClassCount: usize,
+  mailboxBound: bool,
+  messageHandlersBound: bool,
+  stateIsolationBound: bool,
+  supervisionBound: bool,
+  restartPolicyBound: bool,
+  cancellationPolicyBound: bool,
+  backpressureBound: bool,
+}
+
+pub fn actorServiceFact(
+  ownerId: u64,
+  actorClassCount: usize,
+  serviceClassCount: usize,
+  mailboxBound: bool,
+  messageHandlersBound: bool,
+  stateIsolationBound: bool,
+  supervisionBound: bool,
+  restartPolicyBound: bool,
+  cancellationPolicyBound: bool,
+  backpressureBound: bool,
+) -> ActorServiceFact {
+  return ActorServiceFact {
+    ownerId: ownerId,
+    actorClassCount: actorClassCount,
+    serviceClassCount: serviceClassCount,
+    mailboxBound: mailboxBound,
+    messageHandlersBound: messageHandlersBound,
+    stateIsolationBound: stateIsolationBound,
+    supervisionBound: supervisionBound,
+    restartPolicyBound: restartPolicyBound,
+    cancellationPolicyBound: cancellationPolicyBound,
+    backpressureBound: backpressureBound,
+  }
+}
+
+impl ActorServiceFact {
+  pub fn complete(self: ActorServiceFact) -> bool {
+    return self.actorClassCount + self.serviceClassCount > 0
+      && self.mailboxBound
+      && self.messageHandlersBound
+      && self.stateIsolationBound
+      && self.supervisionBound
+      && self.restartPolicyBound
+      && self.cancellationPolicyBound
+      && self.backpressureBound
+  }
+}

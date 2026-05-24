@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum ResultFlowIncidentKind {
+  ErrPropagated,
+  AwaitErrPropagated,
+  ConversionMissing,
+  PatternMatchIncomplete,
+}
+pub struct ResultFlowIncident {
+  kind: ResultFlowIncidentKind
+  errorCode: string
+  sourceAvailable: bool
+  causeChainPreserved: bool
+  taskContextPreserved: bool
+  redacted: bool
+  noPanic: bool
+  noCoredump: bool
+}

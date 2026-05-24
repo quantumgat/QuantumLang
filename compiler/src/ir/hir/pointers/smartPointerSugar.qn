@@ -1,0 +1,30 @@
+pub enum HirSmartPointerSugarKind {
+  BoxConstruct,
+  UniqueConstruct,
+  SharedConstruct,
+  WeakUpgrade,
+  Borrow,
+  MutBorrow,
+  Drop,
+  Pin,
+  WeakCreate,
+  SharedClone,
+  SharedRelease,
+}
+
+pub struct HirSmartPointerSugar {
+  node: u64,
+  kind: HirSmartPointerSugarKind,
+  sourceType: string,
+  targetType: string,
+  ownershipProofRequired: bool,
+}
+
+impl HirSmartPointerSugar {
+  pub fn accepted(self: HirSmartPointerSugar) -> bool {
+    return self.node > 0
+      && self.sourceType != ""
+      && self.targetType != ""
+      && self.ownershipProofRequired
+  }
+}

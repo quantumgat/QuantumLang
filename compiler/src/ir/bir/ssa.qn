@@ -1,0 +1,15 @@
+pub struct SsaValue {
+  valueId: u64,
+  typeId: u64,
+  definitionBlock: u64,
+}
+
+pub fn ssaValue(valueId: u64, typeId: u64, definitionBlock: u64) -> SsaValue {
+  return SsaValue { valueId: valueId, typeId: typeId, definitionBlock: definitionBlock }
+}
+
+impl SsaValue {
+  pub fn typed(self: SsaValue) -> bool {
+    return self.typeId != 0
+  }
+}

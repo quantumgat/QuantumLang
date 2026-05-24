@@ -1,0 +1,141 @@
+/**
+  Fixed-capacity contiguous collection.
+
+  examples:
+    let empty = Array<User, 0>.init()
+    let users = Array<User, 1024>.withCapacity(1024)
+    let fixed = Array<i32, 3>.fromVec([1, 2, 3])
+    let fixed: [i32; 3] = [1, 2, 3]
+    let item = fixed.get(0)
+    fixed = fixed.set(1, 42)
+
+  literal policy:
+    [1, 2, 3] becomes Vec<i32> unless a fixed-array target is present.
+    [i32; 3] and Array<i32, 3> are fixed-capacity targets.
+    [] needs an element type and fixed target when used as an Array.
+    [1, 2, "test"] requires a tuple or explicit union target.
+
+  effects: pure for reads; allocation only while constructing storage
+  complexity: O(1) len/capacity/get/set/asSlice/iter
+  allocation: contiguous fixed-capacity storage
+  stability: public since 0.1
+*/
+pub struct ArrayStorage<T> {
+  items: Vec<T>,
+  capacity: usize,
+}
+
+pub struct Array<T, N> {
+  storage: ArrayStorage<T>,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<T> ArrayStorage<T> {
+  pub fn init(capacity: usize) -> ArrayStorage<T> requires(alloc) {
+    return ArrayStorage<T> {
+      items: Vec<T>.withCapacity(capacity),
+      capacity: capacity,
+    }
+  }
+
+  pub fn fromVec(items: Vec<T>) -> ArrayStorage<T> {
+    let capacity = items.len
+    return ArrayStorage<T> {
+      items: items,
+      capacity: capacity,
+    }
+  }
+
+  pub fn get(self: ArrayStorage<T>, index: usize) -> T {
+    return self.items[index]
+  }
+
+  pub fn set(self: ArrayStorage<T>, index: usize, value: T) -> ArrayStorage<T> requires(alloc) {
+    return ArrayStorage<T> {
+      items: self.items.set(index, value),
+      capacity: self.capacity,
+    }
+  }
+
+  pub fn toVec(self: ArrayStorage<T>) -> Vec<T> {
+    return self.items
+  }
+}
+
+impl<T, N> Array<T, N> {
+  pub fn init() -> Array<T, N> requires(alloc) {
+    return Array<T, N>.withCapacity(0)
+  }
+
+  pub fn withCapacity(capacity: usize) -> Array<T, N> requires(alloc) {
+    return Array<T, N> {
+      storage: ArrayStorage<T>.init(capacity),
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+    }
+  }
+
+  pub fn fromVec(items: Vec<T>) -> Array<T, N> {
+    let len = items.len
+    return Array<T, N> {
+      storage: ArrayStorage<T>.fromVec(items),
+      len: len,
+      capacity: len,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> ArrayBuilder<T, N> {
+    return ArrayBuilder<T, N>.init()
+  }
+
+  pub fn len(self: Array<T, N>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: Array<T, N>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: Array<T, N>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn get(self: Array<T, N>, index: usize) -> Option<T> {
+    if index >= self.len {
+      return None
+    }
+    return Some(self.storage.items[index])
+  }
+
+  pub fn at(self: Array<T, N>, index: usize) -> Option<T> {
+    return self.get(index)
+  }
+
+  pub fn set(self: Array<T, N>, index: usize, value: T) -> Array<T, N> requires(alloc) {
+    if index >= self.len {
+      return self
+    }
+    return Array<T, N> {
+      storage: self.storage.set(index, value),
+      len: self.len,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn asSlice(self: Array<T, N>) -> Slice<T> {
+    return Slice<T>.fromArray(self.storage.items, 0, self.len)
+  }
+
+  pub fn iter(self: Array<T, N>) -> ArrayIter<T, N> {
+    return ArrayIter<T, N>.fromArray(self)
+  }
+
+  pub fn toVec(self: Array<T, N>) -> Vec<T> {
+    return self.storage.toVec()
+  }
+}

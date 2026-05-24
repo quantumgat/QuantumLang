@@ -1,0 +1,31 @@
+pub struct AllocationId {
+  domain: AllocDomain,
+  raw: u64,
+  generation: u64,
+}
+
+impl AllocationId {
+  pub fn init(domain: AllocDomain, raw: u64, generation: u64) -> AllocationId {
+    return AllocationId {
+      domain: domain,
+      raw: raw,
+      generation: generation,
+    }
+  }
+
+  pub fn domain(self: AllocationId) -> AllocDomain {
+    return self.domain
+  }
+
+  pub fn raw(self: AllocationId) -> u64 {
+    return self.raw
+  }
+
+  pub fn generation(self: AllocationId) -> u64 {
+    return self.generation
+  }
+
+  pub fn sameDomain(self: AllocationId, domain: AllocDomain) -> bool {
+    return self.domain.acceptsFreeFrom(domain)
+  }
+}

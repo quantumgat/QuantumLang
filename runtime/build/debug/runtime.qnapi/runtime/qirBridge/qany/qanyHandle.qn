@@ -1,0 +1,18 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum QAnyHandleKind {
+  Qubit
+  Result
+  QFunc
+  ProviderValue
+}
+pub struct QAnyHandle {
+  id: u64
+  kind: QAnyHandleKind
+  providerId: u64
+  generation: u64
+  measured: bool
+  released: bool
+}
+pub extern "qnpkg" {
+  pub fn qanyHandle(id: u64, kind: QAnyHandleKind, providerId: u64) -> QAnyHandle
+}

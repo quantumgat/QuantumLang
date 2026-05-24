@@ -1,0 +1,19 @@
+pub struct RevocationFact {
+  previousGeneration: u64,
+  nextGeneration: u64,
+  leasesInvalidated: bool,
+}
+
+impl RevocationFact {
+  pub fn init(previousGeneration: u64, nextGeneration: u64, leasesInvalidated: bool) -> RevocationFact {
+    return RevocationFact {
+      previousGeneration: previousGeneration,
+      nextGeneration: nextGeneration,
+      leasesInvalidated: leasesInvalidated,
+    }
+  }
+
+  pub fn accepted(self: RevocationFact) -> bool {
+    return self.nextGeneration > self.previousGeneration && self.leasesInvalidated
+  }
+}

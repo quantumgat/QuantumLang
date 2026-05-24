@@ -1,0 +1,221 @@
+pub struct SlotVecEntry<T> {
+  value: Option<T>,
+  generation: usize,
+  nextFree: Option<usize>,
+  occupied: bool,
+}
+
+pub struct SlotVec<T> {
+  entries: Vec<SlotVecEntry<T>>,
+  freeHead: Option<usize>,
+  len: usize,
+  capacity: usize,
+  nextGeneration: usize,
+  generation: usize,
+}
+
+impl<T> SlotVecEntry<T> {
+  pub fn occupied(value: T, generation: usize) -> SlotVecEntry<T> {
+    return SlotVecEntry<T> {
+      value: Some(value),
+      generation: generation,
+      nextFree: None,
+      occupied: true,
+    }
+  }
+
+  pub fn free(generation: usize, nextFree: Option<usize>) -> SlotVecEntry<T> {
+    return SlotVecEntry<T> {
+      value: None,
+      generation: generation,
+      nextFree: nextFree,
+      occupied: false,
+    }
+  }
+}
+
+impl<T> SlotVec<T> {
+  pub fn init() -> SlotVec<T> requires(alloc) {
+    return SlotVec<T>.withCapacity(0)
+  }
+
+  pub fn empty() -> SlotVec<T> requires(alloc) {
+    return SlotVec<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> SlotVec<T> requires(alloc) {
+    return SlotVec<T> {
+      entries: Vec<SlotVecEntry<T>>.withCapacity(capacity),
+      freeHead: None,
+      len: 0,
+      capacity: capacity,
+      nextGeneration: 1,
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> SlotVecBuilder<T> {
+    return SlotVecBuilder<T> { capacity: 0 }
+  }
+
+  pub fn len(self: SlotVec<T>) -> usize {
+    return self.len
+  }
+
+  pub fn capacity(self: SlotVec<T>) -> usize {
+    return self.capacity
+  }
+
+  pub fn isEmpty(self: SlotVec<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn push(self: SlotVec<T>, value: T) -> SlotVec<T> requires(alloc) {
+    return self.insert(value).0
+  }
+
+  pub fn insert(self: SlotVec<T>, value: T) -> (SlotVec<T>, SlotId) requires(alloc) {
+    match self.freeHead {
+      Some(index) => {
+        return self.insertIntoFree(index, value)
+      }
+      None => {
+        return self.insertAtTail(value)
+      }
+    }
+  }
+
+  pub fn get(self: SlotVec<T>, id: SlotId) -> Option<T> {
+    if id.index >= self.entries.len {
+      return None
+    }
+    let entry = self.entries[id.index]
+    if entry.occupied == false {
+      return None
+    }
+    if entry.generation != id.generation {
+      return None
+    }
+    return entry.value
+  }
+
+  pub fn contains(self: SlotVec<T>, id: SlotId) -> bool {
+    if id.index >= self.entries.len {
+      return false
+    }
+    let entry = self.entries[id.index]
+    return entry.occupied && entry.generation == id.generation
+  }
+
+  pub fn remove(self: SlotVec<T>, id: SlotId) -> (SlotVec<T>, Option<T>) requires(alloc) {
+    if self.contains(id) == false {
+      return (self, None)
+    }
+    let entry = self.entries[id.index]
+    let value = entry.value
+    let nextGeneration = entry.generation + 1
+    let entries = self.entries.set(id.index, SlotVecEntry<T>.free(nextGeneration, self.freeHead))
+    return (
+      SlotVec<T> {
+        entries: entries,
+        freeHead: Some(id.index),
+        len: self.len - 1,
+        capacity: self.capacity,
+        nextGeneration: self.nextGeneration,
+        generation: self.generation + 1,
+      },
+      value
+    )
+  }
+
+  pub fn clear(self: SlotVec<T>) -> SlotVec<T> requires(alloc) {
+    return SlotVec<T>.withCapacity(self.capacity).withGeneration(self.generation + 1)
+  }
+
+  pub fn iter(self: SlotVec<T>) -> SlotVecIter<T> {
+    return SlotVecIter<T> {
+      vec: self,
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  pub fn toVec(self: SlotVec<T>) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.entries.len {
+      let entry = self.entries[index]
+      if entry.occupied {
+        match entry.value {
+          Some(value) => {
+            result = result.push(value)
+          }
+          None => {
+          }
+        }
+      }
+      index = index + 1
+    }
+    return result
+  }
+
+  pub fn insertIntoFree(self: SlotVec<T>, index: usize, value: T) -> (SlotVec<T>, SlotId) requires(alloc) {
+    let freeEntry = self.entries[index]
+    let generation = freeEntry.generation
+    let entries = self.entries.set(index, SlotVecEntry<T>.occupied(value, generation))
+    return (
+      SlotVec<T> {
+        entries: entries,
+        freeHead: freeEntry.nextFree,
+        len: self.len + 1,
+        capacity: self.capacity,
+        nextGeneration: self.nextGeneration,
+        generation: self.generation + 1,
+      },
+      SlotId.new(index, generation)
+    )
+  }
+
+  pub fn insertAtTail(self: SlotVec<T>, value: T) -> (SlotVec<T>, SlotId) requires(alloc) {
+    let index = self.entries.len
+    let generation = self.nextGeneration
+    let entries = self.entries.push(SlotVecEntry<T>.occupied(value, generation))
+    return (
+      SlotVec<T> {
+        entries: entries,
+        freeHead: None,
+        len: self.len + 1,
+        capacity: self.nextCapacity(1),
+        nextGeneration: self.nextGeneration + 1,
+        generation: self.generation + 1,
+      },
+      SlotId.new(index, generation)
+    )
+  }
+
+  pub fn nextCapacity(self: SlotVec<T>, additional: usize) -> usize {
+    let needed = self.entries.len + additional
+    if needed <= self.capacity {
+      return self.capacity
+    }
+    if self.capacity == 0 {
+      return needed
+    }
+    let mut next = self.capacity
+    while next < needed {
+      next = next * 2
+    }
+    return next
+  }
+
+  pub fn withGeneration(self: SlotVec<T>, generation: usize) -> SlotVec<T> {
+    return SlotVec<T> {
+      entries: self.entries,
+      freeHead: self.freeHead,
+      len: self.len,
+      capacity: self.capacity,
+      nextGeneration: self.nextGeneration,
+      generation: generation,
+    }
+  }
+}

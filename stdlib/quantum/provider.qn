@@ -1,0 +1,10 @@
+pub struct QuantumProvider {
+  name: string,
+}
+
+pub struct QuantumTarget {
+  name: string,
+}
+
+pub fn provider(name: string) -> QuantumProvider
+pub fn target(provider: QuantumProvider, name: string) -> QuantumTarget

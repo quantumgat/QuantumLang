@@ -1,0 +1,43 @@
+pub struct PoolLease<T> {
+  handle: PoolHandle<T>,
+  generation: usize,
+}
+
+impl<T> PoolLease<T> {
+  pub fn fromHandle(handle: PoolHandle<T>, generation: usize) -> PoolLease<T> {
+    return PoolLease<T> {
+      handle: handle,
+      generation: generation,
+    }
+  }
+}
+
+impl<T> Pool<T> {
+  pub fn lease(self: Pool<T>, value: T) -> (Pool<T>, PoolLease<T>) requires(alloc) {
+    let inserted = self.insert(value)
+    return (inserted.0, PoolLease<T>.fromHandle(inserted.1, inserted.0.generation))
+  }
+
+  pub fn endLease(self: Pool<T>, lease: PoolLease<T>) -> (Pool<T>, Option<T>) requires(alloc) {
+    return self.remove(lease.handle)
+  }
+
+  pub fn borrow<R>(self: Pool<T>, handle: PoolHandle<T>, reader: fn(T) -> R) -> Option<R> {
+    let value = self.get(handle)
+    match value {
+      Some(item) => {
+        return Some(reader(item))
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn withSlot<R>(self: Pool<T>, value: T, body: fn(Pool<T>, PoolHandle<T>) -> (Pool<T>, R)) -> (Pool<T>, R) requires(alloc) {
+    let inserted = self.insert(value)
+    let result = body(inserted.0, inserted.1)
+    let cleaned = result.0.remove(inserted.1)
+    return (cleaned.0, result.1)
+  }
+}

@@ -1,0 +1,12 @@
+pub struct AsyncIterator<T> {
+  stream: Stream<T>,
+  fused: bool,
+}
+
+impl AsyncIterator<T> {
+  pub async fn next(self: AsyncIterator<T>) -> Result<Option<T>, StreamError>
+
+  pub fn isFused(self: AsyncIterator<T>) -> bool {
+    return self.fused
+  }
+}

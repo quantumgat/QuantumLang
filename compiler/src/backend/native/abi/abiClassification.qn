@@ -1,0 +1,37 @@
+pub enum AbiClass {
+  VoidAbi
+  IntegerAbi
+  FloatAbi
+  ComplexAbi
+  PointerAbi
+  AggregateAbi
+  IndirectAbi
+  QuantumHandleAbi
+  DynamicUnionAbi
+  DynamicAnyAbi
+  DynamicQAnyAbi
+}
+
+pub struct AbiClassification {
+  typeId: u64,
+  classId: AbiClass,
+  indirect: bool,
+}
+
+pub fn abiClassification(typeId: u64, classId: AbiClass, indirect: bool) -> AbiClassification {
+  return AbiClassification { typeId: typeId, classId: classId, indirect: indirect }
+}
+
+impl AbiClassification {
+  pub fn resolvedType(self: AbiClassification) -> u64 {
+    return self.typeId
+  }
+
+  pub fn abiClass(self: AbiClassification) -> AbiClass {
+    return self.classId
+  }
+
+  pub fn isIndirect(self: AbiClassification) -> bool {
+    return self.indirect
+  }
+}

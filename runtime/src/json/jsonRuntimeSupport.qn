@@ -1,0 +1,37 @@
+pub struct RuntimeJsonScannerSupport {
+  scalarAvailable: bool,
+  simdFeatureChecked: bool,
+  avx2FeatureChecked: bool,
+  sse42FeatureChecked: bool,
+  neonFeatureChecked: bool,
+  utf8ValidationAvailable: bool,
+  stringEscapeValidationAvailable: bool,
+  requiredSimdIncident: bool,
+  noUncheckedFeatureUse: bool,
+}
+
+pub struct RuntimeJsonSafety {
+  boundedDepth: bool,
+  allocationIncident: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeJsonScannerSupport {
+  pub fn accepted(self: RuntimeJsonScannerSupport) -> bool {
+    return self.scalarAvailable
+      && self.simdFeatureChecked
+      && self.avx2FeatureChecked
+      && self.sse42FeatureChecked
+      && self.neonFeatureChecked
+      && self.utf8ValidationAvailable
+      && self.stringEscapeValidationAvailable
+      && self.requiredSimdIncident
+      && self.noUncheckedFeatureUse
+  }
+}
+
+impl RuntimeJsonSafety {
+  pub fn safe(self: RuntimeJsonSafety) -> bool {
+    return self.boundedDepth && self.allocationIncident && self.noCoredump
+  }
+}

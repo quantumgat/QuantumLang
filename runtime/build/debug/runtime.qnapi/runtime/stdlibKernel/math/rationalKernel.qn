@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct Rational64Kernel {
+  noCoredump: bool
+}
+pub struct Rational64Parts {
+  numerator: i64
+  denominator: i64
+}

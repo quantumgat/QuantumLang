@@ -1,0 +1,13 @@
+pub struct SourceMapArtifact {
+  path: string,
+  sourceCount: usize,
+  sourceMappedDiagnostics: bool,
+}
+
+pub fn sourceMapArtifact(path: string) -> SourceMapArtifact {
+  return SourceMapArtifact {
+    path: path,
+    sourceCount: 0,
+    sourceMappedDiagnostics: true,
+  }
+}

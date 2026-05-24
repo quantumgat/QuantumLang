@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PlatformTarget {
+  arch: string
+  os: string
+  supportsThreads: bool
+  supportsNativeArchive: bool
+  publicSyscallSurface: bool
+}
+pub extern "qnpkg" {
+  pub fn platformTarget(arch: string, os: string) -> PlatformTarget
+}

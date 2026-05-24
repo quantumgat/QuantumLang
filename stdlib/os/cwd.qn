@@ -1,0 +1,3 @@
+pub fn cwd() -> Result<PathBuf, OsError>
+pub fn setCwd(path: PathBuf) -> Result<Unit, OsError>
+pub fn withCwd<T>(path: PathBuf, work: fn() -> Result<T, OsError>) -> Result<T, OsError>

@@ -1,0 +1,39 @@
+pub enum AssociatedMemberKind {
+  Function
+  Const
+  StaticState
+  NestedType
+}
+
+pub struct AssociatedMemberFact {
+  memberId: u64,
+  ownerTypeId: u64,
+  kind: AssociatedMemberKind,
+  publicVisible: bool,
+  mutableStaticRejected: bool,
+  capturesOuterSelfRejected: bool,
+}
+
+pub fn associatedMemberFact(
+  memberId: u64,
+  ownerTypeId: u64,
+  kind: AssociatedMemberKind,
+  publicVisible: bool,
+  mutableStaticRejected: bool,
+  capturesOuterSelfRejected: bool,
+) -> AssociatedMemberFact {
+  return AssociatedMemberFact {
+    memberId: memberId,
+    ownerTypeId: ownerTypeId,
+    kind: kind,
+    publicVisible: publicVisible,
+    mutableStaticRejected: mutableStaticRejected,
+    capturesOuterSelfRejected: capturesOuterSelfRejected,
+  }
+}
+
+impl AssociatedMemberFact {
+  pub fn accepted(self: AssociatedMemberFact) -> bool {
+    return self.mutableStaticRejected == false && self.capturesOuterSelfRejected == false
+  }
+}

@@ -1,0 +1,23 @@
+pub struct DiagnosticHelp {
+  message: string,
+  docPath: string,
+  safeForBeginner: bool,
+  machineReadable: bool,
+}
+
+impl DiagnosticHelp {
+  pub fn text(message: string, docPath: string) -> DiagnosticHelp {
+    return DiagnosticHelp {
+      message: message,
+      docPath: docPath,
+      safeForBeginner: true,
+      machineReadable: true,
+    }
+  }
+
+  pub fn safe(self: DiagnosticHelp) -> bool {
+    return self.message != ""
+      && self.safeForBeginner
+      && self.machineReadable
+  }
+}

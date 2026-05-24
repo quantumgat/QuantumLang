@@ -1,0 +1,26 @@
+pub enum RuntimeOnceState {
+  Empty
+  Running
+  Complete
+  Poisoned
+}
+
+pub struct RuntimeOnce {
+  handle: SyncHandle,
+  state: RuntimeOnceState,
+  waiterCount: usize,
+}
+
+impl RuntimeOnce {
+  pub fn init(handle: SyncHandle, state: RuntimeOnceState, waiterCount: usize) -> RuntimeOnce {
+    return RuntimeOnce {
+      handle: handle,
+      state: state,
+      waiterCount: waiterCount,
+    }
+  }
+
+  pub fn callable(self: RuntimeOnce) -> bool {
+    return self.state == RuntimeOnceState.Empty
+  }
+}

@@ -1,0 +1,64 @@
+pub struct OopEnginePortSet {
+  memoryPortBound: bool,
+  ffiPortBound: bool,
+  observerBound: bool,
+  snapshotBound: bool,
+}
+
+pub fn oopEnginePortSet(
+  memoryPortBound: bool,
+  ffiPortBound: bool,
+  observerBound: bool,
+  snapshotBound: bool,
+) -> OopEnginePortSet {
+  return OopEnginePortSet {
+    memoryPortBound: memoryPortBound,
+    ffiPortBound: ffiPortBound,
+    observerBound: observerBound,
+    snapshotBound: snapshotBound,
+  }
+}
+
+impl OopEnginePortSet {
+  pub fn complete(self: OopEnginePortSet) -> bool {
+    return self.memoryPortBound && self.ffiPortBound && self.observerBound && self.snapshotBound
+  }
+}
+
+pub struct OopEngineContract {
+  abiVersion: u32,
+  typeMetadataBound: bool,
+  registryBound: bool,
+  dispatchBound: bool,
+  downcastBound: bool,
+  ports: OopEnginePortSet,
+}
+
+pub fn oopEngineContract(
+  abiVersion: u32,
+  typeMetadataBound: bool,
+  registryBound: bool,
+  dispatchBound: bool,
+  downcastBound: bool,
+  ports: OopEnginePortSet,
+) -> OopEngineContract {
+  return OopEngineContract {
+    abiVersion: abiVersion,
+    typeMetadataBound: typeMetadataBound,
+    registryBound: registryBound,
+    dispatchBound: dispatchBound,
+    downcastBound: downcastBound,
+    ports: ports,
+  }
+}
+
+impl OopEngineContract {
+  pub fn acceptsRuntimeDispatch(self: OopEngineContract) -> bool {
+    return self.abiVersion > 0
+      && self.typeMetadataBound
+      && self.registryBound
+      && self.dispatchBound
+      && self.downcastBound
+      && self.ports.complete()
+  }
+}

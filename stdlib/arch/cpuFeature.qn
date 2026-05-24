@@ -1,0 +1,83 @@
+pub struct CpuFeature {
+  name: string,
+  required: bool,
+  hasFallback: bool,
+}
+
+pub struct CpuFeatureSet {
+  target: string,
+  features: usize,
+  required: usize,
+  fallbackAvailable: bool,
+}
+
+pub enum DispatchMode {
+  Static,
+  Runtime,
+  Fallback,
+}
+
+pub struct RuntimeDispatch<T> {
+  mode: DispatchMode,
+  selected: T,
+  featureMatched: bool,
+}
+
+impl CpuFeature {
+  pub fn init(name: string, required: bool, hasFallback: bool) -> CpuFeature {
+    CpuFeature {
+      name: name,
+      required: required,
+      hasFallback: hasFallback,
+    }
+  }
+
+  pub fn usable(self: CpuFeature) -> bool {
+    self.required == false || self.hasFallback
+  }
+}
+
+impl CpuFeatureSet {
+  pub fn init(target: string, features: usize, required: usize, fallbackAvailable: bool) -> CpuFeatureSet {
+    return CpuFeatureSet {
+      target: target,
+      features: features,
+      required: required,
+      fallbackAvailable: fallbackAvailable,
+    }
+  }
+
+  pub fn satisfies(self: CpuFeatureSet) -> bool {
+    return self.features >= self.required || self.fallbackAvailable
+  }
+}
+
+impl<T> RuntimeDispatch<T> {
+  pub fn staticChoice(selected: T, featureMatched: bool) -> RuntimeDispatch<T> {
+    return RuntimeDispatch<T> {
+      mode: DispatchMode.Static,
+      selected: selected,
+      featureMatched: featureMatched,
+    }
+  }
+
+  pub fn runtimeChoice(selected: T, featureMatched: bool) -> RuntimeDispatch<T> {
+    return RuntimeDispatch<T> {
+      mode: DispatchMode.Runtime,
+      selected: selected,
+      featureMatched: featureMatched,
+    }
+  }
+
+  pub fn fallback(selected: T) -> RuntimeDispatch<T> {
+    return RuntimeDispatch<T> {
+      mode: DispatchMode.Fallback,
+      selected: selected,
+      featureMatched: true,
+    }
+  }
+
+  pub fn usable(self: RuntimeDispatch<T>) -> bool {
+    return self.featureMatched
+  }
+}

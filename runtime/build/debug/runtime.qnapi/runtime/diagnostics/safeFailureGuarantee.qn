@@ -1,0 +1,39 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum SafeFailureDomain {
+  Binary,
+  Pointer,
+  Allocator,
+  Ffi,
+  Oop,
+  Collections,
+  Async,
+  Quantum,
+  Platform,
+}
+pub enum SafeFailureKind {
+  Bounds,
+  Null,
+  UseAfterFree,
+  DoubleFree,
+  OutOfMemory,
+  Panic,
+  FfiPanic,
+  StackOverflow,
+  InvalidAlignment,
+  TargetTrap,
+  LogTransportFailure,
+  ReportEmissionFailure,
+}
+pub struct SafeFailureGuarantee {
+  domain: SafeFailureDomain
+  kind: SafeFailureKind
+  diagnosticCode: string
+  sourceMapped: bool
+  recoverableReport: bool
+  coredump: bool
+  abortsProcess: bool
+  unsafeBoundary: bool
+  incidentEmitted: bool
+  emergencyReportBuffered: bool
+  fatalRecoverableSeparated: bool
+}

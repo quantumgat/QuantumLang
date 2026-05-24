@@ -1,0 +1,28 @@
+pub enum AstCallableFlowKind {
+  ClosureExpression
+  ShortLambda
+  TypedLambda
+  CapturingClosure
+  NonCapturingClosure
+  MethodReference
+  CallableObject
+  AsyncClosure
+  HotInlineCallback
+}
+
+pub struct AstCallableFlow {
+  node: AstNode,
+  kind: AstCallableFlowKind,
+  parameterCount: usize,
+  bodyId: u64,
+  captureSetId: u64,
+  returnTypeId: u64,
+  hotPathCandidate: bool,
+}
+
+impl AstCallableFlow {
+  pub fn complete(self: AstCallableFlow) -> bool {
+    return self.node.nodeId() > 0
+      && self.bodyId > 0
+  }
+}

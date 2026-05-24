@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub abstract class PosixProcessRunner {
+  providerName: string
+  active: bool
+  pub init() {}
+  pub fn runnerName(self: &PosixProcessRunner) -> string
+  pub fn supportsSpawn(self: &PosixProcessRunner) -> bool
+  pub fn supportsPipes(self: &PosixProcessRunner) -> bool
+  pub fn supportsSignals(self: &PosixProcessRunner) -> bool
+  pub fn noCoredump(self: &PosixProcessRunner) -> bool
+}

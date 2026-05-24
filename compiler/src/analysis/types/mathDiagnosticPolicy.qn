@@ -1,0 +1,30 @@
+pub struct MathDiagnosticPolicy {
+  sourceMapped: bool,
+  exactPrimarySpan: bool,
+  safeFixits: bool,
+  typedRuntimeFailure: bool,
+  noCoredump: bool,
+  noUnsafeSuggestion: bool,
+}
+
+impl MathDiagnosticPolicy {
+  pub fn strict() -> MathDiagnosticPolicy {
+    return MathDiagnosticPolicy {
+      sourceMapped: true,
+      exactPrimarySpan: true,
+      safeFixits: true,
+      typedRuntimeFailure: true,
+      noCoredump: true,
+      noUnsafeSuggestion: true,
+    }
+  }
+
+  pub fn accepted(self: MathDiagnosticPolicy) -> bool {
+    return self.sourceMapped
+      && self.exactPrimarySpan
+      && self.safeFixits
+      && self.typedRuntimeFailure
+      && self.noCoredump
+      && self.noUnsafeSuggestion
+  }
+}

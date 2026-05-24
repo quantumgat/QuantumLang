@@ -1,0 +1,23 @@
+pub struct FreeTokenFact {
+  allocationId: u64,
+  domainId: u64,
+  generation: u64,
+  consumed: bool,
+}
+
+impl FreeTokenFact {
+  pub fn init(allocationId: u64, domainId: u64, generation: u64) -> FreeTokenFact {
+    return FreeTokenFact {
+      allocationId: allocationId,
+      domainId: domainId,
+      generation: generation,
+      consumed: false,
+    }
+  }
+
+  pub fn validFor(self: FreeTokenFact, domain: AllocatorDomainFact) -> bool {
+    return self.consumed == false
+      && domain.allowsFree(self.domainId, self.generation)
+      && self.allocationId == domain.allocationId
+  }
+}

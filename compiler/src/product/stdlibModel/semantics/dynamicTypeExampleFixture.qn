@@ -1,0 +1,30 @@
+pub struct DynamicTypeExampleFixture {
+  unionExample: DynamicTypeExamplePolicy,
+  anyExample: DynamicTypeExamplePolicy,
+  qanyExample: DynamicTypeExamplePolicy,
+  mixedLiteralRejected: DynamicTypeExamplePolicy,
+  docsReady: bool,
+  hoverReady: bool,
+}
+
+pub fn dynamicTypeExampleFixture() -> DynamicTypeExampleFixture {
+  return DynamicTypeExampleFixture {
+    unionExample: dynamicTypeExamplePolicy(DynamicTypeExampleKind.UnionVec, "let values: Vec<i32 | string> = [1, \"two\"]"),
+    anyExample: dynamicTypeExamplePolicy(DynamicTypeExampleKind.AnyVec, "let values: Vec<any> = [1, \"two\"]"),
+    qanyExample: dynamicTypeExamplePolicy(DynamicTypeExampleKind.QAnyVec, "let values: Vec<qany> = [q, result]"),
+    mixedLiteralRejected: dynamicTypeExamplePolicy(DynamicTypeExampleKind.MixedLiteralRejected, "let values = [1, \"two\"]"),
+    docsReady: true,
+    hoverReady: true,
+  }
+}
+
+impl DynamicTypeExampleFixture {
+  pub fn publishable(self: DynamicTypeExampleFixture) -> bool {
+    return self.unionExample.publishable()
+      && self.anyExample.publishable()
+      && self.qanyExample.publishable()
+      && self.mixedLiteralRejected.publishable()
+      && self.docsReady
+      && self.hoverReady
+  }
+}

@@ -1,0 +1,85 @@
+pub enum PrintTargetKind {
+  Stdout,
+  Stderr,
+  Terminal,
+  File,
+  Test,
+}
+
+pub struct PrintTarget {
+  kind: PrintTargetKind,
+  handleId: u64,
+  terminalAware: bool,
+  preservesOrder: bool,
+  returnsResult: bool,
+}
+
+impl PrintTarget {
+  /**
+    Selects standard output.
+
+    example:
+      let options = PrintOptions.stdout()
+      printWith(options, "value=", value)?
+
+    effects: writes to process stdout through runtime IO
+    complexity: O(1) target construction
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn stdout() -> PrintTarget {
+    return PrintTarget {
+      kind: PrintTargetKind.Stdout,
+      handleId: 1,
+      terminalAware: true,
+      preservesOrder: true,
+      returnsResult: true,
+    }
+  }
+
+  /**
+    Selects standard error.
+
+    example:
+      let options = PrintOptions.stderr()
+      eprintlnWith(options, "error=", err)?
+
+    effects: writes to process stderr through runtime IO
+    complexity: O(1) target construction
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn stderr() -> PrintTarget {
+    return PrintTarget {
+      kind: PrintTargetKind.Stderr,
+      handleId: 2,
+      terminalAware: true,
+      preservesOrder: true,
+      returnsResult: true,
+    }
+  }
+
+  pub fn file(handleId: u64) -> PrintTarget {
+    return PrintTarget {
+      kind: PrintTargetKind.File,
+      handleId: handleId,
+      terminalAware: false,
+      preservesOrder: true,
+      returnsResult: true,
+    }
+  }
+
+  pub fn test() -> PrintTarget {
+    return PrintTarget {
+      kind: PrintTargetKind.Test,
+      handleId: 0,
+      terminalAware: false,
+      preservesOrder: true,
+      returnsResult: true,
+    }
+  }
+
+  pub fn safe(self: PrintTarget) -> bool {
+    return self.preservesOrder && self.returnsResult
+  }
+}

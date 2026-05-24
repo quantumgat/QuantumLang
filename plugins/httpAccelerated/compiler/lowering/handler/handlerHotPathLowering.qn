@@ -1,0 +1,27 @@
+pub struct HttpHandlerHotPathLowering {
+  thunkCount: usize,
+  syncDirectStaticCall: bool,
+  asyncStateMachineHook: bool,
+  cancellationCleanup: bool,
+  noHeapFutureOnHotPath: bool,
+}
+
+impl HttpHandlerHotPathLowering {
+  pub fn fromGraph(thunks: HandlerThunkGraph) -> HttpHandlerHotPathLowering {
+    return HttpHandlerHotPathLowering {
+      thunkCount: thunks.thunkCount(),
+      syncDirectStaticCall: true,
+      asyncStateMachineHook: true,
+      cancellationCleanup: true,
+      noHeapFutureOnHotPath: true,
+    }
+  }
+
+  pub fn accepted(self: HttpHandlerHotPathLowering) -> bool {
+    return self.thunkCount > 0
+      && self.syncDirectStaticCall
+      && self.asyncStateMachineHook
+      && self.cancellationCleanup
+      && self.noHeapFutureOnHotPath
+  }
+}

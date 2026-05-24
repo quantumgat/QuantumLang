@@ -1,0 +1,106 @@
+pub struct CacheLine {
+  bytes: usize,
+  aligned: bool,
+}
+
+pub struct CachePadding {
+  beforeBytes: usize,
+  afterBytes: usize,
+  preventsSharing: bool,
+}
+
+pub enum PrefetchLocality {
+  None,
+  Low,
+  Medium,
+  High,
+}
+
+pub struct PrefetchHint {
+  read: bool,
+  locality: PrefetchLocality,
+  distanceBytes: usize,
+}
+
+pub struct NumaNode {
+  id: usize,
+  available: bool,
+}
+
+pub struct PagePlacement {
+  node: NumaNode,
+  pageBytes: usize,
+  pinned: bool,
+}
+
+impl CacheLine {
+  pub fn init(bytes: usize, aligned: bool) -> CacheLine {
+    return CacheLine {
+      bytes: bytes,
+      aligned: aligned,
+    }
+  }
+
+  pub fn accepted(self: CacheLine) -> bool {
+    return self.bytes > 0 && self.aligned
+  }
+}
+
+impl CachePadding {
+  pub fn init(beforeBytes: usize, afterBytes: usize, preventsSharing: bool) -> CachePadding {
+    return CachePadding {
+      beforeBytes: beforeBytes,
+      afterBytes: afterBytes,
+      preventsSharing: preventsSharing,
+    }
+  }
+
+  pub fn accepted(self: CachePadding) -> bool {
+    return self.preventsSharing && (self.beforeBytes > 0 || self.afterBytes > 0)
+  }
+}
+
+impl PrefetchHint {
+  pub fn read(distanceBytes: usize, locality: PrefetchLocality) -> PrefetchHint {
+    return PrefetchHint {
+      read: true,
+      locality: locality,
+      distanceBytes: distanceBytes,
+    }
+  }
+
+  pub fn write(distanceBytes: usize, locality: PrefetchLocality) -> PrefetchHint {
+    return PrefetchHint {
+      read: false,
+      locality: locality,
+      distanceBytes: distanceBytes,
+    }
+  }
+
+  pub fn useful(self: PrefetchHint) -> bool {
+    return self.distanceBytes > 0
+  }
+}
+
+impl NumaNode {
+  pub fn init(id: usize, available: bool) -> NumaNode {
+    return NumaNode {
+      id: id,
+      available: available,
+    }
+  }
+}
+
+impl PagePlacement {
+  pub fn init(node: NumaNode, pageBytes: usize, pinned: bool) -> PagePlacement {
+    return PagePlacement {
+      node: node,
+      pageBytes: pageBytes,
+      pinned: pinned,
+    }
+  }
+
+  pub fn accepted(self: PagePlacement) -> bool {
+    return self.node.available && self.pageBytes > 0
+  }
+}

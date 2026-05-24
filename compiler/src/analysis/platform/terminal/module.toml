@@ -1,0 +1,9 @@
+[module]
+name = "terminal"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "platform-terminal-analysis"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

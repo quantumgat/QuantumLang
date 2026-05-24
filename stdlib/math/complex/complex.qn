@@ -1,0 +1,64 @@
+pub struct Complex<T> {
+  real: T,
+  imag: T,
+}
+
+pub trait ComplexNumber<C, R> {
+  pub fn real(self: C) -> R
+  pub fn imag(self: C) -> R
+  pub fn conj(self: C) -> C
+  pub fn abs(self: C) -> R
+  pub fn norm(self: C) -> R
+  pub fn arg(self: C) -> R
+  pub fn arg(self: C, policy: ComplexBranchPolicy) -> Result<R, ComplexError>
+  pub fn sqrt(self: C) -> Result<C, ComplexError>
+  pub fn exp(self: C) -> C
+  pub fn ln(self: C) -> Result<C, ComplexError>
+  pub fn pow(self: C, exponent: C) -> Result<C, ComplexError>
+  pub fn add(self: C, right: C) -> C
+  pub fn sub(self: C, right: C) -> C
+  pub fn mul(self: C, right: C) -> C
+  pub fn div(self: C, right: C) -> Result<C, ComplexError>
+  pub fn format(self: C) -> string
+  pub fn format(self: C, format: ComplexFormat) -> string
+}
+
+impl<T> Complex<T> {
+  pub fn polar(radius: T, angle: T) -> Complex<T>
+  pub fn parse(text: string) -> Result<Complex<T>, ComplexError>
+}
+
+extend<C, R: FloatNumber<R>, C: ComplexNumber<C, R>> C {
+  pub fn real(self: C) -> R
+  pub fn imag(self: C) -> R
+  pub fn conj(self: C) -> C
+  pub fn abs(self: C) -> R
+  pub fn norm(self: C) -> R
+  pub fn arg(self: C) -> R
+  pub fn arg(self: C, policy: ComplexBranchPolicy) -> Result<R, ComplexError>
+  pub fn sqrt(self: C) -> Result<C, ComplexError>
+  pub fn exp(self: C) -> C
+  pub fn ln(self: C) -> Result<C, ComplexError>
+  pub fn pow(self: C, exponent: C) -> Result<C, ComplexError>
+  pub fn add(self: C, right: C) -> C
+  pub fn sub(self: C, right: C) -> C
+  pub fn mul(self: C, right: C) -> C
+  pub fn div(self: C, right: C) -> Result<C, ComplexError>
+  pub fn format(self: C) -> string
+  pub fn format(self: C, format: ComplexFormat) -> string
+}
+
+extend complex64 {
+  pub fn parse(text: string) -> Result<complex64, ComplexError>
+  pub fn polar(radius: f32, angle: f32) -> complex64
+}
+
+extend complex128 {
+  pub fn parse(text: string) -> Result<complex128, ComplexError>
+  pub fn polar(radius: f64, angle: f64) -> complex128
+}
+
+extend complex256 {
+  pub fn parse(text: string) -> Result<complex256, ComplexError>
+  pub fn polar(radius: f128, angle: f128) -> complex256
+}

@@ -1,0 +1,6 @@
+[module]
+name = "http.route"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-route"

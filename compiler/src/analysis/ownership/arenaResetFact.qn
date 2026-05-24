@@ -1,0 +1,23 @@
+pub struct ArenaResetFact {
+  arenaId: u64,
+  previousGeneration: u64,
+  nextGeneration: u64,
+  previousResetEpoch: u64,
+  nextResetEpoch: u64,
+}
+
+impl ArenaResetFact {
+  pub fn init(arenaId: u64, previousGeneration: u64, nextGeneration: u64, previousResetEpoch: u64, nextResetEpoch: u64) -> ArenaResetFact {
+    return ArenaResetFact {
+      arenaId: arenaId,
+      previousGeneration: previousGeneration,
+      nextGeneration: nextGeneration,
+      previousResetEpoch: previousResetEpoch,
+      nextResetEpoch: nextResetEpoch,
+    }
+  }
+
+  pub fn invalidatesOldViews(self: ArenaResetFact) -> bool {
+    return self.nextGeneration != self.previousGeneration && self.nextResetEpoch != self.previousResetEpoch
+  }
+}

@@ -1,0 +1,12 @@
+pub struct Win64AbiContract {
+  target: string,
+  shadowSpaceRequired: bool,
+  unwindInfoRequired: bool,
+  vectorCallSupported: bool,
+}
+
+impl Win64AbiContract {
+  pub fn accepted(self: Win64AbiContract) -> bool {
+    return self.target != "" && self.shadowSpaceRequired && self.unwindInfoRequired
+  }
+}

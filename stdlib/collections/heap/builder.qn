@@ -1,0 +1,38 @@
+pub struct HeapBuilder<T, P> {
+  capacity: usize,
+  comparator: Comparator<P>,
+}
+
+impl<T, P> HeapBuilder<T, P> {
+  pub fn init() -> HeapBuilder<T, P> {
+    return HeapBuilder<T, P> {
+      capacity: 0,
+      comparator: Comparator<P>.init(),
+    }
+  }
+
+  pub fn capacity(self: HeapBuilder<T, P>, capacity: usize) -> HeapBuilder<T, P> {
+    return HeapBuilder<T, P> {
+      capacity: capacity,
+      comparator: self.comparator,
+    }
+  }
+
+  pub fn comparator(self: HeapBuilder<T, P>, comparator: Comparator<P>) -> HeapBuilder<T, P> {
+    return HeapBuilder<T, P> {
+      capacity: self.capacity,
+      comparator: comparator,
+    }
+  }
+
+  pub fn build(self: HeapBuilder<T, P>) -> Heap<T, P> requires(alloc) {
+    return Heap<T, P> {
+      entries: Vec<HeapEntry<T, P>>.withCapacity(self.capacity),
+      comparator: self.comparator,
+      len: 0,
+      capacity: self.capacity,
+      generation: 0,
+      nextSequence: 0,
+    }
+  }
+}

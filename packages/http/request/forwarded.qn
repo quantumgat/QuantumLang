@@ -1,0 +1,95 @@
+pub struct ForwardedChain {
+  clientIp: string,
+  host: string,
+  proto: string,
+  port: usize,
+  prefix: string,
+  hops: Vec<string>,
+  firstUntrustedIp: string,
+  sourceHeader: string,
+  trusted: bool,
+  spoofed: bool,
+}
+
+impl ForwardedChain {
+  pub fn init(
+    clientIp: string,
+    host: string,
+    proto: string,
+    port: usize,
+    prefix: string,
+    hops: Vec<string>,
+    firstUntrustedIp: string,
+    sourceHeader: string,
+    trusted: bool,
+    spoofed: bool,
+  ) -> ForwardedChain {
+    return ForwardedChain {
+      clientIp: clientIp,
+      host: host,
+      proto: proto,
+      port: port,
+      prefix: prefix,
+      hops: hops,
+      firstUntrustedIp: firstUntrustedIp,
+      sourceHeader: sourceHeader,
+      trusted: trusted,
+      spoofed: spoofed,
+    }
+  }
+
+  pub fn client(self: ForwardedChain) -> string {
+    return self.clientIp
+  }
+
+  pub fn originalHost(self: ForwardedChain) -> string {
+    return self.host
+  }
+
+  pub fn originalScheme(self: ForwardedChain) -> string {
+    return self.proto
+  }
+
+  pub fn originalPort(self: ForwardedChain) -> usize {
+    return self.port
+  }
+
+  pub fn forwardedPrefix(self: ForwardedChain) -> string {
+    return self.prefix
+  }
+
+  pub fn ipChain(self: ForwardedChain) -> Vec<string> {
+    return self.hops
+  }
+
+  pub fn firstUntrusted(self: ForwardedChain) -> string {
+    return self.firstUntrustedIp
+  }
+
+  pub fn source(self: ForwardedChain) -> string {
+    return self.sourceHeader
+  }
+
+  pub fn proxySpoofed(self: ForwardedChain) -> bool {
+    return self.spoofed
+  }
+
+  pub fn badChain(self: ForwardedChain) -> bool {
+    return !self.trusted || self.spoofed
+  }
+
+  pub fn trustedChain(self: ForwardedChain) -> bool {
+    return self.trusted && !self.spoofed
+  }
+}
+
+pub struct Forwarded {
+}
+
+impl Forwarded {
+  pub fn parse(headers: HttpHeaderMap, peer: HttpPeerAddress, policy: TrustedProxyPolicy) -> Result<ForwardedChain, RequestSafetyDiagnostic> {
+    return httpForwardedParseSurface(headers, peer, policy)
+  }
+}
+
+fn httpForwardedParseSurface(headers: HttpHeaderMap, peer: HttpPeerAddress, policy: TrustedProxyPolicy) -> Result<ForwardedChain, RequestSafetyDiagnostic>

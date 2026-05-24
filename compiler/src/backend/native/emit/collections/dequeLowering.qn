@@ -1,0 +1,54 @@
+pub struct DequeLowering {
+  circularBufferBacked: bool,
+  headTailDirect: bool,
+  moduloIndexLowered: bool,
+  pushFrontLoweredToHeadDecAndStore: bool,
+  pushBackLoweredToTailStore: bool,
+  popFrontLoweredToHeadLoadAndHeadInc: bool,
+  popBackLoweredToTailDecAndLoad: bool,
+  peekFrontBackLoweredToDirectLoad: bool,
+  rotateLoweredToHeadTailMove: bool,
+  growRepackLinearized: bool,
+  zeroCopyFromVec: bool,
+  iteratorLoweredToRingCursor: bool,
+  callableLoopsInlined: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn dequeLowering() -> DequeLowering {
+  return DequeLowering {
+    circularBufferBacked: true,
+    headTailDirect: true,
+    moduloIndexLowered: true,
+    pushFrontLoweredToHeadDecAndStore: true,
+    pushBackLoweredToTailStore: true,
+    popFrontLoweredToHeadLoadAndHeadInc: true,
+    popBackLoweredToTailDecAndLoad: true,
+    peekFrontBackLoweredToDirectLoad: true,
+    rotateLoweredToHeadTailMove: true,
+    growRepackLinearized: true,
+    zeroCopyFromVec: true,
+    iteratorLoweredToRingCursor: true,
+    callableLoopsInlined: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl DequeLowering {
+  pub fn hotPathReady(self: DequeLowering) -> bool {
+    return self.circularBufferBacked
+      && self.headTailDirect
+      && self.moduloIndexLowered
+      && self.pushFrontLoweredToHeadDecAndStore
+      && self.pushBackLoweredToTailStore
+      && self.popFrontLoweredToHeadLoadAndHeadInc
+      && self.popBackLoweredToTailDecAndLoad
+      && self.peekFrontBackLoweredToDirectLoad
+      && self.rotateLoweredToHeadTailMove
+      && self.growRepackLinearized
+      && self.zeroCopyFromVec
+      && self.iteratorLoweredToRingCursor
+      && self.callableLoopsInlined
+      && self.boundsProofRequired
+  }
+}

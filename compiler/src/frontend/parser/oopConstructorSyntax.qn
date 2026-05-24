@@ -1,0 +1,32 @@
+pub enum OopConstructorSyntaxKind {
+  InitConstructor
+  ClassNameConstructorSugar
+  ImplicitFieldConstructor
+}
+
+pub struct OopConstructorSyntax {
+  kind: OopConstructorSyntaxKind,
+  ownerTypeName: string,
+  parsedName: string,
+  argumentCount: usize,
+  returnsOwner: bool,
+  lowersToInitFacts: bool,
+  sourceMapBound: bool,
+  fakeWrapperFactoryRejected: bool,
+}
+
+impl OopConstructorSyntax {
+  pub fn valid(self: OopConstructorSyntax) -> bool {
+    return self.ownerTypeName != ""
+      && self.parsedName != ""
+      && self.returnsOwner
+      && self.lowersToInitFacts
+      && self.sourceMapBound
+      && self.fakeWrapperFactoryRejected
+      && ((self.kind == OopConstructorSyntaxKind.InitConstructor && self.parsedName == "init")
+        || (self.kind == OopConstructorSyntaxKind.ClassNameConstructorSugar
+          && self.parsedName == self.ownerTypeName)
+        || (self.kind == OopConstructorSyntaxKind.ImplicitFieldConstructor
+          && self.parsedName == self.ownerTypeName))
+  }
+}

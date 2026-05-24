@@ -1,0 +1,16 @@
+pub enum RestartPolicy {
+  Never
+  OnFailure
+  Always
+}
+
+pub struct Supervisor {
+  restartPolicy: RestartPolicy,
+  maxRestarts: usize,
+}
+
+impl Supervisor {
+  pub fn restartPolicy(self: Supervisor) -> RestartPolicy {
+    return self.restartPolicy
+  }
+}

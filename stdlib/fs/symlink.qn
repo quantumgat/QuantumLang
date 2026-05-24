@@ -1,0 +1,3 @@
+pub fn symlink(target: PathBuf, link: PathBuf) -> FsResult<Unit>
+pub fn readLink(path: PathBuf) -> FsResult<PathBuf>
+pub fn isSymlink(path: PathBuf) -> FsResult<bool>

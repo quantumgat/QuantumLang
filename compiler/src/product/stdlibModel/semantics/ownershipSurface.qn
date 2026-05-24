@@ -1,0 +1,12 @@
+pub struct StdlibOwnershipSurface {
+  symbolName: string,
+  movesValue: bool,
+  borrowsValue: bool,
+  dropsValue: bool,
+}
+
+impl StdlibOwnershipSurface {
+  pub fn accepted(self: StdlibOwnershipSurface) -> bool {
+    return self.symbolName != "" && (self.movesValue || self.borrowsValue || self.dropsValue)
+  }
+}

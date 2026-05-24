@@ -1,0 +1,26 @@
+pub struct FunctionEffectPolicy {
+  callable: u64,
+  declaredEffects: usize,
+  inferredEffects: usize,
+  explicitRequired: bool,
+}
+
+pub fn functionEffectPolicy(
+  callable: u64,
+  declaredEffects: usize,
+  inferredEffects: usize,
+  explicitRequired: bool,
+) -> FunctionEffectPolicy {
+  return FunctionEffectPolicy {
+    callable: callable,
+    declaredEffects: declaredEffects,
+    inferredEffects: inferredEffects,
+    explicitRequired: explicitRequired,
+  }
+}
+
+impl FunctionEffectPolicy {
+  pub fn satisfied(self: FunctionEffectPolicy) -> bool {
+    return self.explicitRequired == false || self.declaredEffects >= self.inferredEffects
+  }
+}

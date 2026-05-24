@@ -1,0 +1,22 @@
+[module]
+name = "native"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "direct-native-lowering-object-link"
+
+[submodules]
+target = "target/mod.qn"
+emit = "emit/mod.qn"
+machine = "machine/mod.qn"
+object = "object/mod.qn"
+link = "link/mod.qn"
+cache = "cache/mod.qn"
+validation = "validation/mod.qn"
+
+[dependencies]
+allowed = ["common", "analysis", "ir"]
+forbidden = ["backend/c", "backend/llvm", "generated source fallback"]
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots", "qtlc_qtlang_oop_style_conformance"]

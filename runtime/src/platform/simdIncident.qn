@@ -1,0 +1,21 @@
+pub enum SimdIncidentKind {
+  UnsupportedLaneWidth,
+  UnsupportedLaneCount,
+  InvalidShuffle,
+  MisalignedLoadStore,
+  ScalarFallbackMissing,
+}
+
+pub struct SimdIncident {
+  kind: SimdIncidentKind,
+  recoverable: bool,
+}
+
+impl SimdIncident {
+  pub fn init(kind: SimdIncidentKind) -> SimdIncident {
+    return SimdIncident {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+}

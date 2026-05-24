@@ -1,0 +1,12 @@
+pub struct RuntimeEmbeddedMemoryContract {
+  target: string,
+  staticArenaRequired: bool,
+  heapOptional: bool,
+  deterministicFailureRequired: bool,
+}
+
+impl RuntimeEmbeddedMemoryContract {
+  pub fn accepted(self: RuntimeEmbeddedMemoryContract) -> bool {
+    return self.target != "" && self.staticArenaRequired && self.deterministicFailureRequired
+  }
+}

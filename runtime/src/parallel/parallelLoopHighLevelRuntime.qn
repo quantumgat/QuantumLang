@@ -1,0 +1,39 @@
+pub struct ParallelLoopHighLevelRuntime {
+  threads: usize,
+  batch: usize,
+  workSourceChecked: bool,
+  stopResultChecked: bool,
+  cleanupChecked: bool,
+  noCoredump: bool,
+}
+
+pub fn parallelLoopHighLevelRuntime(
+  threads: usize,
+  batch: usize,
+  workSourceChecked: bool,
+  stopResultChecked: bool,
+  cleanupChecked: bool,
+  noCoredump: bool,
+) -> ParallelLoopHighLevelRuntime {
+  return ParallelLoopHighLevelRuntime {
+    threads: threads,
+    batch: batch,
+    workSourceChecked: workSourceChecked,
+    stopResultChecked: stopResultChecked,
+    cleanupChecked: cleanupChecked,
+    noCoredump: noCoredump,
+  }
+}
+
+impl ParallelLoopHighLevelRuntime {
+  pub fn accepted(self: ParallelLoopHighLevelRuntime) -> bool {
+    return self.threads > 0
+      && self.threads <= 8
+      && self.batch > 0
+      && self.workSourceChecked
+      && self.stopResultChecked
+      && self.cleanupChecked
+      && self.noCoredump
+  }
+}
+

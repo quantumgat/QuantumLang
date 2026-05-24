@@ -1,0 +1,24 @@
+pub enum WhileErgonomicsProofKind {
+  RequestedFormsCaptured
+  HotPathLowering
+  SafetyDiagnosticCoverage
+  NegativeFixtureCoverage
+  NoGeneratedFallback
+}
+
+pub struct WhileErgonomicsProof {
+  kind: WhileErgonomicsProofKind,
+  fixture: string,
+  formCount: usize,
+  nativeLowering: NativeWhileLoopLowering,
+  negativeFixtureCaptured: bool,
+}
+
+impl WhileErgonomicsProof {
+  pub fn complete(self: WhileErgonomicsProof) -> bool {
+    return self.fixture != ""
+      && self.formCount >= 15
+      && self.nativeLowering.complete()
+      && self.negativeFixtureCaptured
+  }
+}

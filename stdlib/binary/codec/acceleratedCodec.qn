@@ -1,0 +1,300 @@
+pub struct LayoutHash {
+  value: u128,
+  schemaVersion: u32,
+}
+
+pub struct ValidatedView {
+  bytes: BinaryView,
+  layout: LayoutHash,
+  proof: u64,
+}
+
+pub struct View<T> {
+  bytes: BinaryView,
+  layout: LayoutHash,
+  proof: u64,
+}
+
+pub struct Arena {
+  storage: BinaryMutView,
+  used: usize,
+  generation: u64,
+}
+
+pub struct Projection<T> {
+  layout: LayoutHash,
+  fieldCount: usize,
+  proof: u64,
+}
+
+pub enum PredicateOp {
+  Eq,
+  Ne,
+  Lt,
+  Le,
+  Gt,
+  Ge,
+  Prefix,
+}
+
+pub struct Predicate<T> {
+  layout: LayoutHash,
+  fieldOrdinal: u32,
+  op: PredicateOp,
+  encodedValue: BinaryView,
+}
+
+pub struct ColumnBlock<T> {
+  layout: LayoutHash,
+  columnCount: usize,
+  vectorWidth: usize,
+}
+
+pub struct StableKey<K> {
+  layout: LayoutHash,
+  descending: bool,
+  nullsLast: bool,
+}
+
+pub struct Delta<T> {
+  layout: LayoutHash,
+  changedFieldCount: usize,
+}
+
+pub struct Limits {
+  maxBytes: usize,
+  maxDepth: usize,
+  maxFields: usize,
+  maxStringBytes: usize,
+  maxArrayItems: usize,
+}
+
+pub struct CodecBuilder<T> {
+  options: BinaryCodecOptions,
+  layout: LayoutHash,
+  limits: Limits,
+  projectionFields: usize,
+  validationRequired: bool,
+  trustedAfterValidate: bool,
+}
+
+pub struct Codec<T> {
+  options: BinaryCodecOptions,
+  layout: LayoutHash,
+  limits: Limits,
+  projectionFields: usize,
+  proof: u64,
+}
+
+pub trait AcceleratedCodec<T> {
+  pub fn view(bytes: BinaryView) -> Result<View<T>, BinaryError>
+  pub fn write(writer: BinaryWriter, value: T) -> Result<BinaryWriter, BinaryError>
+  pub fn size(value: T) -> Result<usize, BinaryError>
+}
+
+impl LayoutHash {
+  pub fn init(value: u128, schemaVersion: u32) -> LayoutHash {
+    return LayoutHash {
+      value: value,
+      schemaVersion: schemaVersion,
+    }
+  }
+}
+
+impl ValidatedView {
+  pub fn asTyped<T>(self: ValidatedView) -> Result<View<T>, BinaryError> {
+    return binaryViewAsTyped<T>(self)
+  }
+}
+
+impl View<T> {
+  pub fn toOwned(self: View<T>) -> Result<T, BinaryError> {
+    return binaryTypedViewToOwned<T>(self)
+  }
+}
+
+impl Limits {
+  /**
+    Creates practical safe limits for portable binary decoding.
+
+    example:
+      let codec = Binary.codec<User>().limits(Limits.default()).build()?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn default() -> Limits {
+    return Limits {
+      maxBytes: 268435456,
+      maxDepth: 64,
+      maxFields: 4096,
+      maxStringBytes: 16777216,
+      maxArrayItems: 16777216,
+    }
+  }
+}
+
+impl CodecBuilder<T> {
+  pub fn init(options: BinaryCodecOptions) -> CodecBuilder<T> {
+    return CodecBuilder<T> {
+      options: options,
+      layout: LayoutHash.init(0u128, 0u32),
+      limits: Limits.default(),
+      projectionFields: 0,
+      validationRequired: false,
+      trustedAfterValidate: false,
+    }
+  }
+
+  /**
+    Selects portable byte order for this reusable codec.
+
+    example:
+      let codec = Binary.codec<User>().endian(.Little).build()?
+
+    effects: pure builder update
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn endian(self: CodecBuilder<T>, endian: BinaryEndian) -> CodecBuilder<T> {
+    return CodecBuilder<T> {
+      options: BinaryCodecOptions {
+        endian: endian,
+        lengthPrefix: self.options.lengthPrefix,
+        stableMapOrder: self.options.stableMapOrder,
+      },
+      layout: self.layout,
+      limits: self.limits,
+      projectionFields: self.projectionFields,
+      validationRequired: self.validationRequired,
+      trustedAfterValidate: self.trustedAfterValidate,
+    }
+  }
+
+  pub fn layout(self: CodecBuilder<T>, layout: LayoutHash) -> CodecBuilder<T> {
+    return binaryCodecBuilderLayout<T>(self, layout)
+  }
+
+  pub fn limits(self: CodecBuilder<T>, limits: Limits) -> CodecBuilder<T> {
+    return binaryCodecBuilderLimits<T>(self, limits)
+  }
+
+  pub fn projection(self: CodecBuilder<T>, fields: usize) -> CodecBuilder<T> {
+    return binaryCodecBuilderProjection<T>(self, fields)
+  }
+
+  pub fn validate(self: CodecBuilder<T>) -> CodecBuilder<T> {
+    return binaryCodecBuilderRequireValidation<T>(self)
+  }
+
+  pub fn trustedAfterValidate(self: CodecBuilder<T>) -> CodecBuilder<T> {
+    return binaryCodecBuilderTrustedAfterValidate<T>(self)
+  }
+
+  /**
+    Builds a reusable compiled codec plan.
+
+    example:
+      let codec = Binary.codec<User>()
+        .endian(.Little)
+        .limits(Limits.default())
+        .validate()
+        .build()?
+
+    effects: validates codec plan and prepares reusable lowering metadata
+    complexity: O(type layout)
+    allocation: codec plan only
+    stability: public since 0.1
+  */
+  pub fn build(self: CodecBuilder<T>) -> Result<Codec<T>, BinaryError> {
+    return binaryBuildCodec<T>(self)
+  }
+}
+
+impl Codec<T> {
+  pub fn validate(self: Codec<T>, bytes: BinaryView) -> Result<ValidatedView, BinaryError> {
+    return binaryCodecValidate<T>(self, bytes)
+  }
+
+  pub fn view(self: Codec<T>, bytes: BinaryView) -> Result<View<T>, BinaryError> {
+    return binaryCodecView<T>(self, bytes)
+  }
+
+  pub fn view(self: Codec<T>, checked: ValidatedView) -> Result<View<T>, BinaryError> {
+    return binaryCodecCheckedView<T>(self, checked)
+  }
+
+  pub fn write(self: Codec<T>, writer: BinaryWriter, value: T) -> Result<BinaryWriter, BinaryError> {
+    return binaryCodecWrite<T>(self, writer, value)
+  }
+
+  pub fn size(self: Codec<T>, value: T) -> Result<usize, BinaryError> {
+    return binaryCodecSize<T>(self, value)
+  }
+}
+
+impl Arena {
+  pub fn init(storage: BinaryMutView) -> Arena {
+    return Arena {
+      storage: storage,
+      used: 0,
+      generation: 1,
+    }
+  }
+
+  pub fn remaining(self: Arena) -> usize {
+    return self.storage.len - self.used
+  }
+}
+
+impl Projection<T> {
+  pub fn decodeView(self: Projection<T>, bytes: BinaryView) -> Result<View<T>, BinaryError> {
+    return binaryDecodeProjectionView<T>(self, bytes)
+  }
+}
+
+impl Predicate<T> {
+  pub fn matches(self: Predicate<T>, bytes: BinaryView) -> Result<bool, BinaryError> {
+    return binaryPredicateMatches<T>(self, bytes)
+  }
+}
+
+impl ColumnBlock<T> {
+  pub fn decodeBatch(self: ColumnBlock<T>, bytes: BinaryView, arena: Arena) -> Result<View<T>, BinaryError> {
+    return binaryColumnBlockDecodeBatch<T>(self, bytes, arena)
+  }
+}
+
+impl StableKey<K> {
+  pub fn encodeKey(self: StableKey<K>, key: K, writer: BinaryWriter) -> Result<BinaryWriter, BinaryError> {
+    return binaryStableKeyEncode<K>(self, key, writer)
+  }
+}
+
+impl Delta<T> {
+  pub fn encodeDelta(self: Delta<T>, before: T, after: T, writer: BinaryWriter) -> Result<BinaryWriter, BinaryError> {
+    return binaryRowDeltaEncode<T>(self, before, after, writer)
+  }
+}
+
+fn binaryViewAsTyped<T>(view: ValidatedView) -> Result<View<T>, BinaryError>
+fn binaryTypedViewToOwned<T>(view: View<T>) -> Result<T, BinaryError>
+fn binaryCodecBuilderLayout<T>(builder: CodecBuilder<T>, layout: LayoutHash) -> CodecBuilder<T>
+fn binaryCodecBuilderLimits<T>(builder: CodecBuilder<T>, limits: Limits) -> CodecBuilder<T>
+fn binaryCodecBuilderProjection<T>(builder: CodecBuilder<T>, fields: usize) -> CodecBuilder<T>
+fn binaryCodecBuilderRequireValidation<T>(builder: CodecBuilder<T>) -> CodecBuilder<T>
+fn binaryCodecBuilderTrustedAfterValidate<T>(builder: CodecBuilder<T>) -> CodecBuilder<T>
+fn binaryBuildCodec<T>(builder: CodecBuilder<T>) -> Result<Codec<T>, BinaryError>
+fn binaryCodecValidate<T>(codec: Codec<T>, bytes: BinaryView) -> Result<ValidatedView, BinaryError>
+fn binaryCodecView<T>(codec: Codec<T>, bytes: BinaryView) -> Result<View<T>, BinaryError>
+fn binaryCodecCheckedView<T>(codec: Codec<T>, checked: ValidatedView) -> Result<View<T>, BinaryError>
+fn binaryCodecWrite<T>(codec: Codec<T>, writer: BinaryWriter, value: T) -> Result<BinaryWriter, BinaryError>
+fn binaryCodecSize<T>(codec: Codec<T>, value: T) -> Result<usize, BinaryError>
+fn binaryDecodeProjectionView<T>(projection: Projection<T>, bytes: BinaryView) -> Result<View<T>, BinaryError>
+fn binaryPredicateMatches<T>(predicate: Predicate<T>, bytes: BinaryView) -> Result<bool, BinaryError>
+fn binaryColumnBlockDecodeBatch<T>(codec: ColumnBlock<T>, bytes: BinaryView, arena: Arena) -> Result<View<T>, BinaryError>
+fn binaryStableKeyEncode<K>(codec: StableKey<K>, key: K, writer: BinaryWriter) -> Result<BinaryWriter, BinaryError>
+fn binaryRowDeltaEncode<T>(codec: Delta<T>, before: T, after: T, writer: BinaryWriter) -> Result<BinaryWriter, BinaryError>

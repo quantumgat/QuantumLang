@@ -1,0 +1,15 @@
+pub struct InteropBoundary {
+  noCompilerBypass: bool,
+  noCapabilityBypass: bool,
+  noPublicHeaderSurface: bool,
+}
+
+pub fn interopBoundary() -> InteropBoundary {
+  return InteropBoundary { noCompilerBypass: true, noCapabilityBypass: true, noPublicHeaderSurface: true }
+}
+
+impl InteropBoundary {
+  pub fn isHiddenRuntimeBoundary(self: InteropBoundary) -> bool {
+    return self.noCompilerBypass && self.noCapabilityBypass && self.noPublicHeaderSurface
+  }
+}

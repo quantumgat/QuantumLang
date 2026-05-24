@@ -1,0 +1,124 @@
+pub struct LifecycleHooks {
+  onStartCount: usize,
+  onStopCount: usize,
+}
+
+impl LifecycleHooks {
+  pub fn init() -> LifecycleHooks {
+    return LifecycleHooks {
+      onStartCount: 0,
+      onStopCount: 0,
+    }
+  }
+
+  pub fn onStart(self: LifecycleHooks, name: string) -> LifecycleHooks {
+    return LifecycleHooks {
+      onStartCount: self.onStartCount + 1,
+      onStopCount: self.onStopCount,
+    }
+  }
+
+  pub fn onStop(self: LifecycleHooks, name: string) -> LifecycleHooks {
+    return LifecycleHooks {
+      onStartCount: self.onStartCount,
+      onStopCount: self.onStopCount + 1,
+    }
+  }
+
+  pub fn startCount(self: LifecycleHooks) -> usize {
+    return self.onStartCount
+  }
+
+  pub fn stopCount(self: LifecycleHooks) -> usize {
+    return self.onStopCount
+  }
+}
+
+pub struct AppLifecyclePlan {
+  stateCount: usize,
+  dependencyCount: usize,
+  startupStepCount: usize,
+  shutdownStepCount: usize,
+  dropStepCount: usize,
+  healthCheckCount: usize,
+  reconnectCount: usize,
+  warmupCount: usize,
+  scopedStateCount: usize,
+  testOverrideCount: usize,
+  projectionPendingCount: usize,
+  dependencyOrderComplete: bool,
+  lifecyclePlanComplete: bool,
+}
+
+impl AppLifecyclePlan {
+  pub fn init(
+    stateCount: usize,
+    dependencyCount: usize,
+    startupStepCount: usize,
+    shutdownStepCount: usize,
+    dropStepCount: usize,
+    healthCheckCount: usize,
+    reconnectCount: usize,
+    warmupCount: usize,
+    scopedStateCount: usize,
+    testOverrideCount: usize,
+    projectionPendingCount: usize,
+    dependencyOrderComplete: bool,
+    lifecyclePlanComplete: bool,
+  ) -> AppLifecyclePlan {
+    return AppLifecyclePlan {
+      stateCount: stateCount,
+      dependencyCount: dependencyCount,
+      startupStepCount: startupStepCount,
+      shutdownStepCount: shutdownStepCount,
+      dropStepCount: dropStepCount,
+      healthCheckCount: healthCheckCount,
+      reconnectCount: reconnectCount,
+      warmupCount: warmupCount,
+      scopedStateCount: scopedStateCount,
+      testOverrideCount: testOverrideCount,
+      projectionPendingCount: projectionPendingCount,
+      dependencyOrderComplete: dependencyOrderComplete,
+      lifecyclePlanComplete: lifecyclePlanComplete,
+    }
+  }
+
+  pub fn from(states: AppStateGraph, hooks: LifecycleHooks) -> AppLifecyclePlan {
+    let summary = states.summary()
+    let startupStepCount = summary.startRequiredCount + hooks.startCount() + summary.warmupCount
+    let shutdownStepCount = summary.shutdownRequiredCount + hooks.stopCount()
+    let dropStepCount = summary.dropRequiredCount
+    let dependencyOrderComplete = summary.projectionComplete()
+    let lifecyclePlanComplete = dependencyOrderComplete
+      && startupStepCount >= summary.startRequiredCount
+      && shutdownStepCount >= summary.shutdownRequiredCount
+      && dropStepCount >= summary.dropRequiredCount
+    return AppLifecyclePlan.init(
+      summary.stateCount,
+      summary.dependencyCount,
+      startupStepCount,
+      shutdownStepCount,
+      dropStepCount,
+      summary.healthCheckCount,
+      summary.reconnectCount,
+      summary.warmupCount,
+      summary.scopedStateCount,
+      summary.testOverrideCount,
+      summary.projectionPendingCount,
+      dependencyOrderComplete,
+      lifecyclePlanComplete
+    )
+  }
+
+  pub fn complete(self: AppLifecyclePlan) -> bool {
+    return self.lifecyclePlanComplete
+  }
+
+  pub fn hasRuntimeWork(self: AppLifecyclePlan) -> bool {
+    return self.startupStepCount > 0
+      || self.shutdownStepCount > 0
+      || self.dropStepCount > 0
+      || self.healthCheckCount > 0
+      || self.reconnectCount > 0
+  }
+}

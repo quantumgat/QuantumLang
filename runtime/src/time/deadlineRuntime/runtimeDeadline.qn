@@ -1,0 +1,21 @@
+pub struct RuntimeDeadline {
+  deadlineMillis: u64,
+  tokenId: u64,
+  timeoutArmed: bool,
+  cleanupRegistered: bool,
+}
+
+impl RuntimeDeadline {
+  pub fn init(deadlineMillis: u64, tokenId: u64, timeoutArmed: bool, cleanupRegistered: bool) -> RuntimeDeadline {
+    return RuntimeDeadline {
+      deadlineMillis: deadlineMillis,
+      tokenId: tokenId,
+      timeoutArmed: timeoutArmed,
+      cleanupRegistered: cleanupRegistered,
+    }
+  }
+
+  pub fn safe(self: RuntimeDeadline) -> bool {
+    return self.deadlineMillis > 0 && self.tokenId > 0 && self.timeoutArmed && self.cleanupRegistered
+  }
+}

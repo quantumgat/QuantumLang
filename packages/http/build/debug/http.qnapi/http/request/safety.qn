@@ -1,0 +1,23 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum RequestSafetyIssue {
+  None,
+  DuplicateContentLength,
+  ContentLengthTransferEncodingConflict,
+  InvalidHeaderBytes,
+  HeaderTooLarge,
+  TooManyHeaders,
+  UriTooLong,
+  ProxySpoofing,
+  BadForwardedChain,
+  RequestSmugglingRisk,
+  SlowlorisTimeout,
+  BodyLimitExceeded,
+}
+pub struct RequestSafetyDiagnostic {
+  issue: RequestSafetyIssue
+  message: string
+  safeToHandle: bool
+}
+pub struct RequestSafetyReport {
+  diagnostics: Vec<RequestSafetyDiagnostic>
+}

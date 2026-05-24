@@ -1,0 +1,3 @@
+pub trait Iterator<T> {
+  pub fn next(self: &mut Self) -> Option<T>
+}

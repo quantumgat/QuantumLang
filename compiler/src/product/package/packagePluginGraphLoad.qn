@@ -1,0 +1,42 @@
+pub struct PackagePluginGraphLoad {
+  packageGraph: PackageGraph,
+  pluginManifestGraph: PluginManifestGraph,
+  pluginLoadPlan: PluginLoadPlan,
+  packageLockfile: PackageLockfile,
+  pluginDependencyCount: usize,
+  pluginManifestCount: usize,
+  deterministicOrder: bool,
+  lockfileFingerprintsRequired: bool,
+  signaturesRequired: bool,
+  noCompilerFactMutation: bool,
+}
+
+impl PackagePluginGraphLoad {
+  pub fn fromSingle(packageGraph: PackageGraph, manifestLoad: PackagePluginManifestLoad, packageLockfile: PackageLockfile) -> PackagePluginGraphLoad {
+    return PackagePluginGraphLoad {
+      packageGraph: packageGraph,
+      pluginManifestGraph: PluginManifestGraph.single(manifestLoad.parseResult),
+      pluginLoadPlan: PluginLoadPlan.fromManifests(1, 1),
+      packageLockfile: packageLockfile,
+      pluginDependencyCount: 1,
+      pluginManifestCount: 1,
+      deterministicOrder: true,
+      lockfileFingerprintsRequired: true,
+      signaturesRequired: true,
+      noCompilerFactMutation: true,
+    }
+  }
+
+  pub fn accepted(self: PackagePluginGraphLoad) -> bool {
+    return self.packageGraph.reproducible()
+      && self.pluginManifestGraph.accepted()
+      && self.pluginLoadPlan.accepted()
+      && self.packageLockfile.signaturesComplete()
+      && self.pluginDependencyCount == self.pluginManifestCount
+      && self.pluginManifestCount > 0
+      && self.deterministicOrder
+      && self.lockfileFingerprintsRequired
+      && self.signaturesRequired
+      && self.noCompilerFactMutation
+  }
+}

@@ -1,0 +1,55 @@
+pub struct HttpRouteTrie {
+  table: HttpRouteTable,
+  staticRouteCount: usize,
+  dynamicRouteCount: usize,
+}
+
+impl HttpRouteTrie {
+  pub fn empty() -> HttpRouteTrie {
+    return HttpRouteTrie {
+      table: HttpRouteTable.empty(),
+      staticRouteCount: 0,
+      dynamicRouteCount: 0,
+    }
+  }
+
+  pub fn addStatic(self: HttpRouteTrie, method: HttpMethod, path: string, handlerName: string) -> Result<HttpRouteTrie, HttpRouteConflict> {
+    let tableResult = self.table.add(method, path, handlerName)
+    match tableResult {
+      Ok(table) => {
+        return Ok(HttpRouteTrie {
+          table: table,
+          staticRouteCount: self.staticRouteCount + 1,
+          dynamicRouteCount: self.dynamicRouteCount,
+        })
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn addDynamic(self: HttpRouteTrie, method: HttpMethod, path: string, handlerName: string) -> Result<HttpRouteTrie, HttpRouteConflict> {
+    let tableResult = self.table.add(method, path, handlerName)
+    match tableResult {
+      Ok(table) => {
+        return Ok(HttpRouteTrie {
+          table: table,
+          staticRouteCount: self.staticRouteCount,
+          dynamicRouteCount: self.dynamicRouteCount + 1,
+        })
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn find(self: HttpRouteTrie, method: HttpMethod, path: string) -> Option<HttpRoute> {
+    return self.table.find(method, path)
+  }
+
+  pub fn routeCount(self: HttpRouteTrie) -> usize {
+    return self.staticRouteCount + self.dynamicRouteCount
+  }
+}

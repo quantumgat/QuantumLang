@@ -1,0 +1,65 @@
+pub struct SignalSet {
+  signals: Vec<Signal>,
+}
+
+pub fn emptySet() -> SignalSet requires(alloc) {
+  return SignalSet {
+    signals: Vec<Signal>(),
+  }
+}
+
+pub fn signalSet(signals: Vec<Signal>) -> SignalSet {
+  return SignalSet {
+    signals: signals,
+  }
+}
+
+pub fn shutdownSet() -> SignalSet requires(alloc) {
+  let mut signals = Vec<Signal>().push(interrupt())
+  signals = signals.push(terminate())
+  signals = signals.push(hangup())
+  return signalSet(signals)
+}
+
+impl SignalSet {
+  pub fn empty(self: SignalSet) -> bool {
+    return self.signals.len == 0
+  }
+
+  pub fn len(self: SignalSet) -> usize {
+    return self.signals.len
+  }
+
+  pub fn add(self: SignalSet, signal: Signal) -> SignalSet requires(alloc) {
+    if self.contains(signal) {
+      return self
+    }
+    return SignalSet {
+      signals: self.signals.push(signal),
+    }
+  }
+
+  pub fn contains(self: SignalSet, signal: Signal) -> bool {
+    let wanted = number(signal)
+    let mut index: usize = 0
+    while index < self.signals.len {
+      if number(self.signals[index]) == wanted {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn wait(self: SignalSet) -> Result<Signal, OsError> {
+    return waitSet(self)
+  }
+
+  pub fn tryWait(self: SignalSet) -> Result<Option<Signal>, OsError> {
+    return tryWait(self)
+  }
+
+  pub fn waitTimeout(self: SignalSet, timeoutMillis: u64) -> Result<Option<Signal>, OsError> {
+    return waitTimeout(self, timeoutMillis)
+  }
+}

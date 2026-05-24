@@ -1,0 +1,19 @@
+pub struct BigintKernel {
+  canonicalLimbOrder: bool,
+  checkedArithmetic: bool,
+  publicApiOwnedByStdlib: bool,
+}
+
+impl BigintKernel {
+  pub fn standard() -> BigintKernel {
+    return BigintKernel {
+      canonicalLimbOrder: true,
+      checkedArithmetic: true,
+      publicApiOwnedByStdlib: true,
+    }
+  }
+
+  pub fn canRun(self: BigintKernel) -> bool {
+    return self.canonicalLimbOrder && self.checkedArithmetic && self.publicApiOwnedByStdlib
+  }
+}

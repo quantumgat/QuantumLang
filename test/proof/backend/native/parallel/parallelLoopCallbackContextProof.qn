@@ -1,0 +1,42 @@
+pub struct ParallelLoopCallbackContextProof {
+  eligiblePattern: string,
+  captureMode: string,
+  helperFunctionEmitted: bool,
+  runtimeCallEmitted: bool,
+  contextPointerPassed: bool,
+  readOnlyCapture: bool,
+  executableFixture: string,
+  exitCode: i64,
+}
+
+pub fn parallelLoopCallbackContextProof(
+  helperFunctionEmitted: bool,
+  runtimeCallEmitted: bool,
+  contextPointerPassed: bool,
+  readOnlyCapture: bool,
+  exitCode: i64,
+) -> ParallelLoopCallbackContextProof {
+  return ParallelLoopCallbackContextProof {
+    eligiblePattern: "if worker == capturedScalar { stop worker }",
+    captureMode: "readonly-stack-scalar",
+    helperFunctionEmitted: helperFunctionEmitted,
+    runtimeCallEmitted: runtimeCallEmitted,
+    contextPointerPassed: contextPointerPassed,
+    readOnlyCapture: readOnlyCapture,
+    executableFixture: "parallel_loop_callback_context_ok.qn",
+    exitCode: exitCode,
+  }
+}
+
+impl ParallelLoopCallbackContextProof {
+  pub fn accepted(self: ParallelLoopCallbackContextProof) -> bool {
+    return self.eligiblePattern == "if worker == capturedScalar { stop worker }"
+      && self.captureMode == "readonly-stack-scalar"
+      && self.helperFunctionEmitted
+      && self.runtimeCallEmitted
+      && self.contextPointerPassed
+      && self.readOnlyCapture
+      && self.executableFixture == "parallel_loop_callback_context_ok.qn"
+      && self.exitCode == 5
+  }
+}

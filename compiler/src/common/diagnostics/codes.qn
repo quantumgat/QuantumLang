@@ -1,0 +1,26 @@
+pub struct DiagnosticCode {
+  family: string,
+  number: u32,
+}
+
+pub fn diagnosticCode(family: string, number: u32) -> DiagnosticCode {
+  return DiagnosticCode { family: family, number: number }
+}
+
+pub fn lexerDiagnosticCode(number: u32) -> DiagnosticCode {
+  return DiagnosticCode { family: "LEX", number: number }
+}
+
+impl DiagnosticCode {
+  pub fn valid(self: DiagnosticCode) -> bool {
+    return self.family != "" && self.number > 0
+  }
+
+  pub fn familyName(self: DiagnosticCode) -> string {
+    return self.family
+  }
+
+  pub fn codeNumber(self: DiagnosticCode) -> u32 {
+    return self.number
+  }
+}

@@ -1,0 +1,36 @@
+pub struct JsonScannerFallbackFixtureProof {
+  scalarFixture: bool,
+  avx2GateFixture: bool,
+  sse42GateFixture: bool,
+  neonGateFixture: bool,
+  requiredSimdFailureFixture: bool,
+  utf8ValidationFixture: bool,
+  escapeValidationFixture: bool,
+  structuralTapeFixture: bool,
+}
+
+impl JsonScannerFallbackFixtureProof {
+  pub fn required() -> JsonScannerFallbackFixtureProof {
+    return JsonScannerFallbackFixtureProof {
+      scalarFixture: true,
+      avx2GateFixture: true,
+      sse42GateFixture: true,
+      neonGateFixture: true,
+      requiredSimdFailureFixture: true,
+      utf8ValidationFixture: true,
+      escapeValidationFixture: true,
+      structuralTapeFixture: true,
+    }
+  }
+
+  pub fn accepted(self: JsonScannerFallbackFixtureProof) -> bool {
+    return self.scalarFixture
+      && self.avx2GateFixture
+      && self.sse42GateFixture
+      && self.neonGateFixture
+      && self.requiredSimdFailureFixture
+      && self.utf8ValidationFixture
+      && self.escapeValidationFixture
+      && self.structuralTapeFixture
+  }
+}

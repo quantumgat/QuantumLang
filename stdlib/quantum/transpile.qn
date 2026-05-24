@@ -1,0 +1,5 @@
+pub struct TranspileDiagnostic {
+  message: string,
+}
+
+pub fn transpile(circuit: QuantumCircuit, target: QuantumTarget) -> Result<QuantumCircuit, TranspileDiagnostic>

@@ -1,0 +1,12 @@
+pub struct WasmRuntime {
+  target: string,
+  linearMemory: bool,
+  hostImports: bool,
+  wasi: bool,
+}
+
+impl WasmRuntime {
+  pub fn accepted(self: WasmRuntime) -> bool {
+    return self.target != "" && self.linearMemory
+  }
+}

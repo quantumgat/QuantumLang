@@ -1,0 +1,34 @@
+/**
+  Non-owning weak pointer that can be upgraded while the strong owner is live.
+
+  example:
+    let user = weak.upgrade()?.borrow().get()?
+
+  effects: reads the runtime control block
+  complexity: O(1)
+  allocation: none unless upgrade bumps strong count
+  safety: upgrade fails when the allocation generation is stale
+  stability: public since 0.1
+*/
+pub struct WeakPtr<T> {
+  ptr: Ptr<T>,
+  controlBlock: u64,
+  generation: u64,
+}
+
+impl<T> WeakPtr<T> {
+  pub fn upgrade(self: WeakPtr<T>) -> Option<SharedPtr<T>> {
+    return ptrRuntimeWeakUpgrade<T>(self)
+  }
+
+  pub fn expired(self: WeakPtr<T>) -> bool {
+    return ptrRuntimeWeakExpired<T>(self.controlBlock, self.generation)
+  }
+
+  pub fn accepted(self: WeakPtr<T>) -> bool {
+    return self.controlBlock > 0 && self.generation > 0
+  }
+}
+
+fn ptrRuntimeWeakUpgrade<T>(ptr: WeakPtr<T>) -> Option<SharedPtr<T>>
+fn ptrRuntimeWeakExpired<T>(controlBlock: u64, generation: u64) -> bool

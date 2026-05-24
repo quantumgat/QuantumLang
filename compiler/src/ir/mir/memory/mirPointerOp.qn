@@ -1,0 +1,32 @@
+pub enum MirPointerOpKind {
+  Load,
+  Store,
+  Copy,
+  Move,
+  Fill,
+  Zero,
+  Offset,
+  Cast,
+  View,
+  AtomicLoad,
+  AtomicStore,
+}
+
+pub struct MirPointerOp {
+  instruction: u64,
+  kind: MirPointerOpKind,
+  bytes: usize,
+  count: usize,
+  directNativeEligible: bool,
+  targetPointerFactAccepted: bool,
+}
+
+impl MirPointerOp {
+  pub fn accepted(self: MirPointerOp) -> bool {
+    return self.instruction > 0
+      && self.bytes > 0
+      && self.count > 0
+      && self.directNativeEligible
+      && self.targetPointerFactAccepted
+  }
+}

@@ -1,0 +1,31 @@
+pub struct AsyncFrameLayout {
+  frameTypeId: u64,
+  capturedLocalCount: usize,
+  frameSlotCount: usize,
+  sourceMapCount: usize,
+  cleanupSlotCount: usize,
+  debuggerVisible: bool,
+}
+
+pub fn asyncFrameLayout(frameTypeId: u64, capturedLocalCount: usize, cleanupSlotCount: usize) -> AsyncFrameLayout {
+  return AsyncFrameLayout {
+    frameTypeId: frameTypeId,
+    capturedLocalCount: capturedLocalCount,
+    frameSlotCount: capturedLocalCount + cleanupSlotCount + 1,
+    sourceMapCount: capturedLocalCount + cleanupSlotCount + 1,
+    cleanupSlotCount: cleanupSlotCount,
+    debuggerVisible: true,
+  }
+}
+
+impl AsyncFrameLayout {
+  pub fn storesState(self: AsyncFrameLayout) -> bool {
+    return self.frameSlotCount > 0
+      && (self.capturedLocalCount > 0 || self.cleanupSlotCount > 0)
+  }
+
+  pub fn sourceMapped(self: AsyncFrameLayout) -> bool {
+    return self.sourceMapCount >= self.frameSlotCount
+      && self.debuggerVisible
+  }
+}

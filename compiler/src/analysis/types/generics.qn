@@ -1,0 +1,15 @@
+pub enum GenericParameterKind {
+  TypeParameter
+  ConstParameter
+  LifetimeParameter
+}
+
+pub struct GenericParameter {
+  parameterId: u64,
+  kind: GenericParameterKind,
+  defaultProvided: bool,
+}
+
+pub fn genericParameter(parameterId: u64, kind: GenericParameterKind, defaultProvided: bool) -> GenericParameter {
+  return GenericParameter { parameterId: parameterId, kind: kind, defaultProvided: defaultProvided }
+}

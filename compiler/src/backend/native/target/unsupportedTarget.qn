@@ -1,0 +1,35 @@
+pub enum UnsupportedTargetReason {
+  UnsupportedArchitecture
+  UnsupportedOperatingSystem
+  UnsupportedObjectWriter
+  UnsupportedLinkerFamily
+  UnsupportedRuntimeHandoff
+}
+
+pub struct UnsupportedTarget {
+  reason: UnsupportedTargetReason,
+  diagnosticCode: string,
+  artifactAllowed: bool,
+}
+
+pub fn unsupportedTarget(reason: UnsupportedTargetReason, diagnosticCode: string, artifactAllowed: bool) -> UnsupportedTarget {
+  return UnsupportedTarget {
+    reason: reason,
+    diagnosticCode: diagnosticCode,
+    artifactAllowed: artifactAllowed,
+  }
+}
+
+impl UnsupportedTarget {
+  pub fn targetReason(self: UnsupportedTarget) -> UnsupportedTargetReason {
+    return self.reason
+  }
+
+  pub fn diagnostic(self: UnsupportedTarget) -> string {
+    return self.diagnosticCode
+  }
+
+  pub fn stopsBeforeArtifact(self: UnsupportedTarget) -> bool {
+    return !self.artifactAllowed
+  }
+}

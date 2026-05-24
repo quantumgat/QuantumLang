@@ -1,0 +1,19 @@
+pub struct RelativePointerLowering {
+  preservesBase: bool,
+  preservesOffset: bool,
+  preservesBounds: bool,
+}
+
+impl RelativePointerLowering {
+  pub fn init(preservesBase: bool, preservesOffset: bool, preservesBounds: bool) -> RelativePointerLowering {
+    return RelativePointerLowering {
+      preservesBase: preservesBase,
+      preservesOffset: preservesOffset,
+      preservesBounds: preservesBounds,
+    }
+  }
+
+  pub fn accepted(self: RelativePointerLowering) -> bool {
+    return self.preservesBase && self.preservesOffset && self.preservesBounds
+  }
+}

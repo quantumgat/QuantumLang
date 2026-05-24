@@ -1,0 +1,12 @@
+pub struct MachoObjectContract {
+  target: string,
+  loadCommandsSupported: bool,
+  compactUnwindSupported: bool,
+  deterministicWriter: bool,
+}
+
+impl MachoObjectContract {
+  pub fn accepted(self: MachoObjectContract) -> bool {
+    return self.target != "" && self.loadCommandsSupported && self.deterministicWriter
+  }
+}

@@ -1,0 +1,11 @@
+pub struct Once {
+  completed: bool,
+}
+
+impl Once {
+  pub fn call(self: Once, work: fn() -> Unit) -> Result<Unit, SyncError>
+
+  pub fn isCompleted(self: Once) -> bool {
+    return self.completed
+  }
+}

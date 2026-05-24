@@ -1,0 +1,26 @@
+pub struct RuntimeChannelFairness {
+  channelId: u64,
+  turn: u64,
+  starvationThreshold: usize,
+  fairnessPreserved: bool,
+}
+
+impl RuntimeChannelFairness {
+  pub fn init(
+    channelId: u64,
+    turn: u64,
+    starvationThreshold: usize,
+    fairnessPreserved: bool,
+  ) -> RuntimeChannelFairness {
+    return RuntimeChannelFairness {
+      channelId: channelId,
+      turn: turn,
+      starvationThreshold: starvationThreshold,
+      fairnessPreserved: fairnessPreserved,
+    }
+  }
+
+  pub fn safe(self: RuntimeChannelFairness) -> bool {
+    return self.channelId > 0 && self.starvationThreshold > 0 && self.fairnessPreserved
+  }
+}

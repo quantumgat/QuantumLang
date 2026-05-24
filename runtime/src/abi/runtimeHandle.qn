@@ -1,0 +1,84 @@
+pub enum RuntimeHandleKind {
+  ObjectHandle,
+  TaskHandle,
+  QubitHandle,
+  ResultHandle,
+}
+
+pub struct RuntimeHandle {
+  slot: usize,
+  generation: usize,
+  kind: RuntimeHandleKind,
+  ownerSubsystem: string,
+  state: HandleState,
+  leaseEpoch: u64,
+}
+
+pub fn runtimeHandle(
+  slot: usize,
+  generation: usize,
+  kind: RuntimeHandleKind,
+) -> RuntimeHandle {
+  return RuntimeHandle {
+    slot: slot,
+    generation: generation,
+    kind: kind,
+    ownerSubsystem: "runtime",
+    state: HandleState.Open,
+    leaseEpoch: 0,
+  }
+}
+
+impl RuntimeHandle {
+  pub fn ownedBy(self: RuntimeHandle, ownerSubsystem: string) -> RuntimeHandle {
+    return RuntimeHandle {
+      slot: self.slot,
+      generation: self.generation,
+      kind: self.kind,
+      ownerSubsystem: ownerSubsystem,
+      state: self.state,
+      leaseEpoch: self.leaseEpoch,
+    }
+  }
+
+  pub fn open(self: RuntimeHandle) -> bool {
+    return self.state == HandleState.Open
+  }
+
+  pub fn lease(self: RuntimeHandle) -> Result<HandleLease, HandleError> {
+    if self.open() == false {
+      return Err(HandleError.ClosedHandle)
+    }
+    return Ok(HandleLease.init(self.slot, self.generation, self.ownerSubsystem, self.leaseEpoch))
+  }
+
+  pub fn validate(self: RuntimeHandle, slot: usize, generation: usize, ownerSubsystem: string) -> Result<RuntimeHandle, HandleError> {
+    if self.open() == false {
+      return Err(HandleError.ClosedHandle)
+    }
+    if self.slot != slot {
+      return Err(HandleError.StaleHandle)
+    }
+    if self.generation != generation {
+      return Err(HandleError.WrongGeneration)
+    }
+    if self.ownerSubsystem != ownerSubsystem {
+      return Err(HandleError.WrongSubsystem)
+    }
+    return Ok(self)
+  }
+
+  pub fn close(self: RuntimeHandle) -> Result<RuntimeHandle, HandleError> {
+    if self.state == HandleState.Closed {
+      return Err(HandleError.DoubleClose)
+    }
+    return Ok(RuntimeHandle {
+      slot: self.slot,
+      generation: self.generation + 1,
+      kind: self.kind,
+      ownerSubsystem: self.ownerSubsystem,
+      state: HandleState.Closed,
+      leaseEpoch: self.leaseEpoch + 1,
+    })
+  }
+}

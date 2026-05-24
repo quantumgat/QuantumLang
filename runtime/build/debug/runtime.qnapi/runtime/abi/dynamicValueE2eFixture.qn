@@ -1,0 +1,21 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum DynamicValueE2eFixtureKind {
+  UnionConstructRead
+  AnyBoxUnbox
+  QAnyWrapUnwrap
+  SafeFailure
+}
+pub struct DynamicValueE2eFixture {
+  kind: DynamicValueE2eFixtureKind
+  abi: DynamicValueAbi
+  constructReady: bool
+  readbackReady: bool
+  narrowingReady: bool
+  safeFailureReady: bool
+}
+pub extern "qnpkg" {
+  pub fn dynamicValueE2eFixture(
+  kind: DynamicValueE2eFixtureKind,
+  abi: DynamicValueAbi,
+) -> DynamicValueE2eFixture
+}

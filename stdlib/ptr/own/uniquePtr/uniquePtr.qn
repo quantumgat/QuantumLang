@@ -1,0 +1,47 @@
+/**
+  Unique owning pointer for explicit ownership transfer.
+
+  example:
+    let owned = UniquePtr<User>.new(user)
+    let ref = owned.borrow()
+
+  effects: allocates on construction, transfers without refcount traffic
+  complexity: O(1)
+  allocation: one owned heap allocation
+  safety: compiler enforces single owner and runtime generation checks
+  stability: public since 0.1
+*/
+pub struct UniquePtr<T> {
+  ptr: NonNull<T>,
+  allocationId: u64,
+  generation: u64,
+  consumed: bool,
+}
+
+impl<T> UniquePtr<T> {
+  pub fn init(value: T) -> UniquePtr<T> requires(alloc) {
+    return ptrRuntimeUnique<T>(value)
+  }
+
+  pub fn new(value: T) -> UniquePtr<T> requires(alloc) {
+    return UniquePtr<T>(value)
+  }
+
+  pub fn borrow(self: UniquePtr<T>) -> Ref<T> {
+    return Ref<T>.fromPtr(self.ptr, self.generation)
+  }
+
+  pub fn borrowMut(self: &mut UniquePtr<T>) -> MutRef<T> {
+    return MutRef<T>.fromPtr(self.ptr, self.generation)
+  }
+
+  pub fn release(self: UniquePtr<T>) -> Ptr<T> requires(unsafe) {
+    return self.ptr.asPtr()
+  }
+
+  pub fn accepted(self: UniquePtr<T>) -> bool {
+    return self.allocationId > 0 && self.generation > 0 && self.consumed == false
+  }
+}
+
+fn ptrRuntimeUnique<T>(value: T) -> UniquePtr<T> requires(alloc)

@@ -1,0 +1,48 @@
+[package]
+name = "runtime"
+version = "0.1.0"
+edition = "2026"
+description = "Self-hosted QuantumLang runtime source root"
+
+[library]
+type = "static"
+
+[source]
+root = "src"
+include = ["**/*.qn"]
+exclude = ["build/**", ".qtlc/**", "**/target/**"]
+
+[targets.library]
+kind = "lib"
+main = "src/mod.qn"
+backend = "native"
+
+[nativeLink]
+archiveName = "libqtlcRuntime.a"
+visibility = "hidden"
+publicCommand = false
+publicHeaders = false
+generatedSourceFallback = false
+
+[publicBinaryPolicy]
+command = "qtlc"
+role = "shipped-runtime-artifacts"
+publicCompilerBinary = false
+embeddedInCompilerByDefault = false
+shippedArtifacts = ["runtime-qna", "runtime-a"]
+consumedByQtlcBuild = true
+defaultAppOutput = "static-one-executable"
+extraRuntimeFilesInDefaultStaticMode = false
+nativeBackendOnly = true
+
+[self_hosting]
+canonical_path = "qtlc/qtlang/runtime"
+bootstrap_path = "qtlc/runtime"
+public_c_header_surface = false
+generated_c_fallback = false
+generated_cpp_fallback = false
+generated_header_fallback = false
+native_backend_required = true
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots", "qtlc_qtlang_compiler_native_build_probe"]

@@ -1,0 +1,40 @@
+pub struct Token {
+  kind: TokenKind,
+  file: u32,
+  start: usize,
+  end: usize,
+}
+
+pub fn token(kind: TokenKind, file: u32, start: usize, end: usize) -> Token {
+  return Token { kind: kind, file: file, start: start, end: end }
+}
+
+impl Token {
+  pub fn tokenKind(self: Token) -> TokenKind {
+    return self.kind
+  }
+
+  pub fn fileId(self: Token) -> u32 {
+    return self.file
+  }
+
+  pub fn startOffset(self: Token) -> usize {
+    return self.start
+  }
+
+  pub fn endOffset(self: Token) -> usize {
+    return self.end
+  }
+
+  pub fn len(self: Token) -> usize {
+    if self.end <= self.start {
+      return 0
+    }
+
+    return self.end - self.start
+  }
+
+  pub fn isEnd(self: Token) -> bool {
+    return self.kind == TokenKind.End
+  }
+}

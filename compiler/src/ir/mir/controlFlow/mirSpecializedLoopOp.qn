@@ -1,0 +1,34 @@
+pub enum MirSpecializedLoopOpKind {
+  AsyncPollLoop
+  SelectStateMachine
+  JoinAwaitLoop
+  TimeoutCancelCheck
+  ParallelForkReduce
+  DeterministicMergeReduce
+  DomainDirectLoop
+  CursorLinearLoop
+  DecodeDirectLoop
+  CheckedPointerLoop
+  AtomicRetryProgressLoop
+  QirProfileLoop
+  StaticExpandedLoop
+}
+
+pub struct MirSpecializedLoopOp {
+  instruction: u64,
+  kind: MirSpecializedLoopOpKind,
+  allocationFree: bool,
+  boundsHoisted: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirSpecializedLoopOp {
+  pub fn hotLowerable(self: MirSpecializedLoopOp) -> bool {
+    return self.instruction > 0
+      && self.allocationFree
+      && self.boundsHoisted
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

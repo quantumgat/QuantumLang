@@ -1,0 +1,23 @@
+pub struct MirBinaryCodecTypeCoverage {
+  instruction: u64,
+  fixedWidthOps: bool,
+  ieeeFloatOps: bool,
+  lengthPrefixOps: bool,
+  tagOps: bool,
+  recursiveStructOps: bool,
+  stableCollectionOps: bool,
+  rejectionDiagnostics: bool,
+}
+
+impl MirBinaryCodecTypeCoverage {
+  pub fn hotPath(self: MirBinaryCodecTypeCoverage) -> bool {
+    return self.instruction > 0
+      && self.fixedWidthOps
+      && self.ieeeFloatOps
+      && self.lengthPrefixOps
+      && self.tagOps
+      && self.recursiveStructOps
+      && self.stableCollectionOps
+      && self.rejectionDiagnostics
+  }
+}

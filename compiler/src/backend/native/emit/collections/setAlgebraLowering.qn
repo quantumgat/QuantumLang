@@ -1,0 +1,78 @@
+pub enum SetAlgebraLoweringKind {
+  Contains,
+  Insert,
+  Remove,
+  Union,
+  Intersection,
+  Difference,
+  SymmetricDifference,
+  Iterator,
+  DirectCursor,
+  CallableFind,
+  CallableMap,
+  CallableFold,
+}
+
+pub struct SetAlgebraLowering {
+  kind: SetAlgebraLoweringKind,
+  hashProbeReused: bool,
+  membershipLoopLowered: bool,
+  resultCapacityPreallocated: bool,
+  iteratorCursorLowered: bool,
+  callableLoopDirect: bool,
+  cursorObjectErased: bool,
+  cursorStateScalarized: bool,
+  optionWrapErased: bool,
+  directBucketLoadLowered: bool,
+  predicateInlineOrThunk: bool,
+  probeChecksMinimized: bool,
+  boundsProofRequired: bool,
+  benchmarkProofRequired: bool,
+}
+
+impl SetAlgebraLowering {
+  pub fn init(kind: SetAlgebraLoweringKind) -> SetAlgebraLowering {
+    return SetAlgebraLowering {
+      kind: kind,
+      hashProbeReused: true,
+      membershipLoopLowered: true,
+      resultCapacityPreallocated: true,
+      iteratorCursorLowered: true,
+      callableLoopDirect: true,
+      cursorObjectErased: true,
+      cursorStateScalarized: true,
+      optionWrapErased: true,
+      directBucketLoadLowered: true,
+      predicateInlineOrThunk: true,
+      probeChecksMinimized: true,
+      boundsProofRequired: true,
+      benchmarkProofRequired: true,
+    }
+  }
+
+  pub fn canLowerAlgebra(self: SetAlgebraLowering) -> bool {
+    return self.hashProbeReused
+      && self.membershipLoopLowered
+      && self.resultCapacityPreallocated
+      && self.iteratorCursorLowered
+      && self.cursorObjectErased
+      && self.cursorStateScalarized
+      && self.optionWrapErased
+      && self.directBucketLoadLowered
+      && self.probeChecksMinimized
+      && self.boundsProofRequired
+      && self.benchmarkProofRequired
+  }
+
+  pub fn canLowerCallableLoop(self: SetAlgebraLowering) -> bool {
+    return self.canLowerAlgebra()
+      && self.callableLoopDirect
+      && self.predicateInlineOrThunk
+  }
+
+  pub fn canProveNativeHotPath(self: SetAlgebraLowering) -> bool {
+    return self.canLowerCallableLoop()
+      && self.directBucketLoadLowered
+      && self.benchmarkProofRequired
+  }
+}

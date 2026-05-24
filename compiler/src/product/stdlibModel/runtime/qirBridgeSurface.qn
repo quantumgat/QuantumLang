@@ -1,0 +1,11 @@
+pub struct StdlibQirBridgeSurface {
+  symbolName: string,
+  providerBoundary: bool,
+  qirOnly: bool,
+}
+
+impl StdlibQirBridgeSurface {
+  pub fn accepted(self: StdlibQirBridgeSurface) -> bool {
+    return self.symbolName != "" && self.providerBoundary && self.qirOnly
+  }
+}

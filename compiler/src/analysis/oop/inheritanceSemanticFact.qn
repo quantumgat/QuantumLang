@@ -1,0 +1,43 @@
+pub enum InheritancePermission {
+  Allowed
+  FinalBlocked
+  NotOpenBlocked
+  SealedScopeBlocked
+  MultipleBaseBlocked
+}
+
+pub struct InheritanceSemanticFact {
+  derivedTypeId: u64,
+  baseTypeId: u64,
+  permission: InheritancePermission,
+  explicitBaseConstructor: bool,
+  fallibleBasePropagated: bool,
+  abstractObligationsMet: bool,
+}
+
+pub fn inheritanceSemanticFact(
+  derivedTypeId: u64,
+  baseTypeId: u64,
+  permission: InheritancePermission,
+  explicitBaseConstructor: bool,
+  fallibleBasePropagated: bool,
+  abstractObligationsMet: bool,
+) -> InheritanceSemanticFact {
+  return InheritanceSemanticFact {
+    derivedTypeId: derivedTypeId,
+    baseTypeId: baseTypeId,
+    permission: permission,
+    explicitBaseConstructor: explicitBaseConstructor,
+    fallibleBasePropagated: fallibleBasePropagated,
+    abstractObligationsMet: abstractObligationsMet,
+  }
+}
+
+impl InheritanceSemanticFact {
+  pub fn accepted(self: InheritanceSemanticFact) -> bool {
+    return self.permission == InheritancePermission.Allowed
+      && self.explicitBaseConstructor
+      && self.fallibleBasePropagated
+      && self.abstractObligationsMet
+  }
+}

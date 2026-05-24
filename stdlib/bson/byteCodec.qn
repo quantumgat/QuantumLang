@@ -1,0 +1,235 @@
+pub struct BsonByteCodec {
+}
+
+pub enum BsonByteCodecOp {
+  ReadTag
+  ReadCString
+  ReadI32Length
+  ReadValue
+  WriteTag
+  WriteCString
+  ReserveLength
+  PatchLength
+  WriteTerminator
+}
+
+pub struct BsonByteCodecPlan {
+  documentLengthPrepass: bool,
+  documentLengthPatch: bool,
+  cstringValidation: bool,
+  fieldTagValidation: bool,
+  boundedCursorReads: bool,
+  noUncheckedRawPointer: bool,
+  cursorLowering: bool,
+  writerLowering: bool,
+  noCoredumpErrors: bool,
+}
+
+pub struct BsonByteReadState {
+  cursor: BinaryCursor,
+  documentStart: usize,
+  documentEnd: usize,
+  remaining: usize,
+  path: string,
+}
+
+pub struct BsonByteWriteState {
+  writer: BinaryWriter,
+  documentStart: usize,
+  lengthPatchOffset: usize,
+  fieldCount: usize,
+  path: string,
+}
+
+pub struct BsonCString {
+  text: string,
+  byteLength: usize,
+}
+
+pub struct BsonLengthPatch {
+  offset: usize,
+  length: i32,
+  patched: bool,
+}
+
+impl BsonByteCodecPlan {
+  pub fn standard() -> BsonByteCodecPlan {
+    return BsonByteCodecPlan {
+      documentLengthPrepass: true,
+      documentLengthPatch: true,
+      cstringValidation: true,
+      fieldTagValidation: true,
+      boundedCursorReads: true,
+      noUncheckedRawPointer: true,
+      cursorLowering: true,
+      writerLowering: true,
+      noCoredumpErrors: true,
+    }
+  }
+
+  pub fn accepted(self: BsonByteCodecPlan) -> bool {
+    return self.documentLengthPrepass
+      && self.documentLengthPatch
+      && self.cstringValidation
+      && self.fieldTagValidation
+      && self.boundedCursorReads
+      && self.noUncheckedRawPointer
+      && self.cursorLowering
+      && self.writerLowering
+      && self.noCoredumpErrors
+  }
+}
+
+impl BsonByteReadState {
+  /**
+    Creates a bounded BSON document cursor after validating the length prefix.
+
+    example:
+      let state = BsonByteReadState.fromBytes(bytes)?
+      let tag = state.readTag()?
+
+    effects: validates BSON length before any field read
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn fromBytes(bytes: BinaryView) -> Result<BsonByteReadState, BsonError> {
+    return bsonByteReadStateFromBytes(bytes)
+  }
+
+  pub fn position(self: BsonByteReadState) -> usize {
+    return self.cursor.position()
+  }
+
+  pub fn require(self: BsonByteReadState, bytes: usize) -> Result<BsonByteReadState, BsonError> {
+    if bytes > self.remaining {
+      return Err(BsonError.eof(self.path))
+    }
+    return Ok(self)
+  }
+
+  pub fn readTag(self: BsonByteReadState) -> Result<(BsonByteReadState, BsonWireTag), BsonError> {
+    return bsonByteReadTag(self)
+  }
+
+  pub fn readCString(self: BsonByteReadState) -> Result<(BsonByteReadState, BsonCString), BsonError> {
+    return bsonByteReadCString(self)
+  }
+
+  pub fn readLength(self: BsonByteReadState) -> Result<(BsonByteReadState, i32), BsonError> {
+    return bsonByteReadLength(self)
+  }
+
+  pub fn readValue(self: BsonByteReadState, tag: BsonWireTag) -> Result<(BsonByteReadState, BsonValue), BsonError> {
+    return bsonByteReadValue(self, tag)
+  }
+}
+
+impl BsonByteWriteState {
+  /**
+    Creates a checked BSON document writer with a reserved length slot.
+
+    example:
+      let state = BsonByteWriteState.fromWriter(writer)?
+      let state = state.writeTag(BsonWireTag.string())?
+
+    effects: reserves the document length prefix
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn fromWriter(writer: BinaryWriter) -> Result<BsonByteWriteState, BsonError> {
+    return bsonByteWriteStateFromWriter(writer)
+  }
+
+  pub fn position(self: BsonByteWriteState) -> usize {
+    return self.writer.position()
+  }
+
+  pub fn writeTag(self: BsonByteWriteState, tag: BsonWireTag) -> Result<BsonByteWriteState, BsonError> {
+    return bsonByteWriteTag(self, tag)
+  }
+
+  pub fn writeCString(self: BsonByteWriteState, name: string) -> Result<BsonByteWriteState, BsonError> {
+    return bsonByteWriteCString(self, BsonCString.from(name)?)
+  }
+
+  pub fn writeValue(self: BsonByteWriteState, value: BsonValue) -> Result<BsonByteWriteState, BsonError> {
+    return bsonByteWriteValue(self, value)
+  }
+
+  pub fn finishDocument(self: BsonByteWriteState) -> Result<BinaryView, BsonError> {
+    return bsonByteWriteFinishDocument(self)
+  }
+}
+
+impl BsonCString {
+  pub fn from(text: string) -> Result<BsonCString, BsonError> {
+    return bsonCStringValidate(text)
+  }
+
+  pub fn value(self: BsonCString) -> string {
+    return self.text
+  }
+
+  pub fn len(self: BsonCString) -> usize {
+    return self.byteLength
+  }
+}
+
+impl BsonLengthPatch {
+  pub fn init(offset: usize, length: i32) -> BsonLengthPatch {
+    return BsonLengthPatch {
+      offset: offset,
+      length: length,
+      patched: false,
+    }
+  }
+
+  pub fn apply(self: BsonLengthPatch, writer: BinaryWriter) -> Result<BsonLengthPatch, BsonError> {
+    return bsonApplyLengthPatch(self, writer)
+  }
+}
+
+impl BsonByteCodec {
+  pub fn encodeDocument(document: BsonDocument) -> Result<BinaryView, BsonError> {
+    return bsonEncodeDocumentBytes(document, BsonByteCodecPlan.standard())
+  }
+
+  pub fn decodeDocument(bytes: BinaryView) -> Result<BsonDocument, BsonError> {
+    return bsonDecodeDocumentBytes(bytes, BsonByteCodecPlan.standard())
+  }
+
+  pub fn validateDocument(bytes: BinaryView) -> Result<Unit, BsonError> {
+    return bsonValidateDocumentBytes(bytes, BsonByteCodecPlan.standard())
+  }
+
+  pub fn encodedSize(document: BsonDocument) -> Result<usize, BsonError> {
+    return bsonDocumentEncodedSize(document, BsonByteCodecPlan.standard())
+  }
+
+  pub fn readState(bytes: BinaryView) -> Result<BsonByteReadState, BsonError> {
+    return BsonByteReadState.fromBytes(bytes)
+  }
+
+  pub fn writeState(writer: BinaryWriter) -> Result<BsonByteWriteState, BsonError> {
+    return BsonByteWriteState.fromWriter(writer)
+  }
+}
+
+fn bsonByteReadStateFromBytes(bytes: BinaryView) -> Result<BsonByteReadState, BsonError>
+fn bsonByteWriteStateFromWriter(writer: BinaryWriter) -> Result<BsonByteWriteState, BsonError>
+fn bsonByteReadTag(state: BsonByteReadState) -> Result<(BsonByteReadState, BsonWireTag), BsonError>
+fn bsonByteReadCString(state: BsonByteReadState) -> Result<(BsonByteReadState, BsonCString), BsonError>
+fn bsonByteReadLength(state: BsonByteReadState) -> Result<(BsonByteReadState, i32), BsonError>
+fn bsonByteReadValue(state: BsonByteReadState, tag: BsonWireTag) -> Result<(BsonByteReadState, BsonValue), BsonError>
+fn bsonByteWriteTag(state: BsonByteWriteState, tag: BsonWireTag) -> Result<BsonByteWriteState, BsonError>
+fn bsonByteWriteCString(state: BsonByteWriteState, name: BsonCString) -> Result<BsonByteWriteState, BsonError>
+fn bsonByteWriteValue(state: BsonByteWriteState, value: BsonValue) -> Result<BsonByteWriteState, BsonError>
+fn bsonByteWriteFinishDocument(state: BsonByteWriteState) -> Result<BinaryView, BsonError>
+fn bsonCStringValidate(text: string) -> Result<BsonCString, BsonError>
+fn bsonApplyLengthPatch(patch: BsonLengthPatch, writer: BinaryWriter) -> Result<BsonLengthPatch, BsonError>
+fn bsonEncodeDocumentBytes(document: BsonDocument, plan: BsonByteCodecPlan) -> Result<BinaryView, BsonError>
+fn bsonDecodeDocumentBytes(bytes: BinaryView, plan: BsonByteCodecPlan) -> Result<BsonDocument, BsonError>
+fn bsonValidateDocumentBytes(bytes: BinaryView, plan: BsonByteCodecPlan) -> Result<Unit, BsonError>
+fn bsonDocumentEncodedSize(document: BsonDocument, plan: BsonByteCodecPlan) -> Result<usize, BsonError>

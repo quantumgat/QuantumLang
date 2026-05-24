@@ -1,0 +1,11 @@
+pub mod printErrorLogNegativeGate
+pub mod memoryErrorReportGate
+
+pub use printErrorLogNegativeGate.PrintErrorLogNegativeCase
+pub use printErrorLogNegativeGate.PrintErrorLogNegativeCaseKind
+pub use printErrorLogNegativeGate.PrintErrorLogNegativeGate
+pub use printErrorLogNegativeGate.printErrorLogNegativeGate
+pub use memoryErrorReportGate.MemoryErrorReportCase
+pub use memoryErrorReportGate.MemoryErrorReportCaseKind
+pub use memoryErrorReportGate.MemoryErrorReportGate
+pub use memoryErrorReportGate.memoryErrorReportGate

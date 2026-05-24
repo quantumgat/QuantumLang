@@ -1,0 +1,12 @@
+pub struct PlatformEmbeddedFact {
+  target: string,
+  noStd: bool,
+  fixedMemory: bool,
+  interruptAware: bool,
+}
+
+impl PlatformEmbeddedFact {
+  pub fn accepted(self: PlatformEmbeddedFact) -> bool {
+    return self.target != "" && self.noStd && self.fixedMemory
+  }
+}

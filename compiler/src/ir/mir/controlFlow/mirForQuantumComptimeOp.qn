@@ -1,0 +1,39 @@
+pub enum MirForQuantumComptimeOpKind {
+  QforQirLoop
+  QforIndexedQirLoop
+  ControlledQforQirLoop
+  MeasurementQirLoop
+  QifNestedQforQirLoop
+  RestrictedQwhileQirLoop
+  ComptimeExpansionLoop
+  StaticFieldExpansionLoop
+  ReflectionExpansionLoop
+  BuilderExpansionLoop
+}
+
+pub struct MirForQuantumComptimeOp {
+  instruction: u64,
+  kind: MirForQuantumComptimeOpKind,
+  qirRegionReady: bool,
+  qirProfileReady: bool,
+  qregStaticBoundsReady: bool,
+  qubitLifetimeReady: bool,
+  finiteExpansionReady: bool,
+  builderErased: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirForQuantumComptimeOp {
+  pub fn complete(self: MirForQuantumComptimeOp) -> bool {
+    return self.instruction > 0
+      && self.qirRegionReady
+      && self.qirProfileReady
+      && self.qregStaticBoundsReady
+      && self.qubitLifetimeReady
+      && self.finiteExpansionReady
+      && self.builderErased
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

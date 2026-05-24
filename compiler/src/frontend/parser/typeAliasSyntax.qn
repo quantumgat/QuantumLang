@@ -1,0 +1,51 @@
+pub enum TypeAliasSyntaxKind {
+  SimpleAlias
+  GenericAlias
+  HttpContextAlias
+  TraitAliasRejectedHere
+}
+
+pub struct TypeAliasSyntaxParse {
+  kind: TypeAliasSyntaxKind,
+  publicVisible: bool,
+  genericParameterCount: usize,
+  targetArgumentCount: usize,
+  hasEqual: bool,
+  errors: usize,
+}
+
+pub fn typeAliasSyntaxParse(
+  kind: TypeAliasSyntaxKind,
+  publicVisible: bool,
+  genericParameterCount: usize,
+  targetArgumentCount: usize,
+  hasEqual: bool,
+  errors: usize,
+) -> TypeAliasSyntaxParse {
+  return TypeAliasSyntaxParse {
+    kind: kind,
+    publicVisible: publicVisible,
+    genericParameterCount: genericParameterCount,
+    targetArgumentCount: targetArgumentCount,
+    hasEqual: hasEqual,
+    errors: errors,
+  }
+}
+
+impl TypeAliasSyntaxParse {
+  pub fn accepted(self: TypeAliasSyntaxParse) -> bool {
+    return self.hasEqual
+      && self.errors == 0
+      && self.kind != TypeAliasSyntaxKind.TraitAliasRejectedHere
+  }
+
+  pub fn generic(self: TypeAliasSyntaxParse) -> bool {
+    return self.genericParameterCount > 0
+      || self.kind == TypeAliasSyntaxKind.GenericAlias
+  }
+
+  pub fn httpContext(self: TypeAliasSyntaxParse) -> bool {
+    return self.kind == TypeAliasSyntaxKind.HttpContextAlias
+      && self.targetArgumentCount > 0
+  }
+}

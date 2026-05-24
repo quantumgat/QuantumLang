@@ -1,0 +1,39 @@
+pub enum ProtectedAccessValidity {
+  Valid
+  OutsideHierarchy
+  FieldExposureRejected
+  ReceiverNotSubclass
+}
+
+pub struct ProtectedAccessFact {
+  accessId: u64,
+  accessorTypeId: u64,
+  declaringTypeId: u64,
+  targetMemberId: u64,
+  validity: ProtectedAccessValidity,
+  safeAlternativeAvailable: bool,
+}
+
+pub fn protectedAccessFact(
+  accessId: u64,
+  accessorTypeId: u64,
+  declaringTypeId: u64,
+  targetMemberId: u64,
+  validity: ProtectedAccessValidity,
+  safeAlternativeAvailable: bool,
+) -> ProtectedAccessFact {
+  return ProtectedAccessFact {
+    accessId: accessId,
+    accessorTypeId: accessorTypeId,
+    declaringTypeId: declaringTypeId,
+    targetMemberId: targetMemberId,
+    validity: validity,
+    safeAlternativeAvailable: safeAlternativeAvailable,
+  }
+}
+
+impl ProtectedAccessFact {
+  pub fn emitsDiagnostic(self: ProtectedAccessFact) -> bool {
+    return self.validity != ProtectedAccessValidity.Valid
+  }
+}

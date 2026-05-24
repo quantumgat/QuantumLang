@@ -1,0 +1,13 @@
+pub struct PhaseResult {
+  phaseName: string,
+  success: bool,
+  diagnostics: usize,
+}
+
+pub fn phaseResult(phaseName: string, success: bool) -> PhaseResult {
+  return PhaseResult {
+    phaseName: phaseName,
+    success: success,
+    diagnostics: 0,
+  }
+}

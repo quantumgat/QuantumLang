@@ -1,0 +1,97 @@
+/**
+  Forward iterator over a Vec snapshot.
+
+  example:
+    let iter = users.iter()
+
+  effects: pure
+  complexity: O(1) to create and advance
+  allocation: none
+  stability: public since 0.1
+*/
+pub struct VecIter<T> {
+  vec: Vec<T>,
+  index: usize,
+  len: usize,
+  generation: usize,
+}
+
+impl<T> Vec<T> {
+  /**
+    Creates a forward iterator for the Vec.
+
+    example:
+      let iter = users.iter()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn iter(self: Vec<T>) -> VecIter<T> {
+    return VecIter<T> {
+      vec: self,
+      index: 0,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}
+
+impl<T> VecIter<T> {
+  /**
+    Returns true when the iterator is exhausted.
+
+    example:
+      if iter.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: VecIter<T>) -> bool {
+    return self.index >= self.len
+  }
+
+  /**
+    Returns the current item when the iterator is not exhausted.
+
+    example:
+      let item = iter.next()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn next(self: VecIter<T>) -> Option<T> {
+    if self.isEmpty() {
+      return None
+    }
+    return Some(self.vec[self.index])
+  }
+
+  /**
+    Moves the iterator to the next position.
+
+    example:
+      iter = iter.advance()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn advance(self: VecIter<T>) -> VecIter<T> {
+    if self.isEmpty() {
+      return self
+    }
+    return VecIter<T> {
+      vec: self.vec,
+      index: self.index + 1,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}

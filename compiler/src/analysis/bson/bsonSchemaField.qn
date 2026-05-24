@@ -1,0 +1,97 @@
+pub enum BsonSchemaFieldKind {
+  Null
+  Bool
+  Int32
+  Int64
+  Double
+  String
+  Binary
+  ObjectId
+  DateTime
+  Decimal128
+  Array
+  Document
+  NestedStruct
+  StringKeyMap
+  Option
+  Result
+  Enum
+  ExactCarrier
+}
+
+pub struct BsonSchemaField {
+  sourceName: string,
+  wireName: string,
+  typeName: string,
+  kind: BsonSchemaFieldKind,
+  stableIndex: usize,
+  required: bool,
+  aliasCount: usize,
+  hasDefault: bool,
+  sourceMapped: bool,
+}
+
+impl BsonSchemaField {
+  pub fn required(sourceName: string, wireName: string, typeName: string, kind: BsonSchemaFieldKind, stableIndex: usize) -> BsonSchemaField {
+    return BsonSchemaField {
+      sourceName: sourceName,
+      wireName: wireName,
+      typeName: typeName,
+      kind: kind,
+      stableIndex: stableIndex,
+      required: true,
+      aliasCount: 0,
+      hasDefault: false,
+      sourceMapped: true,
+    }
+  }
+
+  pub fn optional(sourceName: string, wireName: string, typeName: string, kind: BsonSchemaFieldKind, stableIndex: usize) -> BsonSchemaField {
+    return BsonSchemaField {
+      sourceName: sourceName,
+      wireName: wireName,
+      typeName: typeName,
+      kind: kind,
+      stableIndex: stableIndex,
+      required: false,
+      aliasCount: 0,
+      hasDefault: false,
+      sourceMapped: true,
+    }
+  }
+
+  pub fn withAliases(self: BsonSchemaField, aliasCount: usize) -> BsonSchemaField {
+    return BsonSchemaField {
+      sourceName: self.sourceName,
+      wireName: self.wireName,
+      typeName: self.typeName,
+      kind: self.kind,
+      stableIndex: self.stableIndex,
+      required: self.required,
+      aliasCount: aliasCount,
+      hasDefault: self.hasDefault,
+      sourceMapped: self.sourceMapped,
+    }
+  }
+
+  pub fn withDefault(self: BsonSchemaField) -> BsonSchemaField {
+    return BsonSchemaField {
+      sourceName: self.sourceName,
+      wireName: self.wireName,
+      typeName: self.typeName,
+      kind: self.kind,
+      stableIndex: self.stableIndex,
+      required: false,
+      aliasCount: self.aliasCount,
+      hasDefault: true,
+      sourceMapped: self.sourceMapped,
+    }
+  }
+
+  pub fn valid(self: BsonSchemaField) -> bool {
+    return self.sourceName != ""
+      && self.wireName != ""
+      && self.typeName != ""
+      && self.sourceMapped
+  }
+}

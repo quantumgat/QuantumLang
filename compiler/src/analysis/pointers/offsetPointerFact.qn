@@ -1,0 +1,19 @@
+pub struct OffsetPointerFact {
+  offset: isize,
+  boundsBytes: usize,
+  inBounds: bool,
+}
+
+impl OffsetPointerFact {
+  pub fn init(offset: isize, boundsBytes: usize, inBounds: bool) -> OffsetPointerFact {
+    return OffsetPointerFact {
+      offset: offset,
+      boundsBytes: boundsBytes,
+      inBounds: inBounds,
+    }
+  }
+
+  pub fn accepted(self: OffsetPointerFact) -> bool {
+    return self.boundsBytes > 0 && self.inBounds
+  }
+}

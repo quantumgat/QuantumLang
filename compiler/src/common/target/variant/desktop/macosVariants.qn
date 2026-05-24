@@ -1,0 +1,11 @@
+pub struct MacosTargetVariants {
+  x8664Apple: TargetVariantId,
+  aarch64Apple: TargetVariantId,
+}
+
+impl MacosTargetVariants {
+  pub fn coversDesktop(self: MacosTargetVariants) -> bool {
+    return self.x8664Apple == TargetVariantId.MacosX8664Apple
+      && self.aarch64Apple == TargetVariantId.MacosAarch64Apple
+  }
+}

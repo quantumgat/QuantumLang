@@ -1,0 +1,23 @@
+pub struct RuntimeCallbackRegistration {
+  callbackId: u64,
+  signatureId: u64,
+  unregisterToken: u64,
+  noUnwind: bool,
+  active: bool,
+}
+
+impl RuntimeCallbackRegistration {
+  pub fn init(callbackId: u64, signatureId: u64, unregisterToken: u64, noUnwind: bool, active: bool) -> RuntimeCallbackRegistration {
+    return RuntimeCallbackRegistration {
+      callbackId: callbackId,
+      signatureId: signatureId,
+      unregisterToken: unregisterToken,
+      noUnwind: noUnwind,
+      active: active,
+    }
+  }
+
+  pub fn accepted(self: RuntimeCallbackRegistration) -> bool {
+    return self.callbackId > 0 && self.signatureId > 0 && self.unregisterToken > 0 && self.noUnwind && self.active
+  }
+}

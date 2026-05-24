@@ -1,0 +1,46 @@
+pub enum ForErgonomicsFamily {
+  Core
+  ShortDevelopment
+  ControlFlow
+  Destructuring
+  Collections
+  AsyncConcurrent
+  DataBinary
+  DomainLoop
+  Quantum
+  LowLevel
+  Text
+  ErrorHandling
+  Utility
+}
+
+pub struct ForErgonomicsFact {
+  family: ForErgonomicsFamily,
+  formCount: usize,
+  hotPathSelected: bool,
+  safetyChecked: bool,
+  diagnosticsReady: bool,
+  executablePositiveEvidence: bool,
+  executableNegativeEvidence: bool,
+  iteratorHotPathProofReady: bool,
+  asyncParallelBoundaryProofReady: bool,
+  qforProofReady: bool,
+}
+
+impl ForErgonomicsFact {
+  pub fn complete(self: ForErgonomicsFact) -> bool {
+    return self.formCount > 0
+      && self.hotPathSelected
+      && self.safetyChecked
+      && self.diagnosticsReady
+  }
+
+  pub fn executableComplete(self: ForErgonomicsFact) -> bool {
+    return self.complete()
+      && self.executablePositiveEvidence
+      && self.executableNegativeEvidence
+      && self.iteratorHotPathProofReady
+      && self.asyncParallelBoundaryProofReady
+      && self.qforProofReady
+  }
+}

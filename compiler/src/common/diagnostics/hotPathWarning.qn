@@ -1,0 +1,21 @@
+pub struct HotPathWarning {
+  range: SourceRange,
+  reason: string,
+  proofRequired: bool,
+  warningOnly: bool,
+}
+
+impl HotPathWarning {
+  pub fn init(range: SourceRange, reason: string, proofRequired: bool) -> HotPathWarning {
+    return HotPathWarning {
+      range: range,
+      reason: reason,
+      proofRequired: proofRequired,
+      warningOnly: true,
+    }
+  }
+
+  pub fn reportable(self: HotPathWarning) -> bool {
+    return self.range.exact() && self.reason != "" && self.warningOnly
+  }
+}

@@ -1,0 +1,60 @@
+pub class WebSocket {
+  frameCount: usize,
+  isOpen: bool,
+  policy: WebSocketPolicy,
+
+  pub init() {
+    self.frameCount = 0
+    self.isOpen = true
+    self.policy = WebSocketPolicy.init()
+  }
+
+  pub fn withPolicy(self: &mut WebSocket, policy: WebSocketPolicy) -> Unit {
+    self.policy = policy
+  }
+
+  pub async fn send(self: &mut WebSocket, frame: Frame) -> Result<Unit, WebSocketDiagnostic> {
+    if self.isOpen == false {
+      return Err(WebSocketDiagnostic.closed())
+    }
+    if self.policy.allowsFrame(frame) == false {
+      return Err(WebSocketDiagnostic.frameTooLarge(self.policy.maxFrameBytes()))
+    }
+    self.frameCount = self.frameCount + 1
+    return Ok(())
+  }
+
+  pub async fn sendText(self: &mut WebSocket, text: string) -> Result<Unit, WebSocketDiagnostic> {
+    return self.send(Frame.text(text.len()))
+  }
+
+  pub async fn sendBinary(self: &mut WebSocket, bytes: Vec<u8>) -> Result<Unit, WebSocketDiagnostic> {
+    return self.send(Frame.binary(bytes.len()))
+  }
+
+  pub async fn ping(self: &mut WebSocket) -> Result<Unit, WebSocketDiagnostic> {
+    return self.send(Frame.ping(0))
+  }
+
+  pub async fn close(self: &mut WebSocket, code: CloseCode) -> Result<Unit, WebSocketDiagnostic> {
+    if code.valid() == false {
+      return Err(WebSocketDiagnostic.invalidCloseCode())
+    }
+    self.isOpen = false
+    return Ok(())
+  }
+
+  pub fn backpressureAware(self: WebSocket) -> bool {
+    return self.policy.maxFrameBytes() > 0
+  }
+
+  pub fn open(self: WebSocket) -> bool {
+    return self.isOpen
+  }
+
+  pub fn sentFrames(self: WebSocket) -> usize {
+    return self.frameCount
+  }
+}
+
+

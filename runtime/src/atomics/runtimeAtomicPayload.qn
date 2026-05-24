@@ -1,0 +1,31 @@
+pub enum RuntimeAtomicPayloadKind {
+  Bool,
+  Int8,
+  Int16,
+  Int32,
+  Int64,
+  Int128,
+  Pointer,
+  Reference,
+  Value,
+}
+
+pub struct RuntimeAtomicPayload {
+  kind: RuntimeAtomicPayloadKind,
+  widthBits: usize,
+  lockFreeRequired: bool,
+}
+
+impl RuntimeAtomicPayload {
+  pub fn init(kind: RuntimeAtomicPayloadKind, widthBits: usize, lockFreeRequired: bool) -> RuntimeAtomicPayload {
+    return RuntimeAtomicPayload {
+      kind: kind,
+      widthBits: widthBits,
+      lockFreeRequired: lockFreeRequired,
+    }
+  }
+
+  pub fn isPointerLike(self: RuntimeAtomicPayload) -> bool {
+    return self.kind == RuntimeAtomicPayloadKind.Pointer || self.kind == RuntimeAtomicPayloadKind.Reference
+  }
+}

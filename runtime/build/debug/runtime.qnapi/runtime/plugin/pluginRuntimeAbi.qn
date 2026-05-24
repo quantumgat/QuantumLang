@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum PluginRuntimePolicy {
+  Optional,
+  Required,
+  Forbidden,
+}
+pub struct PluginRuntimeAbi {
+  abi: string
+  supportedAbi: string
+  noUnwindAcrossBoundary: bool
+  typedFailureRequired: bool
+  noCoredumpRequired: bool
+  allocatorBoundaryRequired: bool
+}

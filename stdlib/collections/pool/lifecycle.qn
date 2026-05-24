@@ -1,0 +1,80 @@
+pub struct PoolLifecycle<T> {
+  recycleValue: fn(T) -> T,
+  dropValue: fn(T) -> Unit,
+}
+
+impl<T> Pool<T> {
+  pub fn replace(self: Pool<T>, handle: PoolHandle<T>, value: T) -> Pool<T> requires(alloc) {
+    if self.contains(handle) == false {
+      return self
+    }
+    let slot = self.slots[handle.index]
+    let slots = self.slots.set(handle.index, PoolSlot<T>.occupied(value, slot.generation))
+    return Pool<T> {
+      slots: slots,
+      freeHead: self.freeHead,
+      len: self.len,
+      capacity: self.capacity,
+      nextGeneration: self.nextGeneration,
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn mutate(self: Pool<T>, handle: PoolHandle<T>, updater: fn(T) -> T) -> Pool<T> requires(alloc) {
+    let current = self.get(handle)
+    match current {
+      Some(value) => {
+        return self.replace(handle, updater(value))
+      }
+      None => {
+        return self
+      }
+    }
+  }
+
+  pub fn take(self: Pool<T>, handle: PoolHandle<T>) -> (Pool<T>, Option<T>) requires(alloc) {
+    return self.remove(handle)
+  }
+
+  pub fn recycle(self: Pool<T>, handle: PoolHandle<T>, reset: fn(T) -> T) -> Pool<T> requires(alloc) {
+    return self.mutate(handle, reset)
+  }
+
+  pub fn resetAll(self: Pool<T>, reset: fn(T) -> T) -> Pool<T> requires(alloc) {
+    let handles = self.activeHandles()
+    return self.updateMany(handles, reset)
+  }
+
+  pub fn swap(self: Pool<T>, left: PoolHandle<T>, right: PoolHandle<T>) -> Pool<T> requires(alloc) {
+    let leftValue = self.get(left)
+    let rightValue = self.get(right)
+    match leftValue {
+      Some(a) => {
+        match rightValue {
+          Some(b) => {
+            return self.replace(left, b).replace(right, a)
+          }
+          None => {
+            return self
+          }
+        }
+      }
+      None => {
+        return self
+      }
+    }
+  }
+
+  pub fn moveTo(self: Pool<T>, target: Pool<T>, handle: PoolHandle<T>) -> (Pool<T>, Pool<T>, Option<PoolHandle<T>>) requires(alloc) {
+    let removed = self.remove(handle)
+    match removed.1 {
+      Some(value) => {
+        let inserted = target.insert(value)
+        return (removed.0, inserted.0, Some(inserted.1))
+      }
+      None => {
+        return (self, target, None)
+      }
+    }
+  }
+}

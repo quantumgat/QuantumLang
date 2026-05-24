@@ -1,0 +1,53 @@
+pub struct RuntimeErrorIncident {
+  code: string,
+  numericCode: u32,
+  category: string,
+  subsystem: string,
+  fieldCount: usize,
+  causeCount: usize,
+  sourceAvailable: bool,
+  taskContextPreserved: bool,
+  memoryReportAvailable: bool,
+  osReportAvailable: bool,
+  fatalBoundaryCaptured: bool,
+  redacted: bool,
+  stableRender: bool,
+  stringOnlyRejected: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeErrorIncident {
+  pub fn typed(code: string, numericCode: u32, category: string, subsystem: string) -> RuntimeErrorIncident {
+    return RuntimeErrorIncident {
+      code: code,
+      numericCode: numericCode,
+      category: category,
+      subsystem: subsystem,
+      fieldCount: 0,
+      causeCount: 0,
+      sourceAvailable: false,
+      taskContextPreserved: true,
+      memoryReportAvailable: true,
+      osReportAvailable: true,
+      fatalBoundaryCaptured: false,
+      redacted: true,
+      stableRender: true,
+      stringOnlyRejected: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeErrorIncident) -> bool {
+    return self.code != ""
+      && self.numericCode > 0
+      && self.category != ""
+      && self.subsystem != ""
+      && self.taskContextPreserved
+      && self.memoryReportAvailable
+      && self.osReportAvailable
+      && self.redacted
+      && self.stableRender
+      && self.stringOnlyRejected
+      && self.noCoredump
+  }
+}

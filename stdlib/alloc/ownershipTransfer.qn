@@ -1,0 +1,29 @@
+pub struct OwnershipTransfer {
+  allocation: AllocationId,
+  fromDomain: AllocDomain,
+  toDomain: AllocDomain,
+  accepted: bool,
+}
+
+impl OwnershipTransfer {
+  pub fn init(allocation: AllocationId, fromDomain: AllocDomain, toDomain: AllocDomain) -> OwnershipTransfer {
+    return OwnershipTransfer {
+      allocation: allocation,
+      fromDomain: fromDomain,
+      toDomain: toDomain,
+      accepted: allocation.sameDomain(fromDomain),
+    }
+  }
+
+  pub fn accepted(self: OwnershipTransfer) -> bool {
+    return self.accepted
+  }
+
+  pub fn toDomain(self: OwnershipTransfer) -> AllocDomain {
+    return self.toDomain
+  }
+
+  pub fn allocation(self: OwnershipTransfer) -> AllocationId {
+    return self.allocation
+  }
+}

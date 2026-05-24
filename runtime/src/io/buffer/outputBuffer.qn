@@ -1,0 +1,62 @@
+pub struct OutputBuffer {
+  capacity: usize,
+  len: usize,
+  lineBuffered: bool,
+  flushOnFull: bool,
+  flushOnError: bool,
+  preservesPartialWrite: bool,
+  cancellationSafeCleanup: bool,
+}
+
+impl OutputBuffer {
+  pub fn direct() -> OutputBuffer {
+    return OutputBuffer {
+      capacity: 0,
+      len: 0,
+      lineBuffered: false,
+      flushOnFull: true,
+      flushOnError: true,
+      preservesPartialWrite: true,
+      cancellationSafeCleanup: true,
+    }
+  }
+
+  pub fn lineBuffered(capacity: usize) -> OutputBuffer {
+    return OutputBuffer {
+      capacity: capacity,
+      len: 0,
+      lineBuffered: true,
+      flushOnFull: true,
+      flushOnError: true,
+      preservesPartialWrite: true,
+      cancellationSafeCleanup: true,
+    }
+  }
+
+  pub fn blockBuffered(capacity: usize) -> OutputBuffer {
+    return OutputBuffer {
+      capacity: capacity,
+      len: 0,
+      lineBuffered: false,
+      flushOnFull: true,
+      flushOnError: true,
+      preservesPartialWrite: true,
+      cancellationSafeCleanup: true,
+    }
+  }
+
+  pub fn hasRoom(self: OutputBuffer) -> bool {
+    return self.len < self.capacity
+  }
+
+  pub fn needsFlush(self: OutputBuffer) -> bool {
+    return self.flushOnFull && self.len >= self.capacity
+  }
+
+  pub fn safe(self: OutputBuffer) -> bool {
+    return self.len <= self.capacity
+      && self.flushOnError
+      && self.preservesPartialWrite
+      && self.cancellationSafeCleanup
+  }
+}

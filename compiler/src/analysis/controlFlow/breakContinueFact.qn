@@ -1,0 +1,52 @@
+pub enum BreakContinueDiagnosticKind {
+  None
+  BreakOutsideLoop
+  ContinueOutsideLoop
+  UnknownLabel
+  LabelNotLoop
+  BreakValueTypeMismatch
+  ContinueWithValue
+}
+
+pub struct BreakContinueFact {
+  node: u64,
+  targetLoop: u64,
+  labelResolved: bool,
+  valueTypeCompatible: bool,
+  cleanupPreserved: bool,
+  diagnostic: BreakContinueDiagnosticKind,
+}
+
+pub fn breakContinueFact(
+  node: u64,
+  targetLoop: u64,
+  labelResolved: bool,
+  valueTypeCompatible: bool,
+  cleanupPreserved: bool,
+  diagnostic: BreakContinueDiagnosticKind,
+) -> BreakContinueFact {
+  return BreakContinueFact {
+    node: node,
+    targetLoop: targetLoop,
+    labelResolved: labelResolved,
+    valueTypeCompatible: valueTypeCompatible,
+    cleanupPreserved: cleanupPreserved,
+    diagnostic: diagnostic,
+  }
+}
+
+impl BreakContinueFact {
+  pub fn executableReady(self: BreakContinueFact) -> bool {
+    return self.node > 0
+      && self.targetLoop > 0
+      && self.labelResolved
+      && self.valueTypeCompatible
+      && self.cleanupPreserved
+      && self.diagnostic == BreakContinueDiagnosticKind.None
+  }
+
+  pub fn safeFailureReady(self: BreakContinueFact) -> bool {
+    return self.node > 0
+      && self.diagnostic != BreakContinueDiagnosticKind.None
+  }
+}

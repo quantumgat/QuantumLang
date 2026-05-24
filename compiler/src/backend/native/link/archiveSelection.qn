@@ -1,0 +1,29 @@
+pub enum NativeArchiveKind {
+  RuntimeArchive
+  StdlibArchive
+  PackageArchive
+}
+
+pub struct ArchiveSelection {
+  kind: NativeArchiveKind,
+  archivePath: string,
+  hidden: bool,
+}
+
+pub fn archiveSelection(kind: NativeArchiveKind, archivePath: string, hidden: bool) -> ArchiveSelection {
+  return ArchiveSelection { kind: kind, archivePath: archivePath, hidden: hidden }
+}
+
+impl ArchiveSelection {
+  pub fn archiveKind(self: ArchiveSelection) -> NativeArchiveKind {
+    return self.kind
+  }
+
+  pub fn path(self: ArchiveSelection) -> string {
+    return self.archivePath
+  }
+
+  pub fn isHidden(self: ArchiveSelection) -> bool {
+    return self.hidden
+  }
+}

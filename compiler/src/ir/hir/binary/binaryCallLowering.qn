@@ -1,0 +1,106 @@
+pub enum HirBinaryCallKind {
+  CursorRead,
+  CursorReadBytes,
+  CursorReadVarU64,
+  WriterWrite,
+  WriterWriteBytes,
+  WriterWriteVarU64,
+  WriterFinish,
+}
+
+pub struct HirBinaryCallLowering {
+  astNode: u64,
+  hirNode: u64,
+  kind: HirBinaryCallKind,
+  receiverType: string,
+  resultType: string,
+  widthBits: u16,
+  endian: BinaryEndian,
+  questionMarkPropagates: bool,
+  linearCursorStateTracked: bool,
+  writerChainTracked: bool,
+}
+
+pub fn lowerBinaryCursorRead(astNode: u64, hirNode: u64, widthBits: u16, endian: BinaryEndian, resultType: string) -> HirBinaryCallLowering {
+  return HirBinaryCallLowering {
+    astNode: astNode,
+    hirNode: hirNode,
+    kind: HirBinaryCallKind.CursorRead,
+    receiverType: "BinaryCursor",
+    resultType: resultType,
+    widthBits: widthBits,
+    endian: endian,
+    questionMarkPropagates: true,
+    linearCursorStateTracked: true,
+    writerChainTracked: false,
+  }
+}
+
+pub fn lowerBinaryCursorBytes(astNode: u64, hirNode: u64) -> HirBinaryCallLowering {
+  return HirBinaryCallLowering {
+    astNode: astNode,
+    hirNode: hirNode,
+    kind: HirBinaryCallKind.CursorReadBytes,
+    receiverType: "BinaryCursor",
+    resultType: "BinaryView",
+    widthBits: 0,
+    endian: BinaryEndian.Little,
+    questionMarkPropagates: true,
+    linearCursorStateTracked: true,
+    writerChainTracked: false,
+  }
+}
+
+pub fn lowerBinaryWriterWrite(astNode: u64, hirNode: u64, widthBits: u16, endian: BinaryEndian) -> HirBinaryCallLowering {
+  return HirBinaryCallLowering {
+    astNode: astNode,
+    hirNode: hirNode,
+    kind: HirBinaryCallKind.WriterWrite,
+    receiverType: "BinaryWriter",
+    resultType: "BinaryWriter",
+    widthBits: widthBits,
+    endian: endian,
+    questionMarkPropagates: true,
+    linearCursorStateTracked: false,
+    writerChainTracked: true,
+  }
+}
+
+pub fn lowerBinaryWriterBytes(astNode: u64, hirNode: u64) -> HirBinaryCallLowering {
+  return HirBinaryCallLowering {
+    astNode: astNode,
+    hirNode: hirNode,
+    kind: HirBinaryCallKind.WriterWriteBytes,
+    receiverType: "BinaryWriter",
+    resultType: "BinaryWriter",
+    widthBits: 0,
+    endian: BinaryEndian.Little,
+    questionMarkPropagates: true,
+    linearCursorStateTracked: false,
+    writerChainTracked: true,
+  }
+}
+
+impl HirBinaryCallLowering {
+  pub fn lowersCursorRead(self: HirBinaryCallLowering) -> bool {
+    return self.astNode > 0
+      && self.hirNode > 0
+      && self.kind == HirBinaryCallKind.CursorRead
+      && self.receiverType == "BinaryCursor"
+      && self.resultType != ""
+      && self.widthBits <= 256
+      && self.questionMarkPropagates
+      && self.linearCursorStateTracked
+  }
+
+  pub fn lowersWriterStep(self: HirBinaryCallLowering) -> bool {
+    return self.astNode > 0
+      && self.hirNode > 0
+      && self.kind == HirBinaryCallKind.WriterWrite
+      && self.receiverType == "BinaryWriter"
+      && self.resultType == "BinaryWriter"
+      && self.widthBits <= 256
+      && self.questionMarkPropagates
+      && self.writerChainTracked
+  }
+}

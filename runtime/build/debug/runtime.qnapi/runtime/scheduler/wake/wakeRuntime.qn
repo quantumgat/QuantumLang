@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum SchedulerWakeRoute {
+  LocalQueue
+  GlobalInject
+  RemoteUnpark
+}
+pub struct SchedulerWakeRuntime {
+  taskId: u64
+  route: SchedulerWakeRoute
+  coalesced: bool
+  batched: bool
+  lostWakePrevented: bool
+}

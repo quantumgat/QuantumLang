@@ -1,0 +1,21 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeMemoryDiagnostic {
+  incident: MemoryIncident
+  snapshot: MemorySnapshot
+  report: RuntimeReport
+  replay: ReplayArtifact
+  query: DiagnosticQuery
+  redactedOutput: bool
+  noCoredump: bool
+  emergencyNoAllocation: bool
+  allocatorFailureSafe: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeMemoryDiagnostic(
+  incident: MemoryIncident,
+  snapshot: MemorySnapshot,
+  report: RuntimeReport,
+  replay: ReplayArtifact,
+  query: DiagnosticQuery,
+) -> RuntimeMemoryDiagnostic
+}

@@ -1,0 +1,17 @@
+pub struct UnsafeDebugFormatPolicy {
+  pointersRedactedByDefault: bool,
+  rawAddressesRequireUnsafeDebug: bool,
+  capabilityNamesOnly: bool,
+  noSecretLeak: bool,
+}
+
+impl UnsafeDebugFormatPolicy {
+  pub fn default() -> UnsafeDebugFormatPolicy {
+    return UnsafeDebugFormatPolicy {
+      pointersRedactedByDefault: true,
+      rawAddressesRequireUnsafeDebug: true,
+      capabilityNamesOnly: true,
+      noSecretLeak: true,
+    }
+  }
+}

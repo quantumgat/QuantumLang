@@ -1,0 +1,39 @@
+pub enum ForIteratorAlgorithmTerminal {
+  Map
+  Filter
+  FilterMap
+  Collect
+  Count
+  Sum
+  Any
+  All
+  Find
+  ForEach
+  Fold
+  Reduce
+}
+
+pub struct ForIteratorAlgorithmFact {
+  terminal: ForIteratorAlgorithmTerminal,
+  sourceType: string,
+  outputType: string,
+  callbackTypeChecked: bool,
+  callbackInlineEligible: bool,
+  allocationPolicyChecked: bool,
+  materializingTerminalRejected: bool,
+  boundsProvable: bool,
+  diagnosticsReady: bool,
+}
+
+impl ForIteratorAlgorithmFact {
+  pub fn complete(self: ForIteratorAlgorithmFact) -> bool {
+    return self.sourceType != ""
+      && self.outputType != ""
+      && self.callbackTypeChecked
+      && self.callbackInlineEligible
+      && self.allocationPolicyChecked
+      && self.materializingTerminalRejected
+      && self.boundsProvable
+      && self.diagnosticsReady
+  }
+}

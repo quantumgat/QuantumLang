@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct SlotMapKernel {
+  generationalKeyBacked: bool
+  slotVecFreeListBacked: bool
+  slotMapBackedByMapEntries: bool
+  insertUsesFreeListOrTail: bool
+  removeUsesGenerationBumpAndFreeLink: bool
+  getUsesIndexGenerationCheck: bool
+  mapGetUsesEntryGenerationCheck: bool
+  iteratorOccupiedSlotCursorStable: bool
+  toVecUsesOccupiedSlotCopy: bool
+  staleKeyRejected: bool
+  callableLoopsInlineable: bool
+}

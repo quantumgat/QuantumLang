@@ -1,0 +1,12 @@
+pub struct PlatformDeviceFact {
+  target: string,
+  deviceMemory: bool,
+  mmio: bool,
+  capabilityRequired: bool,
+}
+
+impl PlatformDeviceFact {
+  pub fn accepted(self: PlatformDeviceFact) -> bool {
+    return self.target != "" && (self.deviceMemory || self.mmio || self.capabilityRequired == false)
+  }
+}

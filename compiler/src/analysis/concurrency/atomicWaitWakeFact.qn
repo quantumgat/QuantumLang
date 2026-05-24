@@ -1,0 +1,24 @@
+pub struct AtomicWaitWakeFact {
+  node: u64,
+  waitOrdering: AtomicOrdering,
+  targetSupported: bool,
+  schedulerParkSupported: bool,
+  wakeCount: usize,
+}
+
+impl AtomicWaitWakeFact {
+  pub fn init(node: u64, waitOrdering: AtomicOrdering, targetSupported: bool, schedulerParkSupported: bool, wakeCount: usize) -> AtomicWaitWakeFact {
+    return AtomicWaitWakeFact {
+      node: node,
+      waitOrdering: waitOrdering,
+      targetSupported: targetSupported,
+      schedulerParkSupported: schedulerParkSupported,
+      wakeCount: wakeCount,
+    }
+  }
+
+  pub fn accepted(self: AtomicWaitWakeFact) -> bool {
+    let wait = MemoryOrderFact.init(self.node, AtomicOperationKind.Wait, self.waitOrdering)
+    return self.targetSupported && self.schedulerParkSupported && self.wakeCount > 0 && wait.valid()
+  }
+}

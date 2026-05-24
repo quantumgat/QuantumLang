@@ -1,0 +1,25 @@
+pub struct RuntimeIdentity {
+  name: string,
+  version: string,
+  hiddenNativeSubstrate: bool,
+  publicCHeaderSurface: bool,
+  generatedSourceFallback: bool,
+}
+
+pub fn runtimeIdentity() -> RuntimeIdentity {
+  return RuntimeIdentity {
+    name: "runtime",
+    version: "0.1.0",
+    hiddenNativeSubstrate: true,
+    publicCHeaderSurface: false,
+    generatedSourceFallback: false,
+  }
+}
+
+impl RuntimeIdentity {
+  pub fn isStrictNative(self) -> bool {
+    return self.hiddenNativeSubstrate &&
+      self.publicCHeaderSurface == false &&
+      self.generatedSourceFallback == false
+  }
+}

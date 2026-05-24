@@ -1,0 +1,23 @@
+pub struct LineRecord {
+  line: usize,
+  column: usize,
+  machineOffset: usize,
+}
+
+pub fn lineRecord(line: usize, column: usize, machineOffset: usize) -> LineRecord {
+  return LineRecord { line: line, column: column, machineOffset: machineOffset }
+}
+
+impl LineRecord {
+  pub fn sourceLine(self: LineRecord) -> usize {
+    return self.line
+  }
+
+  pub fn sourceColumn(self: LineRecord) -> usize {
+    return self.column
+  }
+
+  pub fn offset(self: LineRecord) -> usize {
+    return self.machineOffset
+  }
+}

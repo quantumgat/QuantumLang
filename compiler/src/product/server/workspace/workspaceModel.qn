@@ -1,0 +1,12 @@
+pub struct WorkspaceModel {
+  root: string,
+  packageGraphRequired: bool,
+  sourceMapRequired: bool,
+  cacheAware: bool,
+}
+
+impl WorkspaceModel {
+  pub fn accepted(self: WorkspaceModel) -> bool {
+    return self.root != "" && self.packageGraphRequired && self.sourceMapRequired
+  }
+}

@@ -1,0 +1,29 @@
+pub struct CheckedSource {
+  file: u32,
+  byteLength: usize,
+  validUtf8: bool,
+  diagnosticCount: usize,
+}
+
+pub fn checkedSource(file: u32, byteLength: usize, validUtf8: bool, diagnosticCount: usize) -> CheckedSource {
+  return CheckedSource {
+    file: file,
+    byteLength: byteLength,
+    validUtf8: validUtf8,
+    diagnosticCount: diagnosticCount,
+  }
+}
+
+impl CheckedSource {
+  pub fn fileId(self: CheckedSource) -> u32 {
+    return self.file
+  }
+
+  pub fn lenBytes(self: CheckedSource) -> usize {
+    return self.byteLength
+  }
+
+  pub fn isValid(self: CheckedSource) -> bool {
+    return self.validUtf8 && self.diagnosticCount == 0
+  }
+}

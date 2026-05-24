@@ -1,0 +1,63 @@
+pub struct BsonExactAllTypesRoundTripProof {
+  fixture: string,
+  exactEncode: bool,
+  exactDecode: bool,
+  exactToBsonPolicy: bool,
+  exactFromBsonPolicy: bool,
+  primitiveIdentity: bool,
+  wideIntegerIdentity: bool,
+  floatIdentity: bool,
+  decimalIdentity: bool,
+  charStringBytesIdentity: bool,
+  nestedStructIdentity: bool,
+  arrayMapIdentity: bool,
+  optionResultIdentity: bool,
+  enumTupleIdentity: bool,
+  liveResourcesRejected: bool,
+  mongoCoercionRejected: bool,
+  generatedExecutableRequired: bool,
+}
+
+impl BsonExactAllTypesRoundTripProof {
+  pub fn required() -> BsonExactAllTypesRoundTripProof {
+    return BsonExactAllTypesRoundTripProof {
+      fixture: "qtlc/tests/fixtures/bson_exact_all_types_roundtrip_ok.qn",
+      exactEncode: true,
+      exactDecode: true,
+      exactToBsonPolicy: true,
+      exactFromBsonPolicy: true,
+      primitiveIdentity: true,
+      wideIntegerIdentity: true,
+      floatIdentity: true,
+      decimalIdentity: true,
+      charStringBytesIdentity: true,
+      nestedStructIdentity: true,
+      arrayMapIdentity: true,
+      optionResultIdentity: true,
+      enumTupleIdentity: true,
+      liveResourcesRejected: true,
+      mongoCoercionRejected: true,
+      generatedExecutableRequired: true,
+    }
+  }
+
+  pub fn accepted(self: BsonExactAllTypesRoundTripProof) -> bool {
+    return self.fixture == "qtlc/tests/fixtures/bson_exact_all_types_roundtrip_ok.qn"
+      && self.exactEncode
+      && self.exactDecode
+      && self.exactToBsonPolicy
+      && self.exactFromBsonPolicy
+      && self.primitiveIdentity
+      && self.wideIntegerIdentity
+      && self.floatIdentity
+      && self.decimalIdentity
+      && self.charStringBytesIdentity
+      && self.nestedStructIdentity
+      && self.arrayMapIdentity
+      && self.optionResultIdentity
+      && self.enumTupleIdentity
+      && self.liveResourcesRejected
+      && self.mongoCoercionRejected
+      && self.generatedExecutableRequired
+  }
+}

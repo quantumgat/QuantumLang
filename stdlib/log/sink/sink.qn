@@ -1,0 +1,77 @@
+pub enum LogSinkKind {
+  Stdout,
+  Stderr,
+  File,
+  RingBuffer,
+  Memory,
+  Json,
+  Test,
+  RuntimeIncident,
+}
+
+pub enum LogBackpressurePolicy {
+  DropNewest,
+  DropOldest,
+  Block,
+  SpillToFile,
+  ReturnError,
+}
+
+pub struct LogSink {
+  kind: LogSinkKind,
+  name: string,
+  backpressureAware: bool,
+  backpressurePolicy: LogBackpressurePolicy,
+  redactsBeforeWrite: bool,
+  preservesOrder: bool,
+  flushOnError: bool,
+  runtimeOwned: bool,
+}
+
+impl LogSink {
+  pub fn stdout() -> LogSink {
+    return LogSink {
+      kind: LogSinkKind.Stdout,
+      name: "stdout",
+      backpressureAware: true,
+      backpressurePolicy: LogBackpressurePolicy.ReturnError,
+      redactsBeforeWrite: true,
+      preservesOrder: true,
+      flushOnError: false,
+      runtimeOwned: false,
+    }
+  }
+
+  pub fn stderr() -> LogSink {
+    return LogSink {
+      kind: LogSinkKind.Stderr,
+      name: "stderr",
+      backpressureAware: true,
+      backpressurePolicy: LogBackpressurePolicy.ReturnError,
+      redactsBeforeWrite: true,
+      preservesOrder: true,
+      flushOnError: true,
+      runtimeOwned: false,
+    }
+  }
+
+  pub fn runtimeIncident() -> LogSink {
+    return LogSink {
+      kind: LogSinkKind.RuntimeIncident,
+      name: "runtime-incident",
+      backpressureAware: true,
+      backpressurePolicy: LogBackpressurePolicy.DropOldest,
+      redactsBeforeWrite: true,
+      preservesOrder: true,
+      flushOnError: true,
+      runtimeOwned: true,
+    }
+  }
+
+  pub fn safe(self: LogSink) -> bool {
+    return self.name != ""
+      && self.backpressureAware
+      && self.redactsBeforeWrite
+      && self.preservesOrder
+  }
+}

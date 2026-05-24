@@ -1,0 +1,45 @@
+pub struct PriorityQueueKernel {
+  heapArrayBacked: bool,
+  comparatorPolicyStable: bool,
+  pushUsesAppendAndSiftUp: bool,
+  popUsesRootSwapAndSiftDown: bool,
+  peekUsesRootLoad: bool,
+  replaceTopUsesRootStoreAndSiftDown: bool,
+  heapifyUsesBottomUpSiftDown: bool,
+  sortedDrainUsesRepeatedPop: bool,
+  iteratorHeapArrayCursorStable: bool,
+  stableTieBreakUsesSequence: bool,
+  callableComparatorInlineable: bool,
+}
+
+impl PriorityQueueKernel {
+  pub fn standard() -> PriorityQueueKernel {
+    return PriorityQueueKernel {
+      heapArrayBacked: true,
+      comparatorPolicyStable: true,
+      pushUsesAppendAndSiftUp: true,
+      popUsesRootSwapAndSiftDown: true,
+      peekUsesRootLoad: true,
+      replaceTopUsesRootStoreAndSiftDown: true,
+      heapifyUsesBottomUpSiftDown: true,
+      sortedDrainUsesRepeatedPop: true,
+      iteratorHeapArrayCursorStable: true,
+      stableTieBreakUsesSequence: true,
+      callableComparatorInlineable: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: PriorityQueueKernel) -> bool {
+    return self.heapArrayBacked
+      && self.comparatorPolicyStable
+      && self.pushUsesAppendAndSiftUp
+      && self.popUsesRootSwapAndSiftDown
+      && self.peekUsesRootLoad
+      && self.replaceTopUsesRootStoreAndSiftDown
+      && self.heapifyUsesBottomUpSiftDown
+      && self.sortedDrainUsesRepeatedPop
+      && self.iteratorHeapArrayCursorStable
+      && self.stableTieBreakUsesSequence
+      && self.callableComparatorInlineable
+  }
+}

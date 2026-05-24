@@ -1,0 +1,25 @@
+pub enum OopTypeSyntaxKind {
+  ConcreteTypeSyntax
+  DynInterfaceTypeSyntax
+  SelfTypeSyntax
+}
+
+pub struct OopTypeSyntax {
+  typeId: u64,
+  kind: OopTypeSyntaxKind,
+  interfaceTypeId: u64,
+}
+
+pub fn oopTypeSyntax(typeId: u64, kind: OopTypeSyntaxKind, interfaceTypeId: u64) -> OopTypeSyntax {
+  return OopTypeSyntax {
+    typeId: typeId,
+    kind: kind,
+    interfaceTypeId: interfaceTypeId,
+  }
+}
+
+impl OopTypeSyntax {
+  pub fn isDynInterface(self: OopTypeSyntax) -> bool {
+    return self.kind == OopTypeSyntaxKind.DynInterfaceTypeSyntax && self.interfaceTypeId > 0
+  }
+}

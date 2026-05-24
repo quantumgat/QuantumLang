@@ -1,0 +1,104 @@
+pub struct HttpSendfileKernel {
+  symbol: string,
+  spliceEligible: bool,
+  fallbackWriter: bool,
+  backpressureAware: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+}
+
+pub struct HttpSendfilePlan {
+  fileBytes: usize,
+  offset: usize,
+  len: usize,
+  splice: bool,
+  fallbackWriter: bool,
+}
+
+impl HttpSendfilePlan {
+  pub fn range(fileBytes: usize, offset: usize, len: usize) -> HttpSendfilePlan {
+    return HttpSendfilePlan {
+      fileBytes: fileBytes,
+      offset: offset,
+      len: len,
+      splice: true,
+      fallbackWriter: true,
+    }
+  }
+
+  pub fn valid(self: HttpSendfilePlan) -> bool {
+    return self.offset <= self.fileBytes
+      && self.len <= self.fileBytes - self.offset
+      && (self.splice || self.fallbackWriter)
+  }
+}
+
+pub struct HttpSendfileRuntimeResult {
+  bytesQueued: usize,
+  usedSplice: bool,
+  usedFallback: bool,
+  failure: Option<HttpAcceleratedFailure>,
+}
+
+impl HttpSendfileRuntimeResult {
+  pub fn safe(self: HttpSendfileRuntimeResult) -> bool {
+    if self.failure == None {
+      return self.usedSplice || self.usedFallback
+    }
+    match self.failure {
+      Some(failure) => {
+        return failure.safe()
+      }
+      None => {
+        return false
+      }
+    }
+  }
+}
+
+impl HttpSendfileKernel {
+  pub fn splice() -> HttpSendfileKernel {
+    return HttpSendfileKernel {
+      symbol: "http.sendfile.splice",
+      spliceEligible: true,
+      fallbackWriter: true,
+      backpressureAware: true,
+      typedFailure: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: HttpSendfileKernel) -> bool {
+    return self.symbol == "http.sendfile.splice"
+      && self.spliceEligible
+      && self.fallbackWriter
+      && self.backpressureAware
+      && self.typedFailure
+      && self.noCoredump
+  }
+
+  pub fn transfer(self: HttpSendfileKernel, plan: HttpSendfilePlan) -> HttpSendfileRuntimeResult {
+    if !self.accepted() {
+      return HttpSendfileRuntimeResult {
+        bytesQueued: 0,
+        usedSplice: false,
+        usedFallback: false,
+        failure: Some(HttpAcceleratedFailure.kernelUnavailable()),
+      }
+    }
+    if !plan.valid() {
+      return HttpSendfileRuntimeResult {
+        bytesQueued: 0,
+        usedSplice: false,
+        usedFallback: false,
+        failure: Some(HttpAcceleratedFailure.badRequest(plan.offset, "invalid sendfile range")),
+      }
+    }
+    return HttpSendfileRuntimeResult {
+      bytesQueued: plan.len,
+      usedSplice: plan.splice,
+      usedFallback: !plan.splice && plan.fallbackWriter,
+      failure: None,
+    }
+  }
+}

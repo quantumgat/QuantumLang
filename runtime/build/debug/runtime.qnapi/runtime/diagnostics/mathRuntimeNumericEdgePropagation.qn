@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum MathRuntimeNumericEdgePropagationKind {
+  DivideByZero
+  BigUintUnderflow
+  FixedScaleMismatch
+  DecimalRoundingTrap
+}
+pub struct MathRuntimeNumericEdgePropagation {
+  kind: MathRuntimeNumericEdgePropagationKind
+  failure: MathRuntimeSafeFailure
+  typedErrorCarrier: bool
+  executableNegativeFixture: bool
+  sourceMapped: bool
+  noCoredump: bool
+}

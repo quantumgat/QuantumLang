@@ -1,0 +1,28 @@
+pub enum LayoutDiagnosticKind {
+  UnknownSize,
+  InvalidAlignment,
+  StrideMismatch,
+  WireOffsetMisaligned,
+  UnsupportedCarrier,
+  AbiUnstable,
+}
+
+pub struct LayoutDiagnostic {
+  kind: LayoutDiagnosticKind,
+  code: string,
+  fatal: bool,
+}
+
+impl LayoutDiagnostic {
+  pub fn init(kind: LayoutDiagnosticKind, code: string, fatal: bool) -> LayoutDiagnostic {
+    return LayoutDiagnostic {
+      kind: kind,
+      code: code,
+      fatal: fatal,
+    }
+  }
+
+  pub fn isFatal(self: LayoutDiagnostic) -> bool {
+    return self.fatal
+  }
+}

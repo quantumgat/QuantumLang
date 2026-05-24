@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum CpuFeatureIncidentKind {
+  UnsupportedFeature,
+  MissingFallback,
+  GeneratedFallbackRejected,
+  RuntimeDispatchUnavailable,
+}
+pub struct CpuFeatureIncident {
+  kind: CpuFeatureIncidentKind
+  feature: string
+  recoverable: bool
+}

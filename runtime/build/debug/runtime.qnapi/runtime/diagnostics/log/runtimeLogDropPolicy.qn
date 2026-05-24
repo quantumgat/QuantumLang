@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeLogDropPolicy {
+  reason: string
+  droppedEvents: usize
+  preservesNewestCritical: bool
+  countsDrops: bool
+  emitsIncidentWhenThresholdCrossed: bool
+  redactedDropSummary: bool
+  noAllocationSummary: bool
+}

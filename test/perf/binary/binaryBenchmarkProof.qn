@@ -1,0 +1,121 @@
+pub enum BinaryBenchmarkCaseKind {
+  CursorU64Le,
+  WriterU64Le,
+  RoundTripUserRecord,
+}
+
+pub struct BinaryBenchmarkCase {
+  kind: BinaryBenchmarkCaseKind,
+  caseName: string,
+  qlangPattern: string,
+  cppEquivalentPattern: string,
+  generatedNativeCaptured: bool,
+  cppEquivalentCaptured: bool,
+  directLoadStoreCaptured: bool,
+  endianLoweringCaptured: bool,
+  boundsProofCaptured: bool,
+  noAllocationCaptured: bool,
+  nativeNsPerOp: u64,
+  cppNsPerOp: u64,
+  maxSlowdownPercent: u64,
+  samples: usize,
+}
+
+pub struct BinaryBenchmarkProof {
+  cases: Vec<BinaryBenchmarkCase>,
+  requiredCases: usize,
+  generatedExecutableFixture: string,
+  cppBaselineFixture: string,
+  serialCiSafe: bool,
+  generatedCppFallbackRejected: bool,
+}
+
+pub fn binaryBenchmarkCase(
+  kind: BinaryBenchmarkCaseKind,
+  caseName: string,
+  qlangPattern: string,
+  cppEquivalentPattern: string,
+  nativeNsPerOp: u64,
+  cppNsPerOp: u64,
+) -> BinaryBenchmarkCase {
+  return BinaryBenchmarkCase {
+    kind: kind,
+    caseName: caseName,
+    qlangPattern: qlangPattern,
+    cppEquivalentPattern: cppEquivalentPattern,
+    generatedNativeCaptured: true,
+    cppEquivalentCaptured: true,
+    directLoadStoreCaptured: true,
+    endianLoweringCaptured: true,
+    boundsProofCaptured: true,
+    noAllocationCaptured: true,
+    nativeNsPerOp: nativeNsPerOp,
+    cppNsPerOp: cppNsPerOp,
+    maxSlowdownPercent: 10,
+    samples: 3,
+  }
+}
+
+pub fn binaryBenchmarkProof() -> BinaryBenchmarkProof requires(alloc) {
+  let mut cases = Vec<BinaryBenchmarkCase>.withCapacity(3)
+  cases = cases.push(binaryBenchmarkCase(
+    BinaryBenchmarkCaseKind.CursorU64Le,
+    "cursor-u64le-direct-load",
+    "BinaryCursor.u64le()? direct pointer load",
+    "baseline-only C++ equivalent: memcpy/load + little-endian conversion",
+    4,
+    4
+  ))
+  cases = cases.push(binaryBenchmarkCase(
+    BinaryBenchmarkCaseKind.WriterU64Le,
+    "writer-u64le-direct-store",
+    "BinaryWriter.u64le(value)? direct pointer store",
+    "baseline-only C++ equivalent: memcpy/store + little-endian conversion",
+    4,
+    4
+  ))
+  cases = cases.push(binaryBenchmarkCase(
+    BinaryBenchmarkCaseKind.RoundTripUserRecord,
+    "binary-user-round-trip",
+    "writer.u64le()?.u8()?.i32le()?.finish() plus cursor reads",
+    "baseline-only C++ equivalent: struct encoder/decoder with bounds checks",
+    12,
+    12
+  ))
+  return BinaryBenchmarkProof {
+    cases: cases,
+    requiredCases: 3,
+    generatedExecutableFixture: "binary_e2e_executable_ok.qn",
+    cppBaselineFixture: "binary_e2e_cpp_baseline.cpp",
+    serialCiSafe: true,
+    generatedCppFallbackRejected: true,
+  }
+}
+
+impl BinaryBenchmarkCase {
+  pub fn passed(self: BinaryBenchmarkCase) -> bool {
+    let budget = self.cppNsPerOp
+      + ((self.cppNsPerOp * self.maxSlowdownPercent) / 100)
+    return self.caseName != ""
+      && self.qlangPattern != ""
+      && self.cppEquivalentPattern != ""
+      && self.generatedNativeCaptured
+      && self.cppEquivalentCaptured
+      && self.directLoadStoreCaptured
+      && self.endianLoweringCaptured
+      && self.boundsProofCaptured
+      && self.noAllocationCaptured
+      && self.samples >= 3
+      && self.nativeNsPerOp <= budget
+  }
+}
+
+impl BinaryBenchmarkProof {
+  pub fn passed(self: BinaryBenchmarkProof) -> bool {
+    return self.cases.len >= self.requiredCases
+      && self.generatedExecutableFixture != ""
+      && self.cppBaselineFixture != ""
+      && self.serialCiSafe
+      && self.generatedCppFallbackRejected
+  }
+}

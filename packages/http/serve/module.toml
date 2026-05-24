@@ -1,0 +1,6 @@
+[module]
+name = "http.serve"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-serve"

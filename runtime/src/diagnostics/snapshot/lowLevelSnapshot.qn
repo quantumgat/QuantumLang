@@ -1,0 +1,19 @@
+pub struct RuntimeLowLevelSnapshot {
+  runtime: RuntimeSnapshot,
+  memory: MemorySnapshot,
+  syncIncidentCount: usize,
+  reclamationIncidentCount: usize,
+  platformThreadRows: usize,
+  emergencyNoAllocation: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeLowLevelSnapshot {
+  pub fn publishable(self: RuntimeLowLevelSnapshot) -> bool {
+    return self.runtime.hasEvents()
+      && self.memory.ownedRows() > 0
+      && self.platformThreadRows > 0
+      && self.emergencyNoAllocation
+      && self.noCoredump
+  }
+}

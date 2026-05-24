@@ -1,0 +1,29 @@
+pub struct NumberFormatPolicy {
+  signedInts: bool,
+  unsignedInts: bool,
+  wideInts: bool,
+  floats: bool,
+  decimal: bool,
+  bigint: bool,
+  biguint: bool,
+  complex: bool,
+  hexFloat: bool,
+  rawBits: bool,
+}
+
+impl NumberFormatPolicy {
+  pub fn complete() -> NumberFormatPolicy {
+    return NumberFormatPolicy {
+      signedInts: true,
+      unsignedInts: true,
+      wideInts: true,
+      floats: true,
+      decimal: true,
+      bigint: true,
+      biguint: true,
+      complex: true,
+      hexFloat: true,
+      rawBits: true,
+    }
+  }
+}

@@ -1,0 +1,19 @@
+pub struct RuntimeQueryRequest {
+  queryName: string,
+  consumesStructuredFacts: bool,
+  mutatesRuntime: bool,
+}
+
+pub fn runtimeQueryRequest(queryName: string) -> RuntimeQueryRequest {
+  return RuntimeQueryRequest {
+    queryName: queryName,
+    consumesStructuredFacts: true,
+    mutatesRuntime: false,
+  }
+}
+
+impl RuntimeQueryRequest {
+  pub fn isReadOnly(self: RuntimeQueryRequest) -> bool {
+    return self.consumesStructuredFacts && self.mutatesRuntime == false
+  }
+}

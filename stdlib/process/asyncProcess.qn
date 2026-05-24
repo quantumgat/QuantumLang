@@ -1,0 +1,16 @@
+pub struct AsyncProcess {
+  process: Process,
+  cancellationSafe: bool,
+}
+
+pub fn spawnAsync(command: Command) -> Result<AsyncProcess, OsError>
+
+impl AsyncProcess {
+  pub fn wait(self: AsyncProcess) -> Result<ExitStatus, OsError>
+
+  pub fn cancel(self: AsyncProcess) -> Result<Unit, OsError>
+
+  pub fn safe(self: AsyncProcess) -> bool {
+    return self.cancellationSafe
+  }
+}

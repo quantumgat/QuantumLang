@@ -1,0 +1,18 @@
+import std::ptr::{Ptr, PtrError}
+
+pub struct User {
+  name: string,
+}
+
+pub fn finalExpressionReturnFixture(name: string) -> string {
+  f"Hello, {name}!"
+}
+
+pub fn finalExpressionResultFixture(ptr: Ptr<User>) -> Result<User, PtrError> {
+  let user = ptr.get()?
+  Ok(user)
+}
+
+pub fn finalExpressionTerminatorSuppressedFixture(value: i64) -> Unit {
+  value;
+}

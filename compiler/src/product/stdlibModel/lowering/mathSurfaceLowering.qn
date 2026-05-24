@@ -1,0 +1,50 @@
+pub enum StdlibMathLoweringFamily {
+  Common
+  Integer
+  Float
+  Checked
+  Decimal
+  BigInt
+  BigUint
+  Complex
+  Simd
+  Vector
+  Matrix
+  Tensor
+  Field
+  Rational
+  Fixed
+}
+
+pub struct StdlibMathSurfaceLowering {
+  family: StdlibMathLoweringFamily,
+  symbolName: string,
+  compilerOwnedOperator: bool,
+  runtimeKernelRequired: bool,
+  nativeLoweringRequired: bool,
+  diagnosticRequired: bool,
+  noFakeFallback: bool,
+}
+
+impl StdlibMathSurfaceLowering {
+  pub fn kernelBacked(family: StdlibMathLoweringFamily, symbolName: string) -> StdlibMathSurfaceLowering {
+    return StdlibMathSurfaceLowering {
+      family: family,
+      symbolName: symbolName,
+      compilerOwnedOperator: true,
+      runtimeKernelRequired: true,
+      nativeLoweringRequired: true,
+      diagnosticRequired: true,
+      noFakeFallback: true,
+    }
+  }
+
+  pub fn accepted(self: StdlibMathSurfaceLowering) -> bool {
+    return self.symbolName != ""
+      && self.compilerOwnedOperator
+      && self.runtimeKernelRequired
+      && self.nativeLoweringRequired
+      && self.diagnosticRequired
+      && self.noFakeFallback
+  }
+}

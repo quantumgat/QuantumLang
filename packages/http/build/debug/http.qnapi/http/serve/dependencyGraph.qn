@@ -1,0 +1,47 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum AppDependencyNodeKind {
+  Controller
+  Component
+  State
+  External
+}
+pub enum AppDependencySource {
+  Field
+  Constructor
+  AppState
+  ExplicitBinding
+  GeneratedFact
+}
+pub enum AppDependencyIssueKind {
+  MissingProvider
+  AmbiguousProvider
+  Cycle
+}
+pub struct AppDependencyNode {
+  typeName: string
+  ownerId: u64
+  kind: AppDependencyNodeKind
+  stateBacked: bool
+  lifecycleOwned: bool
+}
+pub struct AppDependencyEdge {
+  ownerTypeName: string
+  dependencyTypeName: string
+  ownerId: u64
+  dependencyOwnerId: u64
+  source: AppDependencySource
+  required: bool
+  providerFound: bool
+}
+pub struct AppDependencyIssue {
+  kind: AppDependencyIssueKind
+  ownerTypeName: string
+  dependencyTypeName: string
+  message: string
+  fix: string
+}
+pub struct AppDependencyGraph {
+  nodes: Vec<AppDependencyNode>
+  edges: Vec<AppDependencyEdge>
+  issues: Vec<AppDependencyIssue>
+}

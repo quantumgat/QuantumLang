@@ -1,0 +1,12 @@
+pub struct NativeNetPlatformEmit {
+  linux: bool,
+  macos: bool,
+  windows: bool,
+  portable: bool,
+}
+
+impl NativeNetPlatformEmit {
+  pub fn accepted(self: NativeNetPlatformEmit) -> bool {
+    return self.linux && self.macos && self.windows && self.portable
+  }
+}

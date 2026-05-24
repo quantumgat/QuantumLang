@@ -1,0 +1,30 @@
+pub struct PluginProofGate {
+  benchmarkProofRequired: bool,
+  negativeTestsRequired: bool,
+  fallbackTestsRequired: bool,
+  reproducibleBuildRequired: bool,
+  measuredClaimsOnly: bool,
+  noProductProofNoise: bool,
+}
+
+impl PluginProofGate {
+  pub fn fromManifest(manifest: PluginManifest) -> PluginProofGate {
+    return PluginProofGate {
+      benchmarkProofRequired: manifest.proof.benchmarks == PluginPolicyRequirement.Required,
+      negativeTestsRequired: manifest.proof.negativeTests == PluginPolicyRequirement.Required,
+      fallbackTestsRequired: manifest.proof.fallbackTests == PluginPolicyRequirement.Required,
+      reproducibleBuildRequired: manifest.proof.reproducibleBuild == PluginPolicyRequirement.Required,
+      measuredClaimsOnly: true,
+      noProductProofNoise: true,
+    }
+  }
+
+  pub fn accepted(self: PluginProofGate) -> bool {
+    return self.benchmarkProofRequired
+      && self.negativeTestsRequired
+      && self.fallbackTestsRequired
+      && self.reproducibleBuildRequired
+      && self.measuredClaimsOnly
+      && self.noProductProofNoise
+  }
+}

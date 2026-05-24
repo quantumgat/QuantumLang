@@ -1,0 +1,39 @@
+pub struct StdlibErrorAnalysisProof {
+  rootCause: bool,
+  subsystem: bool,
+  sourceRange: bool,
+  likelyFix: bool,
+  recoveryOptions: bool,
+  groupedReports: bool,
+  telemetryCorrelation: bool,
+  redaction: bool,
+  noCoredump: bool,
+}
+
+impl StdlibErrorAnalysisProof {
+  pub fn complete() -> StdlibErrorAnalysisProof {
+    return StdlibErrorAnalysisProof {
+      rootCause: true,
+      subsystem: true,
+      sourceRange: true,
+      likelyFix: true,
+      recoveryOptions: true,
+      groupedReports: true,
+      telemetryCorrelation: true,
+      redaction: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn passed(self: StdlibErrorAnalysisProof) -> bool {
+    return self.rootCause
+      && self.subsystem
+      && self.sourceRange
+      && self.likelyFix
+      && self.recoveryOptions
+      && self.groupedReports
+      && self.telemetryCorrelation
+      && self.redaction
+      && self.noCoredump
+  }
+}

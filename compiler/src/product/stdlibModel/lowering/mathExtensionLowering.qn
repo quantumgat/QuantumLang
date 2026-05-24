@@ -1,0 +1,110 @@
+pub enum MathExtensionReceiver {
+  SignedInteger
+  Float
+  Decimal
+  BigInt
+  BigUint
+  Complex
+}
+
+pub struct MathExtensionLowering {
+  receiver: MathExtensionReceiver,
+  receiverType: string,
+  methodName: string,
+  targetSymbol: string,
+  exampleCall: string,
+  zeroCostDesugar: bool,
+  noMethodTable: bool,
+  noAllocation: bool,
+  nativeLoweringEquivalent: bool,
+  sourceMappedDiagnostic: bool,
+}
+
+impl MathExtensionLowering {
+  pub fn i64Abs() -> MathExtensionLowering {
+    return MathExtensionLowering {
+      receiver: MathExtensionReceiver.SignedInteger,
+      receiverType: "i64",
+      methodName: "abs",
+      targetSymbol: "std.math.Math.abs",
+      exampleCall: "a.abs()",
+      zeroCostDesugar: true,
+      noMethodTable: true,
+      noAllocation: true,
+      nativeLoweringEquivalent: true,
+      sourceMappedDiagnostic: true,
+    }
+  }
+
+  pub fn decimalRound() -> MathExtensionLowering {
+    return MathExtensionLowering {
+      receiver: MathExtensionReceiver.Decimal,
+      receiverType: "T: DecimalNumber<T>",
+      methodName: "round",
+      targetSymbol: "std.math.decimal.DecimalNumber.round",
+      exampleCall: "price.round(scale: 2)?",
+      zeroCostDesugar: true,
+      noMethodTable: true,
+      noAllocation: true,
+      nativeLoweringEquivalent: true,
+      sourceMappedDiagnostic: true,
+    }
+  }
+
+  pub fn bigIntPowMod() -> MathExtensionLowering {
+    return MathExtensionLowering {
+      receiver: MathExtensionReceiver.BigInt,
+      receiverType: "BigInt",
+      methodName: "powMod",
+      targetSymbol: "std.math.bigint.BigInt.powMod",
+      exampleCall: "base.powMod(exp, modulus)?",
+      zeroCostDesugar: true,
+      noMethodTable: true,
+      noAllocation: true,
+      nativeLoweringEquivalent: true,
+      sourceMappedDiagnostic: true,
+    }
+  }
+
+  pub fn bigUintPowMod() -> MathExtensionLowering {
+    return MathExtensionLowering {
+      receiver: MathExtensionReceiver.BigUint,
+      receiverType: "BigUint",
+      methodName: "powMod",
+      targetSymbol: "std.math.bigint.BigUint.powMod",
+      exampleCall: "base.powMod(exp, modulus)?",
+      zeroCostDesugar: true,
+      noMethodTable: true,
+      noAllocation: true,
+      nativeLoweringEquivalent: true,
+      sourceMappedDiagnostic: true,
+    }
+  }
+
+  pub fn complexAbs() -> MathExtensionLowering {
+    return MathExtensionLowering {
+      receiver: MathExtensionReceiver.Complex,
+      receiverType: "Complex<T>",
+      methodName: "abs",
+      targetSymbol: "std.math.complex.Complex.abs",
+      exampleCall: "z.abs()",
+      zeroCostDesugar: true,
+      noMethodTable: true,
+      noAllocation: true,
+      nativeLoweringEquivalent: true,
+      sourceMappedDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: MathExtensionLowering) -> bool {
+    return self.receiverType != ""
+      && self.methodName != ""
+      && self.targetSymbol != ""
+      && self.exampleCall != ""
+      && self.zeroCostDesugar
+      && self.noMethodTable
+      && self.noAllocation
+      && self.nativeLoweringEquivalent
+      && self.sourceMappedDiagnostic
+  }
+}

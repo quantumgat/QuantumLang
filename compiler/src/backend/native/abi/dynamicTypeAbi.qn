@@ -1,0 +1,49 @@
+pub enum DynamicTypeAbiKind {
+  TaggedUnion
+  AnyBox
+  QAnyHandle
+}
+
+pub struct DynamicTypeAbi {
+  kind: DynamicTypeAbiKind,
+  abiClass: AbiClass,
+  tagBytes: usize,
+  payloadBytes: usize,
+  indirect: bool,
+  runtimeCheckRequired: bool,
+  hotPathCostVisible: bool,
+}
+
+pub fn dynamicTypeAbi(
+  kind: DynamicTypeAbiKind,
+  tagBytes: usize,
+  payloadBytes: usize,
+) -> DynamicTypeAbi {
+  return DynamicTypeAbi {
+    kind: kind,
+    abiClass: kind.abiClass(),
+    tagBytes: tagBytes,
+    payloadBytes: payloadBytes,
+    indirect: kind != DynamicTypeAbiKind.TaggedUnion,
+    runtimeCheckRequired: kind != DynamicTypeAbiKind.TaggedUnion,
+    hotPathCostVisible: true,
+  }
+}
+
+impl DynamicTypeAbiKind {
+  pub fn abiClass(self: DynamicTypeAbiKind) -> AbiClass {
+    match self {
+      DynamicTypeAbiKind.TaggedUnion => { return AbiClass.DynamicUnionAbi }
+      DynamicTypeAbiKind.AnyBox => { return AbiClass.DynamicAnyAbi }
+      DynamicTypeAbiKind.QAnyHandle => { return AbiClass.DynamicQAnyAbi }
+    }
+  }
+}
+
+impl DynamicTypeAbi {
+  pub fn valid(self: DynamicTypeAbi) -> bool {
+    return self.tagBytes > 0
+      && self.payloadBytes > 0
+      && self.hotPathCostVisible
+  }
+}

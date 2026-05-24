@@ -1,0 +1,47 @@
+pub struct QuantumRegion {
+  id: u64,
+  entryBlock: u64,
+  qubitCount: usize,
+  resultCount: usize,
+  qwhileLoopCount: usize,
+  boundedLoops: bool,
+  qirLoweringReady: bool,
+}
+
+pub fn quantumRegion(id: u64, entryBlock: u64, qubitCount: usize, resultCount: usize) -> QuantumRegion {
+  return QuantumRegion {
+    id: id,
+    entryBlock: entryBlock,
+    qubitCount: qubitCount,
+    resultCount: resultCount,
+    qwhileLoopCount: 0,
+    boundedLoops: true,
+    qirLoweringReady: true,
+  }
+}
+
+impl QuantumRegion {
+  pub fn regionId(self: QuantumRegion) -> u64 {
+    return self.id
+  }
+
+  pub fn entry(self: QuantumRegion) -> u64 {
+    return self.entryBlock
+  }
+
+  pub fn qubits(self: QuantumRegion) -> usize {
+    return self.qubitCount
+  }
+
+  pub fn results(self: QuantumRegion) -> usize {
+    return self.resultCount
+  }
+
+  pub fn qwhileReady(self: QuantumRegion) -> bool {
+    return self.id > 0
+      && self.entryBlock > 0
+      && self.qwhileLoopCount > 0
+      && self.boundedLoops
+      && self.qirLoweringReady
+  }
+}

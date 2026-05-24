@@ -1,0 +1,68 @@
+pub struct GraphPath {
+  nodes: Vec<NodeId>,
+  distance: usize,
+}
+
+impl GraphPath {
+  pub fn empty() -> GraphPath {
+    return GraphPath {
+      nodes: Vec<NodeId>.empty(),
+      distance: 0,
+    }
+  }
+
+  pub fn shortest<T>(graph: Graph<T>, from: NodeId, to: NodeId) -> Option<GraphPath> requires(alloc) {
+    if !graph.hasNode(from) || !graph.hasNode(to) {
+      return None
+    }
+    let mut frontier = Vec<NodeId>.empty().push(from)
+    let mut visited = Set<NodeId>.withCapacity(graph.len).insert(from)
+    let mut previous = Map<NodeId, NodeId>.withCapacity(graph.len)
+    while frontier.len > 0 {
+      let current = frontier[0]
+      frontier = frontier.removeAt(0)
+      if current == to {
+        return Some(GraphPath.rebuild(previous, from, to))
+      }
+      let edges = graph.nodes[current.value].edges
+      let mut index: usize = 0
+      while index < edges.len {
+        let next = edges[index].to
+        if !visited.contains(next) {
+          visited = visited.insert(next)
+          previous = previous.put(next, current)
+          frontier = frontier.push(next)
+        }
+        index = index + 1
+      }
+    }
+    return None
+  }
+
+  pub fn rebuild(previous: Map<NodeId, NodeId>, from: NodeId, to: NodeId) -> GraphPath requires(alloc) {
+    let mut reversed = Vec<NodeId>.empty().push(to)
+    let mut current = to
+    while current != from {
+      let parent = previous.get(current)
+      match parent {
+        Some(node) => {
+          current = node
+          reversed = reversed.push(node)
+        }
+        None => {
+          return GraphPath.empty()
+        }
+      }
+    }
+    let mut nodes = Vec<NodeId>.withCapacity(reversed.len)
+    let mut index = reversed.len
+    while index > 0 {
+      index = index - 1
+      nodes = nodes.push(reversed[index])
+    }
+    return GraphPath {
+      nodes: nodes,
+      distance: nodes.len - 1,
+    }
+  }
+}

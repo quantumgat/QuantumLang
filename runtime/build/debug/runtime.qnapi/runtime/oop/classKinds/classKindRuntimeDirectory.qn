@@ -1,0 +1,21 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopClassKindRuntimeDirectoryRow {
+  directory: string
+  modelFamily: string
+  implementationRoot: string
+  runtimeOwner: string
+  runtimeBoundary: string
+  noRequestLoopReflection: bool
+  hotPathErasedWhenPossible: bool
+}
+pub struct OopClassKindRuntimeDirectory {
+  kindCount: usize
+  indexRoot: string
+  structImplTraitRoot: string
+  classInterfacePolymorphismRoot: string
+  twoPartArchitecture: bool
+  genericOopEngineOwnsDispatch: bool
+  actorRuntimeOwnsActorClasses: bool
+  serviceRuntimeOwnsServiceClasses: bool
+  packageRuntimeOwnedThroughPluginOnly: bool
+}

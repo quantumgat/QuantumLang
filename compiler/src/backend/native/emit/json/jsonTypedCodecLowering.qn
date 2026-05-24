@@ -1,0 +1,35 @@
+pub struct JsonTypedCodecLowering {
+  typeName: string,
+  monomorphized: bool,
+  decodeBodyGenerated: bool,
+  encodeBodyGenerated: bool,
+  sizeBodyGenerated: bool,
+  directFieldLoads: bool,
+  directWriterStores: bool,
+  fieldMatcherInlined: bool,
+  primitiveParsersInlined: bool,
+  primitiveWritersInlined: bool,
+  exactNumberDiagnostics: bool,
+  noRuntimeReflection: bool,
+  noDynamicJsonValueTree: bool,
+  sourceMappedErrors: bool,
+}
+
+impl JsonTypedCodecLowering {
+  pub fn hotPathReady(self: JsonTypedCodecLowering) -> bool {
+    return self.typeName != ""
+      && self.monomorphized
+      && self.decodeBodyGenerated
+      && self.encodeBodyGenerated
+      && self.sizeBodyGenerated
+      && self.directFieldLoads
+      && self.directWriterStores
+      && self.fieldMatcherInlined
+      && self.primitiveParsersInlined
+      && self.primitiveWritersInlined
+      && self.exactNumberDiagnostics
+      && self.noRuntimeReflection
+      && self.noDynamicJsonValueTree
+      && self.sourceMappedErrors
+  }
+}

@@ -1,0 +1,37 @@
+pub enum HirForQuantumComptimeKind {
+  QforStaticRegister
+  QforIndexedRegister
+  QforControlledRegion
+  MeasurementControlledLoop
+  NestedQifQforRegion
+  RestrictedQwhileRegion
+  ComptimeFiniteExpansion
+  StaticFieldExpansion
+  ReflectionMetadataExpansion
+  BuilderChainExpansion
+}
+
+pub struct HirForQuantumComptimeHandoff {
+  sourceNode: u64,
+  kind: HirForQuantumComptimeKind,
+  iterableNode: u64,
+  bodyNode: u64,
+  analysis: ForQuantumComptimeFact,
+  qmirRegionReady: bool,
+  qirSourceReady: bool,
+  comptimeExpansionReady: bool,
+  mirReady: bool,
+}
+
+impl HirForQuantumComptimeHandoff {
+  pub fn complete(self: HirForQuantumComptimeHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.iterableNode > 0
+      && self.bodyNode > 0
+      && self.analysis.complete()
+      && self.qmirRegionReady
+      && self.qirSourceReady
+      && self.comptimeExpansionReady
+      && self.mirReady
+  }
+}

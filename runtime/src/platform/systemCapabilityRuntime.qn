@@ -1,0 +1,35 @@
+pub struct RuntimeSystemCapabilityGate {
+  capability: RuntimeCapabilityKind,
+  target: string,
+  allowed: bool,
+  diagnosticCode: string,
+  checkedBeforeDispatch: bool,
+}
+
+pub struct RuntimeRawHandleBoundary {
+  owner: string,
+  generationChecked: bool,
+  capabilityChecked: bool,
+  noUncheckedSyscall: bool,
+}
+
+impl RuntimeSystemCapabilityGate {
+  pub fn accepted(self: RuntimeSystemCapabilityGate) -> bool {
+    return self.target != ""
+      && self.diagnosticCode != ""
+      && self.checkedBeforeDispatch
+  }
+
+  pub fn canUse(self: RuntimeSystemCapabilityGate) -> bool {
+    return self.allowed && self.accepted()
+  }
+}
+
+impl RuntimeRawHandleBoundary {
+  pub fn safe(self: RuntimeRawHandleBoundary) -> bool {
+    return self.owner != ""
+      && self.generationChecked
+      && self.capabilityChecked
+      && self.noUncheckedSyscall
+  }
+}

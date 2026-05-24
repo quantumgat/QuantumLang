@@ -1,0 +1,25 @@
+pub struct QirSourceLoweringPlan {
+  sourceModule: string,
+  qmirRequired: bool,
+  runtimeBridgeRequired: bool,
+  diagnosticsRequired: bool,
+  qwhileLoweringRequired: bool,
+  qwhileBounded: bool,
+  qwhileSourceMapReady: bool,
+}
+
+impl QirSourceLoweringPlan {
+  pub fn accepted(self: QirSourceLoweringPlan) -> bool {
+    return self.sourceModule != ""
+      && self.qmirRequired
+      && self.diagnosticsRequired
+      && self.runtimeBridgeRequired
+  }
+
+  pub fn qwhileReady(self: QirSourceLoweringPlan) -> bool {
+    return self.accepted()
+      && self.qwhileLoweringRequired
+      && self.qwhileBounded
+      && self.qwhileSourceMapReady
+  }
+}

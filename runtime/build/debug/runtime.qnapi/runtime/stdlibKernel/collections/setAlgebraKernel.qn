@@ -1,0 +1,19 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct SetAlgebraKernel {
+  hashBacked: bool
+  membershipFastPath: bool
+  algebraFastPath: bool
+  builderFastPath: bool
+  iteratorSnapshotStable: bool
+  directCursorLowered: bool
+  cursorObjectErased: bool
+  optionWrapErased: bool
+  directBucketLoadLowered: bool
+  predicateInlineReady: bool
+  probeChecksMinimized: bool
+  iteratorCursorLowered: bool
+  toVecCursorLowered: bool
+  lookupInsertRemoveRawProbe: bool
+  growRehashRawBuckets: bool
+  benchmarkProofRequired: bool
+}

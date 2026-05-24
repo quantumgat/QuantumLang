@@ -1,0 +1,30 @@
+pub struct CompressionPolicy {
+  enabled: bool,
+  brotli: bool,
+  gzip: bool,
+  minBytes: usize,
+}
+
+pub struct Compression {
+}
+
+impl Compression {
+  pub fn auto() -> CompressionPolicy {
+    return CompressionPolicy.init(true, true, true, 1024)
+  }
+
+  pub fn disabled() -> CompressionPolicy {
+    return CompressionPolicy.init(false, false, false, 0)
+  }
+}
+
+impl CompressionPolicy {
+  pub fn init(enabled: bool, brotli: bool, gzip: bool, minBytes: usize) -> CompressionPolicy {
+    return CompressionPolicy {
+      enabled: enabled,
+      brotli: brotli,
+      gzip: gzip,
+      minBytes: minBytes,
+    }
+  }
+}

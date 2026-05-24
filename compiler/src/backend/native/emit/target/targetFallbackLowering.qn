@@ -1,0 +1,19 @@
+pub struct TargetFallbackLowering {
+  fallbackAvailable: bool,
+  generatedFallback: bool,
+  emitsDiagnostic: bool,
+}
+
+impl TargetFallbackLowering {
+  pub fn init(fallbackAvailable: bool, generatedFallback: bool, emitsDiagnostic: bool) -> TargetFallbackLowering {
+    return TargetFallbackLowering {
+      fallbackAvailable: fallbackAvailable,
+      generatedFallback: generatedFallback,
+      emitsDiagnostic: emitsDiagnostic,
+    }
+  }
+
+  pub fn accepted(self: TargetFallbackLowering) -> bool {
+    return self.generatedFallback == false && (self.fallbackAvailable || self.emitsDiagnostic)
+  }
+}

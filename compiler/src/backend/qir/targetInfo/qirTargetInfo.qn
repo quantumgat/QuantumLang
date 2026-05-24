@@ -1,0 +1,12 @@
+pub struct QirTargetInfo {
+  targetName: string,
+  profileName: string,
+  supportsShots: bool,
+  supportsProviderMetadata: bool,
+}
+
+impl QirTargetInfo {
+  pub fn accepted(self: QirTargetInfo) -> bool {
+    return self.targetName != "" && self.profileName != "" && self.supportsProviderMetadata
+  }
+}

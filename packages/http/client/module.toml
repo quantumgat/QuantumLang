@@ -1,0 +1,6 @@
+[module]
+name = "http.client"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-client"

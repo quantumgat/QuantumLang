@@ -1,0 +1,25 @@
+pub enum RuntimeNetIncidentKind {
+  Reset
+  Timeout
+  Cancelled
+  Backpressure
+  DoubleClose
+  StaleHandle
+  PlatformError
+}
+
+pub struct RuntimeNetIncident {
+  kind: RuntimeNetIncidentKind,
+  handleGeneration: u64,
+  noCoredump: bool,
+}
+
+impl RuntimeNetIncident {
+  pub fn safe(self: RuntimeNetIncident) -> bool {
+    return self.noCoredump && self.handleGeneration > 0
+  }
+
+  pub fn reportable(self: RuntimeNetIncident) -> bool {
+    return self.safe()
+  }
+}

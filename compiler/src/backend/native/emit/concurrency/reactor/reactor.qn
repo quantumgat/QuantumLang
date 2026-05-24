@@ -1,0 +1,42 @@
+pub enum NativeReactorLoweringKind {
+  LinuxEpoll
+  LinuxIoUring
+  MacosKqueue
+  WindowsIocp
+  PortablePoll
+  RegisterInterest
+  Wakeup
+  TimerArm
+  Cancellation
+  DeterministicReplay
+}
+
+pub struct NativeReactorLowering {
+  instruction: u64,
+  kind: NativeReactorLoweringKind,
+  targetReady: bool,
+  runtimeAbiReady: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeReactorLowering {
+  pub fn init(
+    instruction: u64,
+    kind: NativeReactorLoweringKind,
+    targetReady: bool,
+    runtimeAbiReady: bool,
+    noGeneratedFallback: bool,
+  ) -> NativeReactorLowering {
+    return NativeReactorLowering {
+      instruction: instruction,
+      kind: kind,
+      targetReady: targetReady,
+      runtimeAbiReady: runtimeAbiReady,
+      noGeneratedFallback: noGeneratedFallback,
+    }
+  }
+
+  pub fn complete(self: NativeReactorLowering) -> bool {
+    return self.instruction > 0 && self.targetReady && self.runtimeAbiReady && self.noGeneratedFallback
+  }
+}

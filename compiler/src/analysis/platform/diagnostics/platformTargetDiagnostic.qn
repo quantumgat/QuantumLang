@@ -1,0 +1,12 @@
+pub struct PlatformTargetDiagnostic {
+  target: string,
+  code: string,
+  blocksBuild: bool,
+  hasFixIt: bool,
+}
+
+impl PlatformTargetDiagnostic {
+  pub fn reportable(self: PlatformTargetDiagnostic) -> bool {
+    return self.target != "" && self.code != "" && self.blocksBuild
+  }
+}

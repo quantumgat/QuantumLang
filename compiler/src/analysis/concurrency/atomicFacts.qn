@@ -1,0 +1,17 @@
+pub enum AtomicOrdering {
+  Relaxed
+  Acquire
+  Release
+  AcqRel
+  SeqCst
+}
+
+pub struct AtomicFacts {
+  node: u64,
+  ordering: AtomicOrdering,
+  realtimeSafe: bool,
+}
+
+pub fn atomicFacts(node: u64, ordering: AtomicOrdering, realtimeSafe: bool) -> AtomicFacts {
+  return AtomicFacts { node: node, ordering: ordering, realtimeSafe: realtimeSafe }
+}

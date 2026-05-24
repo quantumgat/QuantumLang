@@ -1,0 +1,48 @@
+pub enum SymbolKind {
+  PackageSymbol
+  ModuleSymbol
+  FunctionSymbol
+  TypeSymbol
+  TraitSymbol
+  ClassSymbol
+  InterfaceSymbol
+  FieldSymbol
+  LocalSymbol
+  ParameterSymbol
+}
+
+pub struct Symbol {
+  id: u64,
+  name: string,
+  kind: SymbolKind,
+  spanStart: usize,
+  spanEnd: usize,
+}
+
+pub fn symbol(id: u64, name: string, kind: SymbolKind, spanStart: usize, spanEnd: usize) -> Symbol {
+  return Symbol {
+    id: id,
+    name: name,
+    kind: kind,
+    spanStart: spanStart,
+    spanEnd: spanEnd,
+  }
+}
+
+impl Symbol {
+  pub fn symbolId(self: Symbol) -> u64 {
+    return self.id
+  }
+
+  pub fn symbolName(self: Symbol) -> string {
+    return self.name
+  }
+
+  pub fn symbolKind(self: Symbol) -> SymbolKind {
+    return self.kind
+  }
+
+  pub fn isValue(self: Symbol) -> bool {
+    return self.kind == SymbolKind.LocalSymbol || self.kind == SymbolKind.ParameterSymbol || self.kind == SymbolKind.FieldSymbol
+  }
+}

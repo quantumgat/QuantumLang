@@ -1,0 +1,19 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum ExactNumericKernelFamily {
+  CheckedInteger
+  WideInteger
+  Decimal
+  BigInt
+  BigUint
+  Rational
+  Fixed
+}
+pub struct ExactNumericKernel {
+  family: ExactNumericKernelFamily
+  overflowChecked: bool
+  divideByZeroChecked: bool
+  invalidShiftChecked: bool
+  resourceLimitChecked: bool
+  noHiddenFloatFallback: bool
+  noCoredump: bool
+}

@@ -1,0 +1,15 @@
+pub struct InterfaceHandle {
+  typeId: u64,
+  tableId: u64,
+  generationChecked: bool,
+}
+
+pub fn interfaceHandle(typeId: u64, tableId: u64) -> InterfaceHandle {
+  return InterfaceHandle { typeId: typeId, tableId: tableId, generationChecked: true }
+}
+
+impl InterfaceHandle {
+  pub fn canInvoke(self: InterfaceHandle) -> bool {
+    return self.tableId > 0 && self.generationChecked
+  }
+}

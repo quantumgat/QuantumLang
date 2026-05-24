@@ -1,0 +1,259 @@
+pub struct BinaryWriter {
+  view: BinaryMutView,
+  offset: usize,
+}
+
+impl BinaryWriter {
+  pub fn fromView(view: BinaryMutView) -> BinaryWriter {
+    return BinaryWriter { view: view, offset: 0 }
+  }
+
+  pub fn position(self: BinaryWriter) -> usize {
+    return self.offset
+  }
+
+  pub fn require(self: BinaryWriter, bytes: usize) -> Result<BinaryWriter, BinaryError> {
+    if self.offset + bytes > self.view.len {
+      return Err(BinaryError.init(BinaryErrorKind.WriterOverflow, self.offset, "binary writer out of space"))
+    }
+    return Ok(self)
+  }
+
+  pub fn advance(self: BinaryWriter, bytes: usize) -> BinaryWriter {
+    return BinaryWriter { view: self.view, offset: self.offset + bytes }
+  }
+
+  pub fn writeU8(self: BinaryWriter, value: u8) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(1)?
+    binaryWriteU8(checked, value)
+    return Ok(checked.advance(1))
+  }
+
+  pub fn writeI8(self: BinaryWriter, value: i8) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(1)?
+    binaryWriteI8(checked, value)
+    return Ok(checked.advance(1))
+  }
+
+  pub fn writeU16(self: BinaryWriter, value: u16, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(2)?
+    binaryWriteU16(checked, value, endian)
+    return Ok(checked.advance(2))
+  }
+
+  pub fn writeI16(self: BinaryWriter, value: i16, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(2)?
+    binaryWriteI16(checked, value, endian)
+    return Ok(checked.advance(2))
+  }
+
+  pub fn writeU32(self: BinaryWriter, value: u32, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(4)?
+    binaryWriteU32(checked, value, endian)
+    return Ok(checked.advance(4))
+  }
+
+  pub fn writeI32(self: BinaryWriter, value: i32, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(4)?
+    binaryWriteI32(checked, value, endian)
+    return Ok(checked.advance(4))
+  }
+
+  pub fn writeU64(self: BinaryWriter, value: u64, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(8)?
+    binaryWriteU64(checked, value, endian)
+    return Ok(checked.advance(8))
+  }
+
+  pub fn writeI64(self: BinaryWriter, value: i64, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(8)?
+    binaryWriteI64(checked, value, endian)
+    return Ok(checked.advance(8))
+  }
+
+  pub fn writeU128(self: BinaryWriter, value: u128, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(16)?
+    binaryWriteU128(checked, value, endian)
+    return Ok(checked.advance(16))
+  }
+
+  pub fn writeI128(self: BinaryWriter, value: i128, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(16)?
+    binaryWriteI128(checked, value, endian)
+    return Ok(checked.advance(16))
+  }
+
+  pub fn writeU256(self: BinaryWriter, value: u256, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(32)?
+    binaryWriteU256(checked, value, endian)
+    return Ok(checked.advance(32))
+  }
+
+  pub fn writeI256(self: BinaryWriter, value: i256, endian: BinaryEndian) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(32)?
+    binaryWriteI256(checked, value, endian)
+    return Ok(checked.advance(32))
+  }
+
+  /**
+    Writes one unsigned byte.
+
+    example:
+      writer.u8(age)?
+
+    effects: writes one byte into the borrowed binary buffer
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn u8(self: BinaryWriter, value: u8) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU8(value)
+  }
+
+  pub fn i8(self: BinaryWriter, value: i8) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI8(value)
+  }
+
+  pub fn u16le(self: BinaryWriter, value: u16) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU16(value, BinaryEndian.Little)
+  }
+
+  pub fn u16be(self: BinaryWriter, value: u16) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU16(value, BinaryEndian.Big)
+  }
+
+  pub fn i16le(self: BinaryWriter, value: i16) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI16(value, BinaryEndian.Little)
+  }
+
+  pub fn i16be(self: BinaryWriter, value: i16) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI16(value, BinaryEndian.Big)
+  }
+
+  /**
+    Writes a little-endian unsigned 32-bit value.
+
+    example:
+      writer.u32le(user.id)?
+
+    effects: writes four bytes into the borrowed binary buffer
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn u32le(self: BinaryWriter, value: u32) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU32(value, BinaryEndian.Little)
+  }
+
+  pub fn u32be(self: BinaryWriter, value: u32) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU32(value, BinaryEndian.Big)
+  }
+
+  pub fn i32le(self: BinaryWriter, value: i32) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI32(value, BinaryEndian.Little)
+  }
+
+  pub fn i32be(self: BinaryWriter, value: i32) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI32(value, BinaryEndian.Big)
+  }
+
+  pub fn u64le(self: BinaryWriter, value: u64) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU64(value, BinaryEndian.Little)
+  }
+
+  pub fn u64be(self: BinaryWriter, value: u64) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU64(value, BinaryEndian.Big)
+  }
+
+  pub fn i64le(self: BinaryWriter, value: i64) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI64(value, BinaryEndian.Little)
+  }
+
+  pub fn i64be(self: BinaryWriter, value: i64) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI64(value, BinaryEndian.Big)
+  }
+
+  pub fn u128le(self: BinaryWriter, value: u128) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU128(value, BinaryEndian.Little)
+  }
+
+  pub fn u128be(self: BinaryWriter, value: u128) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU128(value, BinaryEndian.Big)
+  }
+
+  pub fn i128le(self: BinaryWriter, value: i128) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI128(value, BinaryEndian.Little)
+  }
+
+  pub fn i128be(self: BinaryWriter, value: i128) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI128(value, BinaryEndian.Big)
+  }
+
+  pub fn u256le(self: BinaryWriter, value: u256) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU256(value, BinaryEndian.Little)
+  }
+
+  pub fn u256be(self: BinaryWriter, value: u256) -> Result<BinaryWriter, BinaryError> {
+    return self.writeU256(value, BinaryEndian.Big)
+  }
+
+  pub fn i256le(self: BinaryWriter, value: i256) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI256(value, BinaryEndian.Little)
+  }
+
+  pub fn i256be(self: BinaryWriter, value: i256) -> Result<BinaryWriter, BinaryError> {
+    return self.writeI256(value, BinaryEndian.Big)
+  }
+
+  /**
+    Writes a borrowed byte view without copying into a temporary object.
+
+    example:
+      writer.bytes(payload)?
+
+    effects: writes payload bytes into the borrowed binary buffer
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn bytes(self: BinaryWriter, payload: BinaryView) -> Result<BinaryWriter, BinaryError> {
+    let checked = self.require(payload.len)?
+    binaryWriteBytes(checked, payload)
+    return Ok(checked.advance(payload.len))
+  }
+
+  pub fn varU64(self: BinaryWriter, value: u64) -> Result<BinaryWriter, BinaryError> {
+    return binaryWriteVarU64(self, value)
+  }
+
+  /**
+    Finishes the writer and returns the written binary view.
+
+    example:
+      writer.u64le(user.id)?.u8(user.age)?.finish()
+
+    effects: validates the borrowed writer state
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn finish(self: BinaryWriter) -> Result<BinaryView, BinaryError> {
+    return Ok(binaryWriterFinish(self))
+  }
+}
+
+fn binaryWriteU8(writer: BinaryWriter, value: u8) -> Unit
+fn binaryWriteI8(writer: BinaryWriter, value: i8) -> Unit
+fn binaryWriteU16(writer: BinaryWriter, value: u16, endian: BinaryEndian) -> Unit
+fn binaryWriteI16(writer: BinaryWriter, value: i16, endian: BinaryEndian) -> Unit
+fn binaryWriteU32(writer: BinaryWriter, value: u32, endian: BinaryEndian) -> Unit
+fn binaryWriteI32(writer: BinaryWriter, value: i32, endian: BinaryEndian) -> Unit
+fn binaryWriteU64(writer: BinaryWriter, value: u64, endian: BinaryEndian) -> Unit
+fn binaryWriteI64(writer: BinaryWriter, value: i64, endian: BinaryEndian) -> Unit
+fn binaryWriteU128(writer: BinaryWriter, value: u128, endian: BinaryEndian) -> Unit
+fn binaryWriteI128(writer: BinaryWriter, value: i128, endian: BinaryEndian) -> Unit
+fn binaryWriteU256(writer: BinaryWriter, value: u256, endian: BinaryEndian) -> Unit
+fn binaryWriteI256(writer: BinaryWriter, value: i256, endian: BinaryEndian) -> Unit
+fn binaryWriteBytes(writer: BinaryWriter, payload: BinaryView) -> Unit
+fn binaryWriteVarU64(writer: BinaryWriter, value: u64) -> Result<BinaryWriter, BinaryError>
+fn binaryWriterFinish(writer: BinaryWriter) -> BinaryView

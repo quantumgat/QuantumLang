@@ -1,0 +1,27 @@
+pub struct CompilerOwnershipGraph {
+  pub sessionOwnsDriver: bool,
+  pub sessionOwnsQueryDatabase: bool,
+  pub sessionOwnsPipeline: bool,
+  pub sessionOwnsPackageResolver: bool,
+  pub sessionOwnsBackendRegistry: bool,
+}
+
+pub fn compilerOwnershipGraph() -> CompilerOwnershipGraph {
+  return CompilerOwnershipGraph {
+    sessionOwnsDriver: true,
+    sessionOwnsQueryDatabase: true,
+    sessionOwnsPipeline: true,
+    sessionOwnsPackageResolver: true,
+    sessionOwnsBackendRegistry: true,
+  }
+}
+
+impl CompilerOwnershipGraph {
+  pub fn isComplete(self) -> bool {
+    return self.sessionOwnsDriver &&
+      self.sessionOwnsQueryDatabase &&
+      self.sessionOwnsPipeline &&
+      self.sessionOwnsPackageResolver &&
+      self.sessionOwnsBackendRegistry
+  }
+}

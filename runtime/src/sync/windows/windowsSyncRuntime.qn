@@ -1,0 +1,12 @@
+pub struct WindowsSyncRuntime {
+  target: string,
+  slimRwLock: bool,
+  conditionVariable: bool,
+  waitOnAddress: bool,
+}
+
+impl WindowsSyncRuntime {
+  pub fn accepted(self: WindowsSyncRuntime) -> bool {
+    return self.target != "" && self.slimRwLock && self.conditionVariable
+  }
+}

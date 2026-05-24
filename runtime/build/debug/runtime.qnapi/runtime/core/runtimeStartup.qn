@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeStartupMode {
+  CompilerLinkedStartup,
+  TestStartup,
+}
+pub struct RuntimeStartup {
+  mode: RuntimeStartupMode
+  initializesHandles: bool
+  initializesMemory: bool
+  initializesPlatform: bool
+  publicCommand: bool
+}
+pub extern "qnpkg" {
+  pub fn compilerLinkedStartup() -> RuntimeStartup
+}

@@ -1,0 +1,21 @@
+pub struct LinuxReactorRuntime {
+  epollReady: bool,
+  ioUringReady: bool,
+  eventfdReady: bool,
+  timerfdReady: bool,
+}
+
+impl LinuxReactorRuntime {
+  pub fn init(epollReady: bool, ioUringReady: bool, eventfdReady: bool, timerfdReady: bool) -> LinuxReactorRuntime {
+    return LinuxReactorRuntime {
+      epollReady: epollReady,
+      ioUringReady: ioUringReady,
+      eventfdReady: eventfdReady,
+      timerfdReady: timerfdReady,
+    }
+  }
+
+  pub fn ready(self: LinuxReactorRuntime) -> bool {
+    return self.epollReady && self.eventfdReady && self.timerfdReady
+  }
+}

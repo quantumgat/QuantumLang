@@ -1,0 +1,39 @@
+pub struct RuntimeErrorAnalysisReport {
+  reportId: u64,
+  subsystem: string,
+  rootCause: string,
+  likelyFix: string,
+  recoveryCount: usize,
+  groupedCount: usize,
+  correlationId: string,
+  traceId: string,
+  redacted: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeErrorAnalysisReport {
+  pub fn create(reportId: u64, subsystem: string, rootCause: string, likelyFix: string) -> RuntimeErrorAnalysisReport {
+    return RuntimeErrorAnalysisReport {
+      reportId: reportId,
+      subsystem: subsystem,
+      rootCause: rootCause,
+      likelyFix: likelyFix,
+      recoveryCount: 0,
+      groupedCount: 1,
+      correlationId: "",
+      traceId: "",
+      redacted: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn publishable(self: RuntimeErrorAnalysisReport) -> bool {
+    return self.reportId > 0
+      && self.subsystem != ""
+      && self.rootCause != ""
+      && self.likelyFix != ""
+      && self.groupedCount > 0
+      && self.redacted
+      && self.noCoredump
+  }
+}

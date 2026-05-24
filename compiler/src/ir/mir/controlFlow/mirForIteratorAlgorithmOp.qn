@@ -1,0 +1,36 @@
+pub enum MirForIteratorAlgorithmOpKind {
+  FusedTransformLoop
+  FusedPredicateLoop
+  PreSizedCollectLoop
+  ScalarReductionLoop
+  EarlyExitPredicateLoop
+  ZipEnumerateLoop
+  ChainTakeSkipUniqueLoop
+}
+
+pub struct MirForIteratorAlgorithmOp {
+  instruction: u64,
+  kind: MirForIteratorAlgorithmOpKind,
+  cursorLowered: bool,
+  callbackInlined: bool,
+  transformFused: bool,
+  terminalLowered: bool,
+  noIntermediateVec: bool,
+  allocationFree: bool,
+  boundsHoisted: bool,
+  safeFailureReady: bool,
+}
+
+impl MirForIteratorAlgorithmOp {
+  pub fn complete(self: MirForIteratorAlgorithmOp) -> bool {
+    return self.instruction > 0
+      && self.cursorLowered
+      && self.callbackInlined
+      && self.transformFused
+      && self.terminalLowered
+      && self.noIntermediateVec
+      && self.allocationFree
+      && self.boundsHoisted
+      && self.safeFailureReady
+  }
+}

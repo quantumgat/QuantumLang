@@ -1,0 +1,35 @@
+import request::{HttpRequest}
+
+pub struct HttpParseResult {
+  request: HttpRequest,
+  consumedBytes: usize,
+  keepAlive: bool,
+  pipelinedBytes: usize,
+}
+
+impl HttpParseResult {
+  pub fn init(request: HttpRequest, consumedBytes: usize, keepAlive: bool, pipelinedBytes: usize) -> HttpParseResult {
+    return HttpParseResult {
+      request: request,
+      consumedBytes: consumedBytes,
+      keepAlive: keepAlive,
+      pipelinedBytes: pipelinedBytes,
+    }
+  }
+
+  pub fn request(self: HttpParseResult) -> HttpRequest {
+    return self.request
+  }
+
+  pub fn consumedBytes(self: HttpParseResult) -> usize {
+    return self.consumedBytes
+  }
+
+  pub fn keepAlive(self: HttpParseResult) -> bool {
+    return self.keepAlive
+  }
+
+  pub fn pipelinedBytes(self: HttpParseResult) -> usize {
+    return self.pipelinedBytes
+  }
+}

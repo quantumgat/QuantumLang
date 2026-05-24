@@ -1,0 +1,6 @@
+[module]
+name = "arch"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "architecture"

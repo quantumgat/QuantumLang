@@ -1,0 +1,21 @@
+pub struct ArtifactGraph {
+  rootOutput: string,
+  objectCount: usize,
+  deterministic: bool,
+  generatedSourceArtifacts: bool,
+}
+
+pub fn artifactGraph(rootOutput: string) -> ArtifactGraph {
+  return ArtifactGraph {
+    rootOutput: rootOutput,
+    objectCount: 0,
+    deterministic: true,
+    generatedSourceArtifacts: false,
+  }
+}
+
+impl ArtifactGraph {
+  pub fn isNativeOnly(self) -> bool {
+    return self.deterministic && self.generatedSourceArtifacts == false
+  }
+}

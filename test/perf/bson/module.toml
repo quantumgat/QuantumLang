@@ -1,0 +1,6 @@
+[module]
+name = "test.perf.bson"
+visibility = "test"
+root = "mod.qn"
+owner = "test"
+role = "bson-benchmark-proof"

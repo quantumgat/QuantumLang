@@ -1,0 +1,50 @@
+pub struct BumpAllocator {
+  capacityBytes: usize,
+  offsetBytes: usize,
+  generation: u64,
+}
+
+impl BumpAllocator {
+  pub fn withCapacity(capacityBytes: usize, generation: u64) -> BumpAllocator {
+    return BumpAllocator {
+      capacityBytes: capacityBytes,
+      offsetBytes: 0,
+      generation: generation,
+    }
+  }
+
+  pub fn allocate(self: BumpAllocator, bytes: usize, align: usize) -> Result<BumpAllocator, ArenaError> {
+    if align == 0 {
+      return Err(ArenaError.init(ArenaErrorKind.InvalidLayout))
+    }
+    let aligned = self.alignUp(self.offsetBytes, align)
+    if aligned + bytes > self.capacityBytes {
+      return Err(ArenaError.init(ArenaErrorKind.CapacityExceeded))
+    }
+    return Ok(BumpAllocator {
+      capacityBytes: self.capacityBytes,
+      offsetBytes: aligned + bytes,
+      generation: self.generation,
+    })
+  }
+
+  pub fn reset(self: BumpAllocator, generation: u64) -> BumpAllocator {
+    return BumpAllocator {
+      capacityBytes: self.capacityBytes,
+      offsetBytes: 0,
+      generation: generation,
+    }
+  }
+
+  pub fn usedBytes(self: BumpAllocator) -> usize {
+    return self.offsetBytes
+  }
+
+  pub fn alignUp(self: BumpAllocator, value: usize, align: usize) -> usize {
+    let remainder = value % align
+    if remainder == 0 {
+      return value
+    }
+    return value + align - remainder
+  }
+}

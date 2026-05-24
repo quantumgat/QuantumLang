@@ -1,0 +1,77 @@
+impl<T> Stream<T> {
+  /**
+    Folds stream items without materializing the stream.
+
+    example:
+      let total = await stream.reduce(0, (sum, row) => sum + row.amount)?
+
+    effects: async
+    complexity: O(n)
+    allocation: none when lowered as a fused stream hot path
+    stability: public since 0.1
+  */
+  pub async fn reduce<U>(self: Stream<T>, seed: U, reducer: fn(U, T) -> U) -> Result<U, StreamError> {
+    let mut total: U = seed
+    while item = await self.next()? {
+      total = reducer(total, item)
+    }
+    return Ok(total)
+  }
+
+  /**
+    Returns the first stream item accepted by predicate.
+
+    example:
+      let user = await stream.find(user => user.id == wanted)?
+
+    effects: async
+    complexity: O(n)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub async fn find(self: Stream<T>, predicate: fn(T) -> bool) -> Result<Option<T>, StreamError> {
+    while item = await self.next()? {
+      if predicate(item) {
+        return Ok(Some(item))
+      }
+    }
+    return Ok(None)
+  }
+
+  /**
+    Materializes stream items into a Vec.
+
+    example:
+      let rows = await stream.collect()?
+
+    effects: async alloc
+    complexity: O(n)
+    allocation: allocates result storage
+    stability: public since 0.1
+  */
+  pub async fn collect(self: Stream<T>) -> Result<Vec<T>, StreamError> requires(alloc) {
+    let mut result = Vec<T>()
+    while item = await self.next()? {
+      result = result.push(item)
+    }
+    return Ok(result)
+  }
+
+  /**
+    Runs a handler for every stream item.
+
+    example:
+      await stream.forEach(row => writer.write(row))?
+
+    effects: async
+    complexity: O(n)
+    allocation: none when handler is inlined
+    stability: public since 0.1
+  */
+  pub async fn forEach(self: Stream<T>, handler: fn(T) -> Result<Unit, StreamError>) -> Result<Unit, StreamError> {
+    while item = await self.next()? {
+      handler(item)?
+    }
+    return Ok(())
+  }
+}

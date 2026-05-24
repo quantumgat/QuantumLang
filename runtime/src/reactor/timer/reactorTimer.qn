@@ -1,0 +1,21 @@
+pub struct RuntimeReactorTimer {
+  timerId: u64,
+  deadlineMillis: u64,
+  cancellationLinked: bool,
+  staleWakeSuppressed: bool,
+}
+
+impl RuntimeReactorTimer {
+  pub fn init(timerId: u64, deadlineMillis: u64, cancellationLinked: bool, staleWakeSuppressed: bool) -> RuntimeReactorTimer {
+    return RuntimeReactorTimer {
+      timerId: timerId,
+      deadlineMillis: deadlineMillis,
+      cancellationLinked: cancellationLinked,
+      staleWakeSuppressed: staleWakeSuppressed,
+    }
+  }
+
+  pub fn safe(self: RuntimeReactorTimer) -> bool {
+    return self.timerId > 0 && self.deadlineMillis > 0 && self.cancellationLinked && self.staleWakeSuppressed
+  }
+}

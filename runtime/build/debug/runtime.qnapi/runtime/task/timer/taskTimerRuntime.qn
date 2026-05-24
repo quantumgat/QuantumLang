@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeTaskTimer {
+  taskId: u64
+  timerId: u64
+  cancellationTokenId: u64
+  staleWakeSuppressed: bool
+}

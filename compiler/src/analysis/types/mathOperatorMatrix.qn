@@ -1,0 +1,131 @@
+import analysis.types::{BuiltinPrimitiveTypeId, PrimitiveOperatorKind}
+
+pub enum MathOperatorTypeFamily {
+  SignedInteger
+  UnsignedInteger
+  Float
+  Decimal
+  FixedDecimal
+  BigInt
+  BigUint
+  Complex
+  Vector
+  Matrix
+  Tensor
+  Field
+}
+
+pub enum MathOperatorMatrixAvailability {
+  DirectNative
+  RuntimeKernel
+  Rejected
+}
+
+pub struct MathOperatorMatrixEntry {
+  operator: PrimitiveOperatorKind,
+  typeFamily: MathOperatorTypeFamily,
+  representativeType: BuiltinPrimitiveTypeId,
+  token: string,
+  availability: MathOperatorMatrixAvailability,
+  mutatesOperand: bool,
+  mutableLvalueRequired: bool,
+  returnsOldValue: bool,
+  sourceMappedDiagnostic: bool,
+  noImport: bool,
+  noCoredump: bool,
+}
+
+impl MathOperatorMatrixEntry {
+  pub fn direct(
+    operator: PrimitiveOperatorKind,
+    typeFamily: MathOperatorTypeFamily,
+    representativeType: BuiltinPrimitiveTypeId,
+    token: string,
+  ) -> MathOperatorMatrixEntry {
+    return MathOperatorMatrixEntry {
+      operator: operator,
+      typeFamily: typeFamily,
+      representativeType: representativeType,
+      token: token,
+      availability: MathOperatorMatrixAvailability.DirectNative,
+      mutatesOperand: false,
+      mutableLvalueRequired: false,
+      returnsOldValue: false,
+      sourceMappedDiagnostic: true,
+      noImport: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn runtime(
+    operator: PrimitiveOperatorKind,
+    typeFamily: MathOperatorTypeFamily,
+    representativeType: BuiltinPrimitiveTypeId,
+    token: string,
+  ) -> MathOperatorMatrixEntry {
+    return MathOperatorMatrixEntry {
+      operator: operator,
+      typeFamily: typeFamily,
+      representativeType: representativeType,
+      token: token,
+      availability: MathOperatorMatrixAvailability.RuntimeKernel,
+      mutatesOperand: false,
+      mutableLvalueRequired: false,
+      returnsOldValue: false,
+      sourceMappedDiagnostic: true,
+      noImport: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn increment(
+    operator: PrimitiveOperatorKind,
+    typeFamily: MathOperatorTypeFamily,
+    representativeType: BuiltinPrimitiveTypeId,
+    token: string,
+    returnsOldValue: bool,
+  ) -> MathOperatorMatrixEntry {
+    return MathOperatorMatrixEntry {
+      operator: operator,
+      typeFamily: typeFamily,
+      representativeType: representativeType,
+      token: token,
+      availability: MathOperatorMatrixAvailability.DirectNative,
+      mutatesOperand: true,
+      mutableLvalueRequired: true,
+      returnsOldValue: returnsOldValue,
+      sourceMappedDiagnostic: true,
+      noImport: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn rejected(
+    operator: PrimitiveOperatorKind,
+    typeFamily: MathOperatorTypeFamily,
+    representativeType: BuiltinPrimitiveTypeId,
+    token: string,
+  ) -> MathOperatorMatrixEntry {
+    return MathOperatorMatrixEntry {
+      operator: operator,
+      typeFamily: typeFamily,
+      representativeType: representativeType,
+      token: token,
+      availability: MathOperatorMatrixAvailability.Rejected,
+      mutatesOperand: false,
+      mutableLvalueRequired: false,
+      returnsOldValue: false,
+      sourceMappedDiagnostic: true,
+      noImport: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: MathOperatorMatrixEntry) -> bool {
+    return self.token != ""
+      && self.sourceMappedDiagnostic
+      && self.noImport
+      && self.noCoredump
+      && (!self.mutatesOperand || self.mutableLvalueRequired)
+  }
+}

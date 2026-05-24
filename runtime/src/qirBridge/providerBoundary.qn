@@ -1,0 +1,21 @@
+pub struct ProviderBoundary {
+  pub providerDispatchBoundary: bool,
+  pub shotExecutionBoundary: bool,
+  pub hotShotLoopDispatch: bool,
+}
+
+pub fn providerBoundary() -> ProviderBoundary {
+  return ProviderBoundary {
+    providerDispatchBoundary: true,
+    shotExecutionBoundary: true,
+    hotShotLoopDispatch: false,
+  }
+}
+
+impl ProviderBoundary {
+  pub fn isHotPathSafe(self) -> bool {
+    return self.providerDispatchBoundary &&
+      self.shotExecutionBoundary &&
+      self.hotShotLoopDispatch == false
+  }
+}

@@ -1,0 +1,15 @@
+pub struct MemorySnapshot {
+  allocationCount: usize,
+  arenaCount: usize,
+  poolCount: usize,
+}
+
+pub fn memorySnapshot(allocationCount: usize, arenaCount: usize, poolCount: usize) -> MemorySnapshot {
+  return MemorySnapshot { allocationCount: allocationCount, arenaCount: arenaCount, poolCount: poolCount }
+}
+
+impl MemorySnapshot {
+  pub fn ownedRows(self: MemorySnapshot) -> usize {
+    return self.allocationCount + self.arenaCount + self.poolCount
+  }
+}

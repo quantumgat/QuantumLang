@@ -1,0 +1,39 @@
+pub struct OopEngineSnapshot {
+  typeCount: usize,
+  vtableCount: usize,
+  interfaceObjectCount: usize,
+  dispatchEntryCount: usize,
+  reflectionRecordCount: usize,
+  staleRejections: usize,
+  downcastFailures: usize,
+  deterministicOrder: bool,
+  reflectionColdPath: bool,
+}
+
+pub fn oopEngineSnapshot(
+  typeCount: usize,
+  vtableCount: usize,
+  interfaceObjectCount: usize,
+  dispatchEntryCount: usize,
+  reflectionRecordCount: usize,
+  staleRejections: usize,
+  downcastFailures: usize,
+) -> OopEngineSnapshot {
+  return OopEngineSnapshot {
+    typeCount: typeCount,
+    vtableCount: vtableCount,
+    interfaceObjectCount: interfaceObjectCount,
+    dispatchEntryCount: dispatchEntryCount,
+    reflectionRecordCount: reflectionRecordCount,
+    staleRejections: staleRejections,
+    downcastFailures: downcastFailures,
+    deterministicOrder: true,
+    reflectionColdPath: true,
+  }
+}
+
+impl OopEngineSnapshot {
+  pub fn releaseDeterministic(self: OopEngineSnapshot) -> bool {
+    return self.deterministicOrder && self.reflectionColdPath
+  }
+}

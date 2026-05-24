@@ -1,0 +1,20 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct Module {
+  name: string
+  controllerCount: usize
+  providerCount: usize
+  routeBlockCount: usize
+}
+pub abstract class ModuleBuilder {
+  name: string
+  controllerCount: usize
+  providerCount: usize
+  routeBlockCount: usize
+  middlewareCount: usize
+  pub init(name: string) {}
+  pub fn controller(self: ModuleBuilder, name: string) -> ModuleBuilder
+  pub fn provider(self: ModuleBuilder, name: string) -> ModuleBuilder
+  pub fn routeBlock(self: ModuleBuilder, name: string) -> ModuleBuilder
+  pub fn use(self: ModuleBuilder, name: string) -> ModuleBuilder
+  pub fn build(self: ModuleBuilder) -> Module
+}

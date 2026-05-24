@@ -1,0 +1,12 @@
+pub struct AndroidPlatformContract {
+  target: string,
+  bionicRequired: bool,
+  appSandbox: bool,
+  permissionAware: bool,
+}
+
+impl AndroidPlatformContract {
+  pub fn accepted(self: AndroidPlatformContract) -> bool {
+    return self.target != "" && self.bionicRequired && self.appSandbox
+  }
+}

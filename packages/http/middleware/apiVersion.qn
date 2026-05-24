@@ -1,0 +1,30 @@
+pub struct ApiVersionPolicy {
+  headerName: string,
+  version: string,
+  deprecation: bool,
+  sunset: string,
+}
+
+pub struct ApiVersion {
+}
+
+impl ApiVersionPolicy {
+  pub fn init(headerName: string, version: string, deprecation: bool, sunset: string) -> ApiVersionPolicy {
+    return ApiVersionPolicy {
+      headerName: headerName,
+      version: version,
+      deprecation: deprecation,
+      sunset: sunset,
+    }
+  }
+}
+
+impl ApiVersion {
+  pub fn header(name: string, version: string) -> ApiVersionPolicy {
+    return ApiVersionPolicy.init(name, version, false, "")
+  }
+
+  pub fn deprecated(name: string, version: string, sunset: string) -> ApiVersionPolicy {
+    return ApiVersionPolicy.init(name, version, true, sunset)
+  }
+}

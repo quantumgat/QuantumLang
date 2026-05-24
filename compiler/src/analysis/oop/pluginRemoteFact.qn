@@ -1,0 +1,60 @@
+pub struct PluginRemoteFact {
+  ownerId: u64,
+  pluginClassBound: bool,
+  remoteInterfaceBound: bool,
+  extensionPointBound: bool,
+  pluginAbiBound: bool,
+  sandboxBound: bool,
+  remoteCallBound: bool,
+  capabilityContractBound: bool,
+  distributedFailureBound: bool,
+  authRetryTimeoutBound: bool,
+  manifestLoadBound: bool,
+  boundaryCostVisible: bool,
+}
+
+pub fn pluginRemoteFact(
+  ownerId: u64,
+  pluginClassBound: bool,
+  remoteInterfaceBound: bool,
+  extensionPointBound: bool,
+  pluginAbiBound: bool,
+  sandboxBound: bool,
+  remoteCallBound: bool,
+  capabilityContractBound: bool,
+  distributedFailureBound: bool,
+  authRetryTimeoutBound: bool,
+  manifestLoadBound: bool,
+  boundaryCostVisible: bool,
+) -> PluginRemoteFact {
+  return PluginRemoteFact {
+    ownerId: ownerId,
+    pluginClassBound: pluginClassBound,
+    remoteInterfaceBound: remoteInterfaceBound,
+    extensionPointBound: extensionPointBound,
+    pluginAbiBound: pluginAbiBound,
+    sandboxBound: sandboxBound,
+    remoteCallBound: remoteCallBound,
+    capabilityContractBound: capabilityContractBound,
+    distributedFailureBound: distributedFailureBound,
+    authRetryTimeoutBound: authRetryTimeoutBound,
+    manifestLoadBound: manifestLoadBound,
+    boundaryCostVisible: boundaryCostVisible,
+  }
+}
+
+impl PluginRemoteFact {
+  pub fn complete(self: PluginRemoteFact) -> bool {
+    return self.pluginClassBound
+      && self.remoteInterfaceBound
+      && self.extensionPointBound
+      && self.pluginAbiBound
+      && self.sandboxBound
+      && self.remoteCallBound
+      && self.capabilityContractBound
+      && self.distributedFailureBound
+      && self.authRetryTimeoutBound
+      && self.manifestLoadBound
+      && self.boundaryCostVisible
+  }
+}

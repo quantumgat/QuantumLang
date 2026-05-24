@@ -1,0 +1,37 @@
+pub enum MirActorServiceOpKind {
+  SpawnActor
+  SendMessage
+  RegisterAsk
+  CompleteAsk
+  StopActor
+  SuperviseActor
+  StartService
+  StopService
+}
+
+pub struct MirActorServiceOp {
+  instruction: u64,
+  kind: MirActorServiceOpKind,
+  runtimeCallRequired: bool,
+  diagnosticRequired: bool,
+}
+
+impl MirActorServiceOp {
+  pub fn init(
+    instruction: u64,
+    kind: MirActorServiceOpKind,
+    runtimeCallRequired: bool,
+    diagnosticRequired: bool,
+  ) -> MirActorServiceOp {
+    return MirActorServiceOp {
+      instruction: instruction,
+      kind: kind,
+      runtimeCallRequired: runtimeCallRequired,
+      diagnosticRequired: diagnosticRequired,
+    }
+  }
+
+  pub fn accepted(self: MirActorServiceOp) -> bool {
+    return self.instruction > 0 && self.runtimeCallRequired && self.diagnosticRequired
+  }
+}

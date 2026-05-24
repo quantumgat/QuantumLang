@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PriorityQueueKernel {
+  heapArrayBacked: bool
+  comparatorPolicyStable: bool
+  pushUsesAppendAndSiftUp: bool
+  popUsesRootSwapAndSiftDown: bool
+  peekUsesRootLoad: bool
+  replaceTopUsesRootStoreAndSiftDown: bool
+  heapifyUsesBottomUpSiftDown: bool
+  sortedDrainUsesRepeatedPop: bool
+  iteratorHeapArrayCursorStable: bool
+  stableTieBreakUsesSequence: bool
+  callableComparatorInlineable: bool
+}

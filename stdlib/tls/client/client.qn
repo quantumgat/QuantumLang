@@ -1,0 +1,24 @@
+pub struct TlsClient {
+  config: TlsConfig,
+}
+
+impl TlsClient {
+  pub fn safe(self: TlsClient) -> bool {
+    return self.config.safe()
+  }
+
+  pub async fn connect(self: TlsClient, stream: TcpStream) -> NetResult<TlsStream> {
+    if !self.config.verificationRequired() {
+      return Err(NetError {
+        kind: NetErrorKind.TlsFailure,
+        message: "tls client requires verification and sni by default",
+        retryable: false,
+      })
+    }
+    return Ok(TlsStream {
+      handle: stream.handle,
+      verified: true,
+      alpnSelected: "",
+    })
+  }
+}

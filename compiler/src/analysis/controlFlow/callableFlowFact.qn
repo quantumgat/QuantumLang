@@ -1,0 +1,25 @@
+pub enum CallableFlowFamily {
+  InlineClosure
+  CapturingClosure
+  AsyncClosure
+  CallableObject
+  MethodReference
+  HotCallback
+}
+
+pub struct CallableFlowFact {
+  family: CallableFlowFamily,
+  signatureChecked: bool,
+  captureChecked: bool,
+  inlineEligible: bool,
+  diagnosticsReady: bool,
+}
+
+impl CallableFlowFact {
+  pub fn complete(self: CallableFlowFact) -> bool {
+    return self.signatureChecked
+      && self.captureChecked
+      && self.inlineEligible
+      && self.diagnosticsReady
+  }
+}

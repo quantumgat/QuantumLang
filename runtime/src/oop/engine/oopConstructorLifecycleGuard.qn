@@ -1,0 +1,29 @@
+pub struct OopConstructorLifecycleGuard {
+  objectId: u64,
+  ownerTypeName: string,
+  allocated: bool,
+  fieldsInitialized: bool,
+  implicitFieldsInitialized: bool,
+  explicitInitOverridesImplicit: bool,
+  baseInitialized: bool,
+  fullyInitialized: bool,
+  partialCleanupInstalled: bool,
+  dropOrderBound: bool,
+  noCoredumpFailure: bool,
+}
+
+impl OopConstructorLifecycleGuard {
+  pub fn accepted(self: OopConstructorLifecycleGuard) -> bool {
+    return self.objectId > 0
+      && self.ownerTypeName != ""
+      && self.allocated
+      && self.fieldsInitialized
+      && self.implicitFieldsInitialized
+      && self.explicitInitOverridesImplicit
+      && self.baseInitialized
+      && self.fullyInitialized
+      && self.partialCleanupInstalled
+      && self.dropOrderBound
+      && self.noCoredumpFailure
+  }
+}

@@ -1,0 +1,11 @@
+pub struct Amplitude {
+  re: f64,
+  im: f64,
+}
+
+pub struct StateVector {
+  len: usize,
+}
+
+pub fn probability(value: Amplitude) -> f64
+pub fn amplitude(vector: StateVector, index: usize) -> Amplitude

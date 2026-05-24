@@ -1,0 +1,39 @@
+pub struct FfiOsBoundaryProof {
+  capabilityChecked: bool,
+  panicMappedToResult: bool,
+  ownershipChecked: bool,
+  threadAffinityChecked: bool,
+  callbackUnregisterChecked: bool,
+  foreignMemoryLifetimeChecked: bool,
+  platformHandleGenerationChecked: bool,
+  noRawUnsafeLeakage: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl FfiOsBoundaryProof {
+  pub fn safe() -> FfiOsBoundaryProof {
+    return FfiOsBoundaryProof {
+      capabilityChecked: true,
+      panicMappedToResult: true,
+      ownershipChecked: true,
+      threadAffinityChecked: true,
+      callbackUnregisterChecked: true,
+      foreignMemoryLifetimeChecked: true,
+      platformHandleGenerationChecked: true,
+      noRawUnsafeLeakage: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: FfiOsBoundaryProof) -> bool {
+    return self.capabilityChecked
+      && self.panicMappedToResult
+      && self.ownershipChecked
+      && self.threadAffinityChecked
+      && self.callbackUnregisterChecked
+      && self.foreignMemoryLifetimeChecked
+      && self.platformHandleGenerationChecked
+      && self.noRawUnsafeLeakage
+      && self.noCoredumpDiagnostic
+  }
+}

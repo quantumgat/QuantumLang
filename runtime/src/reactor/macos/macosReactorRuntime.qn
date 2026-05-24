@@ -1,0 +1,19 @@
+pub struct MacosReactorRuntime {
+  kqueueReady: bool,
+  userEventReady: bool,
+  timerReady: bool,
+}
+
+impl MacosReactorRuntime {
+  pub fn init(kqueueReady: bool, userEventReady: bool, timerReady: bool) -> MacosReactorRuntime {
+    return MacosReactorRuntime {
+      kqueueReady: kqueueReady,
+      userEventReady: userEventReady,
+      timerReady: timerReady,
+    }
+  }
+
+  pub fn ready(self: MacosReactorRuntime) -> bool {
+    return self.kqueueReady && self.userEventReady && self.timerReady
+  }
+}

@@ -1,0 +1,59 @@
+pub struct PluginManifestParseResult {
+  document: PluginTomlDocument,
+  manifest: PluginManifest,
+  diagnostic: PluginLoaderDiagnostic,
+  normalizedToManifest: bool,
+  ownerScopedSchema: bool,
+  deterministic: bool,
+}
+
+impl PluginManifestParseResult {
+  pub fn parse(sourcePath: string, text: string, name: string, version: string) -> PluginManifestParseResult {
+    let document = PluginTomlDocument.parse(sourcePath, text)
+    return PluginManifestParseResult.fromDocument(document, name, version)
+  }
+
+  pub fn fromDocument(document: PluginTomlDocument, name: string, version: string) -> PluginManifestParseResult {
+    let manifest = PluginManifest.fromDocument(document, name, version)
+    return PluginManifestParseResult {
+      document: document,
+      manifest: manifest,
+      diagnostic: PluginManifestParseResult.diagnosticFor(document),
+      normalizedToManifest: manifest.accepted(),
+      ownerScopedSchema: document.ownerScoped(),
+      deterministic: document.deterministicSectionOrder,
+    }
+  }
+
+  pub fn accepted(self: PluginManifestParseResult) -> bool {
+    return self.document.accepted()
+      && self.manifest.accepted()
+      && self.diagnostic.usable()
+      && self.diagnostic.isFailure() == false
+      && self.normalizedToManifest
+      && self.ownerScopedSchema
+      && self.deterministic
+  }
+
+  pub fn diagnosticFor(document: PluginTomlDocument) -> PluginLoaderDiagnostic {
+    if document.hasPlugin == false {
+      return PluginLoaderDiagnostic.missing(document.sourcePath, PluginLoaderDiagnosticKind.MissingPluginSection, "plugin.toml is missing [plugin]")
+    }
+    if document.hasStdlib == false {
+      return PluginLoaderDiagnostic.missing(document.sourcePath, PluginLoaderDiagnosticKind.MissingStdlibSection, "plugin.toml is missing [stdlib]")
+    }
+    if document.hasProof == false {
+      return PluginLoaderDiagnostic.missing(document.sourcePath, PluginLoaderDiagnosticKind.MissingProofSection, "plugin.toml is missing [proof]")
+    }
+    if document.oldTopLevelTypesRejected == false {
+      return PluginLoaderDiagnostic.missing(document.sourcePath, PluginLoaderDiagnosticKind.LegacyTopLevelTypes, "use [compiler.types], not [types]")
+    }
+    if document.oldTopLevelFactsRejected == false {
+      return PluginLoaderDiagnostic.missing(document.sourcePath, PluginLoaderDiagnosticKind.LegacyTopLevelFacts, "use [compiler.facts], not [facts]")
+    }
+    if document.oldTopLevelLoweringRejected == false {
+      return PluginLoaderDiagnostic.missing(document.sourcePath, PluginLoaderDiagnosticKind.LegacyTopLevelLowering, "use [compiler.lowering], not [lowering]")
+    }
+    return PluginLoaderDiagnostic.accepted(document.sourcePath)
+  }
+}

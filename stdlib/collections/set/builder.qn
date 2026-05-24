@@ -1,0 +1,27 @@
+pub struct SetBuilder<T> {
+  set: Set<T>,
+}
+
+impl<T> SetBuilder<T> {
+  pub fn init() -> SetBuilder<T> requires(alloc) {
+    return SetBuilder<T> {
+      set: Set<T>.empty(),
+    }
+  }
+
+  pub fn capacity(capacity: usize) -> SetBuilder<T> requires(alloc) {
+    return SetBuilder<T> {
+      set: Set<T>.withCapacity(capacity),
+    }
+  }
+
+  pub fn insert(self: SetBuilder<T>, value: T) -> SetBuilder<T> requires(alloc) {
+    return SetBuilder<T> {
+      set: self.set.insert(value),
+    }
+  }
+
+  pub fn build(self: SetBuilder<T>) -> Set<T> {
+    return self.set
+  }
+}

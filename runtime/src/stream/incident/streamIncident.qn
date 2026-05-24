@@ -1,0 +1,35 @@
+pub enum RuntimeStreamIncidentKind {
+  BackpressureOverflow
+  Timeout
+  RetryLimit
+  PartialError
+  ClosedStream
+  FrameBoundaryLost
+}
+
+pub struct RuntimeStreamIncident {
+  streamId: u64,
+  kind: RuntimeStreamIncidentKind,
+  diagnosticCode: string,
+  noAllocationRequired: bool,
+}
+
+impl RuntimeStreamIncident {
+  pub fn init(
+    streamId: u64,
+    kind: RuntimeStreamIncidentKind,
+    diagnosticCode: string,
+    noAllocationRequired: bool,
+  ) -> RuntimeStreamIncident {
+    return RuntimeStreamIncident {
+      streamId: streamId,
+      kind: kind,
+      diagnosticCode: diagnosticCode,
+      noAllocationRequired: noAllocationRequired,
+    }
+  }
+
+  pub fn reportable(self: RuntimeStreamIncident) -> bool {
+    return self.streamId > 0 && self.diagnosticCode != "" && self.noAllocationRequired
+  }
+}

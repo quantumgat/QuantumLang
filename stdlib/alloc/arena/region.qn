@@ -1,0 +1,49 @@
+pub struct Region {
+  id: u64,
+  generation: u64,
+  released: bool,
+}
+
+impl Region {
+  pub fn init(id: u64) -> Region {
+    return Region {
+      id: id,
+      generation: 1,
+      released: false,
+    }
+  }
+
+  pub fn id(self: Region) -> u64 {
+    return self.id
+  }
+
+  pub fn generation(self: Region) -> u64 {
+    return self.generation
+  }
+
+  pub fn isReleased(self: Region) -> bool {
+    return self.released
+  }
+
+  pub fn reset(self: Region) -> Result<Region, ArenaError> {
+    if self.released {
+      return Err(ArenaError.init(ArenaErrorKind.Released))
+    }
+    return Ok(Region {
+      id: self.id,
+      generation: self.generation + 1,
+      released: false,
+    })
+  }
+
+  pub fn release(self: Region) -> Result<Region, ArenaError> {
+    if self.released {
+      return Err(ArenaError.init(ArenaErrorKind.Released))
+    }
+    return Ok(Region {
+      id: self.id,
+      generation: self.generation,
+      released: true,
+    })
+  }
+}

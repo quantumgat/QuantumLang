@@ -1,0 +1,47 @@
+pub struct TargetEvidence {
+  targetTriple: string,
+  objectFormat: string,
+  linkerFamily: string,
+  targetSupported: bool,
+  runtimeAbiSupported: bool,
+  objectFormatSupported: bool,
+  linkerSupported: bool,
+}
+
+pub fn targetEvidence(
+  targetTriple: string,
+  objectFormat: string,
+  linkerFamily: string,
+  targetSupported: bool,
+  runtimeAbiSupported: bool,
+  objectFormatSupported: bool,
+  linkerSupported: bool,
+) -> TargetEvidence {
+  return TargetEvidence {
+    targetTriple: targetTriple,
+    objectFormat: objectFormat,
+    linkerFamily: linkerFamily,
+    targetSupported: targetSupported,
+    runtimeAbiSupported: runtimeAbiSupported,
+    objectFormatSupported: objectFormatSupported,
+    linkerSupported: linkerSupported,
+  }
+}
+
+impl TargetEvidence {
+  pub fn triple(self: TargetEvidence) -> string {
+    return self.targetTriple
+  }
+
+  pub fn format(self: TargetEvidence) -> string {
+    return self.objectFormat
+  }
+
+  pub fn linker(self: TargetEvidence) -> string {
+    return self.linkerFamily
+  }
+
+  pub fn isSupported(self: TargetEvidence) -> bool {
+    return self.targetSupported && self.runtimeAbiSupported && self.objectFormatSupported && self.linkerSupported
+  }
+}

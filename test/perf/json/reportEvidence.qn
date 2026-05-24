@@ -1,0 +1,54 @@
+pub struct JsonBenchmarkReportEvidence {
+  reportPath: string,
+  targetTriple: string,
+  cpuModel: string,
+  simdFeatures: string,
+  inputCorpusHash: string,
+  compilerFlags: string,
+  warmupRecorded: bool,
+  iterationsRecorded: bool,
+  allocationCountRecorded: bool,
+  bytesPerSecondRecorded: bool,
+  cyclesPerByteRecorded: bool,
+  errorRateRecorded: bool,
+  baselineVersionsRecorded: bool,
+  noProductSpeedClaimWithoutMeasurement: bool,
+}
+
+impl JsonBenchmarkReportEvidence {
+  pub fn required() -> JsonBenchmarkReportEvidence {
+    return JsonBenchmarkReportEvidence {
+      reportPath: "",
+      targetTriple: "",
+      cpuModel: "",
+      simdFeatures: "",
+      inputCorpusHash: "",
+      compilerFlags: "",
+      warmupRecorded: false,
+      iterationsRecorded: false,
+      allocationCountRecorded: false,
+      bytesPerSecondRecorded: false,
+      cyclesPerByteRecorded: false,
+      errorRateRecorded: false,
+      baselineVersionsRecorded: false,
+      noProductSpeedClaimWithoutMeasurement: true,
+    }
+  }
+
+  pub fn complete(self: JsonBenchmarkReportEvidence) -> bool {
+    return self.reportPath != ""
+      && self.targetTriple != ""
+      && self.cpuModel != ""
+      && self.simdFeatures != ""
+      && self.inputCorpusHash != ""
+      && self.compilerFlags != ""
+      && self.warmupRecorded
+      && self.iterationsRecorded
+      && self.allocationCountRecorded
+      && self.bytesPerSecondRecorded
+      && self.cyclesPerByteRecorded
+      && self.errorRateRecorded
+      && self.baselineVersionsRecorded
+      && self.noProductSpeedClaimWithoutMeasurement
+  }
+}

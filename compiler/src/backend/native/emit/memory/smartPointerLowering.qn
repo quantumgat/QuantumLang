@@ -1,0 +1,21 @@
+pub struct SmartPointerLowering {
+  erasesBoxBorrow: bool,
+  emitsDropGlue: bool,
+  preservesRefcount: bool,
+  preservesPin: bool,
+}
+
+impl SmartPointerLowering {
+  pub fn init(erasesBoxBorrow: bool, emitsDropGlue: bool, preservesRefcount: bool, preservesPin: bool) -> SmartPointerLowering {
+    return SmartPointerLowering {
+      erasesBoxBorrow: erasesBoxBorrow,
+      emitsDropGlue: emitsDropGlue,
+      preservesRefcount: preservesRefcount,
+      preservesPin: preservesPin,
+    }
+  }
+
+  pub fn accepted(self: SmartPointerLowering) -> bool {
+    return self.erasesBoxBorrow && self.emitsDropGlue && self.preservesRefcount && self.preservesPin
+  }
+}

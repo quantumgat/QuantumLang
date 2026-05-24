@@ -1,0 +1,15 @@
+pub struct DowncastCheck {
+  sourceTypeId: u64,
+  targetTypeId: u64,
+  runtimeChecked: bool,
+}
+
+pub fn downcastCheck(sourceTypeId: u64, targetTypeId: u64) -> DowncastCheck {
+  return DowncastCheck { sourceTypeId: sourceTypeId, targetTypeId: targetTypeId, runtimeChecked: true }
+}
+
+impl DowncastCheck {
+  pub fn canAttempt(self: DowncastCheck) -> bool {
+    return self.runtimeChecked && self.sourceTypeId > 0 && self.targetTypeId > 0
+  }
+}

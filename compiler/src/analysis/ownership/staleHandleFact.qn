@@ -1,0 +1,21 @@
+pub struct StaleHandleFact {
+  handleId: u64,
+  expectedGeneration: u64,
+  actualGeneration: u64,
+  open: bool,
+}
+
+impl StaleHandleFact {
+  pub fn init(handleId: u64, expectedGeneration: u64, actualGeneration: u64, open: bool) -> StaleHandleFact {
+    return StaleHandleFact {
+      handleId: handleId,
+      expectedGeneration: expectedGeneration,
+      actualGeneration: actualGeneration,
+      open: open,
+    }
+  }
+
+  pub fn stale(self: StaleHandleFact) -> bool {
+    return self.open == false || self.expectedGeneration != self.actualGeneration
+  }
+}

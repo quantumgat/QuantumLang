@@ -1,0 +1,29 @@
+pub struct TargetCapabilityGate {
+  capability: RuntimeCapabilityKind,
+  target: string,
+  allowed: bool,
+  diagnosticCode: string,
+}
+
+impl TargetCapabilityGate {
+  pub fn init(capability: RuntimeCapabilityKind, target: string, allowed: bool, diagnosticCode: string) -> TargetCapabilityGate {
+    return TargetCapabilityGate {
+      capability: capability,
+      target: target,
+      allowed: allowed,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn canUse(self: TargetCapabilityGate) -> bool {
+    return self.allowed
+  }
+
+  pub fn denies(self: TargetCapabilityGate) -> bool {
+    return self.canUse() == false
+  }
+
+  pub fn reportable(self: TargetCapabilityGate) -> bool {
+    return self.diagnosticCode != ""
+  }
+}

@@ -1,0 +1,25 @@
+pub enum TryResultDiagnosticKind {
+  QuestionRequiresCarrier
+  QuestionReturnTypeMismatch
+  OptionQuestionRequiresOptionReturn
+  ResultQuestionRequiresResultReturn
+  MissingErrorConversion
+  AwaitQuestionRequiresAsync
+  TryBlockRequiresCarrier
+  UnreachableAfterQuestion
+}
+
+pub struct TryResultDiagnostic {
+  kind: TryResultDiagnosticKind,
+  code: string,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+}
+
+impl TryResultDiagnostic {
+  pub fn complete(self: TryResultDiagnostic) -> bool {
+    return self.code != ""
+      && self.sourceRangeReady
+      && self.fixitReady
+  }
+}

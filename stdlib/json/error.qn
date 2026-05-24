@@ -1,0 +1,104 @@
+pub enum JsonErrorKind {
+  UnexpectedToken
+  UnexpectedEnd
+  InvalidUtf8
+  InvalidNumber
+  TypeMismatch
+  MissingField
+  DuplicateField
+  UnknownField
+  InvalidPath
+  DepthLimit
+  IndexOutOfRange
+  NonFiniteNumber
+  PrecisionLossRejected
+  UnsupportedType
+}
+
+pub struct JsonError {
+  kind: JsonErrorKind,
+  path: string,
+  byteOffset: usize,
+  expected: string,
+  actual: string,
+  likelyFix: string,
+  noCoredump: bool,
+}
+
+impl JsonError {
+  pub fn new(kind: JsonErrorKind, path: string, byteOffset: usize) -> JsonError {
+    return JsonError {
+      kind: kind,
+      path: path,
+      byteOffset: byteOffset,
+      expected: "",
+      actual: "",
+      likelyFix: "",
+      noCoredump: true,
+    }
+  }
+
+  pub fn typeMismatch(path: string, expected: string, actual: string) -> JsonError {
+    return JsonError {
+      kind: JsonErrorKind.TypeMismatch,
+      path: path,
+      byteOffset: 0,
+      expected: expected,
+      actual: actual,
+      likelyFix: "check the target type or field policy",
+      noCoredump: true,
+    }
+  }
+
+  pub fn missingField(path: string, fieldName: string) -> JsonError {
+    return JsonError {
+      kind: JsonErrorKind.MissingField,
+      path: path,
+      byteOffset: 0,
+      expected: fieldName,
+      actual: "",
+      likelyFix: "provide the required field or mark it optional/default",
+      noCoredump: true,
+    }
+  }
+
+  pub fn indexOutOfRange(path: string, index: usize) -> JsonError {
+    return JsonError {
+      kind: JsonErrorKind.IndexOutOfRange,
+      path: path,
+      byteOffset: index,
+      expected: "valid array index",
+      actual: "out of range",
+      likelyFix: "check the array length before indexing",
+      noCoredump: true,
+    }
+  }
+
+  pub fn invalidPath(path: string) -> JsonError {
+    return JsonError {
+      kind: JsonErrorKind.InvalidPath,
+      path: path,
+      byteOffset: 0,
+      expected: "valid JSON path",
+      actual: path,
+      likelyFix: "use bracket access for dynamic or non-identifier keys",
+      noCoredump: true,
+    }
+  }
+
+  pub fn precisionLoss(path: string, numberText: string) -> JsonError {
+    return JsonError {
+      kind: JsonErrorKind.PrecisionLossRejected,
+      path: path,
+      byteOffset: 0,
+      expected: "exact JSON number",
+      actual: numberText,
+      likelyFix: "use exact string-backed numeric policy",
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: JsonError) -> bool {
+    return self.path != "" && self.noCoredump
+  }
+}

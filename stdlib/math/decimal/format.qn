@@ -1,0 +1,53 @@
+pub struct DecimalFormat {
+  scale: i32,
+  trimTrailingZeros: bool,
+  grouping: bool,
+  signAlways: bool,
+}
+
+impl DecimalFormat {
+  pub fn plain() -> DecimalFormat {
+    return DecimalFormat {
+      scale: -1,
+      trimTrailingZeros: true,
+      grouping: false,
+      signAlways: false,
+    }
+  }
+
+  pub fn fixed(scale: i32) -> DecimalFormat {
+    return DecimalFormat {
+      scale: scale,
+      trimTrailingZeros: false,
+      grouping: false,
+      signAlways: false,
+    }
+  }
+
+  pub fn money(scale: i32) -> DecimalFormat {
+    return DecimalFormat {
+      scale: scale,
+      trimTrailingZeros: false,
+      grouping: true,
+      signAlways: false,
+    }
+  }
+
+  pub fn withGrouping(self: DecimalFormat) -> DecimalFormat {
+    return DecimalFormat {
+      scale: self.scale,
+      trimTrailingZeros: self.trimTrailingZeros,
+      grouping: true,
+      signAlways: self.signAlways,
+    }
+  }
+
+  pub fn withSign(self: DecimalFormat) -> DecimalFormat {
+    return DecimalFormat {
+      scale: self.scale,
+      trimTrailingZeros: self.trimTrailingZeros,
+      grouping: self.grouping,
+      signAlways: true,
+    }
+  }
+}

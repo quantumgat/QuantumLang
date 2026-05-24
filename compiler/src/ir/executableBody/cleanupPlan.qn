@@ -1,0 +1,15 @@
+pub struct CleanupPlan {
+  bodyId: u64,
+  dropCount: usize,
+  unwindSafe: bool,
+}
+
+pub fn cleanupPlan(bodyId: u64, dropCount: usize, unwindSafe: bool) -> CleanupPlan {
+  return CleanupPlan { bodyId: bodyId, dropCount: dropCount, unwindSafe: unwindSafe }
+}
+
+impl CleanupPlan {
+  pub fn required(self: CleanupPlan) -> bool {
+    return self.dropCount > 0
+  }
+}

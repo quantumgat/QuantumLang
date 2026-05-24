@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeIdentity {
+  name: string
+  version: string
+  hiddenNativeSubstrate: bool
+  publicCHeaderSurface: bool
+  generatedSourceFallback: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeIdentity() -> RuntimeIdentity
+}

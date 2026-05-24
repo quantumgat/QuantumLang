@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeAllocatorFailureKind {
+  OutOfMemory,
+  PressureDenied,
+  InvalidLayout,
+  AllocatorStopped,
+}
+pub struct RuntimeAllocatorFailurePolicy {
+  kind: RuntimeAllocatorFailureKind
+  returnsResult: bool
+  noCoredump: bool
+  redactedDiagnostic: bool
+  emergencyDiagnosticNoAlloc: bool
+}

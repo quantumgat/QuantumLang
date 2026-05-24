@@ -1,0 +1,40 @@
+pub enum NativeActorServiceLoweringKind {
+  ActorSpawn
+  TellFastPath
+  AskRegister
+  MailboxEnqueue
+  MailboxBackpressure
+  SupervisionRestart
+  ServiceLifecycle
+  ServiceReadiness
+}
+
+pub struct NativeActorServiceLowering {
+  instruction: u64,
+  kind: NativeActorServiceLoweringKind,
+  runtimeAbiReady: bool,
+  schedulerLinked: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeActorServiceLowering {
+  pub fn init(
+    instruction: u64,
+    kind: NativeActorServiceLoweringKind,
+    runtimeAbiReady: bool,
+    schedulerLinked: bool,
+    noGeneratedFallback: bool,
+  ) -> NativeActorServiceLowering {
+    return NativeActorServiceLowering {
+      instruction: instruction,
+      kind: kind,
+      runtimeAbiReady: runtimeAbiReady,
+      schedulerLinked: schedulerLinked,
+      noGeneratedFallback: noGeneratedFallback,
+    }
+  }
+
+  pub fn complete(self: NativeActorServiceLowering) -> bool {
+    return self.instruction > 0 && self.runtimeAbiReady && self.schedulerLinked && self.noGeneratedFallback
+  }
+}

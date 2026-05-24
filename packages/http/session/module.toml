@@ -1,0 +1,6 @@
+[module]
+name = "http.session"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-session"

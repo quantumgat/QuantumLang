@@ -1,0 +1,33 @@
+pub struct BsonGeneratedExecutableFixtureProof {
+  fixturePath: string,
+  expectedHex: string,
+  expectedResult: i64,
+  qtlcRunRequired: bool,
+  nativeDumpRequired: bool,
+  generatedExecutableEvidence: bool,
+  generatedCppFallbackRejected: bool,
+}
+
+impl BsonGeneratedExecutableFixtureProof {
+  pub fn required() -> BsonGeneratedExecutableFixtureProof {
+    return BsonGeneratedExecutableFixtureProof {
+      fixturePath: "qtlc/tests/fixtures/bson_generated_executable_ok.qn",
+      expectedHex: bsonUserDocumentFixtureHex(),
+      expectedResult: 39,
+      qtlcRunRequired: true,
+      nativeDumpRequired: true,
+      generatedExecutableEvidence: true,
+      generatedCppFallbackRejected: true,
+    }
+  }
+
+  pub fn accepted(self: BsonGeneratedExecutableFixtureProof) -> bool {
+    return self.fixturePath == "qtlc/tests/fixtures/bson_generated_executable_ok.qn"
+      && self.expectedHex == bsonUserDocumentFixtureHex()
+      && self.expectedResult == 39
+      && self.qtlcRunRequired
+      && self.nativeDumpRequired
+      && self.generatedExecutableEvidence
+      && self.generatedCppFallbackRejected
+  }
+}

@@ -1,0 +1,31 @@
+pub struct RuntimePointerCheckAccess {
+  address: usize,
+  bytes: usize,
+  nonNull: bool,
+  boundsChecked: bool,
+  provenanceChecked: bool,
+  writableAccepted: bool,
+  diagnosticCode: string,
+}
+
+impl RuntimePointerCheckAccess {
+  pub fn init(address: usize, bytes: usize, nonNull: bool, boundsChecked: bool, provenanceChecked: bool, writableAccepted: bool, diagnosticCode: string) -> RuntimePointerCheckAccess {
+    return RuntimePointerCheckAccess {
+      address: address,
+      bytes: bytes,
+      nonNull: nonNull,
+      boundsChecked: boundsChecked,
+      provenanceChecked: provenanceChecked,
+      writableAccepted: writableAccepted,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn permitsRead(self: RuntimePointerCheckAccess) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.nonNull && self.boundsChecked && self.provenanceChecked && self.diagnosticCode != ""
+  }
+
+  pub fn permitsWrite(self: RuntimePointerCheckAccess) -> bool {
+    return self.permitsRead() && self.writableAccepted
+  }
+}

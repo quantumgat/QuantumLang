@@ -1,0 +1,35 @@
+pub struct SimdNativeProof {
+  vector: SimdVectorLowering,
+  loadStore: SimdLoadStoreLowering,
+  shuffle: SimdShuffleLowering,
+  reduction: SimdReductionLowering,
+  targetFeatureChecked: bool,
+  scalarFallbackRejectedOrGated: bool,
+}
+
+impl SimdNativeProof {
+  pub fn init(
+    vector: SimdVectorLowering,
+    loadStore: SimdLoadStoreLowering,
+    shuffle: SimdShuffleLowering,
+    reduction: SimdReductionLowering,
+  ) -> SimdNativeProof {
+    return SimdNativeProof {
+      vector: vector,
+      loadStore: loadStore,
+      shuffle: shuffle,
+      reduction: reduction,
+      targetFeatureChecked: true,
+      scalarFallbackRejectedOrGated: true,
+    }
+  }
+
+  pub fn accepted(self: SimdNativeProof) -> bool {
+    return self.vector.accepted()
+      && self.loadStore.accepted()
+      && self.shuffle.accepted()
+      && self.reduction.accepted()
+      && self.targetFeatureChecked
+      && self.scalarFallbackRejectedOrGated
+  }
+}

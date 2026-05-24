@@ -1,0 +1,49 @@
+pub struct HandlerThunkAsyncPlan {
+  thunk: HandlerThunk,
+  syncDirectStaticCall: bool,
+  asyncStateMachine: bool,
+  reactorSuspendResume: bool,
+  cancellationCleanup: bool,
+  noHeapFutureOnHotPath: bool,
+}
+
+impl HandlerThunkAsyncPlan {
+  pub fn sync(thunk: HandlerThunk) -> HandlerThunkAsyncPlan {
+    return HandlerThunkAsyncPlan {
+      thunk: thunk,
+      syncDirectStaticCall: true,
+      asyncStateMachine: false,
+      reactorSuspendResume: false,
+      cancellationCleanup: true,
+      noHeapFutureOnHotPath: true,
+    }
+  }
+
+  pub fn async(thunk: HandlerThunk) -> HandlerThunkAsyncPlan {
+    return HandlerThunkAsyncPlan {
+      thunk: thunk,
+      syncDirectStaticCall: false,
+      asyncStateMachine: true,
+      reactorSuspendResume: true,
+      cancellationCleanup: true,
+      noHeapFutureOnHotPath: true,
+    }
+  }
+
+  pub fn from(thunk: HandlerThunk) -> HandlerThunkAsyncPlan {
+    if thunk.asyncFrameRequired() {
+      return HandlerThunkAsyncPlan.async(thunk)
+    }
+    return HandlerThunkAsyncPlan.sync(thunk)
+  }
+
+  pub fn complete(self: HandlerThunkAsyncPlan) -> bool {
+    if self.syncDirectStaticCall {
+      return self.cancellationCleanup && self.noHeapFutureOnHotPath
+    }
+    return self.asyncStateMachine
+      && self.reactorSuspendResume
+      && self.cancellationCleanup
+      && self.noHeapFutureOnHotPath
+  }
+}

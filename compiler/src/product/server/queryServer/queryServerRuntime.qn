@@ -1,0 +1,12 @@
+pub struct QueryServerRuntime {
+  routesQueries: bool,
+  ownsDocuments: bool,
+  ownsWorkspace: bool,
+  diagnosticPushEnabled: bool,
+}
+
+impl QueryServerRuntime {
+  pub fn accepted(self: QueryServerRuntime) -> bool {
+    return self.routesQueries && self.ownsDocuments && self.ownsWorkspace
+  }
+}

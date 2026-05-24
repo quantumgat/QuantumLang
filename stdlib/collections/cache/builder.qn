@@ -1,0 +1,31 @@
+pub struct CacheBuilder<K, V> {
+  capacity: usize,
+  policy: CacheEvictionPolicy,
+}
+
+impl<K, V> CacheBuilder<K, V> {
+  pub fn init() -> CacheBuilder<K, V> {
+    return CacheBuilder<K, V> {
+      capacity: 0,
+      policy: CacheEvictionPolicy.default(),
+    }
+  }
+
+  pub fn capacity(self: CacheBuilder<K, V>, capacity: usize) -> CacheBuilder<K, V> {
+    return CacheBuilder<K, V> {
+      capacity: capacity,
+      policy: self.policy,
+    }
+  }
+
+  pub fn policy(self: CacheBuilder<K, V>, policy: CacheEvictionPolicy) -> CacheBuilder<K, V> {
+    return CacheBuilder<K, V> {
+      capacity: self.capacity,
+      policy: policy,
+    }
+  }
+
+  pub fn build(self: CacheBuilder<K, V>) -> Cache<K, V> requires(alloc) {
+    return Cache<K, V>.withPolicy(self.capacity, self.policy)
+  }
+}

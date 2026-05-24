@@ -1,0 +1,33 @@
+pub struct MemoryAllocatorFact {
+  allocationNode: u64,
+  allocatorDomainChecked: bool,
+  accountingTracked: bool,
+  pressureDenialTracked: bool,
+  oomReturnsResult: bool,
+  noCoredumpDiagnostic: bool,
+  backendLowerable: bool,
+}
+
+impl MemoryAllocatorFact {
+  pub fn init(allocationNode: u64) -> MemoryAllocatorFact {
+    return MemoryAllocatorFact {
+      allocationNode: allocationNode,
+      allocatorDomainChecked: true,
+      accountingTracked: true,
+      pressureDenialTracked: true,
+      oomReturnsResult: true,
+      noCoredumpDiagnostic: true,
+      backendLowerable: true,
+    }
+  }
+
+  pub fn accepted(self: MemoryAllocatorFact) -> bool {
+    return self.allocationNode > 0
+      && self.allocatorDomainChecked
+      && self.accountingTracked
+      && self.pressureDenialTracked
+      && self.oomReturnsResult
+      && self.noCoredumpDiagnostic
+      && self.backendLowerable
+  }
+}

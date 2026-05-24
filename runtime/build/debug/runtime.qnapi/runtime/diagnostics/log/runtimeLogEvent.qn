@@ -1,0 +1,33 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeLogEvent {
+  eventId: u64
+  transportSequence: u64
+  level: string
+  target: string
+  loggerName: string
+  template: string
+  fieldCount: usize
+  typedFields: bool
+  stableFieldKeys: bool
+  compactFieldEncoding: bool
+  inlineFieldCount: usize
+  allocationFreeFields: bool
+  traceId: u64
+  spanId: u64
+  taskId: u64
+  actorId: u64
+  requestId: string
+  correlationId: string
+  cancellationId: u64
+  asyncContextPropagated: bool
+  causalChainPreserved: bool
+  redacted: bool
+  sinkNeutral: bool
+  transportReady: bool
+  observerReady: bool
+  backpressureChecked: bool
+  dropPolicyChecked: bool
+  emergencyFallbackReady: bool
+  staticLevelChecked: bool
+  disabledErased: bool
+}

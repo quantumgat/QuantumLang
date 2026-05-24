@@ -1,0 +1,24 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum BreakContinueSafeFailureKind {
+  InvalidLabel
+  BreakOutsideLoop
+  ContinueOutsideLoop
+  BreakValueMismatch
+  ContinueWithValue
+}
+pub struct BreakContinueSafeFailure {
+  kind: BreakContinueSafeFailureKind
+  sourceRangeReady: bool
+  loopStackCaptured: bool
+  noCoredump: bool
+  emergencyReportReady: bool
+}
+pub extern "qnpkg" {
+  pub fn breakContinueSafeFailure(
+  kind: BreakContinueSafeFailureKind,
+  sourceRangeReady: bool,
+  loopStackCaptured: bool,
+  noCoredump: bool,
+  emergencyReportReady: bool,
+) -> BreakContinueSafeFailure
+}

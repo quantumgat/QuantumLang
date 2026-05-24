@@ -1,0 +1,42 @@
+pub enum ObjectIdentityKind {
+  ValueLike
+  ReferenceIdentity
+  InterfaceErased
+}
+
+pub struct ObjectLayoutFact {
+  typeId: u64,
+  identityKind: ObjectIdentityKind,
+  fieldCount: usize,
+  baseCount: usize,
+  interfaceTableCount: usize,
+  layoutHashStable: bool,
+}
+
+pub fn objectLayoutFact(
+  typeId: u64,
+  identityKind: ObjectIdentityKind,
+  fieldCount: usize,
+  baseCount: usize,
+  interfaceTableCount: usize,
+  layoutHashStable: bool,
+) -> ObjectLayoutFact {
+  return ObjectLayoutFact {
+    typeId: typeId,
+    identityKind: identityKind,
+    fieldCount: fieldCount,
+    baseCount: baseCount,
+    interfaceTableCount: interfaceTableCount,
+    layoutHashStable: layoutHashStable,
+  }
+}
+
+impl ObjectLayoutFact {
+  pub fn requiresRuntimeIdentity(self: ObjectLayoutFact) -> bool {
+    return self.identityKind != ObjectIdentityKind.ValueLike
+  }
+
+  pub fn hasDynamicInterfaceSurface(self: ObjectLayoutFact) -> bool {
+    return self.interfaceTableCount > 0 || self.identityKind == ObjectIdentityKind.InterfaceErased
+  }
+}

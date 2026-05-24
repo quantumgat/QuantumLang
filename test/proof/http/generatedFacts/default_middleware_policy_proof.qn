@@ -1,0 +1,60 @@
+pub struct HttpDefaultMiddlewarePolicyProof {
+  appDefaultMagic: bool,
+  appOverrideAllowed: bool,
+  safeSecurityDefaults: bool,
+  corsExplicitOnly: bool,
+  rateLimitHeaders: bool,
+  traceRequestId: bool,
+  customMiddlewareAllowed: bool,
+  serverLeakBlocked: bool,
+}
+
+impl HttpDefaultMiddlewarePolicyProof {
+  pub fn complete(self: HttpDefaultMiddlewarePolicyProof) -> bool {
+    return self.appDefaultMagic
+      && self.appOverrideAllowed
+      && self.safeSecurityDefaults
+      && self.corsExplicitOnly
+      && self.rateLimitHeaders
+      && self.traceRequestId
+      && self.customMiddlewareAllowed
+      && self.serverLeakBlocked
+  }
+}
+
+pub fn httpDefaultMiddlewarePolicyProof() -> HttpDefaultMiddlewarePolicyProof {
+  let app = App()
+    .state(Database(config.db))
+    .context<ApiCtx>()
+    .controller<ProductController>()
+    .plan(8080)
+  let customApp = App()
+    .defaults(Defaults.publicWeb())
+    .use(Cors.allowOrigins(["https://app.com"]))
+    .use(Security.strict())
+    .use(RateLimit.fixedWindow(1000, 60))
+    .use(Trace.headers())
+    .use(RequestId.default())
+    .controller<ProductController>()
+    .plan(8080)
+  let security = Security.api()
+  let cors = Cors.allowOrigins(["https://app.com"])
+  let rate = RateLimit.fixedWindow(1000, 60)
+  let trace = Trace.headers()
+  let requestId = RequestId.default()
+  let server = Header.set("server", "secret-host")
+
+  return HttpDefaultMiddlewarePolicyProof {
+    appDefaultMagic: app.defaultMiddlewarePreset() == "api"
+      && app.defaultMiddlewareMagic(),
+    appOverrideAllowed: customApp.defaultMiddlewarePreset() == "public-web"
+      && customApp.defaultMiddlewareComplete(),
+    safeSecurityDefaults: security.complete(),
+    corsExplicitOnly: !Defaults.api().withCors(Cors.disabled()).corsConfigured()
+      && Defaults.publicWeb().withCors(cors).corsConfigured(),
+    rateLimitHeaders: rate.complete(),
+    traceRequestId: trace.complete() && requestId.complete(),
+    customMiddlewareAllowed: typeName<HttpMiddleware<TenantMiddleware>>() != "",
+    serverLeakBlocked: !server.allowed(),
+  }
+}

@@ -1,0 +1,39 @@
+pub enum ClassModifier {
+  PlainClass
+  OpenClass
+  FinalClass
+  SealedClass
+  AbstractClass
+}
+
+pub struct ClassDecl {
+  node: AstNode,
+  nameId: u64,
+  modifier: ClassModifier,
+  baseTypeId: u64,
+  memberCount: usize,
+}
+
+pub fn classDecl(node: AstNode, nameId: u64, modifier: ClassModifier, baseTypeId: u64, memberCount: usize) -> ClassDecl {
+  return ClassDecl {
+    node: node,
+    nameId: nameId,
+    modifier: modifier,
+    baseTypeId: baseTypeId,
+    memberCount: memberCount,
+  }
+}
+
+impl ClassDecl {
+  pub fn ast(self: ClassDecl) -> AstNode {
+    return self.node
+  }
+
+  pub fn className(self: ClassDecl) -> u64 {
+    return self.nameId
+  }
+
+  pub fn hasBase(self: ClassDecl) -> bool {
+    return self.baseTypeId > 0
+  }
+}

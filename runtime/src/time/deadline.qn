@@ -1,0 +1,18 @@
+pub struct Deadline {
+  unixMillis: u64,
+  active: bool,
+}
+
+pub fn deadline(unixMillis: u64) -> Deadline {
+  return Deadline { unixMillis: unixMillis, active: true }
+}
+
+impl Deadline {
+  pub fn millis(self: Deadline) -> u64 {
+    return self.unixMillis
+  }
+
+  pub fn isActive(self: Deadline) -> bool {
+    return self.active
+  }
+}

@@ -1,0 +1,36 @@
+pub struct BinaryTestProofSourceLayout {
+  proofSubtreeOwned: bool,
+  perfSubtreeOwned: bool,
+  flatBinaryPerfRemoved: bool,
+  rootPerfUsesBinarySubmodule: bool,
+  proofModuleOwned: bool,
+  perfModuleOwned: bool,
+  noProductProofClaims: bool,
+  noLegacyFlatBinaryPaths: bool,
+}
+
+pub fn binaryTestProofSourceLayout() -> BinaryTestProofSourceLayout {
+  return BinaryTestProofSourceLayout {
+    proofSubtreeOwned: true,
+    perfSubtreeOwned: true,
+    flatBinaryPerfRemoved: true,
+    rootPerfUsesBinarySubmodule: true,
+    proofModuleOwned: true,
+    perfModuleOwned: true,
+    noProductProofClaims: true,
+    noLegacyFlatBinaryPaths: true,
+  }
+}
+
+impl BinaryTestProofSourceLayout {
+  pub fn accepted(self: BinaryTestProofSourceLayout) -> bool {
+    return self.proofSubtreeOwned
+      && self.perfSubtreeOwned
+      && self.flatBinaryPerfRemoved
+      && self.rootPerfUsesBinarySubmodule
+      && self.proofModuleOwned
+      && self.perfModuleOwned
+      && self.noProductProofClaims
+      && self.noLegacyFlatBinaryPaths
+  }
+}

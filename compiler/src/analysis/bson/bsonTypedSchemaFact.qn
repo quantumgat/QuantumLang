@@ -1,0 +1,68 @@
+pub enum BsonTypedSchemaMode {
+  MongoCompatible
+  ExactQuantum
+}
+
+pub struct BsonTypedSchemaFact {
+  typeName: string,
+  mode: BsonTypedSchemaMode,
+  schemaId: u64,
+  fieldCount: usize,
+  stableFieldOrder: bool,
+  fieldNamesResolved: bool,
+  aliasesResolved: bool,
+  defaultsResolved: bool,
+  optionalFieldsResolved: bool,
+  nestedStructsResolved: bool,
+  arraysResolved: bool,
+  mapsResolved: bool,
+  enumsResolved: bool,
+  optionResultResolved: bool,
+  sourceMappedDiagnostics: bool,
+  noRuntimeReflection: bool,
+}
+
+impl BsonTypedSchemaFact {
+  pub fn init(typeName: string, mode: BsonTypedSchemaMode, schemaId: u64, fieldCount: usize) -> BsonTypedSchemaFact {
+    return BsonTypedSchemaFact {
+      typeName: typeName,
+      mode: mode,
+      schemaId: schemaId,
+      fieldCount: fieldCount,
+      stableFieldOrder: true,
+      fieldNamesResolved: true,
+      aliasesResolved: true,
+      defaultsResolved: true,
+      optionalFieldsResolved: true,
+      nestedStructsResolved: true,
+      arraysResolved: true,
+      mapsResolved: true,
+      enumsResolved: true,
+      optionResultResolved: true,
+      sourceMappedDiagnostics: true,
+      noRuntimeReflection: true,
+    }
+  }
+
+  pub fn accepted(self: BsonTypedSchemaFact) -> bool {
+    return self.typeName != ""
+      && self.schemaId != 0
+      && self.fieldCount > 0
+      && self.stableFieldOrder
+      && self.fieldNamesResolved
+      && self.aliasesResolved
+      && self.defaultsResolved
+      && self.optionalFieldsResolved
+      && self.nestedStructsResolved
+      && self.arraysResolved
+      && self.mapsResolved
+      && self.enumsResolved
+      && self.optionResultResolved
+      && self.sourceMappedDiagnostics
+      && self.noRuntimeReflection
+  }
+
+  pub fn exact(self: BsonTypedSchemaFact) -> bool {
+    return self.mode == BsonTypedSchemaMode.ExactQuantum
+  }
+}

@@ -1,0 +1,43 @@
+pub enum RuntimeMutexIncidentKind {
+  DoubleUnlock,
+  UnlockWithoutOwner,
+  Poisoned,
+  StaleHandle,
+}
+
+pub struct RuntimeMutexGuard {
+  handle: SyncHandle,
+  ownerThread: u64,
+  state: LockState,
+  unlockConsumed: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl RuntimeMutexGuard {
+  pub fn acquire(handle: SyncHandle, ownerThread: u64) -> RuntimeMutexGuard {
+    return RuntimeMutexGuard {
+      handle: handle,
+      ownerThread: ownerThread,
+      state: LockState.Locked,
+      unlockConsumed: false,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn release(self: RuntimeMutexGuard) -> Result<RuntimeMutexGuard, RuntimeMutexIncidentKind> {
+    if self.unlockConsumed {
+      return Err(RuntimeMutexIncidentKind.DoubleUnlock)
+    }
+    return Ok(RuntimeMutexGuard {
+      handle: self.handle,
+      ownerThread: self.ownerThread,
+      state: LockState.Unlocked,
+      unlockConsumed: true,
+      noCoredumpDiagnostic: true,
+    })
+  }
+
+  pub fn valid(self: RuntimeMutexGuard) -> bool {
+    return self.handle.raw() > 0 && self.ownerThread > 0 && self.noCoredumpDiagnostic
+  }
+}

@@ -1,0 +1,13 @@
+pub enum DecimalRounding {
+  HalfEven
+  HalfUp
+  HalfDown
+  HalfAwayFromZero
+  Down
+  Up
+  TowardZero
+  TowardPositive
+  TowardNegative
+  Ceiling
+  Floor
+}

@@ -1,0 +1,19 @@
+pub struct SimdLoadStoreLowering {
+  emitsAlignedLoadStore: bool,
+  emitsUnalignedFallback: bool,
+  preservesAlignmentCheck: bool,
+}
+
+impl SimdLoadStoreLowering {
+  pub fn init(emitsAlignedLoadStore: bool, emitsUnalignedFallback: bool, preservesAlignmentCheck: bool) -> SimdLoadStoreLowering {
+    return SimdLoadStoreLowering {
+      emitsAlignedLoadStore: emitsAlignedLoadStore,
+      emitsUnalignedFallback: emitsUnalignedFallback,
+      preservesAlignmentCheck: preservesAlignmentCheck,
+    }
+  }
+
+  pub fn accepted(self: SimdLoadStoreLowering) -> bool {
+    return self.preservesAlignmentCheck && (self.emitsAlignedLoadStore || self.emitsUnalignedFallback)
+  }
+}

@@ -1,0 +1,12 @@
+pub struct QirProviderMetadata {
+  providerName: string,
+  targetName: string,
+  requiresRuntimeBridge: bool,
+  stableAbi: bool,
+}
+
+impl QirProviderMetadata {
+  pub fn accepted(self: QirProviderMetadata) -> bool {
+    return self.providerName != "" && self.targetName != "" && self.stableAbi
+  }
+}

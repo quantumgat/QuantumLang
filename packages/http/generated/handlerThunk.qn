@@ -1,0 +1,130 @@
+pub enum HandlerThunkKind {
+  Sync,
+  Async,
+  Stream,
+  WebSocket,
+  Sse,
+}
+
+pub struct HandlerThunk {
+  endpointName: string,
+  handlerName: string,
+  kind: HandlerThunkKind,
+  extractorCount: usize,
+  capabilityCount: usize,
+  contextSlotCount: usize,
+  rawEscapeHatchCount: usize,
+  rawEscapeHatchHotPath: bool,
+  sourceMapId: string,
+}
+
+impl HandlerThunk {
+  pub fn init(
+    endpointName: string,
+    handlerName: string,
+    kind: HandlerThunkKind,
+    extractorCount: usize,
+    capabilityCount: usize,
+    contextSlotCount: usize,
+    rawEscapeHatchCount: usize,
+    rawEscapeHatchHotPath: bool,
+    sourceMapId: string,
+  ) -> HandlerThunk {
+    return HandlerThunk {
+      endpointName: endpointName,
+      handlerName: handlerName,
+      kind: kind,
+      extractorCount: extractorCount,
+      capabilityCount: capabilityCount,
+      contextSlotCount: contextSlotCount,
+      rawEscapeHatchCount: rawEscapeHatchCount,
+      rawEscapeHatchHotPath: rawEscapeHatchHotPath,
+      sourceMapId: sourceMapId,
+    }
+  }
+
+  pub fn fromEndpoint(endpoint: EndpointFact, extractors: ExtractorGraph, capabilities: CapabilityGraph) -> HandlerThunk {
+    let endpointName = endpoint.controllerName() + "." + endpoint.method().name()
+    let sourceMapId = endpoint.controllerName() + ":" + endpoint.method().name()
+    return HandlerThunk.init(
+      endpointName,
+      endpointName,
+      HandlerThunkKind.Sync,
+      extractors.factCount(),
+      capabilities.factCount(),
+      extractors.contextExtractors(),
+      extractors.rawEscapeHatchExtractors(),
+      endpoint.rawEscapeHatchHotPathEligible(),
+      sourceMapId
+    )
+  }
+
+  pub fn endpointName(self: HandlerThunk) -> string {
+    return self.endpointName
+  }
+
+  pub fn handlerName(self: HandlerThunk) -> string {
+    return self.handlerName
+  }
+
+  pub fn sourceMapId(self: HandlerThunk) -> string {
+    return self.sourceMapId
+  }
+
+  pub fn acceleratorReady(self: HandlerThunk) -> bool {
+    return self.extractorCount > 0 || self.capabilityCount > 0
+  }
+
+  pub fn contextSlotCount(self: HandlerThunk) -> usize {
+    return self.contextSlotCount
+  }
+
+  pub fn rawEscapeHatchCount(self: HandlerThunk) -> usize {
+    return self.rawEscapeHatchCount
+  }
+
+  pub fn rawEscapeHatchHotPath(self: HandlerThunk) -> bool {
+    return self.rawEscapeHatchHotPath
+  }
+
+  pub fn kind(self: HandlerThunk) -> HandlerThunkKind {
+    return self.kind
+  }
+
+  pub fn asyncFrameRequired(self: HandlerThunk) -> bool {
+    return self.kind == HandlerThunkKind.Async
+      || self.kind == HandlerThunkKind.Stream
+      || self.kind == HandlerThunkKind.WebSocket
+      || self.kind == HandlerThunkKind.Sse
+  }
+
+  pub fn directStaticCallEligible(self: HandlerThunk) -> bool {
+    return self.kind == HandlerThunkKind.Sync && self.rawEscapeHatchHotPath
+  }
+}
+
+pub struct HandlerThunkGraph {
+  thunks: Vec<HandlerThunk>,
+}
+
+impl HandlerThunkGraph {
+  pub fn empty() -> HandlerThunkGraph {
+    return HandlerThunkGraph {
+      thunks: [],
+    }
+  }
+
+  pub fn add(self: HandlerThunkGraph, thunk: HandlerThunk) -> HandlerThunkGraph {
+    return HandlerThunkGraph {
+      thunks: self.thunks.push(thunk),
+    }
+  }
+
+  pub fn thunkCount(self: HandlerThunkGraph) -> usize {
+    return self.thunks.len()
+  }
+
+  pub fn hasThunks(self: HandlerThunkGraph) -> bool {
+    return self.thunks.len() > 0
+  }
+}

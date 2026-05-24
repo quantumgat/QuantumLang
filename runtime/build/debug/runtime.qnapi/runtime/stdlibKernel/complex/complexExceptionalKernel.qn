@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum ComplexExceptionalPolicy {
+  IeeePropagation
+  PrincipalBranch
+  PreserveSignedZero
+  TypedDomainError
+}
+pub struct ComplexExceptionalKernel {
+  policy: ComplexExceptionalPolicy
+  nanInfHandled: bool
+  signedZeroHandled: bool
+  branchCutStable: bool
+  parseErrorTyped: bool
+  noCoredump: bool
+}

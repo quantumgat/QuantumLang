@@ -1,0 +1,42 @@
+/**
+  Builder for fixed Array construction.
+
+  effects: allocation only when capacity or pushed values reserve storage
+  complexity: O(1) push amortized while building
+  allocation: contiguous fixed-capacity storage
+  stability: public since 0.1
+*/
+pub struct ArrayBuilder<T, N> {
+  items: Vec<T>,
+  capacity: usize,
+}
+
+impl<T, N> ArrayBuilder<T, N> {
+  pub fn init() -> ArrayBuilder<T, N> {
+    return ArrayBuilder<T, N> {
+      items: Vec<T>.empty(),
+      capacity: 0,
+    }
+  }
+
+  pub fn capacity(self: ArrayBuilder<T, N>, capacity: usize) -> ArrayBuilder<T, N> requires(alloc) {
+    return ArrayBuilder<T, N> {
+      items: Vec<T>.withCapacity(capacity),
+      capacity: capacity,
+    }
+  }
+
+  pub fn push(self: ArrayBuilder<T, N>, value: T) -> ArrayBuilder<T, N> requires(alloc) {
+    if self.capacity != 0 && self.items.len >= self.capacity {
+      return self
+    }
+    return ArrayBuilder<T, N> {
+      items: self.items.push(value),
+      capacity: self.capacity,
+    }
+  }
+
+  pub fn build(self: ArrayBuilder<T, N>) -> Array<T, N> {
+    return Array<T, N>.fromVec(self.items)
+  }
+}

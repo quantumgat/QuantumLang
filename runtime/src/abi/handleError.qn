@@ -1,0 +1,8 @@
+pub enum HandleError {
+  StaleHandle,
+  WrongGeneration,
+  WrongSubsystem,
+  ClosedHandle,
+  DoubleClose,
+  LeaseRevoked,
+}

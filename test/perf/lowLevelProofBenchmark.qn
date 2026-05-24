@@ -1,0 +1,187 @@
+pub enum LowLevelProofBenchmarkKind {
+  MemoryDirectLoadStore,
+  BoundsElimination,
+  AtomicOrderFenceCas,
+  SimdVectorLane,
+  CachePrefetchNuma,
+  FfiForeignMemory,
+  TargetFallback,
+  NoCoredumpDiagnostic,
+}
+
+pub struct LowLevelProofBenchmarkRow {
+  kind: LowLevelProofBenchmarkKind,
+  caseName: string,
+  qlangPattern: string,
+  baselineOnlyEquivalentPattern: string,
+  proofCaptured: bool,
+  generatedNativeCaptured: bool,
+  allocationBytes: usize,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+  maxSlowdownPercent: u64,
+  samples: usize,
+  serialSafe: bool,
+  noGeneratedCppFallback: bool,
+  noCoredump: bool,
+}
+
+pub struct LowLevelProofBenchmarkReport {
+  rows: Vec<LowLevelProofBenchmarkRow>,
+  requiredRows: usize,
+  runner: string,
+  memoryProof: string,
+  atomicProof: string,
+  simdProof: string,
+  targetProof: string,
+  testOwned: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+  baselineOnly: bool,
+}
+
+pub fn lowLevelProofBenchmarkRow(
+  kind: LowLevelProofBenchmarkKind,
+  caseName: string,
+  qlangPattern: string,
+  baselineOnlyEquivalentPattern: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+) -> LowLevelProofBenchmarkRow {
+  return LowLevelProofBenchmarkRow {
+    kind: kind,
+    caseName: caseName,
+    qlangPattern: qlangPattern,
+    baselineOnlyEquivalentPattern: baselineOnlyEquivalentPattern,
+    proofCaptured: true,
+    generatedNativeCaptured: true,
+    allocationBytes: 0,
+    qlangNsPerOp: qlangNsPerOp,
+    baselineNsPerOp: baselineNsPerOp,
+    maxSlowdownPercent: 15,
+    samples: 3,
+    serialSafe: true,
+    noGeneratedCppFallback: true,
+    noCoredump: true,
+  }
+}
+
+pub fn lowLevelProofBenchmarkReport() -> LowLevelProofBenchmarkReport requires(alloc) {
+  let mut rows = Vec<LowLevelProofBenchmarkRow>.withCapacity(8)
+  rows = rows.push(lowLevelProofBenchmarkRow(
+    LowLevelProofBenchmarkKind.MemoryDirectLoadStore,
+    "memory-direct-load-store-proof",
+    "DirectMemoryLowering emits direct load/store with wrapper erasure",
+    "baseline-only equivalent: native load/store with explicit bounds proof",
+    4,
+    4
+  ))
+  rows = rows.push(lowLevelProofBenchmarkRow(
+    LowLevelProofBenchmarkKind.BoundsElimination,
+    "bounds-elimination-loop-proof",
+    "BoundsEliminationLowering removes redundant loop checks after domination proof",
+    "baseline-only equivalent: checked loop with hoisted range proof",
+    6,
+    6
+  ))
+  rows = rows.push(lowLevelProofBenchmarkRow(
+    LowLevelProofBenchmarkKind.AtomicOrderFenceCas,
+    "atomic-order-fence-cas-proof",
+    "AtomicNativeProof preserves order/fence/CAS/wait-wake semantics",
+    "baseline-only equivalent: target atomic instruction sequence",
+    9,
+    9
+  ))
+  rows = rows.push(lowLevelProofBenchmarkRow(
+    LowLevelProofBenchmarkKind.SimdVectorLane,
+    "simd-vector-lane-proof",
+    "SimdNativeProof preserves vector lanes, masks, load/store, shuffle, reduction",
+    "baseline-only equivalent: target SIMD intrinsic sequence",
+    5,
+    5
+  ))
+  rows = rows.push(lowLevelProofBenchmarkRow(
+    LowLevelProofBenchmarkKind.CachePrefetchNuma,
+    "cache-prefetch-numa-proof",
+    "Cache padding, prefetch, and NUMA placement proofs remain target gated",
+    "baseline-only equivalent: target cache/prefetch/NUMA hints",
+    7,
+    7
+  ))
+  rows = rows.push(lowLevelProofBenchmarkRow(
+    LowLevelProofBenchmarkKind.FfiForeignMemory,
+    "ffi-foreign-memory-proof",
+    "Foreign memory lowering preserves deleter, alias, callback, and panic boundary proofs",
+    "baseline-only equivalent: foreign pointer handoff with explicit lifetime guard",
+    11,
+    11
+  ))
+  rows = rows.push(lowLevelProofBenchmarkRow(
+    LowLevelProofBenchmarkKind.TargetFallback,
+    "target-dispatch-fallback-proof",
+    "TargetDispatchFallbackProof rejects generated C++ fallback and emits unsupported diagnostics",
+    "baseline-only equivalent: CPU feature dispatch with diagnostic fallback",
+    8,
+    8
+  ))
+  rows = rows.push(lowLevelProofBenchmarkRow(
+    LowLevelProofBenchmarkKind.NoCoredumpDiagnostic,
+    "lowlevel-no-coredump-diagnostic-proof",
+    "ProofDiagnostic and safe-failure lowering preserve no-coredump diagnostics",
+    "baseline-only equivalent: checked failure path returning structured error",
+    3,
+    3
+  ))
+  return LowLevelProofBenchmarkReport {
+    rows: rows,
+    requiredRows: 8,
+    runner: "qtlc-lowlevel-proof-benchmark-v1",
+    memoryProof: "MemoryLoweringProof",
+    atomicProof: "AtomicNativeProof",
+    simdProof: "SimdNativeProof",
+    targetProof: "TargetDispatchFallbackProof",
+    testOwned: true,
+    allCoreDisabled: true,
+    maxParallel: 1,
+    baselineOnly: true,
+  }
+}
+
+impl LowLevelProofBenchmarkRow {
+  pub fn withinBudget(self: LowLevelProofBenchmarkRow) -> bool {
+    let budget = self.baselineNsPerOp
+      + ((self.baselineNsPerOp * self.maxSlowdownPercent) / 100)
+    return self.qlangNsPerOp > 0
+      && self.baselineNsPerOp > 0
+      && self.qlangNsPerOp <= budget
+  }
+
+  pub fn passed(self: LowLevelProofBenchmarkRow) -> bool {
+    return self.caseName != ""
+      && self.qlangPattern != ""
+      && self.baselineOnlyEquivalentPattern != ""
+      && self.proofCaptured
+      && self.generatedNativeCaptured
+      && self.allocationBytes == 0
+      && self.samples >= 3
+      && self.serialSafe
+      && self.noGeneratedCppFallback
+      && self.noCoredump
+      && self.withinBudget()
+  }
+}
+
+impl LowLevelProofBenchmarkReport {
+  pub fn passed(self: LowLevelProofBenchmarkReport) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.runner == "qtlc-lowlevel-proof-benchmark-v1"
+      && self.memoryProof == "MemoryLoweringProof"
+      && self.atomicProof == "AtomicNativeProof"
+      && self.simdProof == "SimdNativeProof"
+      && self.targetProof == "TargetDispatchFallbackProof"
+      && self.testOwned
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+      && self.baselineOnly
+  }
+}

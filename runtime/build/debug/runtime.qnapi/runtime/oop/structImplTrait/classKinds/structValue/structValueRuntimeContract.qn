@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct StructValueRuntimeContract {
+  typeId: u64
+  layoutBound: bool
+  dropGlueBound: bool
+  hiddenAllocationRejected: bool
+  runtimeEngineBypassed: bool
+}

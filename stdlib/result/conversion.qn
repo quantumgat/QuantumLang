@@ -1,0 +1,47 @@
+pub struct ResultErrorConversion<T, E, F> {
+  fromError: string,
+  toError: string,
+  explicitConversion: bool,
+  preservesCode: bool,
+  preservesCategory: bool,
+  preservesFields: bool,
+  preservesCauseChain: bool,
+  diagnosticOnMissingConversion: bool,
+}
+
+impl<T, E, F> ResultErrorConversion<T, E, F> {
+  /**
+    Defines typed conversion when `?` crosses error types.
+
+    example:
+      let user = loadUser()? // converts UserError into AppError only if declared
+
+    effects: pure
+    complexity: O(1)
+    allocation: none unless conversion allocates
+    stability: public since 0.1
+  */
+  pub fn explicit(fromError: string, toError: string) -> ResultErrorConversion<T, E, F> {
+    return ResultErrorConversion<T, E, F> {
+      fromError: fromError,
+      toError: toError,
+      explicitConversion: true,
+      preservesCode: true,
+      preservesCategory: true,
+      preservesFields: true,
+      preservesCauseChain: true,
+      diagnosticOnMissingConversion: true,
+    }
+  }
+
+  pub fn accepted(self: ResultErrorConversion<T, E, F>) -> bool {
+    return self.fromError != ""
+      && self.toError != ""
+      && self.explicitConversion
+      && self.preservesCode
+      && self.preservesCategory
+      && self.preservesFields
+      && self.preservesCauseChain
+      && self.diagnosticOnMissingConversion
+  }
+}

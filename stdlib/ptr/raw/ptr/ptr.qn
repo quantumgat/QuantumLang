@@ -1,0 +1,1078 @@
+/**
+  Error returned by checked raw pointer operations.
+
+  example:
+    let value = ptr.get()?
+    let updated = ptr.set(value)?
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: carries diagnostics instead of trapping on common pointer failures
+  stability: public since 0.1
+*/
+pub enum PtrError {
+  Null,
+  Dangling,
+  Misaligned,
+  CapabilityDenied,
+  AddressSpaceMismatch,
+  Immutable,
+  Unknown,
+}
+
+/**
+  Typed raw pointer with address-space and provenance metadata.
+
+  examples:
+    let empty = Ptr<User>()
+    let empty = Ptr<User>.null()
+    let empty: Ptr<User> = nullptr
+    let user = ptr.get()?
+    ptr.set(user)?
+    let users = ptr.slice(count)?
+    let userPtr = ptr.checkNonNull()?.asPtr()
+    unsafe {
+      let fromAddress = Ptr<User>.fromAddress(address)
+    }
+
+  effects: pure unless an unsafe memory operation is called
+  complexity: O(1) for inspection and pointer arithmetic
+  allocation: none
+  safety: safe to inspect and compare; dereference and raw construction require unsafe proof
+  stability: public since 0.1
+*/
+pub struct Ptr<T> {
+  address: usize,
+  space: AddressSpace,
+  provenance: Provenance,
+}
+
+impl<T> Ptr<T> {
+  /**
+    Creates a typed null raw pointer.
+
+    example:
+      let ptr = Ptr<User>()
+      if ptr.isNull() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: safe to create and compare; unsafe to dereference
+    stability: public since 0.1
+  */
+  pub fn init() -> Ptr<T> {
+    return Ptr<T>.null()
+  }
+
+  /**
+    Creates a typed null raw pointer.
+
+    example:
+      let ptr = Ptr<User>.null()
+      let same: Ptr<User> = nullptr
+      if ptr.isNull() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: safe to create and compare; unsafe to dereference
+    stability: public since 0.1
+  */
+  pub fn null() -> Ptr<T> {
+    return Ptr<T> {
+      address: 0,
+      space: AddressSpace.Host,
+      provenance: Provenance.init(0, false, false),
+    }
+  }
+
+  /**
+    Creates a raw pointer from a typed address.
+
+    example:
+      unsafe {
+        let ptr = Ptr<User>.fromAddress(address)
+        let raw = ptr.rawAddress()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: requires proof that the address belongs to a valid pointer domain before use
+    stability: public since 0.1
+  */
+  pub fn fromAddress(address: Address) -> Ptr<T> requires(unsafe) {
+    return Ptr<T> {
+      address: address.raw(),
+      space: address.addressSpace(),
+      provenance: Provenance.init(0, false, false),
+    }
+  }
+
+  /**
+    Creates a host raw pointer from an integer address.
+
+    example:
+      unsafe {
+        let ptr = Ptr<User>.fromRaw(rawAddress)
+        let user = ptr.read()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: requires unsafe proof that the integer is a live address for T
+    stability: public since 0.1
+  */
+  pub fn fromRaw(address: usize) -> Ptr<T> requires(unsafe) {
+    return Ptr<T> {
+      address: address,
+      space: AddressSpace.Host,
+      provenance: Provenance.init(0, false, false),
+    }
+  }
+
+  /**
+    Creates a non-null, aligned dangling pointer for zero-length views.
+
+    example:
+      unsafe {
+        let ptr = Ptr<User>.danglingAligned()
+        let empty = Slice<User>.fromPtr(ptr.requireNonNull(), 0)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: may only be used where no memory is read or written
+    stability: public since 0.1
+  */
+  pub fn danglingAligned() -> Ptr<T> requires(unsafe) {
+    return Ptr<T> {
+      address: ptrTypeAlign<T>(),
+      space: AddressSpace.Host,
+      provenance: Provenance.init(0, false, false),
+    }
+  }
+
+  /**
+    Returns true when the pointer address is zero.
+
+    example:
+      let nonNull = ptr.checkNonNull()?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: safe null inspection; does not prove the pointer is live
+    stability: public since 0.1
+  */
+  pub fn isNull(self: Ptr<T>) -> bool {
+    return self.address == 0
+  }
+
+  /**
+    Returns true when the pointer address is not zero.
+
+    example:
+      if ptr.isNonNull() {
+        let address = ptr.rawAddress()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: non-null is not the same as readable or writable
+    stability: public since 0.1
+  */
+  pub fn isNonNull(self: Ptr<T>) -> bool {
+    return !self.isNull()
+  }
+
+  /**
+    Returns the typed address for this pointer.
+
+    example:
+      let address = ptr.address()
+      let raw = address.raw()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: exposes address metadata without dereferencing memory
+    stability: public since 0.1
+  */
+  pub fn address(self: Ptr<T>) -> Address {
+    return Address.init(self.address, self.space)
+  }
+
+  /**
+    Returns the integer address.
+
+    example:
+      let raw = ptr.rawAddress()
+      if raw == 0 { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: integer addresses lose type and lifetime proof when passed around
+    stability: public since 0.1
+  */
+  pub fn rawAddress(self: Ptr<T>) -> usize {
+    return self.address
+  }
+
+  /**
+    Returns the provenance carried by this pointer.
+
+    example:
+      let provenance = ptr.provenance()
+      if provenance.valid() == false { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: provenance is proof metadata; it does not read memory
+    stability: public since 0.1
+  */
+  pub fn provenance(self: Ptr<T>) -> Provenance {
+    return self.provenance
+  }
+
+  /**
+    Returns the address space for this pointer.
+
+    example:
+      if ptr.addressSpace() == AddressSpace.Gpu {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: address-space checks help prevent host/device pointer mixups
+    stability: public since 0.1
+  */
+  pub fn addressSpace(self: Ptr<T>) -> AddressSpace {
+    return self.space
+  }
+
+  /**
+    Converts this pointer to NonNull when the address is not zero.
+
+    example:
+      let checked = ptr.checkNonNull()?.asPtr()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: checks null only; use checkReadable/checkWritable before access
+    stability: public since 0.1
+  */
+  pub fn asNonNull(self: Ptr<T>) -> Option<NonNull<T>> {
+    return NonNull<T>.from(self)
+  }
+
+  /**
+    Reinterprets this pointer as a pointer to another type.
+
+    example:
+      unsafe {
+        let bytes = ptr.cast<u8>()
+        let firstByte = bytes.read()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: requires layout and aliasing proof for the target type U
+    stability: public since 0.1
+  */
+  pub fn cast<U>(self: Ptr<T>) -> Ptr<U> requires(unsafe) {
+    return Ptr<U> {
+      address: self.address,
+      space: self.space,
+      provenance: self.provenance,
+    }
+  }
+
+  /**
+    Re-tags this pointer with another address space.
+
+    example:
+      unsafe {
+        let devicePtr = ptr.castAddressSpace(AddressSpace.Device)
+        if devicePtr.addressSpace() == AddressSpace.Device { return }
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: requires platform proof that the address is valid in the target space
+    stability: public since 0.1
+  */
+  pub fn castAddressSpace(self: Ptr<T>, space: AddressSpace) -> Ptr<T> requires(unsafe) {
+    return Ptr<T> {
+      address: self.address,
+      space: space,
+      provenance: self.provenance,
+    }
+  }
+
+  /**
+    Attaches explicit provenance metadata to this pointer.
+
+    example:
+      unsafe {
+        let tracked = ptr.withProvenance(provenance)
+        if tracked.provenance().valid() == false { return }
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: requires compiler/runtime proof that provenance belongs to this address
+    stability: public since 0.1
+  */
+  pub fn withProvenance(self: Ptr<T>, provenance: Provenance) -> Ptr<T> requires(unsafe) {
+    return Ptr<T> {
+      address: self.address,
+      space: self.space,
+      provenance: provenance,
+    }
+  }
+
+  /**
+    Exposes the pointer address as an integer.
+
+    example:
+      unsafe {
+        let raw = ptr.exposeAddress()
+        let restored = Ptr<User>.fromRaw(raw)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: exposed addresses must not be used to bypass provenance checks
+    stability: public since 0.1
+  */
+  pub fn exposeAddress(self: Ptr<T>) -> usize requires(unsafe) {
+    return self.address
+  }
+
+  /**
+    Advances this pointer by element count.
+
+    example:
+      unsafe {
+        let second = first.add(1)
+        let value = second.read()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: result must stay in the same live allocation or one-past boundary
+    stability: public since 0.1
+  */
+  pub fn add(self: Ptr<T>, count: usize) -> Ptr<T> requires(unsafe) {
+    return self.byteAdd(count * ptrTypeStride<T>())
+  }
+
+  /**
+    Moves this pointer backward by element count.
+
+    example:
+      unsafe {
+        let previous = current.sub(1)
+        let value = previous.read()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: result must stay in the same live allocation
+    stability: public since 0.1
+  */
+  pub fn sub(self: Ptr<T>, count: usize) -> Ptr<T> requires(unsafe) {
+    return self.byteSub(count * ptrTypeStride<T>())
+  }
+
+  /**
+    Advances this pointer by raw byte count.
+
+    example:
+      unsafe {
+        let header = ptr.byteAdd(16).cast<Header>()
+        let value = header.read()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove byte offset, alignment, and target layout
+    stability: public since 0.1
+  */
+  pub fn byteAdd(self: Ptr<T>, bytes: usize) -> Ptr<T> requires(unsafe) {
+    return self.withAddress(self.address + bytes)
+  }
+
+  /**
+    Moves this pointer backward by raw byte count.
+
+    example:
+      unsafe {
+        let base = field.byteSub(8).cast<Record>()
+        let record = base.read()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove the result remains inside the allocation
+    stability: public since 0.1
+  */
+  pub fn byteSub(self: Ptr<T>, bytes: usize) -> Ptr<T> requires(unsafe) {
+    return self.withAddress(self.address - bytes)
+  }
+
+  /**
+    Offsets this pointer forward or backward by signed element count.
+
+    example:
+      unsafe {
+        let current = base.offset(index)
+        let value = current.read()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove the signed offset is in bounds for T
+    stability: public since 0.1
+  */
+  pub fn offset(self: Ptr<T>, count: isize) -> Ptr<T> requires(unsafe) {
+    if count < 0 {
+      return self.sub((0 - count) as usize)
+    }
+    return self.add(count as usize)
+  }
+
+  /**
+    Returns the element distance between two pointers.
+
+    example:
+      let count = end.distanceTo(start)
+      if count < 0 { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: both pointers must refer to the same allocation and element type
+    stability: public since 0.1
+  */
+  pub fn distanceTo(self: Ptr<T>, other: Ptr<T>) -> isize requires(unsafe) {
+    if self.address >= other.address {
+      return ((self.address - other.address) / ptrTypeStride<T>()) as isize
+    }
+    return 0 - (((other.address - self.address) / ptrTypeStride<T>()) as isize)
+  }
+
+  /**
+    Returns true when this pointer is aligned for T.
+
+    example:
+      let aligned = ptr.checkAligned()?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: alignment alone does not prove the pointer is readable
+    stability: public since 0.1
+  */
+  pub fn isAligned(self: Ptr<T>) -> bool {
+    return self.isAlignedTo(ptrTypeAlign<T>())
+  }
+
+  /**
+    Returns true when this pointer is aligned to a requested boundary.
+
+    example:
+      let aligned = ptr.checkAligned()?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: align must be non-zero and valid for the target operation
+    stability: public since 0.1
+  */
+  pub fn isAlignedTo(self: Ptr<T>, align: usize) -> bool {
+    if align == 0 {
+      return false
+    }
+    return self.address % align == 0
+  }
+
+  /**
+    Returns the byte remainder relative to an alignment boundary.
+
+    example:
+      let offset = ptr.alignOffset(16)
+      if offset != 0 { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: returns 0 for invalid align 0; use isAlignedTo for validation
+    stability: public since 0.1
+  */
+  pub fn alignOffset(self: Ptr<T>, align: usize) -> usize {
+    if align == 0 {
+      return 0
+    }
+    return self.address % align
+  }
+
+  /**
+    Rounds this pointer up to the next alignment boundary.
+
+    example:
+      unsafe {
+        let aligned = ptr.alignUp(64)
+        if aligned.isAlignedTo(64) == false { return }
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove the aligned address is still in the valid range
+    stability: public since 0.1
+  */
+  pub fn alignUp(self: Ptr<T>, align: usize) -> Ptr<T> requires(unsafe) {
+    let offset = self.alignOffset(align)
+    if offset == 0 {
+      return self
+    }
+    return self.byteAdd(align - offset)
+  }
+
+  /**
+    Rounds this pointer down to the previous alignment boundary.
+
+    example:
+      unsafe {
+        let header = ptr.alignDown(64).cast<Header>()
+        let value = header.read()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove the rounded address still belongs to the object
+    stability: public since 0.1
+  */
+  pub fn alignDown(self: Ptr<T>, align: usize) -> Ptr<T> requires(unsafe) {
+    return self.byteSub(self.alignOffset(align))
+  }
+
+  /**
+    Reads one aligned value from this pointer.
+
+    example:
+      let user = ptr.get()?
+
+    advanced:
+      unsafe {
+        let user = ptr.read()
+      }
+
+    effects: reads memory
+    complexity: O(1)
+    allocation: none
+    safety: requires live, initialized, aligned, readable storage for T
+    stability: public since 0.1
+  */
+  pub fn read(self: Ptr<T>) -> T requires(unsafe) {
+    return ptrRead<T>(self)
+  }
+
+  /**
+    Reads one unaligned value from this pointer.
+
+    example:
+      unsafe {
+        packetPtr.checkReadable(1)?
+        let header = packetPtr.readUnaligned()
+      }
+
+    effects: reads memory
+    complexity: O(1)
+    allocation: none
+    safety: requires readable initialized storage; alignment is not assumed
+    stability: public since 0.1
+  */
+  pub fn readUnaligned(self: Ptr<T>) -> T requires(unsafe) {
+    return ptrReadUnaligned<T>(self)
+  }
+
+  /**
+    Writes one aligned value through this pointer.
+
+    example:
+      ptr.set(user)?
+
+    advanced:
+      unsafe {
+        ptr.write(user)
+      }
+
+    effects: writes memory
+    complexity: O(1)
+    allocation: none
+    safety: requires live, aligned, writable storage and valid ownership
+    stability: public since 0.1
+  */
+  pub fn write(self: Ptr<T>, value: T) -> Unit requires(unsafe) {
+    ptrWrite<T>(self, value)
+  }
+
+  /**
+    Writes one value without requiring alignment.
+
+    example:
+      unsafe {
+        packetPtr.checkWritable(1)?
+        packetPtr.writeUnaligned(header)
+      }
+
+    effects: writes memory
+    complexity: O(1)
+    allocation: none
+    safety: requires writable storage; caller must prove unaligned writes are allowed
+    stability: public since 0.1
+  */
+  pub fn writeUnaligned(self: Ptr<T>, value: T) -> Unit requires(unsafe) {
+    ptrWriteUnaligned<T>(self, value)
+  }
+
+  /**
+    Replaces the current value and returns the previous one.
+
+    example:
+      unsafe {
+        ptr.checkWritable(1)?
+        let old = ptr.replace(newUser)
+      }
+
+    effects: reads and writes memory
+    complexity: O(1)
+    allocation: none
+    safety: requires readable and writable initialized storage for T
+    stability: public since 0.1
+  */
+  pub fn replace(self: Ptr<T>, value: T) -> T requires(unsafe) {
+    let previous = self.read()
+    self.write(value)
+    return previous
+  }
+
+  /**
+    Swaps values stored behind two pointers.
+
+    example:
+      unsafe {
+        left.checkWritable(1)?
+        right.checkWritable(1)?
+        left.swap(right)
+      }
+
+    effects: reads and writes memory
+    complexity: O(1)
+    allocation: none
+    safety: both pointers must be valid, writable, and not illegally aliased
+    stability: public since 0.1
+  */
+  pub fn swap(self: Ptr<T>, other: Ptr<T>) -> Unit requires(unsafe) {
+    let left = self.read()
+    let right = other.read()
+    self.write(right)
+    other.write(left)
+  }
+
+  /**
+    Reads the value at an element index from this pointer.
+
+    example:
+      let user = ptr.getAt(index)?
+
+    advanced:
+      unsafe {
+        let user = ptr.readAt(index)
+      }
+
+    effects: reads memory
+    complexity: O(1)
+    allocation: none
+    safety: index must be in bounds for the same allocation
+    stability: public since 0.1
+  */
+  pub fn readAt(self: Ptr<T>, index: usize) -> T requires(unsafe) {
+    return self.add(index).read()
+  }
+
+  /**
+    Writes a value at an element index from this pointer.
+
+    example:
+      ptr.setAt(index, user)?
+
+    advanced:
+      unsafe {
+        ptr.writeAt(index, user)
+      }
+
+    effects: writes memory
+    complexity: O(1)
+    allocation: none
+    safety: index must be writable in the same allocation
+    stability: public since 0.1
+  */
+  pub fn writeAt(self: Ptr<T>, index: usize, value: T) -> Unit requires(unsafe) {
+    self.add(index).write(value)
+  }
+
+  /**
+    Copies initialized values from this pointer into a destination pointer.
+
+    example:
+      unsafe {
+        src.checkReadable(count)?
+        dst.checkWritable(count)?
+        src.copyTo(dst, count)
+      }
+
+    effects: reads and writes memory
+    complexity: O(n)
+    allocation: none
+    safety: source and destination ranges must be valid; overlap policy is compiler/runtime checked
+    stability: public since 0.1
+  */
+  pub fn copyTo(self: Ptr<T>, dst: Ptr<T>, count: usize) -> Unit requires(unsafe) {
+    ptrCopy<T>(self, dst, count)
+  }
+
+  /**
+    Copies initialized values from a source pointer into this pointer.
+
+    example:
+      unsafe {
+        dst.checkWritable(count)?
+        src.checkReadable(count)?
+        dst.copyFrom(src, count)
+      }
+
+    effects: reads and writes memory
+    complexity: O(n)
+    allocation: none
+    safety: ranges must be valid and overlap must be accepted by lowering
+    stability: public since 0.1
+  */
+  pub fn copyFrom(self: Ptr<T>, src: Ptr<T>, count: usize) -> Unit requires(unsafe) {
+    src.copyTo(self, count)
+  }
+
+  /**
+    Moves values from this pointer to a destination pointer.
+
+    example:
+      unsafe {
+        src.checkReadable(count)?
+        dst.checkWritable(count)?
+        src.moveTo(dst, count)
+      }
+
+    effects: moves memory
+    complexity: O(n)
+    allocation: none
+    safety: supports overlap only when backend lowers to the correct move primitive
+    stability: public since 0.1
+  */
+  pub fn moveTo(self: Ptr<T>, dst: Ptr<T>, count: usize) -> Unit requires(unsafe) {
+    ptrMove<T>(self, dst, count)
+  }
+
+  /**
+    Fills a writable range with a repeated value.
+
+    example:
+      unsafe {
+        ptr.checkWritable(count)?
+        ptr.fill(defaultUser, count)
+      }
+
+    effects: writes memory
+    complexity: O(n)
+    allocation: none
+    safety: range must be writable and value must be valid to duplicate
+    stability: public since 0.1
+  */
+  pub fn fill(self: Ptr<T>, value: T, count: usize) -> Unit requires(unsafe) {
+    ptrFill<T>(self, value, count)
+  }
+
+  /**
+    Zeroes a writable range.
+
+    example:
+      unsafe {
+        ptr.checkWritable(count)?
+        ptr.zero(count)
+      }
+
+    effects: writes memory
+    complexity: O(n)
+    allocation: none
+    safety: zero must be a valid initialization pattern for the destination use
+    stability: public since 0.1
+  */
+  pub fn zero(self: Ptr<T>, count: usize) -> Unit requires(unsafe) {
+    ptrZero<T>(self, count)
+  }
+
+  /**
+    Checks and reads one value.
+
+    example:
+      let user = ptr.get()?
+
+    effects: reads memory when the pointer is valid
+    complexity: O(1)
+    allocation: none
+    safety: checks readable access for one T before reading
+    stability: public since 0.1
+  */
+  pub fn get(self: Ptr<T>) -> Result<T, PtrError> {
+    let checked = self.checkReadable(1)?
+    return Ok(checked.read())
+  }
+
+  /**
+    Checks and writes one value.
+
+    example:
+      ptr.set(user)?
+
+    effects: writes memory when the pointer is valid
+    complexity: O(1)
+    allocation: none
+    safety: checks writable access for one T before writing
+    stability: public since 0.1
+  */
+  pub fn set(self: Ptr<T>, value: T) -> Result<Ptr<T>, PtrError> {
+    let checked = self.checkWritable(1)?
+    checked.write(value)
+    return Ok(checked)
+  }
+
+  /**
+    Checks and reads the value at an element index.
+
+    example:
+      let user = ptr.getAt(index)?
+
+    effects: reads memory when index is valid
+    complexity: O(1)
+    allocation: none
+    safety: checks readable access through index + 1 before reading
+    stability: public since 0.1
+  */
+  pub fn getAt(self: Ptr<T>, index: usize) -> Result<T, PtrError> {
+    let checked = self.checkReadable(index + 1)?
+    return Ok(checked.readAt(index))
+  }
+
+  /**
+    Checks and writes the value at an element index.
+
+    example:
+      ptr.setAt(index, user)?
+
+    effects: writes memory when index is valid
+    complexity: O(1)
+    allocation: none
+    safety: checks writable access through index + 1 before writing
+    stability: public since 0.1
+  */
+  pub fn setAt(self: Ptr<T>, index: usize, value: T) -> Result<Ptr<T>, PtrError> {
+    let checked = self.checkWritable(index + 1)?
+    checked.writeAt(index, value)
+    return Ok(checked)
+  }
+
+  /**
+    Checks null and returns a NonNull pointer or PtrError.Null.
+
+    example:
+      let raw = ptr.checkNonNull()?.asPtr()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: validates only non-null; readability and writability are separate checks
+    stability: public since 0.1
+  */
+  pub fn checkNonNull(self: Ptr<T>) -> Result<NonNull<T>, PtrError> {
+    return NonNull<T>.checked(self)
+  }
+
+  /**
+    Checks alignment for T.
+
+    example:
+      let aligned = ptr.checkAligned()?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: alignment success does not prove lifetime or bounds
+    stability: public since 0.1
+  */
+  pub fn checkAligned(self: Ptr<T>) -> Result<Ptr<T>, PtrError> {
+    if self.isAligned() {
+      return Ok(self)
+    }
+    return Err(PtrError.Misaligned)
+  }
+
+  /**
+    Checks that count elements can be read from this pointer.
+
+    example:
+      let readable = ptr.checkReadable(3)?
+      let first = ptr.getAt(0)?
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: returns a checked pointer only when null, bounds, provenance, and access rules pass
+    stability: public since 0.1
+  */
+  pub fn checkReadable(self: Ptr<T>, count: usize) -> Result<Ptr<T>, PtrError> {
+    return ptrCheckAccess<T>(self, count, false)
+  }
+
+  /**
+    Checks that count elements can be written through this pointer.
+
+    example:
+      let writable = ptr.checkWritable(1)?
+      writable.set(user)?
+
+    effects: pure unless runtime proof table is queried
+    complexity: O(1)
+    allocation: none
+    safety: validates mutability, bounds, provenance, and writable ownership
+    stability: public since 0.1
+  */
+  pub fn checkWritable(self: Ptr<T>, count: usize) -> Result<Ptr<T>, PtrError> {
+    return ptrCheckAccess<T>(self, count, true)
+  }
+
+  /**
+    Attaches a debug label used by pointer diagnostics.
+
+    example:
+      let usersPtr = ptr.debugLabel("users buffer")
+      let user = usersPtr.get()?
+
+    effects: diagnostic metadata update
+    complexity: O(1)
+    allocation: none
+    safety: labeling does not change pointer validity
+    stability: public since 0.1
+  */
+  pub fn debugLabel(self: Ptr<T>, label: string) -> Ptr<T> {
+    return ptrDebugLabel<T>(self, label)
+  }
+
+  /**
+    Compares address space, address, and provenance allocation id.
+
+    example:
+      if left.equals(right) {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: equality does not prove the pointer is currently live
+    stability: public since 0.1
+  */
+  pub fn equals(self: Ptr<T>, other: Ptr<T>) -> bool {
+    return self.address == other.address
+      && self.space == other.space
+      && self.provenance.allocation() == other.provenance.allocation()
+  }
+
+  /**
+    Compares only the numeric address.
+
+    example:
+      if left.sameAddress(right) {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: same address can still have different provenance or address space
+    stability: public since 0.1
+  */
+  pub fn sameAddress(self: Ptr<T>, other: Ptr<T>) -> bool {
+    return self.address == other.address
+  }
+
+  /**
+    Compares only provenance allocation identity.
+
+    example:
+      if viewStart.sameProvenance(viewEnd) == false {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: same provenance does not prove a specific offset is in bounds
+    stability: public since 0.1
+  */
+  pub fn sameProvenance(self: Ptr<T>, other: Ptr<T>) -> bool {
+    return self.provenance.allocation() == other.provenance.allocation()
+  }
+
+  fn withAddress(self: Ptr<T>, address: usize) -> Ptr<T> {
+    return Ptr<T> {
+      address: address,
+      space: self.space,
+      provenance: self.provenance,
+    }
+  }
+}
+
+fn ptrTypeAlign<T>() -> usize
+fn ptrTypeStride<T>() -> usize
+fn ptrRead<T>(ptr: Ptr<T>) -> T requires(unsafe)
+fn ptrReadUnaligned<T>(ptr: Ptr<T>) -> T requires(unsafe)
+fn ptrWrite<T>(ptr: Ptr<T>, value: T) -> Unit requires(unsafe)
+fn ptrWriteUnaligned<T>(ptr: Ptr<T>, value: T) -> Unit requires(unsafe)
+fn ptrCopy<T>(src: Ptr<T>, dst: Ptr<T>, count: usize) -> Unit requires(unsafe)
+fn ptrMove<T>(src: Ptr<T>, dst: Ptr<T>, count: usize) -> Unit requires(unsafe)
+fn ptrFill<T>(ptr: Ptr<T>, value: T, count: usize) -> Unit requires(unsafe)
+fn ptrZero<T>(ptr: Ptr<T>, count: usize) -> Unit requires(unsafe)
+fn ptrCheckAccess<T>(ptr: Ptr<T>, count: usize, mutable: bool) -> Result<Ptr<T>, PtrError>
+fn ptrDebugLabel<T>(ptr: Ptr<T>, label: string) -> Ptr<T>

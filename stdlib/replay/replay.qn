@@ -1,0 +1,6 @@
+pub struct ReplayLog {
+  events: usize,
+}
+
+pub fn empty() -> ReplayLog
+pub fn len(log: ReplayLog) -> usize

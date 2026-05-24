@@ -1,0 +1,39 @@
+pub enum ReceiverCompatibilityReason {
+  AssociatedReceiver
+  ValueReceiver
+  BorrowReceiver
+  MutBorrowReceiver
+  TypeMismatch
+  RequiresValue
+  RequiresType
+}
+
+pub struct ReceiverCompatibilityFact {
+  lookupId: u64,
+  receiverTypeId: u64,
+  candidateReceiverTypeId: u64,
+  reason: ReceiverCompatibilityReason,
+  compatible: bool,
+}
+
+pub fn receiverCompatibilityFact(
+  lookupId: u64,
+  receiverTypeId: u64,
+  candidateReceiverTypeId: u64,
+  reason: ReceiverCompatibilityReason,
+  compatible: bool,
+) -> ReceiverCompatibilityFact {
+  return ReceiverCompatibilityFact {
+    lookupId: lookupId,
+    receiverTypeId: receiverTypeId,
+    candidateReceiverTypeId: candidateReceiverTypeId,
+    reason: reason,
+    compatible: compatible,
+  }
+}
+
+impl ReceiverCompatibilityFact {
+  pub fn rejectsCandidate(self: ReceiverCompatibilityFact) -> bool {
+    return self.compatible == false
+  }
+}

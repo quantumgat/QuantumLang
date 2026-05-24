@@ -1,0 +1,15 @@
+pub struct DocumentState {
+  uri: string,
+  version: u64,
+  open: bool,
+  dirty: bool,
+}
+
+pub fn documentState(uri: string, version: u64) -> DocumentState {
+  return DocumentState {
+    uri: uri,
+    version: version,
+    open: true,
+    dirty: false,
+  }
+}

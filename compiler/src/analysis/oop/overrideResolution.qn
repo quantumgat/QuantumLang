@@ -1,0 +1,29 @@
+pub struct OverrideResolution {
+  baseMethodId: u64,
+  overrideMethodId: u64,
+  validOverride: bool,
+  finalViolation: bool,
+}
+
+pub fn overrideResolution(baseMethodId: u64, overrideMethodId: u64, validOverride: bool, finalViolation: bool) -> OverrideResolution {
+  return OverrideResolution {
+    baseMethodId: baseMethodId,
+    overrideMethodId: overrideMethodId,
+    validOverride: validOverride,
+    finalViolation: finalViolation,
+  }
+}
+
+impl OverrideResolution {
+  pub fn baseMethod(self: OverrideResolution) -> u64 {
+    return self.baseMethodId
+  }
+
+  pub fn overrideMethod(self: OverrideResolution) -> u64 {
+    return self.overrideMethodId
+  }
+
+  pub fn isValid(self: OverrideResolution) -> bool {
+    return self.validOverride && !self.finalViolation
+  }
+}

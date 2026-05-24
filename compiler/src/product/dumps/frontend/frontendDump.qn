@@ -1,0 +1,15 @@
+pub struct FrontendDump {
+  tokenRows: usize,
+  astRows: usize,
+  recoveryRows: usize,
+}
+
+pub fn frontendDump(tokenRows: usize, astRows: usize, recoveryRows: usize) -> FrontendDump {
+  return FrontendDump { tokenRows: tokenRows, astRows: astRows, recoveryRows: recoveryRows }
+}
+
+impl FrontendDump {
+  pub fn rowCount(self: FrontendDump) -> usize {
+    return self.tokenRows + self.astRows + self.recoveryRows
+  }
+}

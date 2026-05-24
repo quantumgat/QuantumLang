@@ -1,0 +1,6 @@
+[module]
+name = "resilience"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "resilience"

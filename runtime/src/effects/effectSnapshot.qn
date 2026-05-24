@@ -1,0 +1,15 @@
+pub struct EffectSnapshot {
+  checkedCapabilities: usize,
+  deniedCapabilities: usize,
+  redacted: bool,
+}
+
+pub fn effectSnapshot(checkedCapabilities: usize, deniedCapabilities: usize) -> EffectSnapshot {
+  return EffectSnapshot { checkedCapabilities: checkedCapabilities, deniedCapabilities: deniedCapabilities, redacted: true }
+}
+
+impl EffectSnapshot {
+  pub fn isClean(self: EffectSnapshot) -> bool {
+    return self.deniedCapabilities == 0
+  }
+}

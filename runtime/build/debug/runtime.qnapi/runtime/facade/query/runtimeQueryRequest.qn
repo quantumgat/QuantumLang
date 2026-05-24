@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeQueryRequest {
+  queryName: string
+  consumesStructuredFacts: bool
+  mutatesRuntime: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeQueryRequest(queryName: string) -> RuntimeQueryRequest
+}

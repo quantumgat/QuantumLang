@@ -1,0 +1,23 @@
+pub struct BinaryNamedEndianCodecFact {
+  callName: string,
+  optionLabel: string,
+  enumQualifiedAccepted: bool,
+  contextualEnumAccepted: bool,
+  lowercaseValueRejected: bool,
+  typoLabelRejected: bool,
+  typoValueRejected: bool,
+  suggestionAvailable: bool,
+}
+
+impl BinaryNamedEndianCodecFact {
+  pub fn accepted(self: BinaryNamedEndianCodecFact) -> bool {
+    return self.callName != ""
+      && self.optionLabel == "endian"
+      && self.enumQualifiedAccepted
+      && self.contextualEnumAccepted
+      && self.lowercaseValueRejected
+      && self.typoLabelRejected
+      && self.typoValueRejected
+      && self.suggestionAvailable
+  }
+}

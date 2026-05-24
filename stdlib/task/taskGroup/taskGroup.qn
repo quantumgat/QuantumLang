@@ -1,0 +1,20 @@
+pub struct TaskGroup {
+  groupId: u64,
+  scopeId: u64,
+  childCount: usize,
+  joinsAllChildren: bool,
+}
+
+impl TaskGroup {
+  pub fn spawn<T>(self: TaskGroup, work: TaskFn<T>) -> Result<JoinHandle<T>, TaskError>
+
+  pub fn joinAll<T>(self: TaskGroup) -> Result<Vec<T>, TaskError>
+
+  pub fn childCount(self: TaskGroup) -> usize {
+    return self.childCount
+  }
+
+  pub fn complete(self: TaskGroup) -> bool {
+    return self.joinsAllChildren
+  }
+}

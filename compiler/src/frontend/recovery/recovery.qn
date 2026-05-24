@@ -1,0 +1,30 @@
+pub enum RecoveryAction {
+  SkipToken
+  InsertMissing
+  CloseBlock
+  Stop
+}
+
+pub struct RecoveryPlan {
+  action: RecoveryAction,
+  sync: SyncPoint,
+  diagnosticCode: u32,
+}
+
+pub fn recoveryPlan(action: RecoveryAction, sync: SyncPoint, diagnosticCode: u32) -> RecoveryPlan {
+  return RecoveryPlan { action: action, sync: sync, diagnosticCode: diagnosticCode }
+}
+
+impl RecoveryPlan {
+  pub fn recoveryAction(self: RecoveryPlan) -> RecoveryAction {
+    return self.action
+  }
+
+  pub fn syncPoint(self: RecoveryPlan) -> SyncPoint {
+    return self.sync
+  }
+
+  pub fn code(self: RecoveryPlan) -> u32 {
+    return self.diagnosticCode
+  }
+}

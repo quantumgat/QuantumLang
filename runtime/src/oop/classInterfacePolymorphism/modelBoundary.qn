@@ -1,0 +1,19 @@
+pub struct RuntimeClassInterfacePolymorphismBoundary {
+  dispatchTablesOwned: bool,
+  interfaceObjectsOwned: bool,
+  downcastOwned: bool,
+  lifecycleHandlesOwned: bool,
+  reflectionBoundaryOwned: bool,
+  noRequestLoopReflection: bool,
+}
+
+impl RuntimeClassInterfacePolymorphismBoundary {
+  pub fn complete(self: RuntimeClassInterfacePolymorphismBoundary) -> bool {
+    return self.dispatchTablesOwned
+      && self.interfaceObjectsOwned
+      && self.downcastOwned
+      && self.lifecycleHandlesOwned
+      && self.reflectionBoundaryOwned
+      && self.noRequestLoopReflection
+  }
+}

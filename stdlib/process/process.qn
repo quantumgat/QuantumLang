@@ -1,0 +1,38 @@
+pub struct Process {
+  id: ProcessId,
+  running: bool,
+  command: Command,
+}
+
+pub fn id(process: Process) -> ProcessId
+pub fn running(process: Process) -> bool
+pub fn spawn(command: Command) -> Result<Process, OsError>
+pub fn output(command: Command) -> Result<ProcessOutput, OsError>
+pub fn status(command: Command) -> Result<ExitStatus, OsError>
+pub fn wait(process: Process) -> Result<ExitStatus, OsError>
+pub fn wait(process: Process, timeoutMillis: u64) -> Result<Option<ExitStatus>, OsError>
+pub fn tryWait(process: Process) -> Result<Option<ExitStatus>, OsError>
+pub fn kill(process: Process) -> Result<Unit, OsError>
+pub fn signal(process: Process, signal: ProcessSignal) -> Result<Unit, OsError>
+
+impl Process {
+  pub fn id(self: Process) -> ProcessId {
+    return id(self)
+  }
+
+  pub fn running(self: Process) -> bool {
+    return running(self)
+  }
+
+  pub fn wait(self: Process) -> Result<ExitStatus, OsError> {
+    return wait(self)
+  }
+
+  pub fn tryWait(self: Process) -> Result<Option<ExitStatus>, OsError> {
+    return tryWait(self)
+  }
+
+  pub fn kill(self: Process) -> Result<Unit, OsError> {
+    return kill(self)
+  }
+}

@@ -1,0 +1,58 @@
+pub enum RuntimeAtomicWaitStatus {
+  Pending,
+  Woken,
+  TimedOut,
+  Cancelled,
+  NotEqual,
+  Unsupported,
+}
+
+pub struct RuntimeAtomicWaitRequest {
+  order: RuntimeMemoryOrder,
+  hasTimeout: bool,
+  cancellationObserved: bool,
+  guardHeld: bool,
+  guardAware: bool,
+  schedulerParkSupported: bool,
+  targetSupported: bool,
+}
+
+impl RuntimeAtomicWaitRequest {
+  pub fn init(
+    order: RuntimeMemoryOrder,
+    hasTimeout: bool,
+    cancellationObserved: bool,
+    guardHeld: bool,
+    guardAware: bool,
+    schedulerParkSupported: bool,
+    targetSupported: bool,
+  ) -> RuntimeAtomicWaitRequest {
+    return RuntimeAtomicWaitRequest {
+      order: order,
+      hasTimeout: hasTimeout,
+      cancellationObserved: cancellationObserved,
+      guardHeld: guardHeld,
+      guardAware: guardAware,
+      schedulerParkSupported: schedulerParkSupported,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn accepted(self: RuntimeAtomicWaitRequest) -> bool {
+    let policy = RuntimeMemoryOrderPolicy.init(RuntimeAtomicOperationKind.Wait, self.order)
+    return self.targetSupported && self.schedulerParkSupported && policy.valid() && (self.guardHeld == false || self.guardAware)
+  }
+
+  pub fn status(self: RuntimeAtomicWaitRequest) -> RuntimeAtomicWaitStatus {
+    if self.targetSupported == false || self.schedulerParkSupported == false {
+      return RuntimeAtomicWaitStatus.Unsupported
+    }
+    if self.cancellationObserved {
+      return RuntimeAtomicWaitStatus.Cancelled
+    }
+    if self.hasTimeout {
+      return RuntimeAtomicWaitStatus.TimedOut
+    }
+    return RuntimeAtomicWaitStatus.Pending
+  }
+}

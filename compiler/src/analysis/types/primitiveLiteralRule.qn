@@ -1,0 +1,60 @@
+import analysis.types::{BuiltinPrimitiveTypeId}
+
+pub enum PrimitiveLiteralKind {
+  Integer
+  Float
+  Complex
+  Bool
+  Char
+  String
+  Unit
+}
+
+pub enum PrimitiveOverflowPolicy {
+  Checked
+  Wrapping
+  Saturating
+  Unsupported
+}
+
+pub struct PrimitiveLiteralRule {
+  targetType: BuiltinPrimitiveTypeId,
+  literalKind: PrimitiveLiteralKind,
+  suffix: string,
+  overflowPolicy: PrimitiveOverflowPolicy,
+  constantFoldable: bool,
+}
+
+pub fn primitiveLiteralRule(
+  targetType: BuiltinPrimitiveTypeId,
+  literalKind: PrimitiveLiteralKind,
+  suffix: string,
+  overflowPolicy: PrimitiveOverflowPolicy,
+  constantFoldable: bool
+) -> PrimitiveLiteralRule {
+  return PrimitiveLiteralRule {
+    targetType: targetType,
+    literalKind: literalKind,
+    suffix: suffix,
+    overflowPolicy: overflowPolicy,
+    constantFoldable: constantFoldable,
+  }
+}
+
+impl PrimitiveLiteralRule {
+  pub fn kind(self: PrimitiveLiteralRule) -> PrimitiveLiteralKind {
+    return self.literalKind
+  }
+
+  pub fn literalSuffix(self: PrimitiveLiteralRule) -> string {
+    return self.suffix
+  }
+
+  pub fn overflow(self: PrimitiveLiteralRule) -> PrimitiveOverflowPolicy {
+    return self.overflowPolicy
+  }
+
+  pub fn canConstantFold(self: PrimitiveLiteralRule) -> bool {
+    return self.constantFoldable
+  }
+}

@@ -1,0 +1,35 @@
+pub struct OopAsyncMethodRuntimeGuard {
+  objectId: u64,
+  ownerTypeName: string,
+  methodName: string,
+  generation: u64,
+  receiverActive: bool,
+  awaitSuspended: bool,
+  cancellationRequested: bool,
+  cleanupCompleted: bool,
+  partialInitCleanupCompleted: bool,
+  typedFailureBound: bool,
+  noCoredumpFailure: bool,
+  sourceMapBound: bool,
+}
+
+impl OopAsyncMethodRuntimeGuard {
+  pub fn accepted(self: OopAsyncMethodRuntimeGuard) -> bool {
+    return self.objectId > 0
+      && self.ownerTypeName != ""
+      && self.methodName != ""
+      && self.generation > 0
+      && self.receiverActive
+      && self.typedFailureBound
+      && self.noCoredumpFailure
+      && self.sourceMapBound
+      && (!self.cancellationRequested || self.cleanupCompleted)
+      && (!self.awaitSuspended || self.partialInitCleanupCompleted)
+  }
+
+  pub fn safeToResume(self: OopAsyncMethodRuntimeGuard) -> bool {
+    return self.accepted()
+      && !self.cancellationRequested
+      && self.receiverActive
+  }
+}

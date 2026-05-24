@@ -1,0 +1,17 @@
+pub struct DequeBuilder<T> {
+  capacity: usize,
+}
+
+impl<T> DequeBuilder<T> {
+  pub fn init() -> DequeBuilder<T> {
+    return DequeBuilder<T> { capacity: 0 }
+  }
+
+  pub fn capacity(self: DequeBuilder<T>, capacity: usize) -> DequeBuilder<T> {
+    return DequeBuilder<T> { capacity: capacity }
+  }
+
+  pub fn build(self: DequeBuilder<T>) -> Deque<T> requires(alloc) {
+    return Deque<T>.withCapacity(self.capacity)
+  }
+}

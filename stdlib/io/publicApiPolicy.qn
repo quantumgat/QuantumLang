@@ -1,0 +1,63 @@
+pub struct PrintPublicApiPolicy {
+  preludePrint: bool,
+  preludePrintln: bool,
+  preludeEprint: bool,
+  preludeEprintln: bool,
+  preludeDbg: bool,
+  advancedUnderStdIo: bool,
+  variadicPrint: bool,
+  sepEndOptions: bool,
+  fStringInterpolationOnly: bool,
+  formatViewsAvailable: bool,
+  bufferFlushOptions: bool,
+  targetSelection: bool,
+  partialWritePreservation: bool,
+  cancellationSafeCleanup: bool,
+  returnsTypedResult: bool,
+  noPanicByDefault: bool,
+  runtimePrimitiveHidden: bool,
+}
+
+pub fn printPublicApiPolicy() -> PrintPublicApiPolicy {
+  return PrintPublicApiPolicy {
+    preludePrint: true,
+    preludePrintln: true,
+    preludeEprint: true,
+    preludeEprintln: true,
+    preludeDbg: true,
+    advancedUnderStdIo: true,
+    variadicPrint: true,
+    sepEndOptions: true,
+    fStringInterpolationOnly: true,
+    formatViewsAvailable: true,
+    bufferFlushOptions: true,
+    targetSelection: true,
+    partialWritePreservation: true,
+    cancellationSafeCleanup: true,
+    returnsTypedResult: true,
+    noPanicByDefault: true,
+    runtimePrimitiveHidden: true,
+  }
+}
+
+impl PrintPublicApiPolicy {
+  pub fn accepted(self: PrintPublicApiPolicy) -> bool {
+    return self.preludePrint
+      && self.preludePrintln
+      && self.preludeEprint
+      && self.preludeEprintln
+      && self.preludeDbg
+      && self.advancedUnderStdIo
+      && self.variadicPrint
+      && self.sepEndOptions
+      && self.fStringInterpolationOnly
+      && self.formatViewsAvailable
+      && self.bufferFlushOptions
+      && self.targetSelection
+      && self.partialWritePreservation
+      && self.cancellationSafeCleanup
+      && self.returnsTypedResult
+      && self.noPanicByDefault
+      && self.runtimePrimitiveHidden
+  }
+}

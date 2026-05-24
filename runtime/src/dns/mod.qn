@@ -1,0 +1,7 @@
+pub mod dnsQuery
+pub mod dnsResult
+
+pub use dnsQuery.DnsQuery
+pub use dnsQuery.dnsQuery
+pub use dnsResult.DnsResult
+pub use dnsResult.dnsResult

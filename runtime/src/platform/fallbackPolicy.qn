@@ -1,0 +1,22 @@
+pub struct RuntimeFallbackPolicy {
+  required: bool,
+  fallbackAvailable: bool,
+  generatedFallback: bool,
+}
+
+impl RuntimeFallbackPolicy {
+  pub fn init(required: bool, fallbackAvailable: bool, generatedFallback: bool) -> RuntimeFallbackPolicy {
+    return RuntimeFallbackPolicy {
+      required: required,
+      fallbackAvailable: fallbackAvailable,
+      generatedFallback: generatedFallback,
+    }
+  }
+
+  pub fn accepted(self: RuntimeFallbackPolicy) -> bool {
+    if self.generatedFallback {
+      return false
+    }
+    return self.required == false || self.fallbackAvailable
+  }
+}

@@ -1,0 +1,29 @@
+pub struct VecBoundsProof {
+  loopGuard: bool,
+  indexMonotonic: bool,
+  lengthStable: bool,
+  mutationDisjoint: bool,
+}
+
+pub fn vecBoundsProof(
+  loopGuard: bool,
+  indexMonotonic: bool,
+  lengthStable: bool,
+  mutationDisjoint: bool,
+) -> VecBoundsProof {
+  return VecBoundsProof {
+    loopGuard: loopGuard,
+    indexMonotonic: indexMonotonic,
+    lengthStable: lengthStable,
+    mutationDisjoint: mutationDisjoint,
+  }
+}
+
+impl VecBoundsProof {
+  pub fn canElideBoundsCheck(self: VecBoundsProof) -> bool {
+    return self.loopGuard
+      && self.indexMonotonic
+      && self.lengthStable
+      && self.mutationDisjoint
+  }
+}

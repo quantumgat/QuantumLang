@@ -1,0 +1,23 @@
+pub struct CallAbi {
+  parameterCount: usize,
+  returnClassId: u64,
+  variadic: bool,
+}
+
+pub fn callAbi(parameterCount: usize, returnClassId: u64, variadic: bool) -> CallAbi {
+  return CallAbi { parameterCount: parameterCount, returnClassId: returnClassId, variadic: variadic }
+}
+
+impl CallAbi {
+  pub fn parameters(self: CallAbi) -> usize {
+    return self.parameterCount
+  }
+
+  pub fn returnClass(self: CallAbi) -> u64 {
+    return self.returnClassId
+  }
+
+  pub fn isVariadic(self: CallAbi) -> bool {
+    return self.variadic
+  }
+}

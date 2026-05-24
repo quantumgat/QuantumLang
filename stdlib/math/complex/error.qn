@@ -1,0 +1,7 @@
+pub enum ComplexError {
+  InvalidSyntax
+  DivisionByZero
+  BranchCutAmbiguous
+  UnsupportedOperation
+  NonFiniteInput
+}

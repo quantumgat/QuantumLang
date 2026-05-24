@@ -1,0 +1,21 @@
+pub struct RwLock<T> {
+  state: usize,
+}
+
+pub struct ReadGuard<T> {
+  active: bool,
+}
+
+pub struct WriteGuard<T> {
+  active: bool,
+}
+
+impl<T> RwLock<T> {
+  pub fn read(self: RwLock<T>) -> Result<ReadGuard<T>, SyncError>
+
+  pub fn write(self: RwLock<T>) -> Result<WriteGuard<T>, SyncError>
+
+  pub fn tryRead(self: RwLock<T>) -> Result<ReadGuard<T>, SyncError>
+
+  pub fn tryWrite(self: RwLock<T>) -> Result<WriteGuard<T>, SyncError>
+}

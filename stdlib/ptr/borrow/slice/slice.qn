@@ -1,0 +1,407 @@
+/**
+  Immutable borrowed view over contiguous pointer storage.
+
+  example:
+    let slice = ptr.slice(count)?
+    let first = slice.first()?
+    let tail = slice.subSlice(1, slice.len() - 1)
+
+  effects: pure for view operations; reads only when values are accessed
+  complexity: O(1) len/get/subSlice/iter, O(n) toVec
+  allocation: none except toVec
+  safety: construction from raw pointers requires readable lifetime proof
+  stability: public since 0.1
+*/
+pub struct Slice<T> {
+  ptr: NonNull<T>,
+  len: usize,
+  provenance: Provenance,
+}
+
+/**
+  Forward iterator over a pointer Slice.
+
+  example:
+    let mut iter = slice.iter()
+    while iter.isEmpty() == false {
+      let value = iter.next()
+      iter = iter.advance()
+    }
+
+  effects: pure
+  complexity: O(1) next and advance
+  allocation: none
+  safety: inherits the source Slice lifetime and bounds proof
+  stability: public since 0.1
+*/
+pub struct SliceIter<T> {
+  slice: Slice<T>,
+  index: usize,
+  len: usize,
+}
+
+impl<T> Slice<T> {
+  /**
+    Creates an empty pointer slice.
+
+    example:
+      unsafe {
+        let users = Slice<User>.empty()
+        if users.isEmpty() { return }
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: uses a dangling non-null pointer that must never be read
+    stability: public since 0.1
+  */
+  pub fn empty() -> Slice<T> requires(unsafe) {
+    return Slice<T> {
+      ptr: NonNull<T>.dangling(),
+      len: 0,
+      provenance: Provenance.init(0, false, false),
+    }
+  }
+
+  /**
+    Creates an immutable slice from a non-null pointer and length.
+
+    example:
+      unsafe {
+        let users = Slice<User>.fromPtr(nonNull, count)
+        let first = users.first()
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: ptr must be readable for len initialized elements
+    stability: public since 0.1
+  */
+  pub fn fromPtr(ptr: NonNull<T>, len: usize) -> Slice<T> requires(unsafe) {
+    return Slice<T> {
+      ptr: ptr,
+      len: len,
+      provenance: ptr.provenance(),
+    }
+  }
+
+  /**
+    Returns the number of visible elements.
+
+    example:
+      let count = users.len()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads slice metadata only
+    stability: public since 0.1
+  */
+  pub fn len(self: Slice<T>) -> usize {
+    return self.len
+  }
+
+  /**
+    Returns true when the slice has no visible elements.
+
+    example:
+      if users.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads slice metadata only
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: Slice<T>) -> bool {
+    return self.len == 0
+  }
+
+  /**
+    Returns the non-null start pointer for this slice.
+
+    example:
+      let start = users.ptr()
+      let address = start.rawAddress()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: pointer access still requires bounds and lifetime proof
+    stability: public since 0.1
+  */
+  pub fn ptr(self: Slice<T>) -> NonNull<T> {
+    return self.ptr
+  }
+
+  /**
+    Returns the start pointer as a raw Ptr.
+
+    example:
+      let ptr = users.asPtr()
+      let address = ptr.rawAddress()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: converting to Ptr does not grant write access
+    stability: public since 0.1
+  */
+  pub fn asPtr(self: Slice<T>) -> Ptr<T> {
+    return self.ptr.asPtr()
+  }
+
+  /**
+    Returns the value at index when it is in bounds.
+
+    example:
+      let user = users.get(0)?
+
+    effects: reads memory when index is in bounds
+    complexity: O(1)
+    allocation: none
+    safety: performs a bounds check before reading
+    stability: public since 0.1
+  */
+  pub fn get(self: Slice<T>, index: usize) -> Option<T> {
+    if index >= self.len {
+      return None
+    }
+    return Some(self.readUnchecked(index))
+  }
+
+  /**
+    Alias for get.
+
+    example:
+      let first = users.at(0)
+
+    effects: reads memory when index is in bounds
+    complexity: O(1)
+    allocation: none
+    safety: performs the same bounds check as get
+    stability: public since 0.1
+  */
+  pub fn at(self: Slice<T>, index: usize) -> Option<T> {
+    return self.get(index)
+  }
+
+  /**
+    Reads an element without performing a bounds check.
+
+    example:
+      unsafe {
+        if index < users.len() {
+          let user = users.readUnchecked(index)
+        }
+      }
+
+    effects: reads memory
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove index is in bounds and storage is readable
+    stability: public since 0.1
+  */
+  pub fn readUnchecked(self: Slice<T>, index: usize) -> T requires(unsafe) {
+    return self.asPtr().readAt(index)
+  }
+
+  /**
+    Returns the first element when present.
+
+    example:
+      let user = users.first()?
+
+    effects: reads memory when the slice is non-empty
+    complexity: O(1)
+    allocation: none
+    safety: checks for empty slice before reading
+    stability: public since 0.1
+  */
+  pub fn first(self: Slice<T>) -> Option<T> {
+    return self.get(0)
+  }
+
+  /**
+    Returns the last element when present.
+
+    example:
+      let user = users.last()?
+
+    effects: reads memory when the slice is non-empty
+    complexity: O(1)
+    allocation: none
+    safety: checks for empty slice before reading
+    stability: public since 0.1
+  */
+  pub fn last(self: Slice<T>) -> Option<T> {
+    if self.isEmpty() {
+      return None
+    }
+    return self.get(self.len - 1)
+  }
+
+  /**
+    Creates a bounded sub-slice view.
+
+    example:
+      let tail = users.subSlice(1, users.len() - 1)
+      let firstTail = tail.first()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: clamps visible length to the source slice bounds
+    stability: public since 0.1
+  */
+  pub fn subSlice(self: Slice<T>, start: usize, len: usize) -> Slice<T> {
+    if start >= self.len {
+      return Slice<T> {
+        ptr: ptrSliceAdvance<T>(self.ptr, self.len),
+        len: 0,
+        provenance: self.provenance,
+      }
+    }
+    let available = self.len - start
+    let visible = ptrMin(len, available)
+    return Slice<T> {
+      ptr: ptrSliceAdvance<T>(self.ptr, start),
+      len: visible,
+      provenance: self.provenance,
+    }
+  }
+
+  /**
+    Splits the slice into left and right views.
+
+    example:
+      let (head, tail) = users.splitAt(1)
+      let first = head.first()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: split index is clamped to the slice length
+    stability: public since 0.1
+  */
+  pub fn splitAt(self: Slice<T>, index: usize) -> (Slice<T>, Slice<T>) {
+    let leftLen = ptrMin(index, self.len)
+    let rightLen = self.len - leftLen
+    return (self.subSlice(0, leftLen), self.subSlice(leftLen, rightLen))
+  }
+
+  /**
+    Creates a forward iterator over this slice.
+
+    example:
+      let iter = users.iter()
+      let first = iter.next()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: iterator keeps the slice bounds used for reads
+    stability: public since 0.1
+  */
+  pub fn iter(self: Slice<T>) -> SliceIter<T> {
+    return SliceIter<T> {
+      slice: self,
+      index: 0,
+      len: self.len,
+    }
+  }
+
+  /**
+    Copies this pointer slice into an owned Vec.
+
+    example:
+      let owned = users.toVec()
+      owned.push(extraUser)
+
+    effects: alloc and reads memory
+    complexity: O(n)
+    allocation: allocates enough space for len elements
+    safety: reads only through this slice's checked visible range
+    stability: public since 0.1
+  */
+  pub fn toVec(self: Slice<T>) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut index: usize = 0
+    while index < self.len {
+      result = result.push(self.readUnchecked(index))
+      index = index + 1
+    }
+    return result
+  }
+}
+
+impl<T> SliceIter<T> {
+  /**
+    Returns true when the iterator is exhausted.
+
+    example:
+      if iter.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads iterator metadata only
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: SliceIter<T>) -> bool {
+    return self.index >= self.len
+  }
+
+  /**
+    Returns the current item when the iterator is not exhausted.
+
+    example:
+      let user = iter.next()?
+
+    effects: reads memory when not exhausted
+    complexity: O(1)
+    allocation: none
+    safety: uses the iterator bounds before reading
+    stability: public since 0.1
+  */
+  pub fn next(self: SliceIter<T>) -> Option<T> {
+    if self.isEmpty() {
+      return None
+    }
+    return self.slice.get(self.index)
+  }
+
+  /**
+    Moves the iterator to the next index.
+
+    example:
+      iter = iter.advance()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: advancing past the end leaves the iterator exhausted
+    stability: public since 0.1
+  */
+  pub fn advance(self: SliceIter<T>) -> SliceIter<T> {
+    if self.isEmpty() {
+      return self
+    }
+    return SliceIter<T> {
+      slice: self.slice,
+      index: self.index + 1,
+      len: self.len,
+    }
+  }
+}
+
+fn ptrSliceAdvance<T>(ptr: NonNull<T>, count: usize) -> NonNull<T>
+
+fn ptrMin(left: usize, right: usize) -> usize {
+  if left < right {
+    return left
+  }
+  return right
+}

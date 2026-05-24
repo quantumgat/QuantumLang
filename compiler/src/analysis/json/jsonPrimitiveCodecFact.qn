@@ -1,0 +1,27 @@
+pub struct JsonPrimitiveCodecFact {
+  typeName: string,
+  parserBound: bool,
+  writerBound: bool,
+  exactNumberChecked: bool,
+  nonFiniteFloatRejected: bool,
+  wideNumberStringBacked: bool,
+  decimalStringBacked: bool,
+  bigIntegerStringBacked: bool,
+  unsupportedResourceRejected: bool,
+  unsupportedQuantumRejected: bool,
+}
+
+impl JsonPrimitiveCodecFact {
+  pub fn safe(self: JsonPrimitiveCodecFact) -> bool {
+    return self.typeName != ""
+      && self.parserBound
+      && self.writerBound
+      && self.exactNumberChecked
+      && self.nonFiniteFloatRejected
+      && self.wideNumberStringBacked
+      && self.decimalStringBacked
+      && self.bigIntegerStringBacked
+      && self.unsupportedResourceRejected
+      && self.unsupportedQuantumRejected
+  }
+}

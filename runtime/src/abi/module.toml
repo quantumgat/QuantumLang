@@ -1,0 +1,9 @@
+[module]
+name = "abi"
+visibility = "internal"
+root = "mod.qn"
+owner = "runtime"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_qtlang_runtime_core_abi_foundation"]

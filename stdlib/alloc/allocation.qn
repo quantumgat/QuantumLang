@@ -1,0 +1,37 @@
+pub struct Allocation<T> {
+  ptr: Ptr<T>,
+  id: AllocationId,
+  layout: Layout,
+  token: FreeToken,
+}
+
+impl<T> Allocation<T> {
+  pub fn fromParts(ptr: Ptr<T>, id: AllocationId, layout: Layout, token: FreeToken) -> Allocation<T> requires(unsafe) {
+    return Allocation<T> {
+      ptr: ptr,
+      id: id,
+      layout: layout,
+      token: token,
+    }
+  }
+
+  pub fn ptr(self: Allocation<T>) -> Ptr<T> {
+    return self.ptr
+  }
+
+  pub fn id(self: Allocation<T>) -> AllocationId {
+    return self.id
+  }
+
+  pub fn layout(self: Allocation<T>) -> Layout {
+    return self.layout
+  }
+
+  pub fn freeToken(self: Allocation<T>) -> FreeToken {
+    return self.token
+  }
+
+  pub fn domain(self: Allocation<T>) -> AllocDomain {
+    return self.id.domain()
+  }
+}

@@ -1,0 +1,66 @@
+pub enum FormatDiagnosticFixitKind {
+  ReplaceFormatSpecifier
+  RemoveFormatSpecifier
+  AddDisplayFormatter
+  AddDebugFormatter
+  UseRedactedWrapper
+  InspectFieldName
+}
+
+pub struct FormatDiagnosticFixit {
+  kind: FormatDiagnosticFixitKind,
+  stableCode: string,
+  replacementText: string,
+  exactReplacementSpan: bool,
+  preservesFormatting: bool,
+  leaksSecretValue: bool,
+  suggestsUnsafePermit: bool,
+  suggestsBroadCapability: bool,
+}
+
+pub fn formatDiagnosticFixit(
+  kind: FormatDiagnosticFixitKind,
+  code: FormatDiagnosticCode,
+  replacementText: string,
+) -> FormatDiagnosticFixit {
+  return FormatDiagnosticFixit {
+    kind: kind,
+    stableCode: code.code(),
+    replacementText: replacementText,
+    exactReplacementSpan: true,
+    preservesFormatting: true,
+    leaksSecretValue: false,
+    suggestsUnsafePermit: false,
+    suggestsBroadCapability: false,
+  }
+}
+
+pub fn precisionDigitsFixit(code: FormatDiagnosticCode) -> FormatDiagnosticFixit {
+  return formatDiagnosticFixit(FormatDiagnosticFixitKind.ReplaceFormatSpecifier, code, ".2")
+}
+
+pub fn zeroPaddingDigitsFixit(code: FormatDiagnosticCode) -> FormatDiagnosticFixit {
+  return formatDiagnosticFixit(FormatDiagnosticFixitKind.ReplaceFormatSpecifier, code, "08")
+}
+
+pub fn removeFormatSpecifierFixit(code: FormatDiagnosticCode) -> FormatDiagnosticFixit {
+  return formatDiagnosticFixit(FormatDiagnosticFixitKind.RemoveFormatSpecifier, code, "")
+}
+
+pub fn redactedWrapperFixit(code: FormatDiagnosticCode) -> FormatDiagnosticFixit {
+  return formatDiagnosticFixit(FormatDiagnosticFixitKind.UseRedactedWrapper, code, "redacted(value)")
+}
+
+impl FormatDiagnosticFixit {
+  pub fn isSafeFirstSuggestion(self: FormatDiagnosticFixit) -> bool {
+    return self.exactReplacementSpan
+      && self.preservesFormatting
+      && self.leaksSecretValue == false
+      && self.suggestsUnsafePermit == false
+      && self.suggestsBroadCapability == false
+  }
+
+  pub fn fixitKind(self: FormatDiagnosticFixit) -> FormatDiagnosticFixitKind {
+    return self.kind
+  }
+}

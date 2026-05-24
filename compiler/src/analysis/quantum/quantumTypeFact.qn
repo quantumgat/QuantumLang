@@ -1,0 +1,56 @@
+import analysis.types::{BuiltinPrimitiveTypeId}
+
+pub enum QuantumTypeKind {
+  Qubit
+  QReg
+  QResult
+  Bit
+  Bits
+  QFunc
+}
+
+pub struct QuantumTypeFact {
+  node: u64,
+  typeId: BuiltinPrimitiveTypeId,
+  kind: QuantumTypeKind,
+  runtimeHandleMapped: bool,
+  qirMapped: bool,
+}
+
+pub fn quantumTypeFact(
+  node: u64,
+  typeId: BuiltinPrimitiveTypeId,
+  kind: QuantumTypeKind,
+  runtimeHandleMapped: bool,
+  qirMapped: bool
+) -> QuantumTypeFact {
+  return QuantumTypeFact {
+    node: node,
+    typeId: typeId,
+    kind: kind,
+    runtimeHandleMapped: runtimeHandleMapped,
+    qirMapped: qirMapped,
+  }
+}
+
+impl QuantumTypeFact {
+  pub fn nodeId(self: QuantumTypeFact) -> u64 {
+    return self.node
+  }
+
+  pub fn quantumKind(self: QuantumTypeFact) -> QuantumTypeKind {
+    return self.kind
+  }
+
+  pub fn hasRuntimeHandleMapping(self: QuantumTypeFact) -> bool {
+    return self.runtimeHandleMapped
+  }
+
+  pub fn hasQirMapping(self: QuantumTypeFact) -> bool {
+    return self.qirMapped
+  }
+}
+
+pub fn requiredQuantumTypeCount() -> usize {
+  return 6
+}

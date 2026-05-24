@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ArenaKernel {
+  regionBacked: bool
+  typedHandleBacked: bool
+  resetGenerationTracked: bool
+  allocUsesAppendSlot: bool
+  getUsesIndexGenerationCheck: bool
+  sliceUsesStartLenGeneration: bool
+  iteratorOccupiedSlotCursorStable: bool
+  bytesAccountingStable: bool
+  staleHandleRejected: bool
+  zeroCopyHandleReturn: bool
+}

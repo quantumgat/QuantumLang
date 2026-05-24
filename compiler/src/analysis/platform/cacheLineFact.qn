@@ -1,0 +1,19 @@
+pub struct CacheLineFact {
+  cacheLineBytes: usize,
+  alignment: usize,
+  padded: bool,
+}
+
+impl CacheLineFact {
+  pub fn init(cacheLineBytes: usize, alignment: usize, padded: bool) -> CacheLineFact {
+    return CacheLineFact {
+      cacheLineBytes: cacheLineBytes,
+      alignment: alignment,
+      padded: padded,
+    }
+  }
+
+  pub fn accepted(self: CacheLineFact) -> bool {
+    return self.cacheLineBytes > 0 && self.alignment >= self.cacheLineBytes && self.padded
+  }
+}

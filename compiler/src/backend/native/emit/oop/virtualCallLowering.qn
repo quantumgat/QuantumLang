@@ -1,0 +1,21 @@
+pub struct VirtualCallLowering {
+  callId: u64,
+  methodTableOffset: usize,
+  indirectCall: bool,
+  hoistedBeforeLoop: bool,
+}
+
+pub fn virtualCallLowering(callId: u64, methodTableOffset: usize, indirectCall: bool, hoistedBeforeLoop: bool) -> VirtualCallLowering {
+  return VirtualCallLowering {
+    callId: callId,
+    methodTableOffset: methodTableOffset,
+    indirectCall: indirectCall,
+    hoistedBeforeLoop: hoistedBeforeLoop,
+  }
+}
+
+impl VirtualCallLowering {
+  pub fn isHotPathSafe(self: VirtualCallLowering) -> bool {
+    return !self.indirectCall || self.hoistedBeforeLoop
+  }
+}

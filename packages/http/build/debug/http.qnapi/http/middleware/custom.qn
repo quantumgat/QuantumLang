@@ -1,0 +1,35 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpNext {
+}
+pub enum HttpMiddlewareStage {
+  Init
+  Start
+  Before
+  Handle
+  After
+  Error
+  Shutdown
+}
+pub struct HttpMiddlewareRuntime {
+  name: string
+  started: bool
+  beforeRequest: bool
+  afterRequest: bool
+  errorAware: bool
+  contextDataWrites: usize
+}
+pub trait HttpMiddleware<M> {
+  pub fn handle(self: M, ctx: HttpCtx, next: HttpNext) -> Result<HttpResponse, HttpError>
+}
+pub trait HttpAsyncMiddleware<M> {
+  pub async fn handle(self: M, ctx: HttpCtx, next: HttpNext) -> Result<HttpResponse, HttpError>
+}
+pub trait HttpMiddlewareLifecycle<M> {
+  pub async fn start(self: &mut M, app: AppStateGraph) -> Result<Unit, HttpError>
+  pub async fn shutdown(self: &mut M) -> Result<Unit, HttpError>
+}
+pub trait HttpMiddlewareHooks<M> {
+  pub async fn before(self: M, ctx: HttpCtx) -> Result<HttpCtx, HttpError>
+  pub async fn after(self: M, ctx: HttpCtx, response: HttpResponse) -> Result<HttpResponse, HttpError>
+  pub async fn onError(self: M, ctx: HttpCtx, error: HttpError) -> Result<HttpResponse, HttpError>
+}

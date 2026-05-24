@@ -1,0 +1,11 @@
+pub struct NetLifetimeFact {
+  bufferOwnerTracked: bool,
+  viewDoesNotOutliveOwner: bool,
+  mutableAliasRejected: bool,
+}
+
+impl NetLifetimeFact {
+  pub fn accepted(self: NetLifetimeFact) -> bool {
+    return self.bufferOwnerTracked && self.viewDoesNotOutliveOwner && self.mutableAliasRejected
+  }
+}

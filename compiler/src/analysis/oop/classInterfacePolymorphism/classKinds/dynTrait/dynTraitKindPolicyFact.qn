@@ -1,0 +1,19 @@
+pub struct DynTraitKindPolicyFact {
+  ownerId: u64,
+  objectLayoutBound: bool,
+  vtableBound: bool,
+  lifetimeBound: bool,
+  unsafeCastRejected: bool,
+  sourceMapBound: bool,
+}
+
+impl DynTraitKindPolicyFact {
+  pub fn complete(self: DynTraitKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.objectLayoutBound
+      && self.vtableBound
+      && self.lifetimeBound
+      && self.unsafeCastRejected
+      && self.sourceMapBound
+  }
+}

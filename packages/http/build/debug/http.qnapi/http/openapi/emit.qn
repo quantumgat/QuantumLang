@@ -1,0 +1,9 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum OpenApiFormat {
+  Json,
+  Yaml,
+}
+pub struct OpenApiEmitter {
+  format: OpenApiFormat
+  includeSourceMaps: bool
+}

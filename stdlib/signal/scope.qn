@@ -1,0 +1,23 @@
+pub struct SignalScope {
+  subscriptions: Vec<SignalSubscription>,
+  active: bool,
+}
+
+pub fn signalScope(subscriptions: Vec<SignalSubscription>) -> SignalScope {
+  return SignalScope {
+    subscriptions: subscriptions,
+    active: true,
+  }
+}
+
+pub fn closeScope(scope: SignalScope) -> Result<Unit, OsError>
+
+impl SignalScope {
+  pub fn active(self: SignalScope) -> bool {
+    return self.active
+  }
+
+  pub fn close(self: SignalScope) -> Result<Unit, OsError> {
+    return closeScope(self)
+  }
+}

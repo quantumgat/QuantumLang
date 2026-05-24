@@ -1,0 +1,62 @@
+pub class PluginCommand {
+  commandName: string,
+  subcommand: PackagePluginCommandKind,
+  packageName: string,
+  templateName: string,
+  manifestPath: string,
+  pluginRoot: string,
+  delegatesToPackageProduct: bool,
+  mutatesCompilerFacts: bool,
+
+  pub init(
+    subcommand: PackagePluginCommandKind,
+    packageName: string,
+    templateName: string,
+    manifestPath: string,
+    pluginRoot: string,
+  ) {
+    self.commandName = "plugin"
+    self.subcommand = subcommand
+    self.packageName = packageName
+    self.templateName = templateName
+    self.manifestPath = manifestPath
+    self.pluginRoot = pluginRoot
+    self.delegatesToPackageProduct = true
+    self.mutatesCompilerFacts = false
+  }
+
+  pub fn request(self: &PluginCommand) -> PackagePluginCommandRequest {
+    if self.subcommand == PackagePluginCommandKind.Create {
+      return PackagePluginCommandRequest.create(self.packageName, self.templateName, self.manifestPath, self.pluginRoot)
+    }
+    if self.subcommand == PackagePluginCommandKind.New {
+      return PackagePluginCommandRequest.new(self.packageName, self.templateName, self.manifestPath, self.pluginRoot)
+    }
+    if self.subcommand == PackagePluginCommandKind.Check {
+      return PackagePluginCommandRequest.check(self.packageName, self.manifestPath, self.pluginRoot)
+    }
+    if self.subcommand == PackagePluginCommandKind.Test {
+      return PackagePluginCommandRequest.test(self.packageName, self.manifestPath, self.pluginRoot)
+    }
+    if self.subcommand == PackagePluginCommandKind.Package {
+      return PackagePluginCommandRequest.package(self.packageName, self.manifestPath, self.pluginRoot)
+    }
+    return PackagePluginCommandRequest.publish(self.packageName, self.manifestPath, self.pluginRoot)
+  }
+
+  pub fn executionPlan(self: &PluginCommand) -> PackagePluginCommandExecutionPlan {
+    return PackagePluginCommandExecutionPlan.fromRequest(self.request())
+  }
+
+  pub fn execute(self: &PluginCommand) -> PackagePluginCommandExecutionResult {
+    return PackagePluginCommandExecutionResult.fromPlan(self.executionPlan())
+  }
+
+  pub fn accepted(self: &PluginCommand) -> bool {
+    return self.commandName == "plugin"
+      && self.delegatesToPackageProduct
+      && self.mutatesCompilerFacts == false
+      && self.executionPlan().accepted()
+      && self.execute().accepted()
+  }
+}

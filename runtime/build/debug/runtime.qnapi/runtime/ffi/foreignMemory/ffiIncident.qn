@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum FfiIncidentKind {
+  ForeignPointerMissingDeleter,
+  ForeignLifetimeTokenRejected,
+  CallbackUnregisterMissing,
+  PanicAcrossFfi,
+  ThreadAffineViolation,
+  AliasPolicyRejected,
+}
+pub struct FfiIncident {
+  kind: FfiIncidentKind
+  recoverable: bool
+}

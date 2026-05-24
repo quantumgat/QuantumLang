@@ -1,0 +1,19 @@
+pub struct SimdShuffleFact {
+  laneCount: usize,
+  indexCount: usize,
+  indicesInRange: bool,
+}
+
+impl SimdShuffleFact {
+  pub fn init(laneCount: usize, indexCount: usize, indicesInRange: bool) -> SimdShuffleFact {
+    return SimdShuffleFact {
+      laneCount: laneCount,
+      indexCount: indexCount,
+      indicesInRange: indicesInRange,
+    }
+  }
+
+  pub fn accepted(self: SimdShuffleFact) -> bool {
+    return self.indicesInRange && self.laneCount == self.indexCount
+  }
+}

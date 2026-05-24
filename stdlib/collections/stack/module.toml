@@ -1,0 +1,6 @@
+[module]
+name = "collections.stack"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "stack"

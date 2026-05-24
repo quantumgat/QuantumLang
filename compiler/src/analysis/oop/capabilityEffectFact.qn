@@ -1,0 +1,48 @@
+pub struct CapabilityEffectFact {
+  symbolId: u64,
+  requiredCapabilityCount: usize,
+  providedCapabilityCount: usize,
+  declaredEffectCount: usize,
+  inferredEffectCount: usize,
+  packagePolicyBound: bool,
+  targetCapabilityBound: bool,
+  dispatchCompatibilityChecked: bool,
+  overrideCompatibilityChecked: bool,
+  noHiddenCostChecked: bool,
+}
+
+pub fn capabilityEffectFact(
+  symbolId: u64,
+  requiredCapabilityCount: usize,
+  providedCapabilityCount: usize,
+  declaredEffectCount: usize,
+  inferredEffectCount: usize,
+  packagePolicyBound: bool,
+  targetCapabilityBound: bool,
+  dispatchCompatibilityChecked: bool,
+  overrideCompatibilityChecked: bool,
+  noHiddenCostChecked: bool,
+) -> CapabilityEffectFact {
+  return CapabilityEffectFact {
+    symbolId: symbolId,
+    requiredCapabilityCount: requiredCapabilityCount,
+    providedCapabilityCount: providedCapabilityCount,
+    declaredEffectCount: declaredEffectCount,
+    inferredEffectCount: inferredEffectCount,
+    packagePolicyBound: packagePolicyBound,
+    targetCapabilityBound: targetCapabilityBound,
+    dispatchCompatibilityChecked: dispatchCompatibilityChecked,
+    overrideCompatibilityChecked: overrideCompatibilityChecked,
+    noHiddenCostChecked: noHiddenCostChecked,
+  }
+}
+
+impl CapabilityEffectFact {
+  pub fn complete(self: CapabilityEffectFact) -> bool {
+    return self.packagePolicyBound
+      && self.targetCapabilityBound
+      && self.dispatchCompatibilityChecked
+      && self.overrideCompatibilityChecked
+      && self.noHiddenCostChecked
+  }
+}

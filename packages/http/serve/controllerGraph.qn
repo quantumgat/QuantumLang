@@ -1,0 +1,55 @@
+pub struct ControllerFact {
+  typeName: string,
+  ownerId: u64,
+}
+
+impl ControllerFact {
+  pub fn init(typeName: string, ownerId: u64) -> ControllerFact {
+    return ControllerFact {
+      typeName: typeName,
+      ownerId: ownerId,
+    }
+  }
+
+  pub fn of<T>() -> ControllerFact {
+    return ControllerFact.init(typeName<T>(), oopOwnerId<T>())
+  }
+
+  pub fn named(typeName: string, ownerId: u64) -> ControllerFact {
+    return ControllerFact.init(typeName, ownerId)
+  }
+
+  pub fn typeName(self: ControllerFact) -> string {
+    return self.typeName
+  }
+
+  pub fn ownerId(self: ControllerFact) -> u64 {
+    return self.ownerId
+  }
+
+  pub fn nodeKind(self: ControllerFact) -> AppDependencyNodeKind {
+    return AppDependencyNodeKind.Controller
+  }
+}
+
+pub struct ControllerGraph {
+  controllers: Vec<ControllerFact>,
+}
+
+impl ControllerGraph {
+  pub fn empty() -> ControllerGraph {
+    return ControllerGraph {
+      controllers: [],
+    }
+  }
+
+  pub fn add(self: ControllerGraph, controller: ControllerFact) -> ControllerGraph {
+    return ControllerGraph {
+      controllers: self.controllers.push(controller),
+    }
+  }
+
+  pub fn controllerCount(self: ControllerGraph) -> usize {
+    return self.controllers.len()
+  }
+}

@@ -1,0 +1,17 @@
+[module]
+name = "plugin"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "plugin-manifest-abi-contract"
+
+[tests]
+required = [
+  "qtlc_qtlang_plugin_manifest_abi_gap_closure",
+  "qtlc_qtlang_plugin_compiler_load_sandbox_gap_closure",
+  "qtlc_qtlang_plugin_stdlib_root_mount_gap_closure",
+  "qtlc_qtlang_plugin_proof_lockfile_gap_closure",
+  "qtlc_qtlang_plugin_system_closeout_audit",
+  "qtlc_qtlang_plugin_real_loader_parser_gap_closure",
+  "qtlc_qtlang_plugin_external_sandbox_loader_gap_closure"
+]

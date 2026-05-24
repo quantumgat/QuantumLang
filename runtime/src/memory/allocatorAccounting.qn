@@ -1,0 +1,73 @@
+pub struct RuntimeAllocatorAccounting {
+  liveBytes: usize,
+  allocatedBytes: usize,
+  freedBytes: usize,
+  liveAllocations: usize,
+  failedAllocations: usize,
+  deniedAllocations: usize,
+}
+
+impl RuntimeAllocatorAccounting {
+  pub fn init() -> RuntimeAllocatorAccounting {
+    return RuntimeAllocatorAccounting {
+      liveBytes: 0,
+      allocatedBytes: 0,
+      freedBytes: 0,
+      liveAllocations: 0,
+      failedAllocations: 0,
+      deniedAllocations: 0,
+    }
+  }
+
+  pub fn recordAlloc(self: RuntimeAllocatorAccounting, bytes: usize) -> RuntimeAllocatorAccounting {
+    return RuntimeAllocatorAccounting {
+      liveBytes: self.liveBytes + bytes,
+      allocatedBytes: self.allocatedBytes + bytes,
+      freedBytes: self.freedBytes,
+      liveAllocations: self.liveAllocations + 1,
+      failedAllocations: self.failedAllocations,
+      deniedAllocations: self.deniedAllocations,
+    }
+  }
+
+  pub fn recordFree(self: RuntimeAllocatorAccounting, record: AllocationRecord) -> RuntimeAllocatorAccounting {
+    if record.bytes() > self.liveBytes {
+      return self.recordFailure()
+    }
+    return RuntimeAllocatorAccounting {
+      liveBytes: self.liveBytes - record.bytes(),
+      allocatedBytes: self.allocatedBytes,
+      freedBytes: self.freedBytes + record.bytes(),
+      liveAllocations: self.liveAllocations - 1,
+      failedAllocations: self.failedAllocations,
+      deniedAllocations: self.deniedAllocations,
+    }
+  }
+
+  pub fn recordFailure(self: RuntimeAllocatorAccounting) -> RuntimeAllocatorAccounting {
+    return RuntimeAllocatorAccounting {
+      liveBytes: self.liveBytes,
+      allocatedBytes: self.allocatedBytes,
+      freedBytes: self.freedBytes,
+      liveAllocations: self.liveAllocations,
+      failedAllocations: self.failedAllocations + 1,
+      deniedAllocations: self.deniedAllocations,
+    }
+  }
+
+  pub fn recordPressureDenial(self: RuntimeAllocatorAccounting) -> RuntimeAllocatorAccounting {
+    return RuntimeAllocatorAccounting {
+      liveBytes: self.liveBytes,
+      allocatedBytes: self.allocatedBytes,
+      freedBytes: self.freedBytes,
+      liveAllocations: self.liveAllocations,
+      failedAllocations: self.failedAllocations,
+      deniedAllocations: self.deniedAllocations + 1,
+    }
+  }
+
+  pub fn balanced(self: RuntimeAllocatorAccounting) -> bool {
+    return self.allocatedBytes >= self.freedBytes
+      && self.liveBytes == self.allocatedBytes - self.freedBytes
+  }
+}

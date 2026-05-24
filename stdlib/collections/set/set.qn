@@ -1,0 +1,170 @@
+pub struct Set<T> {
+  table: HashSet<T>,
+  len: usize,
+  generation: usize,
+}
+
+impl<T> Set<T> {
+  pub fn init() -> Set<T> requires(alloc) {
+    return Set<T>.withCapacity(16)
+  }
+
+  pub fn empty() -> Set<T> requires(alloc) {
+    return Set<T>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> Set<T> requires(alloc) {
+    let table = HashSet<T>.withCapacity(capacity)
+    return Set<T> {
+      table: table,
+      len: table.len(),
+      generation: 0,
+    }
+  }
+
+  pub fn builder() -> SetBuilder<T> requires(alloc) {
+    return SetBuilder<T>.init()
+  }
+
+  pub fn len(self: Set<T>) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: Set<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn contains(self: Set<T>, item: T) -> bool {
+    return self.table.contains(item)
+  }
+
+  pub fn insert(self: Set<T>, item: T) -> Set<T> requires(alloc) {
+    let table = self.table.insert(item)
+    return Set<T> {
+      table: table,
+      len: table.len(),
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn add(self: Set<T>, item: T) -> Set<T> requires(alloc) {
+    return self.insert(item)
+  }
+
+  pub fn remove(self: Set<T>, item: T) -> Set<T> requires(alloc) {
+    let table = self.table.remove(item)
+    return Set<T> {
+      table: table,
+      len: table.len(),
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn entryAt(self: Set<T>, index: usize) -> Option<T> {
+    return self.table.entryAt(index)
+  }
+
+  pub fn iter(self: Set<T>) -> SetIter<T> {
+    return SetIter<T> {
+      set: self,
+      cursor: self.fastCursor(),
+    }
+  }
+
+  pub fn toVec(self: Set<T>) -> Vec<T> requires(alloc) {
+    return self.table.toVec()
+  }
+
+  fn fastCursor(self: Set<T>) -> SetFastCursor<T> {
+    return SetFastCursor<T>.init(self)
+  }
+
+  pub fn retain(self: Set<T>, predicate: fn(T) -> bool) -> Set<T> requires(alloc) {
+    return self.filter(predicate)
+  }
+
+  pub fn forEach(self: Set<T>, action: fn(T) -> Unit) -> Unit {
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      action(value)
+      cursor = cursor.next()
+    }
+  }
+
+  pub fn find(self: Set<T>, predicate: fn(T) -> bool) -> Option<T> {
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      if predicate(value) {
+        return Some(value)
+      }
+      cursor = cursor.next()
+    }
+    return None
+  }
+
+  pub fn countWhere(self: Set<T>, predicate: fn(T) -> bool) -> usize {
+    let mut count: usize = 0
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      if predicate(value) {
+        count = count + 1
+      }
+      cursor = cursor.next()
+    }
+    return count
+  }
+
+  pub fn any(self: Set<T>, predicate: fn(T) -> bool) -> bool {
+    return self.find(predicate) != None
+  }
+
+  pub fn all(self: Set<T>, predicate: fn(T) -> bool) -> bool {
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      if predicate(value) == false {
+        return false
+      }
+      cursor = cursor.next()
+    }
+    return true
+  }
+
+  pub fn fold<U>(self: Set<T>, seed: U, reducer: fn(U, T) -> U) -> U {
+    let mut total: U = seed
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      total = reducer(total, value)
+      cursor = cursor.next()
+    }
+    return total
+  }
+
+  pub fn filter(self: Set<T>, predicate: fn(T) -> bool) -> Set<T> requires(alloc) {
+    let mut result = Set<T>.withCapacity(self.len)
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      if predicate(value) {
+        result = result.insert(value)
+      }
+      cursor = cursor.next()
+    }
+    return result
+  }
+
+  pub fn map<U>(self: Set<T>, mapper: fn(T) -> U) -> Set<U> requires(alloc) {
+    let mut result = Set<U>.withCapacity(self.len)
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      result = result.insert(mapper(value))
+      cursor = cursor.next()
+    }
+    return result
+  }
+}

@@ -1,0 +1,29 @@
+pub struct WhileExecutableHotPathProof {
+  fixtureForms: usize,
+  negativeFixtureRows: usize,
+  parserRows: usize,
+  astRows: usize,
+  analysisRows: usize,
+  hirRows: usize,
+  mirRows: usize,
+  nativeRows: usize,
+  runtimeRows: usize,
+  qwhileQirRows: usize,
+  noGeneratedFallback: bool,
+}
+
+impl WhileExecutableHotPathProof {
+  pub fn complete(self: WhileExecutableHotPathProof) -> bool {
+    return self.fixtureForms == 15
+      && self.negativeFixtureRows >= 9
+      && self.parserRows > 0
+      && self.astRows > 0
+      && self.analysisRows > 0
+      && self.hirRows > 0
+      && self.mirRows > 0
+      && self.nativeRows > 0
+      && self.runtimeRows > 0
+      && self.qwhileQirRows > 0
+      && self.noGeneratedFallback
+  }
+}

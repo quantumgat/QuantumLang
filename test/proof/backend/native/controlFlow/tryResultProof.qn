@@ -1,0 +1,23 @@
+pub enum TryResultProofKind {
+  ResultQuestionProof
+  OptionQuestionProof
+  AwaitQuestionProof
+  ErrorConversionProof
+  NestedControlFlowProof
+  NoGeneratedFallback
+}
+
+pub struct TryResultProof {
+  kind: TryResultProofKind,
+  fixture: string,
+  nativeLowering: NativeTryResultLowering,
+  negativeFixtureCaptured: bool,
+}
+
+impl TryResultProof {
+  pub fn complete(self: TryResultProof) -> bool {
+    return self.fixture != ""
+      && self.nativeLowering.complete()
+      && self.negativeFixtureCaptured
+  }
+}

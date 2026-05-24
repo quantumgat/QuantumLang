@@ -1,0 +1,19 @@
+pub struct MmapDiagnostic {
+  code: string,
+  hasRange: bool,
+  blocksUnsafeMapping: bool,
+}
+
+impl MmapDiagnostic {
+  pub fn init(code: string, hasRange: bool, blocksUnsafeMapping: bool) -> MmapDiagnostic {
+    return MmapDiagnostic {
+      code: code,
+      hasRange: hasRange,
+      blocksUnsafeMapping: blocksUnsafeMapping,
+    }
+  }
+
+  pub fn reportable(self: MmapDiagnostic) -> bool {
+    return self.code != "" && self.hasRange && self.blocksUnsafeMapping
+  }
+}

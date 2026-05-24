@@ -1,0 +1,25 @@
+pub struct OverrideIntegrationFact {
+  baseMethodId: u64,
+  overrideMethodId: u64,
+  signatureCompatible: bool,
+  finalBaseMethod: bool,
+}
+
+pub fn overrideIntegrationFact(baseMethodId: u64, overrideMethodId: u64, signatureCompatible: bool, finalBaseMethod: bool) -> OverrideIntegrationFact {
+  return OverrideIntegrationFact {
+    baseMethodId: baseMethodId,
+    overrideMethodId: overrideMethodId,
+    signatureCompatible: signatureCompatible,
+    finalBaseMethod: finalBaseMethod,
+  }
+}
+
+impl OverrideIntegrationFact {
+  pub fn canResolveOverride(self: OverrideIntegrationFact) -> bool {
+    return self.baseMethodId > 0 && self.overrideMethodId > 0 && self.signatureCompatible && !self.finalBaseMethod
+  }
+
+  pub fn needsFinalViolationDiagnostic(self: OverrideIntegrationFact) -> bool {
+    return self.baseMethodId > 0 && self.overrideMethodId > 0 && self.finalBaseMethod
+  }
+}

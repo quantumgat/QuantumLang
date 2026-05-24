@@ -1,0 +1,6 @@
+[module]
+name = "serde"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "serialization"

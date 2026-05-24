@@ -1,0 +1,45 @@
+pub struct RuntimeMemoryDiagnostic {
+  incident: MemoryIncident,
+  snapshot: MemorySnapshot,
+  report: RuntimeReport,
+  replay: ReplayArtifact,
+  query: DiagnosticQuery,
+  redactedOutput: bool,
+  noCoredump: bool,
+  emergencyNoAllocation: bool,
+  allocatorFailureSafe: bool,
+}
+
+pub fn runtimeMemoryDiagnostic(
+  incident: MemoryIncident,
+  snapshot: MemorySnapshot,
+  report: RuntimeReport,
+  replay: ReplayArtifact,
+  query: DiagnosticQuery,
+) -> RuntimeMemoryDiagnostic {
+  return RuntimeMemoryDiagnostic {
+    incident: incident,
+    snapshot: snapshot,
+    report: report,
+    replay: replay,
+    query: query,
+    redactedOutput: true,
+    noCoredump: true,
+    emergencyNoAllocation: true,
+    allocatorFailureSafe: true,
+  }
+}
+
+impl RuntimeMemoryDiagnostic {
+  pub fn publishable(self: RuntimeMemoryDiagnostic) -> bool {
+    return self.incident.productionSafe()
+      && self.snapshot.ownedRows() > 0
+      && self.report.isRuntimeOwned()
+      && self.replay.canReplayToTest()
+      && self.query.isPrivacySafe()
+      && self.redactedOutput
+      && self.noCoredump
+      && self.emergencyNoAllocation
+      && self.allocatorFailureSafe
+  }
+}

@@ -1,0 +1,25 @@
+pub enum NativeTryResultLoweringKind {
+  ResultTagBranch
+  OptionTagBranch
+  ErrorConvertBranch
+  AwaitQuestionPollBranch
+  TryBlockPhi
+  EarlyReturnBranch
+}
+
+pub struct NativeTryResultLowering {
+  kind: NativeTryResultLoweringKind,
+  mirOp: MirTryResultOp,
+  noHeapAllocation: bool,
+  directBranch: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeTryResultLowering {
+  pub fn complete(self: NativeTryResultLowering) -> bool {
+    return self.mirOp.hotLowerable()
+      && self.noHeapAllocation
+      && self.directBranch
+      && self.noGeneratedFallback
+  }
+}

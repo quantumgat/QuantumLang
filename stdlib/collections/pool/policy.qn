@@ -1,0 +1,36 @@
+pub enum PoolReusePolicy {
+  Lifo,
+  Fifo,
+}
+
+pub enum PoolGrowthPolicy {
+  Exact,
+  Double,
+}
+
+pub enum PoolCompactPolicy {
+  Manual,
+  OnClear,
+}
+
+pub struct PoolPolicy {
+  reuse: PoolReusePolicy,
+  growth: PoolGrowthPolicy,
+  compact: PoolCompactPolicy,
+}
+
+impl PoolPolicy {
+  pub fn default() -> PoolPolicy {
+    return PoolPolicy {
+      reuse: PoolReusePolicy.Lifo,
+      growth: PoolGrowthPolicy.Double,
+      compact: PoolCompactPolicy.Manual,
+    }
+  }
+}
+
+impl<T> PoolBuilder<T> {
+  pub fn policy(self: PoolBuilder<T>, policy: PoolPolicy) -> PoolBuilder<T> {
+    return self
+  }
+}

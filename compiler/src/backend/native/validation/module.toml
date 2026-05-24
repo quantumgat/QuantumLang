@@ -1,0 +1,6 @@
+[module]
+name = "validation"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-product-validation"

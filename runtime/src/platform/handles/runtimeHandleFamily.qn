@@ -1,0 +1,12 @@
+pub struct RuntimeHandleFamily {
+  target: string,
+  opaqueHandles: bool,
+  generationChecked: bool,
+  closeChecked: bool,
+}
+
+impl RuntimeHandleFamily {
+  pub fn accepted(self: RuntimeHandleFamily) -> bool {
+    return self.target != "" && self.generationChecked && self.closeChecked
+  }
+}

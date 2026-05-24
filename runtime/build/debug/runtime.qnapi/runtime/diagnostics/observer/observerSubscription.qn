@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ObserverSubscription {
+  observerId: u64
+  subsystem: string
+  active: bool
+}
+pub extern "qnpkg" {
+  pub fn observerSubscription(observerId: u64, subsystem: string) -> ObserverSubscription
+}

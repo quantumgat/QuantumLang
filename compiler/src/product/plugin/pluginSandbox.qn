@@ -1,0 +1,42 @@
+pub enum PluginSandboxMode {
+  CompileTimeReadOnly,
+  CompileTimeIsolated,
+  Disabled,
+}
+
+pub struct PluginSandbox {
+  mode: PluginSandboxMode,
+  readOnlySourceRoots: bool,
+  noDirectCompilerMutation: bool,
+  noNetworkDuringCompile: bool,
+  explicitFileAccess: bool,
+  capabilityTokensRequired: bool,
+  resourceLimitsRequired: bool,
+  incidentReportingRequired: bool,
+}
+
+impl PluginSandbox {
+  pub fn compileTime() -> PluginSandbox {
+    return PluginSandbox {
+      mode: PluginSandboxMode.CompileTimeIsolated,
+      readOnlySourceRoots: true,
+      noDirectCompilerMutation: true,
+      noNetworkDuringCompile: true,
+      explicitFileAccess: true,
+      capabilityTokensRequired: true,
+      resourceLimitsRequired: true,
+      incidentReportingRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginSandbox) -> bool {
+    return self.mode != PluginSandboxMode.Disabled
+      && self.readOnlySourceRoots
+      && self.noDirectCompilerMutation
+      && self.noNetworkDuringCompile
+      && self.explicitFileAccess
+      && self.capabilityTokensRequired
+      && self.resourceLimitsRequired
+      && self.incidentReportingRequired
+  }
+}

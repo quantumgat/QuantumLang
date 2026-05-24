@@ -1,0 +1,15 @@
+pub struct DataflowFact {
+  block: u64,
+  genCount: usize,
+  killCount: usize,
+}
+
+pub fn dataflowFact(block: u64, genCount: usize, killCount: usize) -> DataflowFact {
+  return DataflowFact { block: block, genCount: genCount, killCount: killCount }
+}
+
+impl DataflowFact {
+  pub fn hasTransfer(self: DataflowFact) -> bool {
+    return self.genCount > 0 || self.killCount > 0
+  }
+}

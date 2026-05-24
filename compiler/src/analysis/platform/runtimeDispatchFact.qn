@@ -1,0 +1,21 @@
+pub struct RuntimeDispatchFact {
+  feature: string,
+  runtimeProbeAvailable: bool,
+  dispatchTableBuilt: bool,
+  fallbackAvailable: bool,
+}
+
+impl RuntimeDispatchFact {
+  pub fn init(feature: string, runtimeProbeAvailable: bool, dispatchTableBuilt: bool, fallbackAvailable: bool) -> RuntimeDispatchFact {
+    return RuntimeDispatchFact {
+      feature: feature,
+      runtimeProbeAvailable: runtimeProbeAvailable,
+      dispatchTableBuilt: dispatchTableBuilt,
+      fallbackAvailable: fallbackAvailable,
+    }
+  }
+
+  pub fn accepted(self: RuntimeDispatchFact) -> bool {
+    return (self.runtimeProbeAvailable && self.dispatchTableBuilt) || self.fallbackAvailable
+  }
+}

@@ -1,0 +1,29 @@
+pub struct HttpBodyBytes {
+  bytes: Vec<u8>,
+}
+
+impl HttpBodyBytes {
+  pub fn init(bytes: Vec<u8>) -> HttpBodyBytes {
+    return HttpBodyBytes {
+      bytes: bytes,
+    }
+  }
+
+  pub fn empty() -> HttpBodyBytes {
+    return HttpBodyBytes {
+      bytes: [],
+    }
+  }
+
+  pub fn bytes(self: HttpBodyBytes) -> Vec<u8> {
+    return self.bytes
+  }
+
+  pub fn len(self: HttpBodyBytes) -> usize {
+    return self.bytes.len()
+  }
+
+  pub fn isEmpty(self: HttpBodyBytes) -> bool {
+    return self.len() == 0
+  }
+}

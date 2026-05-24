@@ -1,0 +1,12 @@
+pub struct NetReadiness {
+  readable: bool,
+  writable: bool,
+  error: bool,
+  hangup: bool,
+}
+
+impl NetReadiness {
+  pub fn active(self: NetReadiness) -> bool {
+    return self.readable || self.writable || self.error || self.hangup
+  }
+}

@@ -1,0 +1,16 @@
+pub enum ProcessStream {
+  Inherit
+  Null
+  Pipe
+  File
+}
+
+pub struct ProcessStdio {
+  stdin: ProcessStream,
+  stdout: ProcessStream,
+  stderr: ProcessStream,
+}
+
+pub fn inherit() -> ProcessStdio
+pub fn piped() -> ProcessStdio
+pub fn quiet() -> ProcessStdio

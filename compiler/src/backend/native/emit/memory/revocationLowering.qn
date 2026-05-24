@@ -1,0 +1,19 @@
+pub struct RevocationLowering {
+  bumpsGeneration: bool,
+  invalidatesLeases: bool,
+  emitsDiagnostic: bool,
+}
+
+impl RevocationLowering {
+  pub fn init(bumpsGeneration: bool, invalidatesLeases: bool, emitsDiagnostic: bool) -> RevocationLowering {
+    return RevocationLowering {
+      bumpsGeneration: bumpsGeneration,
+      invalidatesLeases: invalidatesLeases,
+      emitsDiagnostic: emitsDiagnostic,
+    }
+  }
+
+  pub fn accepted(self: RevocationLowering) -> bool {
+    return self.bumpsGeneration && self.invalidatesLeases && self.emitsDiagnostic
+  }
+}

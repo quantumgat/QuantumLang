@@ -1,0 +1,15 @@
+pub struct Fingerprint {
+  content: u64,
+  semantic: u64,
+  target: u64,
+}
+
+pub fn fingerprint(content: u64, semantic: u64, target: u64) -> Fingerprint {
+  return Fingerprint { content: content, semantic: semantic, target: target }
+}
+
+impl Fingerprint {
+  pub fn cacheKeyReady(self: Fingerprint) -> bool {
+    return self.content != 0 && self.semantic != 0 && self.target != 0
+  }
+}

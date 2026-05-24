@@ -1,0 +1,23 @@
+pub struct AsyncInterfaceRuntimeSafety {
+  interfaceTypeId: u64,
+  asyncObligationRuntimeBound: bool,
+  objectSafetyRuntimeBound: bool,
+  dynAdapterBoundaryBound: bool,
+  futureAbiRuntimeBound: bool,
+  pollEntryRuntimeBound: bool,
+  typedFailureNoCoredumpBound: bool,
+  sourceMapBound: bool,
+}
+
+impl AsyncInterfaceRuntimeSafety {
+  pub fn complete(self: AsyncInterfaceRuntimeSafety) -> bool {
+    return self.interfaceTypeId > 0
+      && self.asyncObligationRuntimeBound
+      && self.objectSafetyRuntimeBound
+      && self.dynAdapterBoundaryBound
+      && self.futureAbiRuntimeBound
+      && self.pollEntryRuntimeBound
+      && self.typedFailureNoCoredumpBound
+      && self.sourceMapBound
+  }
+}

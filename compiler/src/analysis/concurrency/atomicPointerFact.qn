@@ -1,0 +1,21 @@
+pub struct AtomicPointerFact {
+  node: u64,
+  addressSpaceChecked: bool,
+  provenanceChecked: bool,
+  generationChecked: bool,
+}
+
+impl AtomicPointerFact {
+  pub fn init(node: u64, addressSpaceChecked: bool, provenanceChecked: bool, generationChecked: bool) -> AtomicPointerFact {
+    return AtomicPointerFact {
+      node: node,
+      addressSpaceChecked: addressSpaceChecked,
+      provenanceChecked: provenanceChecked,
+      generationChecked: generationChecked,
+    }
+  }
+
+  pub fn accepted(self: AtomicPointerFact) -> bool {
+    return self.addressSpaceChecked && self.provenanceChecked && self.generationChecked
+  }
+}

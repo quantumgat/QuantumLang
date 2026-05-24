@@ -1,0 +1,21 @@
+pub struct DeterministicReactor {
+  eventCount: usize,
+  timerCount: usize,
+  replayable: bool,
+  publicRuntimeApi: bool,
+}
+
+impl DeterministicReactor {
+  pub fn init(eventCount: usize, timerCount: usize) -> DeterministicReactor {
+    return DeterministicReactor {
+      eventCount: eventCount,
+      timerCount: timerCount,
+      replayable: true,
+      publicRuntimeApi: false,
+    }
+  }
+
+  pub fn canReplay(self: DeterministicReactor) -> bool {
+    return self.replayable && self.publicRuntimeApi == false
+  }
+}

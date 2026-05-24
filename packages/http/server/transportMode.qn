@@ -1,0 +1,256 @@
+pub enum HttpTransportMode {
+  Async
+  Hybrid
+  Blocking
+}
+
+pub struct HttpTransportModePlan {
+  mode: HttpTransportMode,
+  workers: usize,
+  workersAuto: bool,
+  reactorShards: usize,
+  perCoreSharding: bool,
+  blockingPoolWorkers: usize,
+  blockingPoolConfigured: bool,
+  threadPerConnection: bool,
+  genericRuntimeTransport: bool,
+  pluginConsumableFacts: bool,
+  policyValid: bool,
+}
+
+impl HttpTransportModePlan {
+  pub fn init(
+    mode: HttpTransportMode,
+    workers: usize,
+    workersAuto: bool,
+    reactorShards: usize,
+    perCoreSharding: bool,
+    blockingPoolWorkers: usize,
+    blockingPoolConfigured: bool,
+    threadPerConnection: bool,
+    genericRuntimeTransport: bool,
+    pluginConsumableFacts: bool,
+    policyValid: bool,
+  ) -> HttpTransportModePlan {
+    return HttpTransportModePlan {
+      mode: mode,
+      workers: workers,
+      workersAuto: workersAuto,
+      reactorShards: reactorShards,
+      perCoreSharding: perCoreSharding,
+      blockingPoolWorkers: blockingPoolWorkers,
+      blockingPoolConfigured: blockingPoolConfigured,
+      threadPerConnection: threadPerConnection,
+      genericRuntimeTransport: genericRuntimeTransport,
+      pluginConsumableFacts: pluginConsumableFacts,
+      policyValid: policyValid,
+    }
+  }
+
+  pub fn fromPolicy(policy: ServerPolicy) -> HttpTransportModePlan {
+    let mode = policy.transportMode()
+    if mode == HttpTransportMode.Blocking {
+      return HttpTransportModePlan.init(
+        mode,
+        policy.workersCount(),
+        policy.workersAuto(),
+        0,
+        false,
+        0,
+        policy.blockingPoolSet(),
+        true,
+        true,
+        true,
+        policy.transportModeValid()
+      )
+    }
+    return HttpTransportModePlan.init(
+      mode,
+      policy.workersCount(),
+      policy.workersAuto(),
+      policy.workersCount(),
+      true,
+      policy.blockingPoolWorkers(),
+      policy.blockingPoolSet(),
+      false,
+      true,
+      true,
+      policy.transportModeValid()
+    )
+  }
+
+  pub fn asyncMode() -> HttpTransportModePlan {
+    return HttpTransportModePlan.init(
+      HttpTransportMode.Async,
+      1,
+      true,
+      1,
+      true,
+      0,
+      false,
+      false,
+      true,
+      true,
+      true
+    )
+  }
+
+  pub fn hybrid(blockingPoolWorkers: usize) -> HttpTransportModePlan {
+    return HttpTransportModePlan.init(
+      HttpTransportMode.Hybrid,
+      1,
+      true,
+      1,
+      true,
+      blockingPoolWorkers,
+      true,
+      false,
+      true,
+      true,
+      blockingPoolWorkers > 0
+    )
+  }
+
+  pub fn blocking() -> HttpTransportModePlan {
+    return HttpTransportModePlan.init(
+      HttpTransportMode.Blocking,
+      1,
+      true,
+      0,
+      false,
+      0,
+      false,
+      true,
+      true,
+      true,
+      true
+    )
+  }
+
+  pub fn modeName(self: HttpTransportModePlan) -> string {
+    if self.mode == HttpTransportMode.Async {
+      return "async"
+    }
+    if self.mode == HttpTransportMode.Hybrid {
+      return "hybrid"
+    }
+    return "blocking"
+  }
+
+  pub fn usesReactor(self: HttpTransportModePlan) -> bool {
+    return self.mode != HttpTransportMode.Blocking
+      && self.reactorShards > 0
+      && self.perCoreSharding
+  }
+
+  pub fn usesBlockingPool(self: HttpTransportModePlan) -> bool {
+    return self.mode == HttpTransportMode.Hybrid && self.blockingPoolWorkers > 0
+  }
+
+  pub fn workersAuto(self: HttpTransportModePlan) -> bool {
+    return self.workersAuto
+  }
+
+  pub fn blockingPoolWasConfigured(self: HttpTransportModePlan) -> bool {
+    return self.blockingPoolConfigured
+  }
+
+  pub fn noThreadPerConnection(self: HttpTransportModePlan) -> bool {
+    return !self.threadPerConnection
+  }
+
+  pub fn highPerformance(self: HttpTransportModePlan) -> bool {
+    return self.usesReactor()
+      && self.noThreadPerConnection()
+      && self.genericRuntimeTransport
+  }
+
+  pub fn productionRecommended(self: HttpTransportModePlan) -> bool {
+    return self.mode == HttpTransportMode.Async || self.mode == HttpTransportMode.Hybrid
+  }
+
+  pub fn accepted(self: HttpTransportModePlan) -> bool {
+    if !self.policyValid {
+      return false
+    }
+    if self.mode == HttpTransportMode.Blocking {
+      return self.workers > 0
+        && self.threadPerConnection
+        && self.genericRuntimeTransport
+        && self.pluginConsumableFacts
+    }
+    if self.mode == HttpTransportMode.Hybrid {
+      return self.highPerformance()
+        && self.usesBlockingPool()
+        && self.pluginConsumableFacts
+    }
+    return self.highPerformance()
+      && self.blockingPoolWorkers == 0
+      && self.pluginConsumableFacts
+  }
+
+  pub fn asyncTransportPlan(self: HttpTransportModePlan) -> HttpAsyncTransportPlan {
+    return HttpAsyncTransportPlan.init(
+      self.workers,
+      self.reactorShards,
+      self.perCoreSharding,
+      HttpBackpressurePolicy.Adaptive,
+      true,
+      self.noThreadPerConnection(),
+      self.genericRuntimeTransport,
+      self.pluginConsumableFacts
+    )
+  }
+}
+
+pub struct HttpTransportModeDiagnostic {
+  code: string,
+  message: string,
+  help: string,
+}
+
+impl HttpTransportModeDiagnostic {
+  pub fn init(code: string, message: string, help: string) -> HttpTransportModeDiagnostic {
+    return HttpTransportModeDiagnostic {
+      code: code,
+      message: message,
+      help: help,
+    }
+  }
+
+  pub fn ok() -> HttpTransportModeDiagnostic {
+    return HttpTransportModeDiagnostic.init("OK", "transport mode policy is valid", "")
+  }
+
+  pub fn blockingPoolRequiresHybrid() -> HttpTransportModeDiagnostic {
+    return HttpTransportModeDiagnostic.init(
+      "HTTP001",
+      "blockingPool() requires .mode(.Hybrid)",
+      "use .mode(.Hybrid).blockingPool(n), or remove blockingPool() for .Async/.Blocking"
+    )
+  }
+
+  pub fn blockingPoolWorkersRequired() -> HttpTransportModeDiagnostic {
+    return HttpTransportModeDiagnostic.init(
+      "HTTP002",
+      "blockingPool() requires at least one worker",
+      "use blockingPool(1) or higher"
+    )
+  }
+
+  pub fn workersRequired() -> HttpTransportModeDiagnostic {
+    return HttpTransportModeDiagnostic.init(
+      "HTTP003",
+      "workers() requires at least one worker",
+      "use workers(1) or omit workers() for auto"
+    )
+  }
+
+  pub fn code(self: HttpTransportModeDiagnostic) -> string {
+    return self.code
+  }
+
+  pub fn help(self: HttpTransportModeDiagnostic) -> string {
+    return self.help
+  }
+}

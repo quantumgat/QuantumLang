@@ -1,0 +1,43 @@
+pub enum MethodCandidateSource {
+  Inherent
+  Associated
+  TraitImpl
+  InterfaceImpl
+  Inherited
+}
+
+pub struct MethodCandidateFact {
+  lookupId: u64,
+  ownerTypeId: u64,
+  methodId: u64,
+  source: MethodCandidateSource,
+  order: usize,
+  applicable: bool,
+  visible: bool,
+}
+
+pub fn methodCandidateFact(
+  lookupId: u64,
+  ownerTypeId: u64,
+  methodId: u64,
+  source: MethodCandidateSource,
+  order: usize,
+  applicable: bool,
+  visible: bool,
+) -> MethodCandidateFact {
+  return MethodCandidateFact {
+    lookupId: lookupId,
+    ownerTypeId: ownerTypeId,
+    methodId: methodId,
+    source: source,
+    order: order,
+    applicable: applicable,
+    visible: visible,
+  }
+}
+
+impl MethodCandidateFact {
+  pub fn selectable(self: MethodCandidateFact) -> bool {
+    return self.applicable && self.visible
+  }
+}

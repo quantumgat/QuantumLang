@@ -1,0 +1,17 @@
+pub struct DynTraitRuntimeContract {
+  typeId: u64,
+  dataPointerBound: bool,
+  vtablePointerBound: bool,
+  lifetimeChecked: bool,
+  staleHandleRejected: bool,
+}
+
+impl DynTraitRuntimeContract {
+  pub fn complete(self: DynTraitRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.dataPointerBound
+      && self.vtablePointerBound
+      && self.lifetimeChecked
+      && self.staleHandleRejected
+  }
+}

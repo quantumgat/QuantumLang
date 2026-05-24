@@ -1,0 +1,102 @@
+pub struct LogContext {
+  traceId: u64,
+  spanId: u64,
+  taskId: u64,
+  actorId: u64,
+  requestId: string,
+  correlationId: string,
+  cancellationId: u64,
+  asyncPropagated: bool,
+  redacted: bool,
+}
+
+impl LogContext {
+  pub fn empty() -> LogContext {
+    return LogContext {
+      traceId: 0,
+      spanId: 0,
+      taskId: 0,
+      actorId: 0,
+      requestId: "",
+      correlationId: "",
+      cancellationId: 0,
+      asyncPropagated: true,
+      redacted: true,
+    }
+  }
+
+  /**
+    Creates context for async/task-aware logs.
+
+    example:
+      let ctx = LogContext.task(trace, span, task)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn task(traceId: u64, spanId: u64, taskId: u64) -> LogContext {
+    return LogContext {
+      traceId: traceId,
+      spanId: spanId,
+      taskId: taskId,
+      actorId: 0,
+      requestId: "",
+      correlationId: "",
+      cancellationId: 0,
+      asyncPropagated: true,
+      redacted: true,
+    }
+  }
+
+  pub fn actor(traceId: u64, spanId: u64, actorId: u64) -> LogContext {
+    return LogContext {
+      traceId: traceId,
+      spanId: spanId,
+      taskId: 0,
+      actorId: actorId,
+      requestId: "",
+      correlationId: "",
+      cancellationId: 0,
+      asyncPropagated: true,
+      redacted: true,
+    }
+  }
+
+  pub fn withCorrelation(self: LogContext, requestId: string, correlationId: string) -> LogContext {
+    return LogContext {
+      traceId: self.traceId,
+      spanId: self.spanId,
+      taskId: self.taskId,
+      actorId: self.actorId,
+      requestId: requestId,
+      correlationId: correlationId,
+      cancellationId: self.cancellationId,
+      asyncPropagated: self.asyncPropagated,
+      redacted: true,
+    }
+  }
+
+  pub fn withCancellation(self: LogContext, cancellationId: u64) -> LogContext {
+    return LogContext {
+      traceId: self.traceId,
+      spanId: self.spanId,
+      taskId: self.taskId,
+      actorId: self.actorId,
+      requestId: self.requestId,
+      correlationId: self.correlationId,
+      cancellationId: cancellationId,
+      asyncPropagated: self.asyncPropagated,
+      redacted: true,
+    }
+  }
+
+  pub fn correlated(self: LogContext) -> bool {
+    return self.correlationId != "" || self.requestId != "" || self.traceId > 0
+  }
+
+  pub fn safe(self: LogContext) -> bool {
+    return self.asyncPropagated && self.redacted
+  }
+}

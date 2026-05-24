@@ -1,0 +1,11 @@
+pub struct PartialStreamResult<T> {
+  value: Option<T>,
+  error: Option<StreamError>,
+  recoverable: bool,
+}
+
+impl PartialStreamResult<T> {
+  pub fn canContinue(self: PartialStreamResult<T>) -> bool {
+    return self.recoverable
+  }
+}

@@ -1,0 +1,96 @@
+pub enum ParallelLoopControl<T> {
+  Continue
+  Break
+  Stop(T)
+}
+
+pub struct ParallelLoopOptions {
+  threads: usize,
+  batch: usize,
+}
+
+pub struct ParallelWorkSource<W> {
+  sourceId: u64,
+  infinite: bool,
+  uniqueWork: bool,
+  batchable: bool,
+}
+
+pub struct ParallelLoopResult<T> {
+  stopped: bool,
+  value: Option<T>,
+  workersStopped: bool,
+}
+
+pub struct Parallel {
+}
+
+impl ParallelLoopOptions {
+  pub fn init(threads: usize, batch: usize) -> ParallelLoopOptions {
+    return ParallelLoopOptions {
+      threads: threads,
+      batch: batch,
+    }
+  }
+
+  pub fn valid(self: ParallelLoopOptions) -> bool {
+    return self.threads > 0 && self.batch > 0
+  }
+}
+
+impl ParallelWorkSource<W> {
+  pub fn init(sourceId: u64, infinite: bool, uniqueWork: bool, batchable: bool) -> ParallelWorkSource<W> {
+    return ParallelWorkSource<W> {
+      sourceId: sourceId,
+      infinite: infinite,
+      uniqueWork: uniqueWork,
+      batchable: batchable,
+    }
+  }
+
+  pub fn accepted(self: ParallelWorkSource<W>) -> bool {
+    return self.sourceId > 0 && self.uniqueWork && self.batchable
+  }
+}
+
+impl ParallelLoopResult<T> {
+  pub fn stopped(value: T) -> ParallelLoopResult<T> {
+    return ParallelLoopResult<T> {
+      stopped: true,
+      value: Some(value),
+      workersStopped: true,
+    }
+  }
+
+  pub fn broken() -> ParallelLoopResult<T> {
+    return ParallelLoopResult<T> {
+      stopped: true,
+      value: None,
+      workersStopped: true,
+    }
+  }
+
+  pub fn complete(self: ParallelLoopResult<T>) -> bool {
+    return self.stopped && self.workersStopped
+  }
+}
+
+impl Parallel {
+  pub fn options(threads: usize, batch: usize) -> ParallelLoopOptions {
+    return ParallelLoopOptions.init(threads, batch)
+  }
+
+  pub fn loop<W, T>(
+    threads: usize,
+    batch: usize,
+    work: ParallelWorkSource<W>,
+    body: fn(W) -> ParallelLoopControl<T>,
+  ) -> ParallelLoopResult<T> requires(thread) {
+    let options = ParallelLoopOptions.init(threads, batch)
+    return ParallelLoopResult<T> {
+      stopped: options.valid() && work.accepted(),
+      value: None,
+      workersStopped: true,
+    }
+  }
+}

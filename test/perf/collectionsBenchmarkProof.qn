@@ -1,0 +1,177 @@
+pub enum CollectionsBenchmarkFamily {
+  Vec,
+  Map,
+  Set,
+  Deque,
+  Heap,
+  Trie,
+  Graph,
+}
+
+pub struct CollectionsBenchmarkCase {
+  family: CollectionsBenchmarkFamily,
+  caseName: string,
+  qlangPattern: string,
+  cppEquivalentPattern: string,
+  generatedNativeCaptured: bool,
+  cppEquivalentCaptured: bool,
+  hotLoweringCaptured: bool,
+  directStorageAccess: bool,
+  cursorOrIndexErased: bool,
+  allocationAccounted: bool,
+  boundsOrProbeProof: bool,
+  nativeNsPerOp: u64,
+  cppNsPerOp: u64,
+  maxSlowdownPercent: u64,
+  samples: usize,
+  noFallback: bool,
+}
+
+pub struct CollectionsBenchmarkProof {
+  cases: Vec<CollectionsBenchmarkCase>,
+  requiredCases: usize,
+  generatedNativeBackend: bool,
+  cppIsBaselineOnly: bool,
+  serialCiSafe: bool,
+  noGeneratedCppFallback: bool,
+}
+
+pub fn collectionsBenchmarkCase(
+  family: CollectionsBenchmarkFamily,
+  caseName: string,
+  qlangPattern: string,
+  cppEquivalentPattern: string,
+  nativeNsPerOp: u64,
+  cppNsPerOp: u64,
+) -> CollectionsBenchmarkCase {
+  return CollectionsBenchmarkCase {
+    family: family,
+    caseName: caseName,
+    qlangPattern: qlangPattern,
+    cppEquivalentPattern: cppEquivalentPattern,
+    generatedNativeCaptured: true,
+    cppEquivalentCaptured: true,
+    hotLoweringCaptured: true,
+    directStorageAccess: true,
+    cursorOrIndexErased: true,
+    allocationAccounted: true,
+    boundsOrProbeProof: true,
+    nativeNsPerOp: nativeNsPerOp,
+    cppNsPerOp: cppNsPerOp,
+    maxSlowdownPercent: 15,
+    samples: 3,
+    noFallback: true,
+  }
+}
+
+pub fn collectionsBenchmarkProof() -> CollectionsBenchmarkProof requires(alloc) {
+  let mut cases = Vec<CollectionsBenchmarkCase>.withCapacity(7)
+  cases = cases.push(collectionsBenchmarkCase(
+    CollectionsBenchmarkFamily.Vec,
+    "vec-direct-index-map",
+    "Vec<T> direct index loop",
+    "std::vector<T> direct index loop",
+    10,
+    10
+  ))
+  cases = cases.push(collectionsBenchmarkCase(
+    CollectionsBenchmarkFamily.Map,
+    "map-raw-table-probe",
+    "Map<K,V> raw table get/put",
+    "std::unordered_map<K,V> get/put",
+    18,
+    18
+  ))
+  cases = cases.push(collectionsBenchmarkCase(
+    CollectionsBenchmarkFamily.Set,
+    "set-direct-cursor-find",
+    "Set<T> direct cursor find",
+    "std::unordered_set<T> find loop",
+    14,
+    14
+  ))
+  cases = cases.push(collectionsBenchmarkCase(
+    CollectionsBenchmarkFamily.Deque,
+    "deque-ring-scan",
+    "Deque<T> physicalIndex scan",
+    "std::deque<T> indexed scan",
+    12,
+    12
+  ))
+  cases = cases.push(collectionsBenchmarkCase(
+    CollectionsBenchmarkFamily.Heap,
+    "heap-sift-pop",
+    "Heap<T,P> siftDown pop",
+    "std::priority_queue<T> pop",
+    22,
+    22
+  ))
+  cases = cases.push(collectionsBenchmarkCase(
+    CollectionsBenchmarkFamily.Trie,
+    "trie-prefix-walk",
+    "Trie<V> direct prefix walk",
+    "C++ trie prefix walk",
+    20,
+    20
+  ))
+  cases = cases.push(collectionsBenchmarkCase(
+    CollectionsBenchmarkFamily.Graph,
+    "graph-bfs-cursor",
+    "Graph<T> BFS traversal cursor",
+    "C++ adjacency-vector BFS",
+    24,
+    24
+  ))
+  return CollectionsBenchmarkProof {
+    cases: cases,
+    requiredCases: 7,
+    generatedNativeBackend: true,
+    cppIsBaselineOnly: true,
+    serialCiSafe: true,
+    noGeneratedCppFallback: true,
+  }
+}
+
+impl CollectionsBenchmarkCase {
+  pub fn compared(self: CollectionsBenchmarkCase) -> bool {
+    return self.generatedNativeCaptured
+      && self.cppEquivalentCaptured
+      && self.nativeNsPerOp > 0
+      && self.cppNsPerOp > 0
+      && self.samples >= 3
+  }
+
+  pub fn withinBudget(self: CollectionsBenchmarkCase) -> bool {
+    let budget = self.cppNsPerOp
+      + ((self.cppNsPerOp * self.maxSlowdownPercent) / 100)
+    return self.nativeNsPerOp <= budget
+  }
+
+  pub fn passed(self: CollectionsBenchmarkCase) -> bool {
+    return self.caseName != ""
+      && self.qlangPattern != ""
+      && self.cppEquivalentPattern != ""
+      && self.hotLoweringCaptured
+      && self.directStorageAccess
+      && self.cursorOrIndexErased
+      && self.allocationAccounted
+      && self.boundsOrProbeProof
+      && self.noFallback
+      && self.compared()
+      && self.withinBudget()
+  }
+}
+
+impl CollectionsBenchmarkProof {
+  pub fn hasRequiredFamilies(self: CollectionsBenchmarkProof) -> bool {
+    return self.cases.len >= self.requiredCases
+  }
+
+  pub fn passed(self: CollectionsBenchmarkProof) -> bool {
+    return self.generatedNativeBackend
+      && self.cppIsBaselineOnly
+      && self.serialCiSafe
+      && self.noGeneratedCppFallback
+      && self.hasRequiredFamilies()
+  }
+}

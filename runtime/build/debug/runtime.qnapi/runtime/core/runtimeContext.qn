@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeContext {
+  target: string
+  started: bool
+  diagnosticsEnabled: bool
+  handleValidation: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeContext(target: string) -> RuntimeContext
+}

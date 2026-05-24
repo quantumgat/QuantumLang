@@ -1,0 +1,9 @@
+[module]
+name = "platform"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "target-platform-capability-analysis"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

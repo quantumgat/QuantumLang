@@ -1,0 +1,6 @@
+[module]
+name = "http.body"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-body"

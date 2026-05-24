@@ -1,0 +1,27 @@
+[plugin]
+name = "plugin-template-stdlib"
+version = "0.1.0"
+schema = 1
+edition = "2026"
+kind = "stdlib"
+
+[stdlib]
+root = "stdlib"
+include = ["**/*.qn"]
+public_roots = ["std.pluginTemplate"]
+docs = "docs"
+examples = "examples"
+
+[exports]
+modules = ["std.pluginTemplate"]
+diagnostics = ["pluginTemplate"]
+
+[proof]
+positive_tests = "required"
+negative_tests = "required"
+fallback_tests = "not-required"
+perf_tests = "optional"
+source_maps = "not-required"
+typed_failure = "required"
+no_coredump = "required"
+

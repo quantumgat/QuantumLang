@@ -1,0 +1,23 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum TrustedProxyVendor {
+  None,
+  Loopback,
+  PrivateNetwork,
+  Cloudflare,
+  Fastly,
+  Fly,
+  AwsAlb,
+  Nginx,
+  Custom,
+}
+pub struct TrustedProxyPolicy {
+  vendor: TrustedProxyVendor
+  cidrRanges: Vec<string>
+  maxHops: usize
+  parseForwarded: bool
+  parseXForwarded: bool
+  rejectSpoofedHeaders: bool
+  requireTrustedRemote: bool
+}
+pub struct TrustedProxy {
+}

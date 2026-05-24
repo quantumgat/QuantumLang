@@ -1,0 +1,19 @@
+pub struct NumaLocalityFact {
+  nodeAvailable: bool,
+  localAccess: bool,
+  pagePinned: bool,
+}
+
+impl NumaLocalityFact {
+  pub fn init(nodeAvailable: bool, localAccess: bool, pagePinned: bool) -> NumaLocalityFact {
+    return NumaLocalityFact {
+      nodeAvailable: nodeAvailable,
+      localAccess: localAccess,
+      pagePinned: pagePinned,
+    }
+  }
+
+  pub fn accepted(self: NumaLocalityFact) -> bool {
+    return self.nodeAvailable && self.localAccess && self.pagePinned
+  }
+}

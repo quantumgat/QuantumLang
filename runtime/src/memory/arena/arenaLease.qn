@@ -1,0 +1,40 @@
+pub struct ArenaLease {
+  arenaId: u64,
+  regionId: u64,
+  generation: u64,
+  resetEpoch: u64,
+  active: bool,
+}
+
+impl ArenaLease {
+  pub fn init(handle: ArenaHandle) -> Result<ArenaLease, ArenaRuntimeError> {
+    if handle.released {
+      return Err(ArenaRuntimeError.Released)
+    }
+    return Ok(ArenaLease {
+      arenaId: handle.arenaId,
+      regionId: handle.regionId,
+      generation: handle.generation,
+      resetEpoch: handle.resetEpoch,
+      active: true,
+    })
+  }
+
+  pub fn validates(self: ArenaLease, handle: ArenaHandle) -> bool {
+    return self.active &&
+      self.arenaId == handle.arenaId &&
+      self.regionId == handle.regionId &&
+      self.generation == handle.generation &&
+      self.resetEpoch == handle.resetEpoch
+  }
+
+  pub fn revoke(self: ArenaLease) -> ArenaLease {
+    return ArenaLease {
+      arenaId: self.arenaId,
+      regionId: self.regionId,
+      generation: self.generation,
+      resetEpoch: self.resetEpoch,
+      active: false,
+    }
+  }
+}

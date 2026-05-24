@@ -1,0 +1,106 @@
+pub enum AdvancedOopClosureOwner {
+  CompilerRuntime
+  CompilerBackend
+  RuntimeService
+  PackageBoundary
+  ProviderBoundary
+  MixedBoundary
+}
+
+pub enum AdvancedOopClosureKind {
+  RuntimeRevalidation
+  PackagePolicy
+  RuntimeResourceLifecycle
+  ActorServiceRuntime
+  DataRegionLowering
+  PackageDeferral
+  ReactiveRuntimePackage
+  ProviderDeferral
+  DelegationForwardingLowering
+}
+
+pub enum AdvancedOopClosureStatus {
+  ExecutableContractClosed
+  DeferredDiagnosticClosed
+  PackageOwnedContractClosed
+  ProviderOwnedContractClosed
+}
+
+pub struct OopAdvancedExecutionClosureFact {
+  familyName: string,
+  owner: AdvancedOopClosureOwner,
+  kind: AdvancedOopClosureKind,
+  sourceFactBound: bool,
+  dumpExplainBound: bool,
+  runtimeContractClosed: bool,
+  backendProofClosed: bool,
+  packageDeferralDiagnosticClosed: bool,
+  diagnosticCodeBound: bool,
+  hotPathProofClosed: bool,
+  externalProviderOwned: bool,
+  status: AdvancedOopClosureStatus,
+}
+
+pub fn oopAdvancedExecutionClosureFact(
+  familyName: string,
+  owner: AdvancedOopClosureOwner,
+  kind: AdvancedOopClosureKind,
+  sourceFactBound: bool,
+  dumpExplainBound: bool,
+  runtimeContractClosed: bool,
+  backendProofClosed: bool,
+  packageDeferralDiagnosticClosed: bool,
+  diagnosticCodeBound: bool,
+  hotPathProofClosed: bool,
+  externalProviderOwned: bool,
+  status: AdvancedOopClosureStatus,
+) -> OopAdvancedExecutionClosureFact {
+  return OopAdvancedExecutionClosureFact {
+    familyName: familyName,
+    owner: owner,
+    kind: kind,
+    sourceFactBound: sourceFactBound,
+    dumpExplainBound: dumpExplainBound,
+    runtimeContractClosed: runtimeContractClosed,
+    backendProofClosed: backendProofClosed,
+    packageDeferralDiagnosticClosed: packageDeferralDiagnosticClosed,
+    diagnosticCodeBound: diagnosticCodeBound,
+    hotPathProofClosed: hotPathProofClosed,
+    externalProviderOwned: externalProviderOwned,
+    status: status,
+  }
+}
+
+impl OopAdvancedExecutionClosureFact {
+  pub fn contractClosed(self: OopAdvancedExecutionClosureFact) -> bool {
+    return self.sourceFactBound
+      && self.dumpExplainBound
+      && self.diagnosticCodeBound
+      && (
+        self.runtimeContractClosed
+        || self.backendProofClosed
+        || self.packageDeferralDiagnosticClosed
+        || self.externalProviderOwned
+      )
+      && (
+        self.status == AdvancedOopClosureStatus.ExecutableContractClosed
+        || self.status == AdvancedOopClosureStatus.DeferredDiagnosticClosed
+        || self.status == AdvancedOopClosureStatus.PackageOwnedContractClosed
+        || self.status == AdvancedOopClosureStatus.ProviderOwnedContractClosed
+      )
+  }
+
+  pub fn needsHotProof(self: OopAdvancedExecutionClosureFact) -> bool {
+    return self.owner != AdvancedOopClosureOwner.PackageBoundary
+      && self.owner != AdvancedOopClosureOwner.ProviderBoundary
+      && self.packageDeferralDiagnosticClosed == false
+  }
+
+  pub fn hotPathClosed(self: OopAdvancedExecutionClosureFact) -> bool {
+    return self.needsHotProof() == false || self.hotPathProofClosed
+  }
+
+  pub fn blocksAdvancedCompletion(self: OopAdvancedExecutionClosureFact) -> bool {
+    return self.contractClosed() == false || self.hotPathClosed() == false
+  }
+}

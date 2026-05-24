@@ -1,0 +1,150 @@
+pub enum BuiltinPrimitiveKind {
+  SignedInteger
+  UnsignedInteger
+  Float
+  Decimal
+  BigInteger
+  Complex
+  Rational
+  Fixed
+  Simd
+  Vector
+  Matrix
+  Tensor
+  FiniteField
+  Overflow
+  CoreScalar
+  TextBytes
+  Quantum
+}
+
+pub enum BuiltinPrimitiveTypeId {
+  I8
+  I16
+  I32
+  I64
+  I128
+  I256
+  ISize
+  U8
+  U16
+  U32
+  U64
+  U128
+  U256
+  USize
+  F16
+  F32
+  F64
+  F128
+  Dec64
+  Dec128
+  Dec256
+  Dec
+  Decimal
+  BigInt
+  BigUint
+  Complex64
+  Complex128
+  Complex256
+  Complex
+  Rational64
+  Rational
+  Fixed
+  SimdI64x4
+  SimdU64x4
+  Vector2F64
+  Vector3F64
+  Matrix2x2F64
+  Matrix3x3F64
+  Tensor2x2x2F64
+  Tensor3x3x3F64
+  PrimeField64
+  OverflowI64
+  OverflowU64
+  Bool
+  Char
+  String
+  Text
+  Str
+  Bytes
+  BytesView
+  BytesMutView
+  Unit
+  Never
+  Any
+  Qubit
+  QReg
+  QResult
+  Bit
+  Bits
+  QFunc
+  QAny
+}
+
+pub struct BuiltinPrimitiveType {
+  typeId: BuiltinPrimitiveTypeId,
+  spelling: string,
+  kind: BuiltinPrimitiveKind,
+  bitWidth: usize,
+  abiSize: usize,
+  abiAlign: usize,
+  signed: bool,
+  targetSupported: bool,
+}
+
+pub fn builtinPrimitiveType(
+  typeId: BuiltinPrimitiveTypeId,
+  spelling: string,
+  kind: BuiltinPrimitiveKind,
+  bitWidth: usize,
+  abiSize: usize,
+  abiAlign: usize,
+  signed: bool,
+  targetSupported: bool
+) -> BuiltinPrimitiveType {
+  return BuiltinPrimitiveType {
+    typeId: typeId,
+    spelling: spelling,
+    kind: kind,
+    bitWidth: bitWidth,
+    abiSize: abiSize,
+    abiAlign: abiAlign,
+    signed: signed,
+    targetSupported: targetSupported,
+  }
+}
+
+impl BuiltinPrimitiveType {
+  pub fn sourceSpelling(self: BuiltinPrimitiveType) -> string {
+    return self.spelling
+  }
+
+  pub fn primitiveKind(self: BuiltinPrimitiveType) -> BuiltinPrimitiveKind {
+    return self.kind
+  }
+
+  pub fn width(self: BuiltinPrimitiveType) -> usize {
+    return self.bitWidth
+  }
+
+  pub fn layoutSize(self: BuiltinPrimitiveType) -> usize {
+    return self.abiSize
+  }
+
+  pub fn layoutAlign(self: BuiltinPrimitiveType) -> usize {
+    return self.abiAlign
+  }
+
+  pub fn isSigned(self: BuiltinPrimitiveType) -> bool {
+    return self.signed
+  }
+
+  pub fn isTargetSupported(self: BuiltinPrimitiveType) -> bool {
+    return self.targetSupported
+  }
+}
+
+pub fn requiredBuiltinPrimitiveTypeCount() -> usize {
+  return 61
+}

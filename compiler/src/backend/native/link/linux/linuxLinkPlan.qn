@@ -1,0 +1,12 @@
+pub struct LinuxLinkPlan {
+  target: string,
+  elfRequired: bool,
+  sysvAbiRequired: bool,
+  runtimeArchiveHidden: bool,
+}
+
+impl LinuxLinkPlan {
+  pub fn accepted(self: LinuxLinkPlan) -> bool {
+    return self.target != "" && self.elfRequired && self.sysvAbiRequired
+  }
+}

@@ -1,0 +1,25 @@
+pub struct RuntimeSemaphore {
+  handle: SyncHandle,
+  permits: usize,
+  waiters: usize,
+  fair: bool,
+}
+
+impl RuntimeSemaphore {
+  pub fn init(handle: SyncHandle, permits: usize, waiters: usize, fair: bool) -> RuntimeSemaphore {
+    return RuntimeSemaphore {
+      handle: handle,
+      permits: permits,
+      waiters: waiters,
+      fair: fair,
+    }
+  }
+
+  pub fn canAcquire(self: RuntimeSemaphore) -> bool {
+    return self.permits > 0
+  }
+
+  pub fn safe(self: RuntimeSemaphore) -> bool {
+    return self.handle.raw() > 0 && self.fair
+  }
+}

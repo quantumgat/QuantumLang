@@ -1,0 +1,39 @@
+pub enum MathKernelBridgeFamily {
+  ExactNumeric
+  DecimalContext
+  LimbArithmetic
+  ComplexExceptional
+  FiniteField
+  SimdMath
+  SafeFailure
+}
+
+pub struct MathKernelBridge {
+  family: MathKernelBridgeFamily,
+  runtimeSymbol: string,
+  typedError: bool,
+  sourceMapped: bool,
+  noCoredump: bool,
+  productRuntimeOwned: bool,
+}
+
+impl MathKernelBridge {
+  pub fn runtime(family: MathKernelBridgeFamily, runtimeSymbol: string) -> MathKernelBridge {
+    return MathKernelBridge {
+      family: family,
+      runtimeSymbol: runtimeSymbol,
+      typedError: true,
+      sourceMapped: true,
+      noCoredump: true,
+      productRuntimeOwned: true,
+    }
+  }
+
+  pub fn accepted(self: MathKernelBridge) -> bool {
+    return self.runtimeSymbol != ""
+      && self.typedError
+      && self.sourceMapped
+      && self.noCoredump
+      && self.productRuntimeOwned
+  }
+}

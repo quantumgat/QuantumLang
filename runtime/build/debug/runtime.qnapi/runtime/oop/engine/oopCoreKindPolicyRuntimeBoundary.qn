@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopCoreKindPolicyRuntimeBoundary {
+  coreKindCount: usize
+  genericEngineOwnsDispatch: bool
+  perPolicyRuntimeEnginesRejected: bool
+  stateRuntimeThroughLifecycle: bool
+  callableRuntimeThroughDispatch: bool
+  resourceRuntimeThroughHandleLifecycle: bool
+  actorServiceRuntimeThroughScheduler: bool
+  pluginRuntimeThroughKernelBoundary: bool
+  reflectionColdOnly: bool
+  packageHttpRuntimeRejected: bool
+}

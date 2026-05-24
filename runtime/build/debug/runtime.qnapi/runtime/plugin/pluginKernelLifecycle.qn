@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct PluginKernelLifecycle {
+  loaded: bool
+  initialized: bool
+  shutdownRegistered: bool
+  unloadSafe: bool
+  generationChecked: bool
+  staleHandleRejected: bool
+}

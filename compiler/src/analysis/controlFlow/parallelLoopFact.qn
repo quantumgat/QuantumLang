@@ -1,0 +1,63 @@
+pub enum ParallelLoopDiagnosticKind {
+  None
+  InvalidThreadCount
+  InvalidBatch
+  WorkNotUnique
+  BlockingInHotBody
+  AllocationInHotBody
+  CapturedMutationNotDisjoint
+}
+
+pub struct ParallelLoopFact {
+  node: u64,
+  threadsProved: bool,
+  batchProved: bool,
+  workUnique: bool,
+  stopAllWorkers: bool,
+  continueWorkerLocal: bool,
+  noLockHotBody: bool,
+  noAllocHotBody: bool,
+  disjointMutationProved: bool,
+  diagnostic: ParallelLoopDiagnosticKind,
+}
+
+pub fn parallelLoopFact(
+  node: u64,
+  threadsProved: bool,
+  batchProved: bool,
+  workUnique: bool,
+  stopAllWorkers: bool,
+  continueWorkerLocal: bool,
+  noLockHotBody: bool,
+  noAllocHotBody: bool,
+  disjointMutationProved: bool,
+  diagnostic: ParallelLoopDiagnosticKind,
+) -> ParallelLoopFact {
+  return ParallelLoopFact {
+    node: node,
+    threadsProved: threadsProved,
+    batchProved: batchProved,
+    workUnique: workUnique,
+    stopAllWorkers: stopAllWorkers,
+    continueWorkerLocal: continueWorkerLocal,
+    noLockHotBody: noLockHotBody,
+    noAllocHotBody: noAllocHotBody,
+    disjointMutationProved: disjointMutationProved,
+    diagnostic: diagnostic,
+  }
+}
+
+impl ParallelLoopFact {
+  pub fn hotPathReady(self: ParallelLoopFact) -> bool {
+    return self.node > 0
+      && self.threadsProved
+      && self.batchProved
+      && self.workUnique
+      && self.stopAllWorkers
+      && self.continueWorkerLocal
+      && self.noLockHotBody
+      && self.noAllocHotBody
+      && self.disjointMutationProved
+      && self.diagnostic == ParallelLoopDiagnosticKind.None
+  }
+}

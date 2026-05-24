@@ -1,0 +1,57 @@
+pub struct Span {
+  file: u32,
+  start: usize,
+  end: usize,
+}
+
+pub fn span(file: u32, start: usize, end: usize) -> Span {
+  return Span { file: file, start: start, end: end }
+}
+
+pub fn emptySpan(file: u32, offset: usize) -> Span {
+  return Span { file: file, start: offset, end: offset }
+}
+
+impl Span {
+  pub fn fileId(self: Span) -> u32 {
+    return self.file
+  }
+
+  pub fn startOffset(self: Span) -> usize {
+    return self.start
+  }
+
+  pub fn endOffset(self: Span) -> usize {
+    return self.end
+  }
+
+  pub fn len(self: Span) -> usize {
+    if self.end <= self.start {
+      return 0
+    }
+
+    return self.end - self.start
+  }
+
+  pub fn isEmpty(self: Span) -> bool {
+    return self.end <= self.start
+  }
+
+  pub fn contains(self: Span, offset: usize) -> bool {
+    return offset >= self.start && offset < self.end
+  }
+
+  pub fn join(self: Span, other: Span) -> Span {
+    let mut start = self.start
+    let mut end = self.end
+
+    if other.start < start {
+      start = other.start
+    }
+    if other.end > end {
+      end = other.end
+    }
+
+    return Span { file: self.file, start: start, end: end }
+  }
+}

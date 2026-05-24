@@ -1,0 +1,19 @@
+pub struct CacheStats {
+  len: usize,
+  capacity: usize,
+  orderSlots: usize,
+  staleOrderSlots: usize,
+  generation: usize,
+}
+
+impl<K, V> Cache<K, V> {
+  pub fn stats(self: Cache<K, V>) -> CacheStats {
+    return CacheStats {
+      len: self.len,
+      capacity: self.capacity,
+      orderSlots: self.order.len,
+      staleOrderSlots: self.order.len - self.len,
+      generation: self.generation,
+    }
+  }
+}

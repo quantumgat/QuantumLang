@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeErrorAnalysisReport {
+  reportId: u64
+  subsystem: string
+  rootCause: string
+  likelyFix: string
+  recoveryCount: usize
+  groupedCount: usize
+  correlationId: string
+  traceId: string
+  redacted: bool
+  noCoredump: bool
+}

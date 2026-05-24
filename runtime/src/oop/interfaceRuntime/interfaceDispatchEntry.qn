@@ -1,0 +1,23 @@
+pub struct InterfaceDispatchEntry {
+  interfaceTypeId: u64,
+  implementorTypeId: u64,
+  methodId: u64,
+  slot: usize,
+  functionPtr: u64,
+}
+
+pub fn interfaceDispatchEntry(interfaceTypeId: u64, implementorTypeId: u64, methodId: u64, slot: usize, functionPtr: u64) -> InterfaceDispatchEntry {
+  return InterfaceDispatchEntry {
+    interfaceTypeId: interfaceTypeId,
+    implementorTypeId: implementorTypeId,
+    methodId: methodId,
+    slot: slot,
+    functionPtr: functionPtr,
+  }
+}
+
+impl InterfaceDispatchEntry {
+  pub fn canDispatch(self: InterfaceDispatchEntry) -> bool {
+    return self.interfaceTypeId > 0 && self.implementorTypeId > 0 && self.methodId > 0 && self.functionPtr > 0
+  }
+}

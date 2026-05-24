@@ -1,0 +1,73 @@
+pub enum JsonViewEligibility {
+  Borrowed
+  NeedsOwnedString
+  NeedsOwnedContainer
+  LifetimeTooShort
+  UnsupportedField
+}
+
+pub struct JsonViewPlan {
+  typeName: string,
+  zeroCopyEligible: bool,
+  borrowedStrings: bool,
+  borrowedArrays: bool,
+  escapedStringFallback: bool,
+  lifetimeChecked: bool,
+  sourceOutlivesView: bool,
+  explicitOwnedConversion: bool,
+}
+
+pub struct JsonView<T> {
+  sourceBytes: Bytes,
+  plan: JsonViewPlan,
+  eligibility: JsonViewEligibility,
+  zeroCopy: bool,
+  lifetimeChecked: bool,
+}
+
+pub fn view<T>(bytes: Bytes) -> Result<JsonView<T>, JsonError> {
+  return jsonViewKernel<T>(bytes, JsonViewPlan.forType<T>())
+}
+
+pub fn view<T>(bytes: Bytes, plan: JsonViewPlan) -> Result<JsonView<T>, JsonError> {
+  return jsonViewKernel<T>(bytes, plan)
+}
+
+impl JsonViewPlan {
+  pub fn forType<T>() -> JsonViewPlan {
+    return jsonViewPlanFor<T>()
+  }
+
+  pub fn ready(self: JsonViewPlan) -> bool {
+    return self.typeName != ""
+      && self.zeroCopyEligible
+      && self.borrowedStrings
+      && self.borrowedArrays
+      && self.escapedStringFallback
+      && self.lifetimeChecked
+      && self.sourceOutlivesView
+      && self.explicitOwnedConversion
+  }
+}
+
+impl<T> JsonView<T> {
+  pub fn borrowed(self: JsonView<T>) -> bool {
+    return self.zeroCopy
+      && self.lifetimeChecked
+      && self.eligibility == JsonViewEligibility.Borrowed
+      && self.plan.ready()
+  }
+
+  pub fn needsOwned(self: JsonView<T>) -> bool {
+    return self.eligibility == JsonViewEligibility.NeedsOwnedString
+      || self.eligibility == JsonViewEligibility.NeedsOwnedContainer
+  }
+
+  pub fn toOwned(self: JsonView<T>) -> Result<T, JsonError> {
+    return jsonViewToOwnedKernel<T>(self)
+  }
+}
+
+fn jsonViewPlanFor<T>() -> JsonViewPlan
+fn jsonViewKernel<T>(bytes: Bytes, plan: JsonViewPlan) -> Result<JsonView<T>, JsonError>
+fn jsonViewToOwnedKernel<T>(view: JsonView<T>) -> Result<T, JsonError>

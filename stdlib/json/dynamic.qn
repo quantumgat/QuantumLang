@@ -1,0 +1,88 @@
+pub enum JsonAccessKind {
+  Dot
+  BracketKey
+  BracketIndex
+}
+
+pub struct JsonDynamicAccessPlan {
+  builtinJsonAlias: bool,
+  objectLiteralKeys: bool,
+  quotedKeys: bool,
+  identifierKeys: bool,
+  dotAccess: bool,
+  bracketKeyAccess: bool,
+  bracketIndexAccess: bool,
+  indexAssignment: bool,
+  objectBulkSet: bool,
+  objectMerge: bool,
+  objectMergeRight: bool,
+  objectMergeLeft: bool,
+  objectMergeError: bool,
+  objectMergeDeep: bool,
+  arrayPush: bool,
+  arrayAppend: bool,
+  arrayMergeConcat: bool,
+  arrayMergeUnique: bool,
+  arrayMergeUniqueBy: bool,
+  arrayRemoveAt: bool,
+  typedReads: bool,
+  pathAwareErrors: bool,
+}
+
+impl JsonDynamicAccessPlan {
+  pub fn default() -> JsonDynamicAccessPlan {
+    return JsonDynamicAccessPlan {
+      builtinJsonAlias: true,
+      objectLiteralKeys: true,
+      quotedKeys: true,
+      identifierKeys: true,
+      dotAccess: true,
+      bracketKeyAccess: true,
+      bracketIndexAccess: true,
+      indexAssignment: true,
+      objectBulkSet: true,
+      objectMerge: true,
+      objectMergeRight: true,
+      objectMergeLeft: true,
+      objectMergeError: true,
+      objectMergeDeep: true,
+      arrayPush: true,
+      arrayAppend: true,
+      arrayMergeConcat: true,
+      arrayMergeUnique: true,
+      arrayMergeUniqueBy: true,
+      arrayRemoveAt: true,
+      typedReads: true,
+      pathAwareErrors: true,
+    }
+  }
+
+  pub fn ready(self: JsonDynamicAccessPlan) -> bool {
+    return self.builtinJsonAlias
+      && self.objectLiteralKeys
+      && self.quotedKeys
+      && self.identifierKeys
+      && self.dotAccess
+      && self.bracketKeyAccess
+      && self.bracketIndexAccess
+      && self.indexAssignment
+      && self.objectBulkSet
+      && self.objectMerge
+      && self.objectMergeRight
+      && self.objectMergeLeft
+      && self.objectMergeError
+      && self.objectMergeDeep
+      && self.arrayPush
+      && self.arrayAppend
+      && self.arrayMergeConcat
+      && self.arrayMergeUnique
+      && self.arrayMergeUniqueBy
+      && self.arrayRemoveAt
+      && self.typedReads
+      && self.pathAwareErrors
+  }
+}
+
+pub fn dynamicAccessPlan() -> JsonDynamicAccessPlan {
+  return JsonDynamicAccessPlan.default()
+}

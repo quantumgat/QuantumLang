@@ -1,0 +1,57 @@
+pub enum OrderedMapLoweringKind {
+  Lookup,
+  Insert,
+  Remove,
+  Range,
+  LowerBound,
+  Iteration,
+}
+
+pub struct OrderedMapLowering {
+  kind: OrderedMapLoweringKind,
+  btreeNodeWalkLowered: bool,
+  comparatorHoisted: bool,
+  rangeCursorLowered: bool,
+  rangeAllCursorLowered: bool,
+  lowerBoundNodeWalkLowered: bool,
+  upperBoundNodeWalkLowered: bool,
+  orderedSetCursorProjectionLowered: bool,
+  repeatedEntryAtScanRejected: bool,
+  stableOrderProofRequired: bool,
+  nodeCapacityTracked: bool,
+}
+
+impl OrderedMapLowering {
+  pub fn init(kind: OrderedMapLoweringKind) -> OrderedMapLowering {
+    return OrderedMapLowering {
+      kind: kind,
+      btreeNodeWalkLowered: true,
+      comparatorHoisted: true,
+      rangeCursorLowered: true,
+      rangeAllCursorLowered: true,
+      lowerBoundNodeWalkLowered: true,
+      upperBoundNodeWalkLowered: true,
+      orderedSetCursorProjectionLowered: true,
+      repeatedEntryAtScanRejected: true,
+      stableOrderProofRequired: true,
+      nodeCapacityTracked: true,
+    }
+  }
+
+  pub fn canLowerRange(self: OrderedMapLowering) -> bool {
+    return self.btreeNodeWalkLowered
+      && self.comparatorHoisted
+      && self.rangeCursorLowered
+      && self.rangeAllCursorLowered
+      && self.lowerBoundNodeWalkLowered
+      && self.upperBoundNodeWalkLowered
+      && self.orderedSetCursorProjectionLowered
+      && self.repeatedEntryAtScanRejected
+      && self.stableOrderProofRequired
+      && self.nodeCapacityTracked
+  }
+
+  pub fn canLowerLookup(self: OrderedMapLowering) -> bool {
+    return self.btreeNodeWalkLowered && self.comparatorHoisted
+  }
+}

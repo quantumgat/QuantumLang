@@ -1,0 +1,21 @@
+pub struct CsrfChecked {
+  tokenId: string,
+  valid: bool,
+}
+
+impl CsrfChecked {
+  pub fn init(tokenId: string, valid: bool) -> CsrfChecked {
+    return CsrfChecked {
+      tokenId: tokenId,
+      valid: valid,
+    }
+  }
+
+  pub fn tokenId(self: CsrfChecked) -> string {
+    return self.tokenId
+  }
+
+  pub fn valid(self: CsrfChecked) -> bool {
+    return self.valid
+  }
+}

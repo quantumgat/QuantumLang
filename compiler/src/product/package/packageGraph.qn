@@ -1,0 +1,83 @@
+pub struct PackageGraphNode {
+  name: string,
+  version: string,
+  source: string,
+  registry: string,
+  signingKey: string,
+  registryTrusted: bool,
+  signingKeyTrusted: bool,
+}
+
+impl PackageGraphNode {
+  pub fn registry(name: string, version: string, registry: string, signingKey: string) -> PackageGraphNode {
+    return PackageGraphNode {
+      name: name,
+      version: version,
+      source: "registry",
+      registry: registry,
+      signingKey: signingKey,
+      registryTrusted: true,
+      signingKeyTrusted: true,
+    }
+  }
+
+  pub fn trusted(self: PackageGraphNode) -> bool {
+    return self.source != "registry" || (self.registryTrusted && self.signingKeyTrusted)
+  }
+}
+
+pub struct PackageGraphEdge {
+  from: string,
+  to: string,
+  requirement: string,
+  resolvedVersion: string,
+  requirementSatisfied: bool,
+  registryCandidateCount: usize,
+  registryYankedSkipped: usize,
+  source: string,
+}
+
+impl PackageGraphEdge {
+  pub fn resolved(from: string, to: string, requirement: string, resolvedVersion: string, source: string) -> PackageGraphEdge {
+    return PackageGraphEdge {
+      from: from,
+      to: to,
+      requirement: requirement,
+      resolvedVersion: resolvedVersion,
+      requirementSatisfied: true,
+      registryCandidateCount: 0,
+      registryYankedSkipped: 0,
+      source: source,
+    }
+  }
+
+  pub fn reproducible(self: PackageGraphEdge) -> bool {
+    return self.requirementSatisfied && self.resolvedVersion != ""
+  }
+}
+
+pub struct PackageGraph {
+  rootPackage: string,
+  nodeCount: usize,
+  edgeCount: usize,
+  acyclic: bool,
+  lockfileRequired: bool,
+  supplyChainChecked: bool,
+}
+
+impl PackageGraph {
+  pub fn empty(rootPackage: string) -> PackageGraph {
+    return PackageGraph {
+      rootPackage: rootPackage,
+      nodeCount: 1,
+      edgeCount: 0,
+      acyclic: true,
+      lockfileRequired: true,
+      supplyChainChecked: true,
+    }
+  }
+
+  pub fn reproducible(self: PackageGraph) -> bool {
+    return self.acyclic && self.lockfileRequired && self.supplyChainChecked
+  }
+}

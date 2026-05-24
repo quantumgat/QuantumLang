@@ -1,0 +1,12 @@
+pub struct EmbeddedIoRuntime {
+  target: string,
+  hostFsUnavailable: bool,
+  deviceStreams: bool,
+  boundedBuffers: bool,
+}
+
+impl EmbeddedIoRuntime {
+  pub fn accepted(self: EmbeddedIoRuntime) -> bool {
+    return self.target != "" && self.boundedBuffers
+  }
+}

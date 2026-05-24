@@ -1,0 +1,19 @@
+pub struct ServiceClassKindPolicyFact {
+  ownerId: u64,
+  lifecycleBound: bool,
+  dependencyGraphBound: bool,
+  asyncMethodPolicyBound: bool,
+  shutdownBeforeDropBound: bool,
+  healthCheckBound: bool,
+}
+
+impl ServiceClassKindPolicyFact {
+  pub fn complete(self: ServiceClassKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.lifecycleBound
+      && self.dependencyGraphBound
+      && self.asyncMethodPolicyBound
+      && self.shutdownBeforeDropBound
+      && self.healthCheckBound
+  }
+}

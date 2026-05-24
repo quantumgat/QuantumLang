@@ -1,0 +1,15 @@
+pub struct NativeNetTlsEmit {
+  providerCallLowered: bool,
+  verificationBranchRequired: bool,
+  zeroCopyPlaintextEligible: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeNetTlsEmit {
+  pub fn accepted(self: NativeNetTlsEmit) -> bool {
+    return self.providerCallLowered
+      && self.verificationBranchRequired
+      && self.zeroCopyPlaintextEligible
+      && self.noGeneratedFallback
+  }
+}

@@ -1,0 +1,33 @@
+pub struct BinaryAcceleratedCodecLowering {
+  viewDecodeZeroCopy: bool,
+  encodeIntoSinglePass: bool,
+  encodedSizePrepassElidedWhenStatic: bool,
+  pageArenaStackOrPageLocal: bool,
+  projectionLoadsOnlyNeededFields: bool,
+  predicateUsesEncodedBytes: bool,
+  columnBlocksUseSimdWhenAvailable: bool,
+  stableKeysMemcmpSortable: bool,
+  rowDeltaWritesChangedFieldsOnly: bool,
+  validationTokenErasesRepeatedChecks: bool,
+  builderErasedAfterBuild: bool,
+  compiledCodecReused: bool,
+  limitsChecksHoisted: bool,
+}
+
+impl BinaryAcceleratedCodecLowering {
+  pub fn hotPath(self: BinaryAcceleratedCodecLowering) -> bool {
+    return self.viewDecodeZeroCopy
+      && self.encodeIntoSinglePass
+      && self.encodedSizePrepassElidedWhenStatic
+      && self.pageArenaStackOrPageLocal
+      && self.projectionLoadsOnlyNeededFields
+      && self.predicateUsesEncodedBytes
+      && self.columnBlocksUseSimdWhenAvailable
+      && self.stableKeysMemcmpSortable
+      && self.rowDeltaWritesChangedFieldsOnly
+      && self.validationTokenErasesRepeatedChecks
+      && self.builderErasedAfterBuild
+      && self.compiledCodecReused
+      && self.limitsChecksHoisted
+  }
+}

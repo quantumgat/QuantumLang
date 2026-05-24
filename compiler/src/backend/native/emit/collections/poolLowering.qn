@@ -1,0 +1,42 @@
+pub struct PoolLowering {
+  freeListBacked: bool,
+  typedHandleBacked: bool,
+  generationTracked: bool,
+  insertReusesFreeSlot: bool,
+  insertAppendsWhenNoFreeSlot: bool,
+  getLoweredToIndexGenerationCheck: bool,
+  removeLinksFreeList: bool,
+  iteratorLoweredToOccupiedSlotCursor: bool,
+  staleHandleRejectedOnHotPath: bool,
+  zeroCopyHandleReturn: bool,
+}
+
+pub fn poolLowering() -> PoolLowering {
+  return PoolLowering {
+    freeListBacked: true,
+    typedHandleBacked: true,
+    generationTracked: true,
+    insertReusesFreeSlot: true,
+    insertAppendsWhenNoFreeSlot: true,
+    getLoweredToIndexGenerationCheck: true,
+    removeLinksFreeList: true,
+    iteratorLoweredToOccupiedSlotCursor: true,
+    staleHandleRejectedOnHotPath: true,
+    zeroCopyHandleReturn: true,
+  }
+}
+
+impl PoolLowering {
+  pub fn hotPathReady(self: PoolLowering) -> bool {
+    return self.freeListBacked
+      && self.typedHandleBacked
+      && self.generationTracked
+      && self.insertReusesFreeSlot
+      && self.insertAppendsWhenNoFreeSlot
+      && self.getLoweredToIndexGenerationCheck
+      && self.removeLinksFreeList
+      && self.iteratorLoweredToOccupiedSlotCursor
+      && self.staleHandleRejectedOnHotPath
+      && self.zeroCopyHandleReturn
+  }
+}

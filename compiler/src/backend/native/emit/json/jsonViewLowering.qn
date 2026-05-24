@@ -1,0 +1,27 @@
+pub struct JsonViewLowering {
+  typeName: string,
+  borrowedViewLowered: bool,
+  sourceLifetimeCarried: bool,
+  stringSliceBorrowed: bool,
+  arraySliceBorrowed: bool,
+  escapedStringCopyFallback: bool,
+  toOwnedExplicitCopy: bool,
+  boundsChecked: bool,
+  noDanglingPointer: bool,
+  noImplicitAllocation: bool,
+}
+
+impl JsonViewLowering {
+  pub fn accepted(self: JsonViewLowering) -> bool {
+    return self.typeName != ""
+      && self.borrowedViewLowered
+      && self.sourceLifetimeCarried
+      && self.stringSliceBorrowed
+      && self.arraySliceBorrowed
+      && self.escapedStringCopyFallback
+      && self.toOwnedExplicitCopy
+      && self.boundsChecked
+      && self.noDanglingPointer
+      && self.noImplicitAllocation
+  }
+}

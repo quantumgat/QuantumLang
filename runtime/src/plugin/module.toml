@@ -1,0 +1,12 @@
+[module]
+name = "plugin"
+visibility = "internal"
+root = "mod.qn"
+owner = "runtime"
+role = "plugin-runtime-kernel-abi"
+
+[tests]
+required = [
+  "qtlc_qtlang_plugin_runtime_kernel_abi_gap_closure",
+  "qtlc_qtlang_plugin_runtime_dynamic_kernel_load_gap_closure"
+]

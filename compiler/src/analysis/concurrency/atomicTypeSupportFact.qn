@@ -1,0 +1,27 @@
+pub struct AtomicTypeSupportFact {
+  payload: AtomicPayloadFact,
+  targetCapability: TargetCapabilityKind,
+  targetSupported: bool,
+  lockFree: bool,
+}
+
+impl AtomicTypeSupportFact {
+  pub fn init(payload: AtomicPayloadFact, targetCapability: TargetCapabilityKind, targetSupported: bool, lockFree: bool) -> AtomicTypeSupportFact {
+    return AtomicTypeSupportFact {
+      payload: payload,
+      targetCapability: targetCapability,
+      targetSupported: targetSupported,
+      lockFree: lockFree,
+    }
+  }
+
+  pub fn usable(self: AtomicTypeSupportFact) -> bool {
+    if self.targetCapability != TargetCapabilityKind.Atomic {
+      return false
+    }
+    if self.payload.lockFreeRequired && self.lockFree == false {
+      return false
+    }
+    return self.targetSupported
+  }
+}

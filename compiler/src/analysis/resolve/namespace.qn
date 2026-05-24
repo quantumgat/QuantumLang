@@ -1,0 +1,27 @@
+pub enum NamespaceKind {
+  PackageNamespace
+  ModuleNamespace
+  TypeNamespace
+  ValueNamespace
+}
+
+pub struct Namespace {
+  id: u64,
+  parent: u64,
+  kind: NamespaceKind,
+  symbolCount: usize,
+}
+
+pub fn namespace(id: u64, parent: u64, kind: NamespaceKind, symbolCount: usize) -> Namespace {
+  return Namespace { id: id, parent: parent, kind: kind, symbolCount: symbolCount }
+}
+
+impl Namespace {
+  pub fn namespaceId(self: Namespace) -> u64 {
+    return self.id
+  }
+
+  pub fn isRoot(self: Namespace) -> bool {
+    return self.parent == 0
+  }
+}

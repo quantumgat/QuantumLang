@@ -1,0 +1,20 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct LifecycleHooks {
+  onStartCount: usize
+  onStopCount: usize
+}
+pub struct AppLifecyclePlan {
+  stateCount: usize
+  dependencyCount: usize
+  startupStepCount: usize
+  shutdownStepCount: usize
+  dropStepCount: usize
+  healthCheckCount: usize
+  reconnectCount: usize
+  warmupCount: usize
+  scopedStateCount: usize
+  testOverrideCount: usize
+  projectionPendingCount: usize
+  dependencyOrderComplete: bool
+  lifecyclePlanComplete: bool
+}

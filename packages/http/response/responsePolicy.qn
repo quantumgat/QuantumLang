@@ -1,0 +1,58 @@
+pub enum ResponsePolicyShape {
+  Raw,
+  Envelope,
+}
+
+pub struct ResponsePolicy {
+  shape: ResponsePolicyShape,
+  includeTraceId: bool,
+  includeDurationMs: bool,
+  rawHttpResponseBypasses: bool,
+}
+
+impl ResponsePolicy {
+  pub fn init(
+    shape: ResponsePolicyShape,
+    includeTraceId: bool,
+    includeDurationMs: bool,
+    rawHttpResponseBypasses: bool,
+  ) -> ResponsePolicy {
+    return ResponsePolicy {
+      shape: shape,
+      includeTraceId: includeTraceId,
+      includeDurationMs: includeDurationMs,
+      rawHttpResponseBypasses: rawHttpResponseBypasses,
+    }
+  }
+
+  pub fn envelope() -> ResponsePolicy {
+    return ResponsePolicy.init(ResponsePolicyShape.Envelope, true, true, true)
+  }
+
+  pub fn raw() -> ResponsePolicy {
+    return ResponsePolicy.init(ResponsePolicyShape.Raw, false, false, true)
+  }
+
+  pub fn default() -> ResponsePolicy {
+    return ResponsePolicy.envelope()
+  }
+
+  pub fn name(self: ResponsePolicy) -> string {
+    match self.shape {
+      ResponsePolicyShape.Raw => return "raw"
+      ResponsePolicyShape.Envelope => return "envelope"
+    }
+  }
+
+  pub fn wrapsTypedReturns(self: ResponsePolicy) -> bool {
+    return self.shape == ResponsePolicyShape.Envelope
+  }
+
+  pub fn rawBypasses(self: ResponsePolicy) -> bool {
+    return self.rawHttpResponseBypasses
+  }
+
+  pub fn complete(self: ResponsePolicy) -> bool {
+    return self.rawHttpResponseBypasses
+  }
+}

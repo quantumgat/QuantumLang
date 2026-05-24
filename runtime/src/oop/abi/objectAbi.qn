@@ -1,0 +1,15 @@
+pub struct ObjectAbi {
+  stableHeader: bool,
+  vtablePointerOffset: usize,
+  interfaceTableOffset: usize,
+}
+
+pub fn objectAbi() -> ObjectAbi {
+  return ObjectAbi { stableHeader: true, vtablePointerOffset: 0, interfaceTableOffset: 8 }
+}
+
+impl ObjectAbi {
+  pub fn isLayoutStable(self: ObjectAbi) -> bool {
+    return self.stableHeader && self.interfaceTableOffset > self.vtablePointerOffset
+  }
+}

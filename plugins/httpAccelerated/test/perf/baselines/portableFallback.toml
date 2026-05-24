@@ -1,0 +1,34 @@
+[baseline]
+name = "http-portable-fallback"
+ownedBy = "packages/http"
+comparedBy = "qtlc-http-accelerated-measured-v1"
+serialSafe = true
+allCoreDisabled = true
+
+[[case]]
+accelerated = "http-accelerated-parser-headers-measured"
+fallback = "packages-http-parser-portable"
+
+[[case]]
+accelerated = "http-accelerated-route-trie-measured"
+fallback = "packages-http-route-table-portable"
+
+[[case]]
+accelerated = "http-accelerated-extractor-chain-measured"
+fallback = "packages-http-extractor-chain-portable"
+
+[[case]]
+accelerated = "http-accelerated-handler-thunk-measured"
+fallback = "packages-http-handler-thunk-portable"
+
+[[case]]
+accelerated = "http-accelerated-response-writer-measured"
+fallback = "packages-http-response-writer-portable"
+
+[[case]]
+accelerated = "http-accelerated-sendfile-path-measured"
+fallback = "packages-http-body-stream-portable"
+
+[[case]]
+accelerated = "http-accelerated-backpressure-queue-measured"
+fallback = "packages-http-backpressure-portable"

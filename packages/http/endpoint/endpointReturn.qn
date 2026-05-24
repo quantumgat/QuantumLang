@@ -1,0 +1,55 @@
+import response::{HttpStatus}
+
+pub struct EndpointReturn {
+  typeName: string,
+  status: HttpStatus,
+  streaming: bool,
+  contentType: string,
+}
+
+impl EndpointReturn {
+  pub fn init(typeName: string, status: HttpStatus, streaming: bool, contentType: string) -> EndpointReturn {
+    return EndpointReturn {
+      typeName: typeName,
+      status: status,
+      streaming: streaming,
+      contentType: contentType,
+    }
+  }
+
+  pub fn json(typeName: string) -> EndpointReturn {
+    return EndpointReturn.init(typeName, HttpStatus.ok(), false, "application/json")
+  }
+
+  pub fn created(typeName: string) -> EndpointReturn {
+    return EndpointReturn.init(typeName, HttpStatus.created(), false, "application/json")
+  }
+
+  pub fn stream(typeName: string, contentType: string) -> EndpointReturn {
+    return EndpointReturn.init(typeName, HttpStatus.ok(), true, contentType)
+  }
+
+  pub fn rawResponse() -> EndpointReturn {
+    return EndpointReturn.init("HttpResponse", HttpStatus.ok(), false, "raw")
+  }
+
+  pub fn typeName(self: EndpointReturn) -> string {
+    return self.typeName
+  }
+
+  pub fn status(self: EndpointReturn) -> HttpStatus {
+    return self.status
+  }
+
+  pub fn streaming(self: EndpointReturn) -> bool {
+    return self.streaming
+  }
+
+  pub fn contentType(self: EndpointReturn) -> string {
+    return self.contentType
+  }
+
+  pub fn rawResponse(self: EndpointReturn) -> bool {
+    return self.typeName == "HttpResponse" && self.contentType == "raw"
+  }
+}

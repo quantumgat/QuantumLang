@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeDirectIoRequest {
+  handleId: u64
+  bytes: usize
+  aligned: bool
+  pinned: bool
+  cleanupRegistered: bool
+}

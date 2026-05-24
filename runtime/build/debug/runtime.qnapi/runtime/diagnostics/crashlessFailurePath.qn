@@ -1,0 +1,21 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum CrashlessFailureKind {
+  RecoverableResult,
+  CapturedPanic,
+  OutOfMemory,
+  FatalBoundary,
+  EmergencyReport,
+}
+pub struct CrashlessFailurePath {
+  kind: CrashlessFailureKind
+  policy: SafeFailurePolicy
+  incident: RuntimeIncident
+  reportBuffer: EmergencyReportBuffer
+  fatalBoundary: FatalRecoverableBoundary
+  logEmergency: RuntimeLogEmergencyPath
+  returnsResultWhenRecoverable: bool
+  capturesPanic: bool
+  disablesCoredump: bool
+  emitsIncidentBeforeShutdown: bool
+  noProcessAbortForRecoverable: bool
+}

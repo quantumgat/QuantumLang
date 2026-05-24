@@ -1,0 +1,36 @@
+pub enum HirForIteratorAlgorithmKind {
+  FusedMap
+  FusedFilter
+  FusedFilterMap
+  PreSizedCollect
+  DirectCount
+  DirectSum
+  DirectAnyAll
+  EarlyExitFind
+  FusedZipEnumerate
+  FusedChainTakeSkipUnique
+}
+
+pub struct HirForIteratorAlgorithmHandoff {
+  sourceNode: u64,
+  kind: HirForIteratorAlgorithmKind,
+  sourceIterable: u64,
+  callbackNode: u64,
+  terminalNode: u64,
+  analysis: ForIteratorAlgorithmFact,
+  pipelineFused: bool,
+  callbackInlineReady: bool,
+  mirReady: bool,
+}
+
+impl HirForIteratorAlgorithmHandoff {
+  pub fn complete(self: HirForIteratorAlgorithmHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.sourceIterable > 0
+      && self.terminalNode > 0
+      && self.analysis.complete()
+      && self.pipelineFused
+      && self.callbackInlineReady
+      && self.mirReady
+  }
+}

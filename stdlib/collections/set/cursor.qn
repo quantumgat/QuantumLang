@@ -1,0 +1,45 @@
+pub struct SetFastCursor<T> {
+  set: Set<T>,
+  index: usize,
+  limit: usize,
+}
+
+impl<T> SetFastCursor<T> {
+  pub fn init(set: Set<T>) -> SetFastCursor<T> {
+    let first = SetFastCursor<T>.advanceToFull(set, 0)
+    return SetFastCursor<T> {
+      set: set,
+      index: first,
+      limit: set.table.directCursorLimit(),
+    }
+  }
+
+  pub fn advanceToFull(set: Set<T>, start: usize) -> usize {
+    let limit = set.table.directCursorLimit()
+    let mut index = start
+    while index < limit {
+      if set.table.directIsFullAt(index) {
+        return index
+      }
+      index = index + 1
+    }
+    return limit
+  }
+
+  pub fn hasNext(self: SetFastCursor<T>) -> bool {
+    return self.index < self.limit
+  }
+
+  pub fn value(self: SetFastCursor<T>) -> T {
+    return self.set.table.directValueAt(self.index)
+  }
+
+  pub fn next(self: SetFastCursor<T>) -> SetFastCursor<T> {
+    let nextIndex = SetFastCursor<T>.advanceToFull(self.set, self.index + 1)
+    return SetFastCursor<T> {
+      set: self.set,
+      index: nextIndex,
+      limit: self.limit,
+    }
+  }
+}

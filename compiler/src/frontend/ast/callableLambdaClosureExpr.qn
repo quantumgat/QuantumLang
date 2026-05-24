@@ -1,0 +1,61 @@
+pub enum AstCallableLambdaClosureKind {
+  ShortLambdaExpr
+  TypedLambdaExpr
+  BlockClosureExpr
+  NestedClosureExpr
+  AsyncClosureExpr
+  MoveClosureExpr
+  MethodReferenceExpr
+  CallableClassCallExpr
+}
+
+pub struct AstCallableCapture {
+  name: string,
+  typeId: u64,
+  byValue: bool,
+  byReference: bool,
+  mutable: bool,
+  moved: bool,
+  shadowDepth: usize,
+}
+
+pub struct AstCallableLambdaClosureExpr {
+  node: AstNode,
+  kind: AstCallableLambdaClosureKind,
+  parameterCount: usize,
+  bodyId: u64,
+  captureCount: usize,
+  returnTypeId: u64,
+  asyncBody: bool,
+  moveCapture: bool,
+  hotPathCandidate: bool,
+  sourceMapBound: bool,
+}
+
+impl AstCallableCapture {
+  pub fn valid(self: AstCallableCapture) -> bool {
+    return self.name != ""
+      && self.typeId > 0
+      && (self.byValue || self.byReference || self.moved)
+      && (!self.moved || self.byValue)
+  }
+}
+
+impl AstCallableLambdaClosureExpr {
+  pub fn complete(self: AstCallableLambdaClosureExpr) -> bool {
+    return self.node.nodeId() > 0
+      && self.bodyId > 0
+      && self.sourceMapBound
+  }
+
+  pub fn capturesEnvironment(self: AstCallableLambdaClosureExpr) -> bool {
+    return self.captureCount > 0
+      || self.moveCapture
+      || self.kind == AstCallableLambdaClosureKind.NestedClosureExpr
+  }
+
+  pub fn hotCandidate(self: AstCallableLambdaClosureExpr) -> bool {
+    return self.complete()
+      && self.hotPathCandidate
+  }
+}

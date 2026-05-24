@@ -1,0 +1,14 @@
+[module]
+name = "package"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "owned-module-boundary"
+
+[tests]
+required = [
+  "qtlc_qtlang_compiler_native_build_probe",
+  "qtlc_qtlang_package_cache_foundation",
+  "qtlc_qtlang_package_selfhosted_mirror_gap_closure",
+  "qtlc_qtlang_plugin_package_graph_load_gap_closure"
+]

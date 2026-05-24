@@ -1,0 +1,6 @@
+[module]
+name = "foreignClass"
+visibility = "internal"
+owner = "runtime"
+role = "oop-class-interface-polymorphism-class-kind"
+root = "mod.qn"

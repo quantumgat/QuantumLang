@@ -1,0 +1,39 @@
+pub enum HeaderPolicyKind {
+  Set,
+  Remove,
+}
+
+pub struct HeaderPolicy {
+  kind: HeaderPolicyKind,
+  name: string,
+  value: string,
+  safe: bool,
+}
+
+pub struct Header {
+}
+
+impl Header {
+  pub fn set(name: string, value: string) -> HeaderPolicy {
+    return HeaderPolicy.init(HeaderPolicyKind.Set, name, value)
+  }
+
+  pub fn remove(name: string) -> HeaderPolicy {
+    return HeaderPolicy.init(HeaderPolicyKind.Remove, name, "")
+  }
+}
+
+impl HeaderPolicy {
+  pub fn init(kind: HeaderPolicyKind, name: string, value: string) -> HeaderPolicy {
+    return HeaderPolicy {
+      kind: kind,
+      name: name,
+      value: value,
+      safe: name != "server" && name != "x-powered-by",
+    }
+  }
+
+  pub fn allowed(self: HeaderPolicy) -> bool {
+    return self.safe
+  }
+}

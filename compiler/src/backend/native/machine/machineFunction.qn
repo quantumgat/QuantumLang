@@ -1,0 +1,28 @@
+pub struct MachineFunction {
+  symbol: string,
+  blockCount: usize,
+  frameSize: usize,
+  leaf: bool,
+}
+
+pub fn machineFunction(symbol: string, blockCount: usize, frameSize: usize, leaf: bool) -> MachineFunction {
+  return MachineFunction { symbol: symbol, blockCount: blockCount, frameSize: frameSize, leaf: leaf }
+}
+
+impl MachineFunction {
+  pub fn symbolName(self: MachineFunction) -> string {
+    return self.symbol
+  }
+
+  pub fn blocks(self: MachineFunction) -> usize {
+    return self.blockCount
+  }
+
+  pub fn frameBytes(self: MachineFunction) -> usize {
+    return self.frameSize
+  }
+
+  pub fn isLeaf(self: MachineFunction) -> bool {
+    return self.leaf
+  }
+}

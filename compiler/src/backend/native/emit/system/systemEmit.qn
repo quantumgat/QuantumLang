@@ -1,0 +1,79 @@
+pub enum NativeSystemEmitKind {
+  FileRead
+  FileWrite
+  FileOpen
+  DirectoryList
+  FileMetadata
+  FileCopy
+  FileMove
+  FileRemove
+  FilePermissions
+  FileSymlink
+  TempFileCreate
+  FileStream
+  FileLock
+  PathLiteral
+  PathNormalize
+  PathJoin
+  PathSafeJoin
+  PathComponents
+  PathRelative
+  PathStyleConvert
+  ArgsRead
+  EnvLookup
+  EnvSet
+  EnvRemove
+  CurrentDirectory
+  SetCurrentDirectory
+  OsInfoRead
+  UserDirsRead
+  ProcessIdRead
+  ProcessSpawn
+  ProcessOutput
+  ProcessStatus
+  ProcessWait
+  ProcessTryWait
+  ProcessKill
+  ProcessSignal
+  ProcessGroup
+  ProcessAsync
+  TerminalSize
+  TerminalTty
+  TerminalColor
+  TerminalCapability
+  TerminalMode
+  TerminalCursor
+  TerminalScreen
+  SignalInstall
+  SignalRaise
+  SignalWait
+  SignalTryWait
+  SignalWaitTimeout
+  SignalSubscription
+  SignalShutdown
+  SystemInfo
+  CapabilityGate
+  UnsupportedDiagnostic
+  RawHandleAccess
+}
+
+pub struct NativeSystemEmit {
+  kind: NativeSystemEmitKind,
+  directRuntimeAbi: bool,
+  targetGateBeforeArtifact: bool,
+  resultCarrierPreserved: bool,
+  literalFastPath: bool,
+  noGeneratedFallback: bool,
+  noCoredumpIncidentPath: bool,
+}
+
+impl NativeSystemEmit {
+  pub fn accepted(self: NativeSystemEmit) -> bool {
+    return self.directRuntimeAbi
+      && self.targetGateBeforeArtifact
+      && self.resultCarrierPreserved
+      && self.literalFastPath
+      && self.noGeneratedFallback
+      && self.noCoredumpIncidentPath
+  }
+}

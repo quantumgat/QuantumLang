@@ -1,0 +1,43 @@
+pub enum RuntimeAtomicOrdering {
+  Relaxed,
+  Acquire,
+  Release,
+  AcqRel,
+  SeqCst,
+}
+
+pub enum RuntimeAtomicOpKind {
+  Load,
+  Store,
+  CompareExchange,
+  Fence,
+  Wait,
+  WakeOne,
+  WakeAll,
+}
+
+pub struct RuntimeAtomicOp {
+  kind: RuntimeAtomicOpKind,
+  ordering: RuntimeAtomicOrdering,
+  lockFree: bool,
+  targetSupported: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl RuntimeAtomicOp {
+  pub fn init(kind: RuntimeAtomicOpKind, ordering: RuntimeAtomicOrdering) -> RuntimeAtomicOp {
+    return RuntimeAtomicOp {
+      kind: kind,
+      ordering: ordering,
+      lockFree: true,
+      targetSupported: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: RuntimeAtomicOp) -> bool {
+    return self.targetSupported
+      && self.noCoredumpDiagnostic
+      && (self.lockFree || self.kind == RuntimeAtomicOpKind.Wait)
+  }
+}

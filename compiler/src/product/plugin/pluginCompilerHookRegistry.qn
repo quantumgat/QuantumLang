@@ -1,0 +1,42 @@
+pub struct PluginCompilerHookRegistry {
+  passHookCount: usize,
+  intrinsicHookCount: usize,
+  factHookCount: usize,
+  loweringHookCount: usize,
+  nativeEmitHookCount: usize,
+  sourceMapped: bool,
+  deterministicPriority: bool,
+  fallbackVerified: bool,
+  domainNeutral: bool,
+}
+
+impl PluginCompilerHookRegistry {
+  pub fn fromManifest(manifest: PluginManifest) -> PluginCompilerHookRegistry {
+    return PluginCompilerHookRegistry {
+      passHookCount: manifest.compiler.passCount,
+      intrinsicHookCount: manifest.exports.intrinsicCount,
+      factHookCount: manifest.compiler.factCount,
+      loweringHookCount: manifest.compiler.loweringStageCount,
+      nativeEmitHookCount: manifest.compiler.loweringStageCount,
+      sourceMapped: manifest.compiler.sourceMaps == PluginPolicyRequirement.Required,
+      deterministicPriority: true,
+      fallbackVerified: manifest.compiler.fallback == PluginPolicyRequirement.Required,
+      domainNeutral: true,
+    }
+  }
+
+  pub fn accepted(self: PluginCompilerHookRegistry) -> bool {
+    return self.sourceMapped
+      && self.deterministicPriority
+      && self.fallbackVerified
+      && self.domainNeutral
+  }
+
+  pub fn hasHooks(self: PluginCompilerHookRegistry) -> bool {
+    return self.passHookCount > 0
+      || self.intrinsicHookCount > 0
+      || self.factHookCount > 0
+      || self.loweringHookCount > 0
+      || self.nativeEmitHookCount > 0
+  }
+}

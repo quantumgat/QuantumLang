@@ -1,0 +1,36 @@
+pub struct ReplayBundle {
+  artifact: ReplayArtifact,
+  reportSnapshot: RuntimeReportSnapshot,
+  incidentId: DeterministicIncidentId,
+  command: string,
+  deterministicOrdering: bool,
+  redactedPayload: bool,
+  canReplayToTest: bool,
+  noCompilerDependency: bool,
+}
+
+impl ReplayBundle {
+  pub fn create(artifact: ReplayArtifact, reportSnapshot: RuntimeReportSnapshot, command: string) -> ReplayBundle {
+    return ReplayBundle {
+      artifact: artifact,
+      reportSnapshot: reportSnapshot,
+      incidentId: reportSnapshot.incidentId,
+      command: command,
+      deterministicOrdering: true,
+      redactedPayload: true,
+      canReplayToTest: true,
+      noCompilerDependency: true,
+    }
+  }
+
+  pub fn safe(self: ReplayBundle) -> bool {
+    return self.artifact.canReplayToTest()
+      && self.reportSnapshot.publishable()
+      && self.incidentId.safe()
+      && self.command != ""
+      && self.deterministicOrdering
+      && self.redactedPayload
+      && self.canReplayToTest
+      && self.noCompilerDependency
+  }
+}

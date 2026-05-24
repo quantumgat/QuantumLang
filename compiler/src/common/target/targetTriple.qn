@@ -1,0 +1,20 @@
+pub struct TargetTriple {
+  arch: string,
+  vendor: string,
+  os: string,
+  abi: string,
+}
+
+pub fn targetTriple(arch: string, vendor: string, os: string, abi: string) -> TargetTriple {
+  return TargetTriple { arch: arch, vendor: vendor, os: os, abi: abi }
+}
+
+impl TargetTriple {
+  pub fn architecture(self: TargetTriple) -> string {
+    return self.arch
+  }
+
+  pub fn operatingSystem(self: TargetTriple) -> string {
+    return self.os
+  }
+}

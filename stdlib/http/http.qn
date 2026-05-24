@@ -1,0 +1,12 @@
+pub use context.HttpCtx
+
+pub struct HttpRequest {
+  url: string,
+}
+
+pub struct HttpResponse {
+  status: u16,
+}
+
+pub fn get(url: string) -> HttpRequest
+pub fn status(response: HttpResponse) -> u16

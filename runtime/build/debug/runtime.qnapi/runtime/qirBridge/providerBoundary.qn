@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ProviderBoundary {
+  pub providerDispatchBoundary: bool
+  pub shotExecutionBoundary: bool
+  pub hotShotLoopDispatch: bool
+}
+pub extern "qnpkg" {
+  pub fn providerBoundary() -> ProviderBoundary
+}

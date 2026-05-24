@@ -1,0 +1,6 @@
+[module]
+name = "jsonProof"
+visibility = "test"
+root = "mod.qn"
+owner = "qtlc"
+role = "json-conformance-negative-proof-evidence"

@@ -1,0 +1,30 @@
+pub enum RuntimeServiceState {
+  Starting
+  Ready
+  Degraded
+  Stopping
+  Stopped
+  Failed
+}
+
+pub struct RuntimeServiceLifecycle {
+  serviceId: u64,
+  state: RuntimeServiceState,
+  actorLinked: bool,
+  cleanupRegistered: bool,
+}
+
+impl RuntimeServiceLifecycle {
+  pub fn init(serviceId: u64, state: RuntimeServiceState, actorLinked: bool, cleanupRegistered: bool) -> RuntimeServiceLifecycle {
+    return RuntimeServiceLifecycle {
+      serviceId: serviceId,
+      state: state,
+      actorLinked: actorLinked,
+      cleanupRegistered: cleanupRegistered,
+    }
+  }
+
+  pub fn safe(self: RuntimeServiceLifecycle) -> bool {
+    return self.serviceId > 0 && self.actorLinked && self.cleanupRegistered
+  }
+}

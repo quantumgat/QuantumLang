@@ -1,0 +1,11 @@
+pub struct StdlibPublicTrait {
+  name: string,
+  objectSafe: bool,
+  publicSurface: bool,
+}
+
+impl StdlibPublicTrait {
+  pub fn accepted(self: StdlibPublicTrait) -> bool {
+    return self.name != "" && self.publicSurface
+  }
+}

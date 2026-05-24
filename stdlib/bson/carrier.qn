@@ -1,0 +1,129 @@
+pub enum BsonCarrierKind {
+  Null
+  Bool
+  Int32
+  Int64
+  Double
+  String
+  Binary
+  Decimal128
+  Array
+  Document
+}
+
+pub enum BsonCarrierPolicyKind {
+  MongoCanonical
+  ExactTypeTagged
+}
+
+pub struct BsonCarrierPolicy {
+  kind: BsonCarrierPolicyKind,
+  wideInteger: BsonCarrierKind,
+  hugeFloat: BsonCarrierKind,
+  bigNumber: BsonCarrierKind,
+  complexNumber: BsonCarrierKind,
+  bytes: BsonCarrierKind,
+  charValue: BsonCarrierKind,
+  nestedStruct: BsonCarrierKind,
+  stringKeyMap: BsonCarrierKind,
+  optionValue: BsonCarrierKind,
+  resultValue: BsonCarrierKind,
+  rejectLiveResources: bool,
+  rejectPrecisionLoss: bool,
+}
+
+pub struct BsonCarrier {
+  sourceType: string,
+  kind: BsonCarrierKind,
+  recoverable: bool,
+  precisionSafe: bool,
+  note: string,
+}
+
+impl BsonCarrierPolicy {
+  /**
+    Mongo-compatible carrier policy used by Bson.encode and Bson.decode.
+
+    example:
+      let policy = BsonCarrierPolicy.mongo()
+      let carrier = policy.carrierFor("u256")
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn mongo() -> BsonCarrierPolicy {
+    return BsonCarrierPolicy {
+      kind: BsonCarrierPolicyKind.MongoCanonical,
+      wideInteger: BsonCarrierKind.String,
+      hugeFloat: BsonCarrierKind.String,
+      bigNumber: BsonCarrierKind.String,
+      complexNumber: BsonCarrierKind.Document,
+      bytes: BsonCarrierKind.Binary,
+      charValue: BsonCarrierKind.String,
+      nestedStruct: BsonCarrierKind.Document,
+      stringKeyMap: BsonCarrierKind.Document,
+      optionValue: BsonCarrierKind.Null,
+      resultValue: BsonCarrierKind.Document,
+      rejectLiveResources: true,
+      rejectPrecisionLoss: true,
+    }
+  }
+
+  pub fn exact() -> BsonCarrierPolicy {
+    return BsonCarrierPolicy {
+      kind: BsonCarrierPolicyKind.ExactTypeTagged,
+      wideInteger: BsonCarrierKind.Document,
+      hugeFloat: BsonCarrierKind.Document,
+      bigNumber: BsonCarrierKind.Document,
+      complexNumber: BsonCarrierKind.Document,
+      bytes: BsonCarrierKind.Document,
+      charValue: BsonCarrierKind.Document,
+      nestedStruct: BsonCarrierKind.Document,
+      stringKeyMap: BsonCarrierKind.Document,
+      optionValue: BsonCarrierKind.Document,
+      resultValue: BsonCarrierKind.Document,
+      rejectLiveResources: true,
+      rejectPrecisionLoss: true,
+    }
+  }
+
+  pub fn carrierFor(self: BsonCarrierPolicy, sourceType: string) -> BsonCarrier {
+    return bsonCarrierFor(self, sourceType)
+  }
+
+  pub fn isMongo(self: BsonCarrierPolicy) -> bool {
+    return self.kind == BsonCarrierPolicyKind.MongoCanonical
+  }
+
+  pub fn isExact(self: BsonCarrierPolicy) -> bool {
+    return self.kind == BsonCarrierPolicyKind.ExactTypeTagged
+  }
+}
+
+impl BsonCarrier {
+  pub fn init(sourceType: string, kind: BsonCarrierKind, note: string) -> BsonCarrier {
+    return BsonCarrier {
+      sourceType: sourceType,
+      kind: kind,
+      recoverable: true,
+      precisionSafe: true,
+      note: note,
+    }
+  }
+
+  pub fn bsonKind(self: BsonCarrier) -> BsonCarrierKind {
+    return self.kind
+  }
+
+  pub fn typeName(self: BsonCarrier) -> string {
+    return self.sourceType
+  }
+
+  pub fn preservesValue(self: BsonCarrier) -> bool {
+    return self.recoverable && self.precisionSafe
+  }
+}
+
+fn bsonCarrierFor(policy: BsonCarrierPolicy, sourceType: string) -> BsonCarrier

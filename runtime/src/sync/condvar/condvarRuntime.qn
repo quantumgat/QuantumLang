@@ -1,0 +1,26 @@
+pub struct RuntimeCondvar {
+  handle: SyncHandle,
+  waiterCount: usize,
+  mutexHandle: SyncHandle,
+  lostWakePrevented: bool,
+}
+
+impl RuntimeCondvar {
+  pub fn init(
+    handle: SyncHandle,
+    waiterCount: usize,
+    mutexHandle: SyncHandle,
+    lostWakePrevented: bool,
+  ) -> RuntimeCondvar {
+    return RuntimeCondvar {
+      handle: handle,
+      waiterCount: waiterCount,
+      mutexHandle: mutexHandle,
+      lostWakePrevented: lostWakePrevented,
+    }
+  }
+
+  pub fn safe(self: RuntimeCondvar) -> bool {
+    return self.handle.raw() > 0 && self.mutexHandle.raw() > 0 && self.lostWakePrevented
+  }
+}

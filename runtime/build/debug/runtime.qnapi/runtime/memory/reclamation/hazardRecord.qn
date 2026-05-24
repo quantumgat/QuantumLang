@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct HazardRecord {
+  address: usize
+  ownerThread: u64
+  generation: u64
+  protected: bool
+}

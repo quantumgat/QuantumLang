@@ -1,0 +1,43 @@
+pub struct BsonByteCodecFixtureProof {
+  smallDocumentHex: string,
+  documentLengthBytes: string,
+  stringTag: string,
+  int32Tag: string,
+  boolTag: string,
+  terminator: string,
+  encodeFixture: bool,
+  decodeFixture: bool,
+  roundTripFixture: bool,
+}
+
+pub fn bsonUserDocumentFixtureHex() -> string {
+  return "27000000026e616d65000600000073616c616d0010616765001900000008616374697665000100"
+}
+
+impl BsonByteCodecFixtureProof {
+  pub fn required() -> BsonByteCodecFixtureProof {
+    return BsonByteCodecFixtureProof {
+      smallDocumentHex: bsonUserDocumentFixtureHex(),
+      documentLengthBytes: "27000000",
+      stringTag: "02",
+      int32Tag: "10",
+      boolTag: "08",
+      terminator: "00",
+      encodeFixture: true,
+      decodeFixture: true,
+      roundTripFixture: true,
+    }
+  }
+
+  pub fn accepted(self: BsonByteCodecFixtureProof) -> bool {
+    return self.smallDocumentHex == bsonUserDocumentFixtureHex()
+      && self.documentLengthBytes == "27000000"
+      && self.stringTag == "02"
+      && self.int32Tag == "10"
+      && self.boolTag == "08"
+      && self.terminator == "00"
+      && self.encodeFixture
+      && self.decodeFixture
+      && self.roundTripFixture
+  }
+}

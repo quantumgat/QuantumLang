@@ -1,0 +1,21 @@
+pub struct FfiPanicBoundaryFact {
+  noUnwind: bool,
+  statusMapping: bool,
+  cleanupBeforeReturn: bool,
+  diagnosticCode: string,
+}
+
+impl FfiPanicBoundaryFact {
+  pub fn init(noUnwind: bool, statusMapping: bool, cleanupBeforeReturn: bool, diagnosticCode: string) -> FfiPanicBoundaryFact {
+    return FfiPanicBoundaryFact {
+      noUnwind: noUnwind,
+      statusMapping: statusMapping,
+      cleanupBeforeReturn: cleanupBeforeReturn,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn accepted(self: FfiPanicBoundaryFact) -> bool {
+    return self.noUnwind && self.statusMapping && self.cleanupBeforeReturn && self.diagnosticCode != ""
+  }
+}

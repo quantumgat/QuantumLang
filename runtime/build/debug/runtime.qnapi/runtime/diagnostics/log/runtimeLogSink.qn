@@ -1,0 +1,20 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeLogSinkKind {
+  Console,
+  File,
+  RingBuffer,
+  Memory,
+  Json,
+  Test,
+  Incident,
+}
+pub struct RuntimeLogSink {
+  kind: RuntimeLogSinkKind
+  transport: RuntimeLogTransport
+  backpressure: RuntimeLogBackpressure
+  bounded: bool
+  backpressureAware: bool
+  redactsBeforeWrite: bool
+  panicSafe: bool
+  noCoredump: bool
+}

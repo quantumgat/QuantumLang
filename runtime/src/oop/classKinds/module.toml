@@ -1,0 +1,13 @@
+[module]
+name = "oop.classKinds"
+visibility = "internal"
+root = "mod.qn"
+owner = "runtime"
+role = "class-kind-runtime-directory-boundary"
+
+[policy]
+kindCount = 14
+genericOopEngineOwnsDispatch = true
+actorRuntimeOwnsActorClasses = true
+serviceRuntimeOwnsServiceClasses = true
+packageRuntimeOwnedThroughPluginOnly = true

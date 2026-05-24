@@ -1,0 +1,27 @@
+pub class ProviderRegistry {
+  providerCount: usize,
+  active: bool,
+
+  pub init() {
+    self.providerCount = 0
+    self.active = false
+  }
+
+  pub fn start(self: &mut ProviderRegistry) -> bool {
+    self.active = true
+    return self.active
+  }
+
+  pub fn shutdown(self: &mut ProviderRegistry) -> bool {
+    self.active = false
+    return self.active == false
+  }
+
+  pub fn drop(self: &mut ProviderRegistry) -> bool {
+    return self.shutdown()
+  }
+
+  pub fn ownsProviderBoundary(self: &ProviderRegistry) -> bool {
+    return self.active || self.providerCount == 0
+  }
+}

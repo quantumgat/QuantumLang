@@ -1,0 +1,66 @@
+pub enum ParseMode {
+  ModuleFile
+  ReplInput
+  ExpressionOnly
+}
+
+pub struct ParseState {
+  file: u32,
+  tokenCount: usize,
+  cursor: usize,
+  mode: ParseMode,
+  recovered: bool,
+}
+
+pub fn parseState(file: u32, tokenCount: usize, mode: ParseMode) -> ParseState {
+  return ParseState {
+    file: file,
+    tokenCount: tokenCount,
+    cursor: 0,
+    mode: mode,
+    recovered: false,
+  }
+}
+
+impl ParseState {
+  pub fn fileId(self: ParseState) -> u32 {
+    return self.file
+  }
+
+  pub fn position(self: ParseState) -> usize {
+    return self.cursor
+  }
+
+  pub fn atEnd(self: ParseState) -> bool {
+    return self.cursor >= self.tokenCount
+  }
+
+  pub fn hasRecovered(self: ParseState) -> bool {
+    return self.recovered
+  }
+
+  pub fn advance(self: ParseState) -> ParseState {
+    let mut next = self.cursor + 1
+    if next > self.tokenCount {
+      next = self.tokenCount
+    }
+
+    return ParseState {
+      file: self.file,
+      tokenCount: self.tokenCount,
+      cursor: next,
+      mode: self.mode,
+      recovered: self.recovered,
+    }
+  }
+
+  pub fn markRecovered(self: ParseState) -> ParseState {
+    return ParseState {
+      file: self.file,
+      tokenCount: self.tokenCount,
+      cursor: self.cursor,
+      mode: self.mode,
+      recovered: true,
+    }
+  }
+}

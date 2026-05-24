@@ -1,0 +1,19 @@
+pub struct Admin {
+  user: AuthenticatedUser,
+}
+
+impl Admin {
+  pub fn init(user: AuthenticatedUser) -> Admin {
+    return Admin {
+      user: user,
+    }
+  }
+
+  pub fn user(self: Admin) -> AuthenticatedUser {
+    return self.user
+  }
+
+  pub fn userId(self: Admin) -> string {
+    return self.user.userId()
+  }
+}

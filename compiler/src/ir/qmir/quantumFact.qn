@@ -1,0 +1,32 @@
+pub enum QuantumFactKind {
+  QubitUse
+  ResultUse
+  GateApply
+  Measurement
+  Reset
+  Release
+}
+
+pub struct QuantumFact {
+  node: u64,
+  region: u64,
+  kind: QuantumFactKind,
+}
+
+pub fn quantumFact(node: u64, region: u64, kind: QuantumFactKind) -> QuantumFact {
+  return QuantumFact { node: node, region: region, kind: kind }
+}
+
+impl QuantumFact {
+  pub fn nodeId(self: QuantumFact) -> u64 {
+    return self.node
+  }
+
+  pub fn regionId(self: QuantumFact) -> u64 {
+    return self.region
+  }
+
+  pub fn factKind(self: QuantumFact) -> QuantumFactKind {
+    return self.kind
+  }
+}

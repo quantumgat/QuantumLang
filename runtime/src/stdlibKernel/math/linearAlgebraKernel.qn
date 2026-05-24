@@ -1,0 +1,52 @@
+pub struct LinearAlgebraKernel {
+  noCoredump: bool,
+}
+
+impl LinearAlgebraKernel {
+  pub fn init() -> LinearAlgebraKernel {
+    return LinearAlgebraKernel { noCoredump: true }
+  }
+
+  pub fn dotF64(self: LinearAlgebraKernel, left: Vec<f64>, right: Vec<f64>) -> Result<f64, MathRuntimeError> {
+    if left.len != right.len {
+      return Err(MathRuntimeError.DimensionMismatch)
+    }
+    let mut index: usize = 0
+    let mut sum: f64 = 0.0
+    while index < left.len {
+      sum = sum + left[index] * right[index]
+      index = index + 1
+    }
+    return Ok(sum)
+  }
+
+  pub fn matrixCellF64(
+    self: LinearAlgebraKernel,
+    left: Vec<f64>,
+    right: Vec<f64>,
+    leftCols: usize,
+    rightCols: usize,
+    row: usize,
+    col: usize,
+  ) -> Result<f64, MathRuntimeError> {
+    if leftCols == 0 || rightCols == 0 {
+      return Err(MathRuntimeError.DimensionMismatch)
+    }
+    let mut offset: usize = 0
+    let mut sum: f64 = 0.0
+    while offset < leftCols {
+      let leftIndex = row * leftCols + offset
+      let rightIndex = offset * rightCols + col
+      if leftIndex >= left.len || rightIndex >= right.len {
+        return Err(MathRuntimeError.DimensionMismatch)
+      }
+      sum = sum + left[leftIndex] * right[rightIndex]
+      offset = offset + 1
+    }
+    return Ok(sum)
+  }
+
+  pub fn accepted(self: LinearAlgebraKernel) -> bool {
+    return self.noCoredump
+  }
+}

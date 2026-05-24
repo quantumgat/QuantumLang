@@ -1,0 +1,34 @@
+pub struct Oop001ProofDiagnostic {
+  callId: u64,
+  functionId: u64,
+  diagnosticCode: string,
+  dynamicDispatchInHotPath: bool,
+  proofException: bool,
+  emitted: bool,
+}
+
+pub fn oop001ProofDiagnostic(
+  callId: u64,
+  functionId: u64,
+  dynamicDispatchInHotPath: bool,
+  proofException: bool,
+  emitted: bool
+) -> Oop001ProofDiagnostic {
+  return Oop001ProofDiagnostic {
+    callId: callId,
+    functionId: functionId,
+    diagnosticCode: "performance[OOP001]",
+    dynamicDispatchInHotPath: dynamicDispatchInHotPath,
+    proofException: proofException,
+    emitted: emitted,
+  }
+}
+
+impl Oop001ProofDiagnostic {
+  pub fn isSatisfied(self: Oop001ProofDiagnostic) -> bool {
+    return self.callId > 0 &&
+      self.functionId > 0 &&
+      self.diagnosticCode == "performance[OOP001]" &&
+      (!self.dynamicDispatchInHotPath || self.proofException || self.emitted)
+  }
+}

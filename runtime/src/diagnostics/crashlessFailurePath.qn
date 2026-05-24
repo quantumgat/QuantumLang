@@ -1,0 +1,67 @@
+pub enum CrashlessFailureKind {
+  RecoverableResult,
+  CapturedPanic,
+  OutOfMemory,
+  FatalBoundary,
+  EmergencyReport,
+}
+
+pub struct CrashlessFailurePath {
+  kind: CrashlessFailureKind,
+  policy: SafeFailurePolicy,
+  incident: RuntimeIncident,
+  reportBuffer: EmergencyReportBuffer,
+  fatalBoundary: FatalRecoverableBoundary,
+  logEmergency: RuntimeLogEmergencyPath,
+  returnsResultWhenRecoverable: bool,
+  capturesPanic: bool,
+  disablesCoredump: bool,
+  emitsIncidentBeforeShutdown: bool,
+  noProcessAbortForRecoverable: bool,
+}
+
+impl CrashlessFailurePath {
+  pub fn recoverable(incident: RuntimeIncident, reportBuffer: EmergencyReportBuffer) -> CrashlessFailurePath {
+    return CrashlessFailurePath {
+      kind: CrashlessFailureKind.RecoverableResult,
+      policy: safeFailurePolicy(),
+      incident: incident,
+      reportBuffer: reportBuffer,
+      fatalBoundary: FatalRecoverableBoundary.recoverable(incident),
+      logEmergency: RuntimeLogEmergencyPath.incident(incident, reportBuffer.capacityBytes),
+      returnsResultWhenRecoverable: true,
+      capturesPanic: true,
+      disablesCoredump: true,
+      emitsIncidentBeforeShutdown: true,
+      noProcessAbortForRecoverable: true,
+    }
+  }
+
+  pub fn fatal(incident: RuntimeIncident, reportBuffer: EmergencyReportBuffer) -> CrashlessFailurePath {
+    return CrashlessFailurePath {
+      kind: CrashlessFailureKind.FatalBoundary,
+      policy: safeFailurePolicy(),
+      incident: incident,
+      reportBuffer: reportBuffer,
+      fatalBoundary: FatalRecoverableBoundary.fatal(incident),
+      logEmergency: RuntimeLogEmergencyPath.incident(incident, reportBuffer.capacityBytes),
+      returnsResultWhenRecoverable: false,
+      capturesPanic: true,
+      disablesCoredump: true,
+      emitsIncidentBeforeShutdown: true,
+      noProcessAbortForRecoverable: true,
+    }
+  }
+
+  pub fn safe(self: CrashlessFailurePath) -> bool {
+    return self.policy.guaranteesSafeFailure()
+      && self.incident.safe()
+      && self.reportBuffer.safe()
+      && self.fatalBoundary.safe()
+      && self.logEmergency.safe()
+      && self.capturesPanic
+      && self.disablesCoredump
+      && self.emitsIncidentBeforeShutdown
+      && self.noProcessAbortForRecoverable
+  }
+}

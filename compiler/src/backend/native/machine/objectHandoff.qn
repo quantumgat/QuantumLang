@@ -1,0 +1,33 @@
+pub struct ObjectWriterHandoff {
+  functionSymbol: string,
+  sectionName: string,
+  instructionBytes: usize,
+  sourceRegisteredOnce: bool,
+}
+
+pub fn objectWriterHandoff(functionSymbol: string, sectionName: string, instructionBytes: usize, sourceRegisteredOnce: bool) -> ObjectWriterHandoff {
+  return ObjectWriterHandoff {
+    functionSymbol: functionSymbol,
+    sectionName: sectionName,
+    instructionBytes: instructionBytes,
+    sourceRegisteredOnce: sourceRegisteredOnce,
+  }
+}
+
+impl ObjectWriterHandoff {
+  pub fn symbol(self: ObjectWriterHandoff) -> string {
+    return self.functionSymbol
+  }
+
+  pub fn section(self: ObjectWriterHandoff) -> string {
+    return self.sectionName
+  }
+
+  pub fn bytes(self: ObjectWriterHandoff) -> usize {
+    return self.instructionBytes
+  }
+
+  pub fn hasSingleSourceRegistration(self: ObjectWriterHandoff) -> bool {
+    return self.sourceRegisteredOnce
+  }
+}

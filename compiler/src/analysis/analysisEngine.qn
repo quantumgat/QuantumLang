@@ -1,0 +1,30 @@
+pub class AnalysisEngine {
+  ruleCount: usize,
+  coverage: AnalysisCoverageFact,
+  running: bool,
+
+  pub init() {
+    self.ruleCount = 0
+    self.coverage = AnalysisCoverageFact.init()
+    self.running = false
+  }
+
+  pub fn start(self: &mut AnalysisEngine) -> bool {
+    self.running = self.coverage.complete()
+    return self.running
+  }
+
+  pub fn registerRule(self: &mut AnalysisEngine) -> usize {
+    self.ruleCount = self.ruleCount + 1
+    return self.ruleCount
+  }
+
+  pub fn canAnalyze(self: &AnalysisEngine) -> bool {
+    return self.running && self.ruleCount > 0 && self.coverage.complete()
+  }
+
+  pub fn shutdown(self: &mut AnalysisEngine) -> bool {
+    self.running = false
+    return self.running == false
+  }
+}

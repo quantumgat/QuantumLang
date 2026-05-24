@@ -1,0 +1,43 @@
+pub struct UnsafeCapsule {
+  node: u64,
+  kind: UnsafeCapsuleKind,
+  permit: UnsafePermit,
+  proof: UnsafeProof,
+  obligation: UnsafeObligation,
+  reason: UnsafeReason,
+  diagnostic: SafetyDiagnostic,
+}
+
+impl UnsafeCapsule {
+  pub fn init(
+    node: u64,
+    kind: UnsafeCapsuleKind,
+    permit: UnsafePermit,
+    proof: UnsafeProof,
+    obligation: UnsafeObligation,
+    reason: UnsafeReason,
+    diagnostic: SafetyDiagnostic,
+  ) -> UnsafeCapsule {
+    return UnsafeCapsule {
+      node: node,
+      kind: kind,
+      permit: permit,
+      proof: proof,
+      obligation: obligation,
+      reason: reason,
+      diagnostic: diagnostic,
+    }
+  }
+
+  pub fn accepted(self: UnsafeCapsule) -> bool {
+    return self.permit.accepted() &&
+      self.proof.accepted() &&
+      self.obligation.complete() &&
+      self.reason.accepted() &&
+      self.diagnostic.reportable()
+  }
+
+  pub fn mustReject(self: UnsafeCapsule) -> bool {
+    return self.accepted() == false
+  }
+}

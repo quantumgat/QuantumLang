@@ -1,0 +1,19 @@
+pub struct FfiThreadAffinityLowering {
+  checksOwnerThread: bool,
+  preservesLifetimeToken: bool,
+  emitsDiagnostic: bool,
+}
+
+impl FfiThreadAffinityLowering {
+  pub fn init(checksOwnerThread: bool, preservesLifetimeToken: bool, emitsDiagnostic: bool) -> FfiThreadAffinityLowering {
+    return FfiThreadAffinityLowering {
+      checksOwnerThread: checksOwnerThread,
+      preservesLifetimeToken: preservesLifetimeToken,
+      emitsDiagnostic: emitsDiagnostic,
+    }
+  }
+
+  pub fn accepted(self: FfiThreadAffinityLowering) -> bool {
+    return self.checksOwnerThread && self.preservesLifetimeToken && self.emitsDiagnostic
+  }
+}

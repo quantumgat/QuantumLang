@@ -1,0 +1,150 @@
+pub struct HttpError {
+  status: HttpStatus,
+  kind: ErrorKind,
+  code: string,
+  message: string,
+  coreError: Error,
+}
+
+impl HttpError {
+  pub fn init(status: HttpStatus, kind: ErrorKind, code: string, message: string) -> HttpError {
+    return HttpError {
+      status: status,
+      kind: kind,
+      code: code,
+      message: message,
+      coreError: Error(kind, code, message),
+    }
+  }
+
+  pub fn status(kind: ErrorKind, code: string, message: string) -> HttpError {
+    return HttpError.init(HttpError.statusFor(kind), kind, code, message)
+  }
+
+  pub fn badRequest(code: string, message: string) -> HttpError {
+    return HttpError.status(ErrorKind.BadRequest, code, message)
+  }
+
+  pub fn unauthorized(code: string, message: string) -> HttpError {
+    return HttpError.status(ErrorKind.Unauthorized, code, message)
+  }
+
+  pub fn forbidden(code: string, message: string) -> HttpError {
+    return HttpError.status(ErrorKind.Forbidden, code, message)
+  }
+
+  pub fn notFound(code: string, message: string) -> HttpError {
+    return HttpError.status(ErrorKind.NotFound, code, message)
+  }
+
+  pub fn conflict(code: string, message: string) -> HttpError {
+    return HttpError.status(ErrorKind.Conflict, code, message)
+  }
+
+  pub fn tooManyRequests(code: string, message: string) -> HttpError {
+    return HttpError.status(ErrorKind.RateLimited, code, message)
+  }
+
+  pub fn internal(code: string, message: string) -> HttpError {
+    return HttpError.status(ErrorKind.Internal, code, message)
+  }
+
+  pub fn unavailable(code: string, message: string) -> HttpError {
+    return HttpError.status(ErrorKind.Unavailable, code, message)
+  }
+
+  pub fn fromError(error: Error) -> HttpError {
+    return HttpError.init(
+      HttpError.statusFor(error.kind()),
+      error.kind(),
+      error.publicCode(),
+      error.safeMessage()
+    )
+  }
+
+  pub fn statusFor(kind: ErrorKind) -> HttpStatus {
+    match kind {
+      ErrorKind.InvalidInput => return HttpStatus.badRequest()
+      ErrorKind.BadRequest => return HttpStatus.badRequest()
+      ErrorKind.Unauthorized => return HttpStatus.unauthorized()
+      ErrorKind.Forbidden => return HttpStatus.forbidden()
+      ErrorKind.NotFound => return HttpStatus.notFound()
+      ErrorKind.Conflict => return HttpStatus.conflict()
+      ErrorKind.RateLimited => return HttpStatus.tooManyRequests()
+      ErrorKind.Timeout => return HttpStatus.requestTimeout()
+      ErrorKind.Canceled => return HttpStatus.init(499)
+      ErrorKind.Unavailable => return HttpStatus.serviceUnavailable()
+      ErrorKind.Internal => return HttpStatus.internalServerError()
+      ErrorKind.Unknown => return HttpStatus.internalServerError()
+    }
+  }
+
+  pub fn status(self: HttpError) -> HttpStatus {
+    return self.status
+  }
+
+  pub fn code(self: HttpError) -> string {
+    return self.code
+  }
+
+  pub fn kind(self: HttpError) -> ErrorKind {
+    return self.kind
+  }
+
+  pub fn message(self: HttpError) -> string {
+    return self.message
+  }
+
+  pub fn toError(self: HttpError) -> Error {
+    return self.coreError
+  }
+
+  pub fn jsonValue(self: HttpError) -> json {
+    return {
+      ok: false,
+      error: {
+        code: self.code,
+        message: self.message,
+        status: self.status.code(),
+      },
+    }
+  }
+
+  pub fn jsonBody(self: HttpError) -> string {
+    let encoded: Result<string, JsonError> = httpJsonEncode(self.jsonValue())
+    match encoded {
+      Ok(body) => {
+        return body
+      }
+      Err(error) => {
+        return HttpError.fallbackJson()
+      }
+    }
+  }
+
+  pub fn fallbackJson() -> string {
+    return "{\"ok\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"internal server error\",\"status\":500}}"
+  }
+
+  pub fn response(self: HttpError) -> HttpResponse {
+    return HttpResponse.init(
+      self.status,
+      HttpHeaderMap.empty().add("content-type", "application/json"),
+      HttpBody.json(self.jsonBody())
+    )
+  }
+}
+
+pub fn HttpError(kind: ErrorKind, code: string, message: string) -> HttpError {
+  return HttpError.status(kind, code, message)
+}
+
+pub fn badRequest(code: string, message: string) -> HttpError {
+  return HttpError.badRequest(code, message)
+}
+
+pub fn notFound(code: string, message: string) -> HttpError {
+  return HttpError.notFound(code, message)
+}
+
+fn httpJsonEncode(value: json) -> Result<string, JsonError>

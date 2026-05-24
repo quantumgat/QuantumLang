@@ -1,0 +1,76 @@
+pub enum IfDiagnosticKind {
+  NonBoolCondition
+  BranchTypeMismatch
+  InvalidIfLetPattern
+  GuardRequiresBool
+  RangeTypeMismatch
+  TypeTestImpossible
+  QuestionRequiresResultOrOption
+  AwaitQuestionRequiresAsync
+  StaticIfRequiresComptime
+  TargetFeatureUnknown
+  QuantumProfileUnsupported
+}
+
+pub struct IfDiagnostic {
+  kind: IfDiagnosticKind,
+  code: string,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+}
+
+pub fn ifDiagnostic(
+  kind: IfDiagnosticKind,
+  code: string,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+) -> IfDiagnostic {
+  return IfDiagnostic {
+    kind: kind,
+    code: code,
+    sourceRangeReady: sourceRangeReady,
+    fixitReady: fixitReady,
+  }
+}
+
+pub fn ifDiagnosticCode(kind: IfDiagnosticKind) -> string {
+  if kind == IfDiagnosticKind.NonBoolCondition {
+    return "QLIF0001"
+  }
+  if kind == IfDiagnosticKind.BranchTypeMismatch {
+    return "QLIF0002"
+  }
+  if kind == IfDiagnosticKind.InvalidIfLetPattern {
+    return "QLIF0003"
+  }
+  if kind == IfDiagnosticKind.GuardRequiresBool {
+    return "QLIF0004"
+  }
+  if kind == IfDiagnosticKind.RangeTypeMismatch {
+    return "QLIF0005"
+  }
+  if kind == IfDiagnosticKind.TypeTestImpossible {
+    return "QLIF0006"
+  }
+  if kind == IfDiagnosticKind.QuestionRequiresResultOrOption {
+    return "QLIF0007"
+  }
+  if kind == IfDiagnosticKind.AwaitQuestionRequiresAsync {
+    return "QLIF0008"
+  }
+  if kind == IfDiagnosticKind.StaticIfRequiresComptime {
+    return "QLIF0009"
+  }
+  if kind == IfDiagnosticKind.TargetFeatureUnknown {
+    return "QLIF0010"
+  }
+  return "QLIF0011"
+}
+
+impl IfDiagnostic {
+  pub fn complete(self: IfDiagnostic) -> bool {
+    return self.code != ""
+      && self.sourceRangeReady
+      && self.fixitReady
+  }
+}

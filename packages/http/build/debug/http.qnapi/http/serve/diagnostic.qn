@@ -1,0 +1,40 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct AppBuilderDiagnostic {
+  message: string
+}
+pub enum AppStateDiagnosticKind {
+  MissingRequiredStart
+  MissingRequiredShutdown
+  MissingRequiredDrop
+  DependencyCycle
+  HealthUnavailable
+  ReconnectUnavailable
+  HiddenStaticState
+  ServiceLocatorLeak
+  TestOverrideLeak
+  HotPathClassDispatch
+}
+pub enum AppStateDiagnosticSeverity {
+  Warning
+  Error
+}
+pub struct AppStateDiagnostic {
+  kind: AppStateDiagnosticKind
+  severity: AppStateDiagnosticSeverity
+  typeName: string
+  ownerId: u64
+  message: string
+  fix: string
+}
+pub struct AppStateDiagnosticPolicy {
+  productionPlan: bool
+  healthRequired: bool
+  reconnectRequired: bool
+  hiddenStaticStateDetected: bool
+  serviceLocatorDetected: bool
+}
+pub struct AppStateDiagnosticReport {
+  diagnostics: Vec<AppStateDiagnostic>
+  errorCount: usize
+  warningCount: usize
+}

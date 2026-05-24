@@ -1,0 +1,153 @@
+pub struct HashMapPut<K, V> {
+  map: HashMap<K, V>,
+  updated: bool,
+}
+
+pub struct HashMap<K, V> {
+  table: RawTable<K, V>,
+  hasher: Hasher,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<K, V> HashMap<K, V> {
+  pub fn init() -> HashMap<K, V> requires(alloc) {
+    return HashMap<K, V>.withCapacity(16)
+  }
+
+  pub fn empty() -> HashMap<K, V> requires(alloc) {
+    return HashMap<K, V>.init()
+  }
+
+  pub fn withCapacity(capacity: usize) -> HashMap<K, V> requires(alloc) {
+    let table = RawTable<K, V>.withCapacity(capacity)
+    return HashMap<K, V>.fromTable(table, Hasher.init(), 0, 0)
+  }
+
+  pub fn withHasher(hasher: Hasher) -> HashMap<K, V> requires(alloc) {
+    let table = RawTable<K, V>.withCapacity(16)
+    return HashMap<K, V>.fromTable(table, hasher, 0, 0)
+  }
+
+  pub fn fromTable(table: RawTable<K, V>, hasher: Hasher, len: usize, generation: usize) -> HashMap<K, V> {
+    return HashMap<K, V> {
+      table: table,
+      hasher: hasher,
+      len: len,
+      capacity: table.capacity,
+      generation: generation,
+    }
+  }
+
+  pub fn len(self: HashMap<K, V>) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: HashMap<K, V>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn get(self: HashMap<K, V>, key: K) -> Option<V> {
+    let hash = self.hasher.hash(key)
+    return self.table.get(key, hash)
+  }
+
+  pub fn containsKey(self: HashMap<K, V>, key: K) -> bool {
+    let hash = self.hasher.hash(key)
+    return self.table.containsKey(key, hash)
+  }
+
+  pub fn put(self: HashMap<K, V>, key: K, value: V) -> HashMap<K, V> requires(alloc) {
+    return self.putResult(key, value).map
+  }
+
+  pub fn putResult(self: HashMap<K, V>, key: K, value: V) -> HashMapPut<K, V> requires(alloc) {
+    let hash = self.hasher.hash(key)
+    let table = self.ensureCapacityForInsert()
+    let inserted = table.put(key, value, hash)
+    let nextTable = inserted.0
+    if inserted.1 {
+      return HashMapPut<K, V> {
+        map: HashMap<K, V>.fromTable(nextTable, self.hasher, self.len, self.generation + 1),
+        updated: true,
+      }
+    }
+    return HashMapPut<K, V> {
+      map: HashMap<K, V>.fromTable(nextTable, self.hasher, self.len + 1, self.generation + 1),
+      updated: false,
+    }
+  }
+
+  pub fn remove(self: HashMap<K, V>, key: K) -> (HashMap<K, V>, Option<V>) requires(alloc) {
+    let hash = self.hasher.hash(key)
+    let removed = self.table.remove(key, hash)
+    let nextTable = removed.0
+    match removed.1 {
+      Some(value) => {
+        return (
+          HashMap<K, V>.fromTable(nextTable, self.hasher, self.len - 1, self.generation + 1),
+          Some(value)
+        )
+      }
+      None => {
+        return (self, None)
+      }
+    }
+  }
+
+  pub fn entryAt(self: HashMap<K, V>, index: usize) -> Option<(K, V)> {
+    if index >= self.len {
+      return None
+    }
+    let mut seen: usize = 0
+    let mut bucketIndex: usize = 0
+    let limit = self.directCursorLimit()
+    while bucketIndex < limit {
+      if self.directIsFullAt(bucketIndex) {
+        if seen == index {
+          return Some((self.directKeyAt(bucketIndex), self.directValueAt(bucketIndex)))
+        }
+        seen = seen + 1
+      }
+      bucketIndex = bucketIndex + 1
+    }
+    return None
+  }
+
+  pub fn directCursorLimit(self: HashMap<K, V>) -> usize {
+    return self.table.directCursorLimit()
+  }
+
+  pub fn directIsFullAt(self: HashMap<K, V>, index: usize) -> bool {
+    return self.table.directIsFullAt(index)
+  }
+
+  pub fn directKeyAt(self: HashMap<K, V>, index: usize) -> K {
+    return self.table.directKeyAt(index)
+  }
+
+  pub fn directValueAt(self: HashMap<K, V>, index: usize) -> V {
+    return self.table.directValueAt(index)
+  }
+
+  pub fn ensureCapacityForInsert(self: HashMap<K, V>) -> RawTable<K, V> requires(alloc) {
+    if self.table.canInsertWithoutGrow(1) {
+      return self.table
+    }
+    let mut grown = RawTable<K, V>.withCapacity(self.capacity * 2)
+    let mut index: usize = 0
+    let limit = self.table.directCursorLimit()
+    while index < limit {
+      if self.table.directIsFullAt(index) {
+        let key = self.table.directKeyAt(index)
+        let value = self.table.directValueAt(index)
+        let hash = self.table.directHashAt(index)
+        let inserted = grown.put(key, value, hash)
+        grown = inserted.0
+      }
+      index = index + 1
+    }
+    return grown
+  }
+}

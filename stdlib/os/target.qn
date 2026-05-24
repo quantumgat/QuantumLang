@@ -1,0 +1,40 @@
+pub struct OsTarget {
+  arch: string,
+  os: string,
+  supportsThreads: bool,
+  supportsNativeRuntime: bool,
+  publicSyscallSurface: bool,
+}
+
+impl OsTarget {
+  /**
+    Describes the active target without exposing raw platform syscalls.
+
+    example:
+      let target = OsTarget.current("x86_64", "linux")
+      if target.supportsHiddenRuntime() == false { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: metadata only; runtime owns real platform dispatch
+    stability: public since 0.1
+  */
+  pub fn current(arch: string, os: string) -> OsTarget {
+    return OsTarget {
+      arch: arch,
+      os: os,
+      supportsThreads: true,
+      supportsNativeRuntime: true,
+      publicSyscallSurface: false,
+    }
+  }
+
+  pub fn accepted(self: OsTarget) -> bool {
+    return self.arch != "" && self.os != "" && self.supportsNativeRuntime
+  }
+
+  pub fn supportsHiddenRuntime(self: OsTarget) -> bool {
+    return self.supportsNativeRuntime && self.publicSyscallSurface == false
+  }
+}

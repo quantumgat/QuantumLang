@@ -1,0 +1,30 @@
+pub enum RuntimeSyncDiagnosticKind {
+  InvalidOrdering,
+  StaleWaitHandle,
+  DoubleUnlock,
+  MissedWake,
+  AbaVersionMissing,
+  PrematureReclaim,
+}
+
+pub struct RuntimeSyncDiagnostic {
+  kind: RuntimeSyncDiagnosticKind,
+  recoverable: bool,
+  redacted: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeSyncDiagnostic {
+  pub fn init(kind: RuntimeSyncDiagnosticKind) -> RuntimeSyncDiagnostic {
+    return RuntimeSyncDiagnostic {
+      kind: kind,
+      recoverable: true,
+      redacted: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn productionSafe(self: RuntimeSyncDiagnostic) -> bool {
+    return self.recoverable && self.redacted && self.noCoredump
+  }
+}

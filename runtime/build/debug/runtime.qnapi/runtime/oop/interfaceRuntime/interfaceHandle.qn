@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct InterfaceHandle {
+  typeId: u64
+  tableId: u64
+  generationChecked: bool
+}
+pub extern "qnpkg" {
+  pub fn interfaceHandle(typeId: u64, tableId: u64) -> InterfaceHandle
+}

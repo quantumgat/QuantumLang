@@ -1,0 +1,36 @@
+pub struct PriorityQueueBuilder<T, P> {
+  capacity: usize,
+  comparator: Comparator<P>,
+}
+
+impl<T, P> PriorityQueueBuilder<T, P> {
+  pub fn init() -> PriorityQueueBuilder<T, P> {
+    return PriorityQueueBuilder<T, P> {
+      capacity: 0,
+      comparator: Comparator<P>.init(),
+    }
+  }
+
+  pub fn capacity(self: PriorityQueueBuilder<T, P>, capacity: usize) -> PriorityQueueBuilder<T, P> {
+    return PriorityQueueBuilder<T, P> {
+      capacity: capacity,
+      comparator: self.comparator,
+    }
+  }
+
+  pub fn comparator(self: PriorityQueueBuilder<T, P>, comparator: Comparator<P>) -> PriorityQueueBuilder<T, P> {
+    return PriorityQueueBuilder<T, P> {
+      capacity: self.capacity,
+      comparator: comparator,
+    }
+  }
+
+  pub fn build(self: PriorityQueueBuilder<T, P>) -> PriorityQueue<T, P> requires(alloc) {
+    return PriorityQueue<T, P> {
+      heap: HeapBuilder<T, P>.init().capacity(self.capacity).comparator(self.comparator).build(),
+      len: 0,
+      capacity: self.capacity,
+      generation: 0,
+    }
+  }
+}

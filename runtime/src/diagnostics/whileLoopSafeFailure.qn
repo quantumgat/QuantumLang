@@ -1,0 +1,64 @@
+pub enum WhileLoopSafeFailureKind {
+  NonBoolCondition
+  InvalidPattern
+  BreakValueMismatch
+  UnknownLabel
+  QuestionFlowViolation
+  AwaitQuestionViolation
+  TimeoutViolation
+  PollViolation
+  AsyncLoopCancellationViolation
+  AsyncLoopCleanupViolation
+  QwhileBoundViolation
+  QwhileQirProfileViolation
+  QwhileQubitOwnershipViolation
+  QuantumProfileViolation
+}
+
+pub struct WhileLoopSafeFailure {
+  kind: WhileLoopSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+  executableNegativeCovered: bool,
+}
+
+pub fn whileLoopSafeFailure(
+  kind: WhileLoopSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+  executableNegativeCovered: bool,
+) -> WhileLoopSafeFailure {
+  return WhileLoopSafeFailure {
+    kind: kind,
+    sourceRangeReady: sourceRangeReady,
+    fixitReady: fixitReady,
+    noCoredump: noCoredump,
+    recoverable: recoverable,
+    executableNegativeCovered: executableNegativeCovered,
+  }
+}
+
+pub fn whileDefaultSafeFailure(kind: WhileLoopSafeFailureKind) -> WhileLoopSafeFailure {
+  return whileLoopSafeFailure(kind, true, true, true, true, true)
+}
+
+impl WhileLoopSafeFailure {
+  pub fn safe(self: WhileLoopSafeFailure) -> bool {
+    return self.sourceRangeReady
+      && self.fixitReady
+      && self.noCoredump
+      && self.recoverable
+  }
+
+  pub fn noCoredumpReady(self: WhileLoopSafeFailure) -> bool {
+    return self.noCoredump
+  }
+
+  pub fn executableReady(self: WhileLoopSafeFailure) -> bool {
+    return self.safe() && self.executableNegativeCovered
+  }
+}

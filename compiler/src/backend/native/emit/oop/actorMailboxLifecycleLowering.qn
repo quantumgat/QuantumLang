@@ -1,0 +1,31 @@
+pub struct OopActorMailboxLifecycleNativeLowering {
+  mirOpId: u64,
+  ownerTypeName: string,
+  emitsMailboxEnqueue: bool,
+  emitsSchedulerHandoff: bool,
+  emitsSerializedStateAccess: bool,
+  emitsBackpressureCheck: bool,
+  emitsStopDrainShutdown: bool,
+  emitsCancellationCleanup: bool,
+  emitsSupervisionEdge: bool,
+  emitsTypedFailurePath: bool,
+  noCoredumpFailure: bool,
+  sourceMapBound: bool,
+}
+
+impl OopActorMailboxLifecycleNativeLowering {
+  pub fn complete(self: OopActorMailboxLifecycleNativeLowering) -> bool {
+    return self.mirOpId > 0
+      && self.ownerTypeName != ""
+      && self.emitsMailboxEnqueue
+      && self.emitsSchedulerHandoff
+      && self.emitsSerializedStateAccess
+      && self.emitsBackpressureCheck
+      && self.emitsStopDrainShutdown
+      && self.emitsCancellationCleanup
+      && self.emitsSupervisionEdge
+      && self.emitsTypedFailurePath
+      && self.noCoredumpFailure
+      && self.sourceMapBound
+  }
+}

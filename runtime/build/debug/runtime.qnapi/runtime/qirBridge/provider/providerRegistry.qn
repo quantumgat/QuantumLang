@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub abstract class ProviderRegistry {
+  providerCount: usize
+  active: bool
+  pub init() {}
+  pub fn start(self: &mut ProviderRegistry) -> bool
+  pub fn shutdown(self: &mut ProviderRegistry) -> bool
+  pub fn drop(self: &mut ProviderRegistry) -> bool
+  pub fn ownsProviderBoundary(self: &ProviderRegistry) -> bool
+}

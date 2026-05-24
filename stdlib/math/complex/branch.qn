@@ -1,0 +1,5 @@
+pub enum ComplexBranchPolicy {
+  Principal
+  PreserveSignedZero
+  DiagnosticOnAmbiguous
+}

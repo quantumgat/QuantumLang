@@ -1,0 +1,24 @@
+pub enum ForErgonomicsProofKind {
+  HundredFormsCaptured
+  HotPathLowering
+  SafetyDiagnosticCoverage
+  NegativeFixtureCoverage
+  NoGeneratedFallback
+}
+
+pub struct ForErgonomicsProof {
+  kind: ForErgonomicsProofKind,
+  fixture: string,
+  formCount: usize,
+  nativeLowering: NativeForLoopLowering,
+  negativeFixtureCaptured: bool,
+}
+
+impl ForErgonomicsProof {
+  pub fn complete(self: ForErgonomicsProof) -> bool {
+    return self.fixture != ""
+      && self.formCount >= 100
+      && self.nativeLowering.complete()
+      && self.negativeFixtureCaptured
+  }
+}

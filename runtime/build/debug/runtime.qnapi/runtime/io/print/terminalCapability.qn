@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeTerminalCapability {
+  target: RuntimePrintTarget
+  isTerminalKnown: bool
+  supportsColor: bool
+  supportsUnicode: bool
+  widthKnown: bool
+  widthColumns: usize
+  detectionReturnsResult: bool
+  fallbackPlainText: bool
+  noPanic: bool
+}

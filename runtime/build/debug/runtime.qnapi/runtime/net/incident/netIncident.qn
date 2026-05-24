@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeNetIncidentKind {
+  Reset
+  Timeout
+  Cancelled
+  Backpressure
+  DoubleClose
+  StaleHandle
+  PlatformError
+}
+pub struct RuntimeNetIncident {
+  kind: RuntimeNetIncidentKind
+  handleGeneration: u64
+  noCoredump: bool
+}

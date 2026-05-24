@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct QueueKernel {
+  ringBufferBacked: bool
+  headTailDirect: bool
+  moduloIndexLowered: bool
+  pushUsesTailStore: bool
+  popUsesHeadLoadAndHeadInc: bool
+  peekUsesHeadLoad: bool
+  growRepackLinearized: bool
+  zeroCopyFromVec: bool
+  iteratorRingCursorStable: bool
+  callableLoopsInlineable: bool
+}

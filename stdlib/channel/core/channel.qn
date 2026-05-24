@@ -1,0 +1,39 @@
+pub enum ChannelError {
+  Closed
+  Full
+  Empty
+  Cancelled
+  Timeout
+  LostWake
+}
+
+pub enum Backpressure {
+  Block
+  DropNewest
+  DropOldest
+  Fail
+}
+
+pub struct Sender<T> {
+  id: u64,
+}
+
+pub struct Receiver<T> {
+  id: u64,
+}
+
+impl Sender<T> {
+  pub fn send(self: Sender<T>, value: T) -> Result<Unit, ChannelError>
+
+  pub fn trySend(self: Sender<T>, value: T) -> Result<Unit, ChannelError>
+
+  pub fn close(self: Sender<T>) -> Result<Unit, ChannelError>
+}
+
+impl Receiver<T> {
+  pub fn recv(self: Receiver<T>) -> Result<T, ChannelError>
+
+  pub fn tryRecv(self: Receiver<T>) -> Result<T, ChannelError>
+
+  pub fn isClosed(self: Receiver<T>) -> bool
+}

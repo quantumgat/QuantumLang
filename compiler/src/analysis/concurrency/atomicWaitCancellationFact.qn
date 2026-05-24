@@ -1,0 +1,21 @@
+pub struct AtomicWaitCancellationFact {
+  node: u64,
+  tokenObserved: bool,
+  timeoutHandled: bool,
+  cleanupSafe: bool,
+}
+
+impl AtomicWaitCancellationFact {
+  pub fn init(node: u64, tokenObserved: bool, timeoutHandled: bool, cleanupSafe: bool) -> AtomicWaitCancellationFact {
+    return AtomicWaitCancellationFact {
+      node: node,
+      tokenObserved: tokenObserved,
+      timeoutHandled: timeoutHandled,
+      cleanupSafe: cleanupSafe,
+    }
+  }
+
+  pub fn accepted(self: AtomicWaitCancellationFact) -> bool {
+    return self.tokenObserved && self.timeoutHandled && self.cleanupSafe
+  }
+}

@@ -1,0 +1,34 @@
+pub struct PluginLockfileValidation {
+  entry: PluginLockfileEntry,
+  fingerprint: PluginFingerprint,
+  proofGate: PluginProofGate,
+  lockfileRequired: bool,
+  staleLockfileRejected: bool,
+  unsignedPluginRejected: bool,
+  publicRootOwnerRecorded: bool,
+}
+
+impl PluginLockfileValidation {
+  pub fn fromManifest(manifest: PluginManifest) -> PluginLockfileValidation {
+    let entry = PluginLockfileEntry.fromManifest(manifest)
+    return PluginLockfileValidation {
+      entry: entry,
+      fingerprint: PluginFingerprint.fromEntry(entry),
+      proofGate: PluginProofGate.fromManifest(manifest),
+      lockfileRequired: true,
+      staleLockfileRejected: true,
+      unsignedPluginRejected: true,
+      publicRootOwnerRecorded: true,
+    }
+  }
+
+  pub fn accepted(self: PluginLockfileValidation) -> bool {
+    return self.entry.accepted()
+      && self.fingerprint.accepted()
+      && self.proofGate.accepted()
+      && self.lockfileRequired
+      && self.staleLockfileRejected
+      && self.unsignedPluginRejected
+      && self.publicRootOwnerRecorded
+  }
+}

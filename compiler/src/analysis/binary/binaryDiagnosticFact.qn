@@ -1,0 +1,15 @@
+pub struct BinaryDiagnosticFact {
+  code: string,
+  byteOffsetStable: bool,
+  cursorPositionPreserved: bool,
+  noCoredump: bool,
+}
+
+impl BinaryDiagnosticFact {
+  pub fn accepted(self: BinaryDiagnosticFact) -> bool {
+    return self.code != ""
+      && self.byteOffsetStable
+      && self.cursorPositionPreserved
+      && self.noCoredump
+  }
+}

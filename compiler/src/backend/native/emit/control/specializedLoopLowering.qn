@@ -1,0 +1,31 @@
+pub enum NativeSpecializedLoopLoweringKind {
+  AsyncPollStateMachine
+  SelectJoinRuntimeHandoff
+  TimeoutCancelFastCheck
+  ParallelWorkShardReduce
+  DeterministicReductionMerge
+  DomainDirectCursor
+  DecodeZeroCopyCursor
+  LowLevelPointerRange
+  CheckedSliceDirectIndex
+  AtomicRetryBackoff
+  QirProfileLoop
+  ComptimeExpansion
+}
+
+pub struct NativeSpecializedLoopLowering {
+  kind: NativeSpecializedLoopLoweringKind,
+  mirLoop: MirSpecializedLoopOp,
+  noHeapAllocation: bool,
+  directHotPath: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeSpecializedLoopLowering {
+  pub fn complete(self: NativeSpecializedLoopLowering) -> bool {
+    return self.mirLoop.hotLowerable()
+      && self.noHeapAllocation
+      && self.directHotPath
+      && self.noGeneratedFallback
+  }
+}

@@ -1,0 +1,24 @@
+pub enum LiteralRangeInferenceFamily {
+  VecElementInference
+  EmptyTypedVec
+  MapRecordDisambiguation
+  TupleInference
+  RangeBoundsInference
+  UnionInference
+}
+
+pub struct LiteralRangeInferenceFact {
+  family: LiteralRangeInferenceFamily,
+  typeHintUsed: bool,
+  ambiguityRejected: bool,
+  hotPathReady: bool,
+  diagnosticsReady: bool,
+}
+
+impl LiteralRangeInferenceFact {
+  pub fn complete(self: LiteralRangeInferenceFact) -> bool {
+    return self.hotPathReady
+      && self.diagnosticsReady
+      && (self.typeHintUsed || self.ambiguityRejected)
+  }
+}

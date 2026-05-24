@@ -1,0 +1,25 @@
+pub struct AsyncActorMailboxLifecycleFact {
+  ownerId: u64,
+  mailboxBound: bool,
+  asyncMethodMailboxBound: bool,
+  serializedStateAccessBound: bool,
+  stopDrainShutdownBound: bool,
+  backpressureBound: bool,
+  supervisionBound: bool,
+  cancellationCleanupBound: bool,
+  typedFailureNoCoredumpBound: bool,
+}
+
+impl AsyncActorMailboxLifecycleFact {
+  pub fn complete(self: AsyncActorMailboxLifecycleFact) -> bool {
+    return self.ownerId > 0
+      && self.mailboxBound
+      && self.asyncMethodMailboxBound
+      && self.serializedStateAccessBound
+      && self.stopDrainShutdownBound
+      && self.backpressureBound
+      && self.supervisionBound
+      && self.cancellationCleanupBound
+      && self.typedFailureNoCoredumpBound
+  }
+}

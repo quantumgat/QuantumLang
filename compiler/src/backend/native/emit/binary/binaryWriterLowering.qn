@@ -1,0 +1,17 @@
+pub struct BinaryWriterNativeLowering {
+  directPointerWrite: bool,
+  overflowDiagnostic: bool,
+  borrowedBuffer: bool,
+  noAllocation: bool,
+  targetEndianHandled: bool,
+}
+
+impl BinaryWriterNativeLowering {
+  pub fn hotPath(self: BinaryWriterNativeLowering) -> bool {
+    return self.directPointerWrite
+      && self.overflowDiagnostic
+      && self.borrowedBuffer
+      && self.noAllocation
+      && self.targetEndianHandled
+  }
+}

@@ -1,0 +1,30 @@
+pub struct RegionScope {
+  regionId: u64,
+  generation: u64,
+  active: bool,
+}
+
+impl RegionScope {
+  pub fn enter(region: Region) -> Result<RegionScope, ArenaError> {
+    if region.isReleased() {
+      return Err(ArenaError.init(ArenaErrorKind.Released))
+    }
+    return Ok(RegionScope {
+      regionId: region.id(),
+      generation: region.generation(),
+      active: true,
+    })
+  }
+
+  pub fn validates(self: RegionScope, region: Region) -> bool {
+    return self.active && self.regionId == region.id() && self.generation == region.generation()
+  }
+
+  pub fn leave(self: RegionScope) -> RegionScope {
+    return RegionScope {
+      regionId: self.regionId,
+      generation: self.generation,
+      active: false,
+    }
+  }
+}

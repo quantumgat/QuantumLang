@@ -1,0 +1,22 @@
+pub struct LineIndex {
+  file: u32,
+  lineCount: usize,
+}
+
+pub fn lineIndex(file: u32, lineCount: usize) -> LineIndex {
+  return LineIndex { file: file, lineCount: lineCount }
+}
+
+impl LineIndex {
+  pub fn fileId(self: LineIndex) -> u32 {
+    return self.file
+  }
+
+  pub fn lines(self: LineIndex) -> usize {
+    return self.lineCount
+  }
+
+  pub fn isEmpty(self: LineIndex) -> bool {
+    return self.lineCount == 0
+  }
+}

@@ -1,0 +1,11 @@
+pub struct PointerPolicy {
+  rawPointerAllowed: bool,
+  unsafeRequired: bool,
+  provenanceChecked: bool,
+}
+
+impl PointerPolicy {
+  pub fn guarded(self: PointerPolicy) -> bool {
+    return self.unsafeRequired && self.provenanceChecked
+  }
+}

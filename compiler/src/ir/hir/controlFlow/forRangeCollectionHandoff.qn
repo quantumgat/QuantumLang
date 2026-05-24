@@ -1,0 +1,33 @@
+pub enum HirForRangeCollectionKind {
+  CountedExclusiveRange
+  CountedInclusiveRange
+  OpenEndedRangeWithBreak
+  ArrayLiteralIndexLoop
+  FixedArrayIndexLoop
+  BytesIndexLoop
+  CollectionCursorLoop
+}
+
+pub struct HirForRangeCollectionHandoff {
+  sourceNode: u64,
+  kind: HirForRangeCollectionKind,
+  patternNode: u64,
+  iterableNode: u64,
+  bodyNode: u64,
+  analysis: ForRangeCollectionFact,
+  directIndexReady: bool,
+  cursorReady: bool,
+  diagnosticsAttached: bool,
+}
+
+impl HirForRangeCollectionHandoff {
+  pub fn complete(self: HirForRangeCollectionHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.patternNode > 0
+      && self.iterableNode > 0
+      && self.bodyNode > 0
+      && self.analysis.complete()
+      && (self.directIndexReady || self.cursorReady)
+      && self.diagnosticsAttached
+  }
+}

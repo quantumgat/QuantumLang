@@ -1,0 +1,37 @@
+pub enum TargetEndian {
+  LittleEndian,
+  BigEndian,
+  MixedEndian,
+  UnknownEndian,
+}
+
+pub struct TargetVariantFacts {
+  id: TargetVariantId,
+  triple: string,
+  pointerBits: usize,
+  endian: TargetEndian,
+  addressSpaceBits: usize,
+  pageBytes: usize,
+  heapAvailable: bool,
+  threadsAvailable: bool,
+  atomicsAvailable: bool,
+}
+
+impl TargetVariantFacts {
+  pub fn accepted(self: TargetVariantFacts) -> bool {
+    return self.id != TargetVariantId.UnknownVariant
+      && self.triple != ""
+      && self.pointerBits > 0
+      && self.addressSpaceBits >= self.pointerBits
+  }
+
+  pub fn canLowerPointers(self: TargetVariantFacts) -> bool {
+    return self.accepted()
+      && self.endian != TargetEndian.UnknownEndian
+      && self.pointerBits <= self.addressSpaceBits
+  }
+
+  pub fn hasHostedMemory(self: TargetVariantFacts) -> bool {
+    return self.heapAvailable && self.pageBytes > 0
+  }
+}

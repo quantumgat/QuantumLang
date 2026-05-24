@@ -1,0 +1,18 @@
+pub struct FixedWidthBinaryFact {
+  widthBits: usize,
+  endianKnown: bool,
+  carrierSupported: bool,
+  readLowered: bool,
+  writeLowered: bool,
+}
+
+impl FixedWidthBinaryFact {
+  pub fn accepted(self: FixedWidthBinaryFact) -> bool {
+    return self.widthBits > 0
+      && self.widthBits <= 256
+      && self.endianKnown
+      && self.carrierSupported
+      && self.readLowered
+      && self.writeLowered
+  }
+}

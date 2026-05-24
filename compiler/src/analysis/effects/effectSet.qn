@@ -1,0 +1,32 @@
+pub struct EffectSet {
+  alloc: bool,
+  io: bool,
+  blocking: bool,
+  quantum: bool,
+}
+
+pub fn emptyEffectSet() -> EffectSet {
+  return EffectSet { alloc: false, io: false, blocking: false, quantum: false }
+}
+
+impl EffectSet {
+  pub fn hasAllocation(self: EffectSet) -> bool {
+    return self.alloc
+  }
+
+  pub fn hasIo(self: EffectSet) -> bool {
+    return self.io
+  }
+
+  pub fn hasBlocking(self: EffectSet) -> bool {
+    return self.blocking
+  }
+
+  pub fn hasQuantum(self: EffectSet) -> bool {
+    return self.quantum
+  }
+
+  pub fn isPure(self: EffectSet) -> bool {
+    return !self.alloc && !self.io && !self.blocking && !self.quantum
+  }
+}

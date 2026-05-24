@@ -1,0 +1,48 @@
+pub enum ClassDropKind {
+  Trivial
+  FieldOnly
+  Custom
+  BaseDerived
+  InterfaceErased
+  Foreign
+}
+
+pub struct ClassDropFact {
+  typeId: u64,
+  dropMethodId: u64,
+  kind: ClassDropKind,
+  fieldDropCount: usize,
+  baseDropCount: usize,
+  virtualDispatchRejected: bool,
+  panicPolicyBound: bool,
+}
+
+pub fn classDropFact(
+  typeId: u64,
+  dropMethodId: u64,
+  kind: ClassDropKind,
+  fieldDropCount: usize,
+  baseDropCount: usize,
+  virtualDispatchRejected: bool,
+  panicPolicyBound: bool,
+) -> ClassDropFact {
+  return ClassDropFact {
+    typeId: typeId,
+    dropMethodId: dropMethodId,
+    kind: kind,
+    fieldDropCount: fieldDropCount,
+    baseDropCount: baseDropCount,
+    virtualDispatchRejected: virtualDispatchRejected,
+    panicPolicyBound: panicPolicyBound,
+  }
+}
+
+impl ClassDropFact {
+  pub fn deterministic(self: ClassDropFact) -> bool {
+    return self.virtualDispatchRejected && self.panicPolicyBound
+  }
+
+  pub fn hasBaseCleanup(self: ClassDropFact) -> bool {
+    return self.kind == ClassDropKind.BaseDerived || self.baseDropCount > 0
+  }
+}

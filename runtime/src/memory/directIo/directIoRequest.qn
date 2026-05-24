@@ -1,0 +1,23 @@
+pub struct RuntimeDirectIoRequest {
+  handleId: u64,
+  bytes: usize,
+  aligned: bool,
+  pinned: bool,
+  cleanupRegistered: bool,
+}
+
+impl RuntimeDirectIoRequest {
+  pub fn init(handleId: u64, bytes: usize, aligned: bool, pinned: bool, cleanupRegistered: bool) -> RuntimeDirectIoRequest {
+    return RuntimeDirectIoRequest {
+      handleId: handleId,
+      bytes: bytes,
+      aligned: aligned,
+      pinned: pinned,
+      cleanupRegistered: cleanupRegistered,
+    }
+  }
+
+  pub fn accepted(self: RuntimeDirectIoRequest) -> bool {
+    return self.handleId > 0 && self.bytes > 0 && self.aligned && self.pinned && self.cleanupRegistered
+  }
+}

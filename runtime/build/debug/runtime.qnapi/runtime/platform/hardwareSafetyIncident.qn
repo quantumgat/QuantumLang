@@ -1,0 +1,6 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct HardwareSafetyIncident {
+  diagnosticCode: string
+  recoverable: bool
+  coredump: bool
+}

@@ -1,0 +1,32 @@
+pub enum MirControlFlowOpKind {
+  ConditionalBranch
+  LoopBackedge
+  BreakJump
+  ContinueJump
+  MatchSwitch
+  PatternGuard
+  CleanupEdge
+  ParallelFork
+  ParallelJoin
+  QuantumBranch
+  QuantumLoop
+}
+
+pub struct MirControlFlowOp {
+  instruction: u64,
+  kind: MirControlFlowOpKind,
+  block: u64,
+  targetBlock: u64,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirControlFlowOp {
+  pub fn lowerable(self: MirControlFlowOp) -> bool {
+    return self.instruction > 0
+      && self.block > 0
+      && self.targetBlock > 0
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

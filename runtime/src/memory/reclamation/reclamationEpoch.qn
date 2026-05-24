@@ -1,0 +1,35 @@
+pub struct ReclamationEpoch {
+  currentEpoch: u64,
+  activeReaders: usize,
+  quiescent: bool,
+}
+
+impl ReclamationEpoch {
+  pub fn init(currentEpoch: u64) -> ReclamationEpoch {
+    return ReclamationEpoch {
+      currentEpoch: currentEpoch,
+      activeReaders: 0,
+      quiescent: true,
+    }
+  }
+
+  pub fn enter(self: ReclamationEpoch) -> ReclamationEpoch {
+    return ReclamationEpoch {
+      currentEpoch: self.currentEpoch,
+      activeReaders: self.activeReaders + 1,
+      quiescent: false,
+    }
+  }
+
+  pub fn leave(self: ReclamationEpoch) -> ReclamationEpoch {
+    return ReclamationEpoch {
+      currentEpoch: self.currentEpoch,
+      activeReaders: self.activeReaders - 1,
+      quiescent: self.activeReaders <= 1,
+    }
+  }
+
+  pub fn canAdvance(self: ReclamationEpoch) -> bool {
+    return self.activeReaders == 0 && self.quiescent
+  }
+}

@@ -1,0 +1,13 @@
+pub struct RuntimeTlsSession {
+  handle: u64,
+  resumed: bool,
+  verified: bool,
+  unsafeDisabledRejected: bool,
+  zeroCopyPlaintextEligible: bool,
+}
+
+impl RuntimeTlsSession {
+  pub fn safe(self: RuntimeTlsSession) -> bool {
+    return self.handle > 0 && self.verified && self.unsafeDisabledRejected
+  }
+}

@@ -1,0 +1,16 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeFlushReason {
+  Manual,
+  Newline,
+  BufferFull,
+  ErrorCleanup,
+  CancellationCleanup,
+}
+pub struct RuntimeFlushState {
+  reason: RuntimeFlushReason
+  requestedBytes: usize
+  flushedBytes: usize
+  partial: PartialWrite
+  returnedResult: bool
+  noPanic: bool
+}

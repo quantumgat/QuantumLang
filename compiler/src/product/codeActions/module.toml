@@ -1,0 +1,9 @@
+[module]
+name = "codeActions"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_qtlang_query_ide_foundation"]

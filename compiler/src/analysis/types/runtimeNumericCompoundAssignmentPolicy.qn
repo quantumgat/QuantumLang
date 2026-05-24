@@ -1,0 +1,72 @@
+import analysis.types::{MathOperatorTypeFamily}
+
+pub enum RuntimeNumericCompoundAssignmentDecision {
+  DirectPrimitive
+  RuntimeKernel
+  Reject
+}
+
+pub struct RuntimeNumericCompoundAssignmentPolicy {
+  family: MathOperatorTypeFamily,
+  decision: RuntimeNumericCompoundAssignmentDecision,
+  mutableLvalueRequired: bool,
+  targetTypedRhsRequired: bool,
+  runtimeKernelRequired: bool,
+  wrapperSyntaxAllowed: bool,
+  sourceMappedDiagnostic: bool,
+  noCoredump: bool,
+  reason: string,
+}
+
+impl RuntimeNumericCompoundAssignmentPolicy {
+  pub fn primitive(family: MathOperatorTypeFamily) -> RuntimeNumericCompoundAssignmentPolicy {
+    return RuntimeNumericCompoundAssignmentPolicy {
+      family: family,
+      decision: RuntimeNumericCompoundAssignmentDecision.DirectPrimitive,
+      mutableLvalueRequired: true,
+      targetTypedRhsRequired: false,
+      runtimeKernelRequired: false,
+      wrapperSyntaxAllowed: false,
+      sourceMappedDiagnostic: true,
+      noCoredump: true,
+      reason: "primitive numeric compound assignment lowers to direct scalar storage",
+    }
+  }
+
+  pub fn runtimeKernel(family: MathOperatorTypeFamily) -> RuntimeNumericCompoundAssignmentPolicy {
+    return RuntimeNumericCompoundAssignmentPolicy {
+      family: family,
+      decision: RuntimeNumericCompoundAssignmentDecision.RuntimeKernel,
+      mutableLvalueRequired: true,
+      targetTypedRhsRequired: true,
+      runtimeKernelRequired: true,
+      wrapperSyntaxAllowed: false,
+      sourceMappedDiagnostic: true,
+      noCoredump: true,
+      reason: "runtime-backed numeric compound assignment lowers through checked runtime kernels",
+    }
+  }
+
+  pub fn rejected(family: MathOperatorTypeFamily, reason: string) -> RuntimeNumericCompoundAssignmentPolicy {
+    return RuntimeNumericCompoundAssignmentPolicy {
+      family: family,
+      decision: RuntimeNumericCompoundAssignmentDecision.Reject,
+      mutableLvalueRequired: false,
+      targetTypedRhsRequired: false,
+      runtimeKernelRequired: false,
+      wrapperSyntaxAllowed: false,
+      sourceMappedDiagnostic: true,
+      noCoredump: true,
+      reason: reason,
+    }
+  }
+
+  pub fn accepted(self: RuntimeNumericCompoundAssignmentPolicy) -> bool {
+    return self.reason != ""
+      && self.sourceMappedDiagnostic
+      && self.noCoredump
+      && !self.wrapperSyntaxAllowed
+      && (self.decision != RuntimeNumericCompoundAssignmentDecision.RuntimeKernel
+        || (self.mutableLvalueRequired && self.targetTypedRhsRequired && self.runtimeKernelRequired))
+  }
+}

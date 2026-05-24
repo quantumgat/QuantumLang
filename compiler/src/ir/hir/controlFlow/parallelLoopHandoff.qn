@@ -1,0 +1,41 @@
+pub struct HirParallelLoopHandoff {
+  sourceNode: u64,
+  workerBinding: u64,
+  bodyNode: u64,
+  analysis: ParallelLoopFact,
+  runtimePlanReady: bool,
+  stopTokenReady: bool,
+  mirReady: bool,
+}
+
+pub fn hirParallelLoopHandoff(
+  sourceNode: u64,
+  workerBinding: u64,
+  bodyNode: u64,
+  analysis: ParallelLoopFact,
+  runtimePlanReady: bool,
+  stopTokenReady: bool,
+  mirReady: bool,
+) -> HirParallelLoopHandoff {
+  return HirParallelLoopHandoff {
+    sourceNode: sourceNode,
+    workerBinding: workerBinding,
+    bodyNode: bodyNode,
+    analysis: analysis,
+    runtimePlanReady: runtimePlanReady,
+    stopTokenReady: stopTokenReady,
+    mirReady: mirReady,
+  }
+}
+
+impl HirParallelLoopHandoff {
+  pub fn complete(self: HirParallelLoopHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.workerBinding > 0
+      && self.bodyNode > 0
+      && self.analysis.hotPathReady()
+      && self.runtimePlanReady
+      && self.stopTokenReady
+      && self.mirReady
+  }
+}

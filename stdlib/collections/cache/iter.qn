@@ -1,0 +1,24 @@
+pub struct CacheIter<K, V> {
+  cursor: CacheCursor<K, V>,
+}
+
+impl<K, V> CacheIter<K, V> {
+  pub fn fromCache(cache: Cache<K, V>) -> CacheIter<K, V> {
+    return CacheIter<K, V> {
+      cursor: cache.cursor(),
+    }
+  }
+
+  pub fn next(self: CacheIter<K, V>) -> Option<(K, V)> {
+    if self.cursor.hasNext() {
+      return Some(self.cursor.entryUnchecked())
+    }
+    return None
+  }
+
+  pub fn advance(self: CacheIter<K, V>) -> CacheIter<K, V> {
+    return CacheIter<K, V> {
+      cursor: self.cursor.next(),
+    }
+  }
+}

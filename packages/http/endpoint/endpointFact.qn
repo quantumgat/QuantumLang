@@ -1,0 +1,176 @@
+import route::{HttpRoute}
+
+pub struct EndpointFact {
+  controllerName: string,
+  method: EndpointMethod,
+  routeSpec: EndpointRouteSpec,
+  params: Vec<EndpointParam>,
+  returnModel: EndpointReturn,
+  sourceFile: string,
+  sourceLine: usize,
+}
+
+impl EndpointFact {
+  pub fn init(
+    controllerName: string,
+    method: EndpointMethod,
+    params: Vec<EndpointParam>,
+    returnModel: EndpointReturn,
+    sourceFile: string,
+    sourceLine: usize,
+  ) -> EndpointFact {
+    return EndpointFact {
+      controllerName: controllerName,
+      method: method,
+      routeSpec: EndpointRouteSpec.derived(controllerName, method),
+      params: params,
+      returnModel: returnModel,
+      sourceFile: sourceFile,
+      sourceLine: sourceLine,
+    }
+  }
+
+  pub fn simple(controllerName: string, method: EndpointMethod, returnModel: EndpointReturn) -> EndpointFact {
+    return EndpointFact.init(controllerName, method, [], returnModel, "", 0)
+  }
+
+  pub fn withParam(self: EndpointFact, param: EndpointParam) -> EndpointFact {
+    return EndpointFact {
+      controllerName: self.controllerName,
+      method: self.method,
+      routeSpec: self.routeSpec,
+      params: self.params.push(param),
+      returnModel: self.returnModel,
+      sourceFile: self.sourceFile,
+      sourceLine: self.sourceLine,
+    }
+  }
+
+  pub fn withManualRoute(self: EndpointFact, routeSpec: EndpointRouteSpec) -> EndpointFact {
+    return EndpointFact {
+      controllerName: self.controllerName,
+      method: self.method,
+      routeSpec: routeSpec,
+      params: self.params,
+      returnModel: self.returnModel,
+      sourceFile: self.sourceFile,
+      sourceLine: self.sourceLine,
+    }
+  }
+
+  pub fn manual(
+    controllerName: string,
+    method: EndpointMethod,
+    routeSpec: EndpointRouteSpec,
+    returnModel: EndpointReturn,
+  ) -> EndpointFact {
+    let fact = EndpointFact.simple(controllerName, method, returnModel)
+    return fact.withManualRoute(routeSpec)
+  }
+
+  pub fn controllerName(self: EndpointFact) -> string {
+    return self.controllerName
+  }
+
+  pub fn method(self: EndpointFact) -> EndpointMethod {
+    return self.method
+  }
+
+  pub fn paramCount(self: EndpointFact) -> usize {
+    return self.params.len()
+  }
+
+  pub fn capabilityParamCount(self: EndpointFact) -> usize {
+    let mut count: usize = 0
+    let mut index: usize = 0
+    while index < self.params.len() {
+      if self.params[index].source() == EndpointParamSource.Capability {
+        count = count + 1
+      }
+      index = index + 1
+    }
+    return count
+  }
+
+  pub fn rawRequestParamCount(self: EndpointFact) -> usize {
+    return self.countParamsBySource(EndpointParamSource.Request)
+  }
+
+  pub fn rawContextParamCount(self: EndpointFact) -> usize {
+    let mut count: usize = 0
+    let mut index: usize = 0
+    while index < self.params.len() {
+      let param = self.params[index]
+      if param.source() == EndpointParamSource.Context && param.typeName() == "HttpCtx" {
+        count = count + 1
+      }
+      index = index + 1
+    }
+    return count
+  }
+
+  pub fn rawResponseParamCount(self: EndpointFact) -> usize {
+    return self.countParamsBySource(EndpointParamSource.Response)
+  }
+
+  pub fn rawEscapeHatchParamCount(self: EndpointFact) -> usize {
+    return self.rawRequestParamCount() + self.rawContextParamCount() + self.rawResponseParamCount()
+  }
+
+  pub fn rawEscapeHatchHotPathEligible(self: EndpointFact) -> bool {
+    return self.rawEscapeHatchParamCount() > 0 && !self.queryInRoutePath()
+  }
+
+  pub fn countParamsBySource(self: EndpointFact, source: EndpointParamSource) -> usize {
+    let mut count: usize = 0
+    let mut index: usize = 0
+    while index < self.params.len() {
+      if self.params[index].source() == source {
+        count = count + 1
+      }
+      index = index + 1
+    }
+    return count
+  }
+
+  pub fn hasCapabilityParam(self: EndpointFact, typeName: string) -> bool {
+    let mut index: usize = 0
+    while index < self.params.len() {
+      let param = self.params[index]
+      if param.source() == EndpointParamSource.Capability && param.typeName() == typeName {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn returnModel(self: EndpointFact) -> EndpointReturn {
+    return self.returnModel
+  }
+
+  pub fn routeSpec(self: EndpointFact) -> EndpointRouteSpec {
+    return self.routeSpec
+  }
+
+  pub fn routePath(self: EndpointFact) -> string {
+    return self.routeSpec.path()
+  }
+
+  pub fn route(self: EndpointFact) -> HttpRoute {
+    let handlerName = self.controllerName + "." + self.method.name()
+    return HttpRoute.init(self.routeSpec.httpMethod(), self.routePath(), handlerName)
+  }
+
+  pub fn manualRoute(self: EndpointFact) -> bool {
+    return self.routeSpec.manual()
+  }
+
+  pub fn validRoute(self: EndpointFact) -> bool {
+    return self.routeSpec.valid()
+  }
+
+  pub fn queryInRoutePath(self: EndpointFact) -> bool {
+    return self.routeSpec.queryInPath()
+  }
+}

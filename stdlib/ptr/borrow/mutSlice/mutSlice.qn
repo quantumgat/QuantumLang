@@ -1,0 +1,366 @@
+/**
+  Exclusive mutable view over contiguous pointer storage.
+
+  example:
+    let users = ptr.mutSlice(count)?
+    users.set(0, user)?
+    users.fill(defaultUser)
+
+  effects: reads and writes through explicit methods
+  complexity: O(1) metadata operations, O(n) fill/copy/move
+  allocation: none
+  safety: construction requires exclusive writable lifetime proof
+  stability: public since 0.1
+*/
+pub struct MutSlice<T> {
+  ptr: NonNull<T>,
+  len: usize,
+  provenance: Provenance,
+}
+
+impl<T> MutSlice<T> {
+  /**
+    Creates a mutable slice from a non-null pointer and length.
+
+    example:
+      unsafe {
+        let users = MutSlice<User>.fromPtr(nonNull, count)
+        users.set(0, user)?
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: ptr must be exclusively writable for len elements
+    stability: public since 0.1
+  */
+  pub fn fromPtr(ptr: NonNull<T>, len: usize) -> MutSlice<T> requires(unsafe) {
+    return MutSlice<T> {
+      ptr: ptr,
+      len: len,
+      provenance: ptr.provenance(),
+    }
+  }
+
+  /**
+    Returns the number of visible elements.
+
+    example:
+      let count = users.len()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn len(self: MutSlice<T>) -> usize {
+    return self.len
+  }
+
+  /**
+    Returns true when the mutable slice is empty.
+
+    example:
+      if users.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: reads metadata only
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: MutSlice<T>) -> bool {
+    return self.len == 0
+  }
+
+  /**
+    Returns the non-null start pointer.
+
+    example:
+      let start = users.ptr()
+      let address = start.rawAddress()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: returning the pointer does not weaken the exclusive slice proof
+    stability: public since 0.1
+  */
+  pub fn ptr(self: MutSlice<T>) -> NonNull<T> {
+    return self.ptr
+  }
+
+  /**
+    Returns the start pointer as a raw pointer.
+
+    example:
+      let ptr = users.asPtr()
+      let address = ptr.rawAddress()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: raw pointer access still requires checked operations
+    stability: public since 0.1
+  */
+  pub fn asPtr(self: MutSlice<T>) -> Ptr<T> {
+    return self.ptr.asPtr()
+  }
+
+  /**
+    Returns the writable start pointer.
+
+    example:
+      unsafe {
+        let ptr = users.asMutPtr()
+        ptr.writeAt(0, user)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must preserve exclusive mutable access
+    stability: public since 0.1
+  */
+  pub fn asMutPtr(self: MutSlice<T>) -> Ptr<T> {
+    return self.ptr.asPtr()
+  }
+
+  /**
+    Returns a read-only view over the same memory.
+
+    example:
+      let readOnly = users.asSlice()
+      let first = readOnly.get(0)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: keeps the same lifetime and provenance as the mutable slice
+    stability: public since 0.1
+  */
+  pub fn asSlice(self: MutSlice<T>) -> Slice<T> {
+    return Slice<T>.fromPtr(self.ptr, self.len)
+  }
+
+  /**
+    Returns the value at index when it is in bounds.
+
+    example:
+      let first = users.get(0)
+
+    effects: reads memory when index is valid
+    complexity: O(1)
+    allocation: none
+    safety: performs a bounds check before reading
+    stability: public since 0.1
+  */
+  pub fn get(self: MutSlice<T>, index: usize) -> Option<T> {
+    if index >= self.len {
+      return None
+    }
+    return Some(self.readUnchecked(index))
+  }
+
+  /**
+    Reads an element without a bounds check.
+
+    example:
+      unsafe {
+        if index < users.len() {
+          let user = users.readUnchecked(index)
+        }
+      }
+
+    effects: reads memory
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove index is in bounds
+    stability: public since 0.1
+  */
+  pub fn readUnchecked(self: MutSlice<T>, index: usize) -> T requires(unsafe) {
+    return self.asPtr().readAt(index)
+  }
+
+  /**
+    Writes an element without a bounds check.
+
+    example:
+      unsafe {
+        if index < users.len() {
+          users.writeUnchecked(index, user)
+        }
+      }
+
+    effects: writes memory
+    complexity: O(1)
+    allocation: none
+    safety: caller must prove index is in bounds and storage is writable
+    stability: public since 0.1
+  */
+  pub fn writeUnchecked(self: MutSlice<T>, index: usize, value: T) -> Unit requires(unsafe) {
+    self.asMutPtr().writeAt(index, value)
+  }
+
+  /**
+    Writes one element after checking bounds.
+
+    example:
+      users = users.set(0, user)?
+
+    effects: writes memory when index is valid
+    complexity: O(1)
+    allocation: none
+    safety: checks index before writing
+    stability: public since 0.1
+  */
+  pub fn set(self: MutSlice<T>, index: usize, value: T) -> Result<MutSlice<T>, PtrError> {
+    if index >= self.len {
+      return Err(PtrError.Dangling)
+    }
+    self.writeUnchecked(index, value)
+    return Ok(self)
+  }
+
+  /**
+    Fills the entire mutable slice with a value.
+
+    example:
+      users = users.fill(defaultUser)
+
+    effects: writes memory
+    complexity: O(n)
+    allocation: none
+    safety: every visible element must be writable and valid for T
+    stability: public since 0.1
+  */
+  pub fn fill(self: MutSlice<T>, value: T) -> MutSlice<T> {
+    self.asMutPtr().fill(value, self.len)
+    return self
+  }
+
+  /**
+    Copies values from an immutable slice into this mutable slice.
+
+    example:
+      dst = dst.copyFrom(src)?
+
+    effects: reads source and writes destination
+    complexity: O(n)
+    allocation: none
+    safety: destination must be large enough and overlap policy must be valid
+    stability: public since 0.1
+  */
+  pub fn copyFrom(self: MutSlice<T>, src: Slice<T>) -> Result<MutSlice<T>, PtrError> {
+    if src.len() > self.len {
+      return Err(PtrError.Dangling)
+    }
+    src.asPtr().copyTo(self.asMutPtr(), src.len())
+    return Ok(self)
+  }
+
+  /**
+    Moves values from another mutable slice into this slice.
+
+    example:
+      dst = dst.moveFrom(src)?
+
+    effects: moves memory
+    complexity: O(n)
+    allocation: none
+    safety: destination must be large enough; overlap is handled by move lowering
+    stability: public since 0.1
+  */
+  pub fn moveFrom(self: MutSlice<T>, src: MutSlice<T>) -> Result<MutSlice<T>, PtrError> {
+    if src.len() > self.len {
+      return Err(PtrError.Dangling)
+    }
+    src.asMutPtr().moveTo(self.asMutPtr(), src.len())
+    return Ok(self)
+  }
+
+  /**
+    Creates a mutable sub-slice with offset and length metadata only.
+
+    example:
+      let page = users.subSlice(0, count)
+      page.fill(defaultUser)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: clamps out-of-range starts to an empty mutable view
+    stability: public since 0.1
+  */
+  pub fn subSlice(self: MutSlice<T>, start: usize, len: usize) -> MutSlice<T> {
+    if start > self.len {
+      return MutSlice<T> {
+        ptr: ptrMutSliceAdvance<T>(self.ptr, self.len),
+        len: 0,
+        provenance: self.provenance,
+      }
+    }
+    let available = self.len - start
+    let visible = ptrMutSliceMin(len, available)
+    return MutSlice<T> {
+      ptr: ptrMutSliceAdvance<T>(self.ptr, start),
+      len: visible,
+      provenance: self.provenance,
+    }
+  }
+
+  /**
+    Swaps two elements after checking both indexes.
+
+    example:
+      users = users.swap(0, users.len() - 1)?
+
+    effects: reads and writes memory
+    complexity: O(1)
+    allocation: none
+    safety: checks both indexes before swapping
+    stability: public since 0.1
+  */
+  pub fn swap(self: MutSlice<T>, left: usize, right: usize) -> Result<MutSlice<T>, PtrError> {
+    if left >= self.len || right >= self.len {
+      return Err(PtrError.Dangling)
+    }
+    self.asMutPtr().add(left).swap(self.asMutPtr().add(right))
+    return Ok(self)
+  }
+
+  /**
+    Splits a mutable slice into two non-overlapping mutable views.
+
+    example:
+      unsafe {
+        let (left, right) = users.splitAtMut(mid)
+        left.fill(defaultUser)
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must preserve non-overlap and exclusive access to both results
+    stability: public since 0.1
+  */
+  pub fn splitAtMut(self: MutSlice<T>, index: usize) -> (MutSlice<T>, MutSlice<T>) requires(unsafe) {
+    let leftLen = ptrMutSliceMin(index, self.len)
+    let rightLen = self.len - leftLen
+    let rightPtr = ptrMutSliceAdvance<T>(self.ptr, leftLen)
+    return (
+      MutSlice<T> { ptr: self.ptr, len: leftLen, provenance: self.provenance },
+      MutSlice<T> { ptr: rightPtr, len: rightLen, provenance: self.provenance }
+    )
+  }
+}
+
+fn ptrMutSliceAdvance<T>(ptr: NonNull<T>, count: usize) -> NonNull<T>
+
+fn ptrMutSliceMin(left: usize, right: usize) -> usize {
+  if left < right {
+    return left
+  }
+  return right
+}

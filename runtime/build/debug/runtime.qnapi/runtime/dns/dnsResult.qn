@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct DnsResult {
+  addressCount: usize
+  cached: bool
+  diagnosticCode: u32
+}
+pub extern "qnpkg" {
+  pub fn dnsResult(addressCount: usize, cached: bool, diagnosticCode: u32) -> DnsResult
+}

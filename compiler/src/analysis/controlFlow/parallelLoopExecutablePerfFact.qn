@@ -1,0 +1,54 @@
+pub struct ParallelLoopExecutablePerfFact {
+  sourceNode: u64,
+  workSourceUnique: bool,
+  batchShardProved: bool,
+  stopFlagAtomic: bool,
+  firstResultWins: bool,
+  noSharedMutation: bool,
+  noAllocHotBody: bool,
+  runtimePrimitive: string,
+  executableFixture: string,
+  baselineFixture: string,
+}
+
+pub fn parallelLoopExecutablePerfFact(
+  sourceNode: u64,
+  workSourceUnique: bool,
+  batchShardProved: bool,
+  stopFlagAtomic: bool,
+  firstResultWins: bool,
+  noSharedMutation: bool,
+  noAllocHotBody: bool,
+  runtimePrimitive: string,
+  executableFixture: string,
+  baselineFixture: string,
+) -> ParallelLoopExecutablePerfFact {
+  return ParallelLoopExecutablePerfFact {
+    sourceNode: sourceNode,
+    workSourceUnique: workSourceUnique,
+    batchShardProved: batchShardProved,
+    stopFlagAtomic: stopFlagAtomic,
+    firstResultWins: firstResultWins,
+    noSharedMutation: noSharedMutation,
+    noAllocHotBody: noAllocHotBody,
+    runtimePrimitive: runtimePrimitive,
+    executableFixture: executableFixture,
+    baselineFixture: baselineFixture,
+  }
+}
+
+impl ParallelLoopExecutablePerfFact {
+  pub fn accepted(self: ParallelLoopExecutablePerfFact) -> bool {
+    return self.sourceNode > 0
+      && self.workSourceUnique
+      && self.batchShardProved
+      && self.stopFlagAtomic
+      && self.firstResultWins
+      && self.noSharedMutation
+      && self.noAllocHotBody
+      && self.runtimePrimitive == "QnParallelForRange"
+      && self.executableFixture == "parallel_loop_executable_perf_ok.qn"
+      && self.baselineFixture == "parallel_loop_cpp_baseline.cpp"
+  }
+}
+

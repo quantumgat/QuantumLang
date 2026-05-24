@@ -1,0 +1,147 @@
+pub struct HttpGoComparisonCaps {
+  fixedCpuCount: usize,
+  maxParallel: usize,
+  maxConnections: usize,
+  maxRequests: usize,
+  memoryCapBytes: usize,
+  serialSafe: bool,
+  highLoadOptional: bool,
+  highLoadEnabledByDefault: bool,
+}
+
+impl HttpGoComparisonCaps {
+  pub fn safeCi() -> HttpGoComparisonCaps {
+    return HttpGoComparisonCaps {
+      fixedCpuCount: 2,
+      maxParallel: 1,
+      maxConnections: 64,
+      maxRequests: 10000,
+      memoryCapBytes: 268435456,
+      serialSafe: true,
+      highLoadOptional: true,
+      highLoadEnabledByDefault: false,
+    }
+  }
+
+  pub fn accepted(self: HttpGoComparisonCaps) -> bool {
+    return self.fixedCpuCount > 0
+      && self.maxParallel == 1
+      && self.maxConnections > 0
+      && self.maxRequests > 0
+      && self.memoryCapBytes <= 268435456
+      && self.serialSafe
+      && self.highLoadOptional
+      && !self.highLoadEnabledByDefault
+  }
+}
+
+pub struct HttpGoComparisonRoute {
+  quantumRoute: string,
+  goRoute: string,
+  quantumServer: string,
+  goServer: string,
+  sameResponseShape: bool,
+}
+
+impl HttpGoComparisonRoute {
+  pub fn sameUsersRoute() -> HttpGoComparisonRoute {
+    return HttpGoComparisonRoute {
+      quantumRoute: "GET /users",
+      goRoute: "GET /users",
+      quantumServer: "QuantumLang httpAccelerated",
+      goServer: "Go net/http",
+      sameResponseShape: true,
+    }
+  }
+
+  pub fn accepted(self: HttpGoComparisonRoute) -> bool {
+    return self.quantumRoute == self.goRoute
+      && self.quantumServer != ""
+      && self.goServer == "Go net/http"
+      && self.sameResponseShape
+  }
+}
+
+pub struct HttpGoComparisonMetrics {
+  p50LatencyMicros: usize,
+  p95LatencyMicros: usize,
+  p99LatencyMicros: usize,
+  requestsPerSecond: f64,
+  cpuNanosPerRequest: usize,
+  memoryBytesPerRequest: usize,
+  noCrash: bool,
+  noTimeout: bool,
+}
+
+impl HttpGoComparisonMetrics {
+  pub fn fixture(
+    p50LatencyMicros: usize,
+    p95LatencyMicros: usize,
+    p99LatencyMicros: usize,
+    requestsPerSecond: f64,
+    cpuNanosPerRequest: usize,
+    memoryBytesPerRequest: usize,
+  ) -> HttpGoComparisonMetrics {
+    return HttpGoComparisonMetrics {
+      p50LatencyMicros: p50LatencyMicros,
+      p95LatencyMicros: p95LatencyMicros,
+      p99LatencyMicros: p99LatencyMicros,
+      requestsPerSecond: requestsPerSecond,
+      cpuNanosPerRequest: cpuNanosPerRequest,
+      memoryBytesPerRequest: memoryBytesPerRequest,
+      noCrash: true,
+      noTimeout: true,
+    }
+  }
+
+  pub fn accepted(self: HttpGoComparisonMetrics) -> bool {
+    return self.p50LatencyMicros > 0
+      && self.p95LatencyMicros >= self.p50LatencyMicros
+      && self.p99LatencyMicros >= self.p95LatencyMicros
+      && self.requestsPerSecond > 0.0
+      && self.cpuNanosPerRequest > 0
+      && self.memoryBytesPerRequest > 0
+      && self.noCrash
+      && self.noTimeout
+  }
+}
+
+pub struct HttpGoComparisonBenchmark {
+  runner: string,
+  route: HttpGoComparisonRoute,
+  caps: HttpGoComparisonCaps,
+  quantum: HttpGoComparisonMetrics,
+  go: HttpGoComparisonMetrics,
+  reportPath: string,
+  liveMeasured: bool,
+  comparisonShapeComplete: bool,
+  productSpeedClaimBlocked: bool,
+}
+
+impl HttpGoComparisonBenchmark {
+  pub fn fixture() -> HttpGoComparisonBenchmark {
+    return HttpGoComparisonBenchmark {
+      runner: "qtlc-http-go-comparison-fixture-v1",
+      route: HttpGoComparisonRoute.sameUsersRoute(),
+      caps: HttpGoComparisonCaps.safeCi(),
+      quantum: HttpGoComparisonMetrics.fixture(300, 900, 1800, 250000.0, 4200, 384),
+      go: HttpGoComparisonMetrics.fixture(360, 1100, 2300, 210000.0, 5100, 512),
+      reportPath: "plugins/httpAccelerated/test/perf/reports/httpGoComparisonFixtureReport.toml",
+      liveMeasured: false,
+      comparisonShapeComplete: true,
+      productSpeedClaimBlocked: true,
+    }
+  }
+
+  pub fn accepted(self: HttpGoComparisonBenchmark) -> bool {
+    return self.runner == "qtlc-http-go-comparison-fixture-v1"
+      && self.route.accepted()
+      && self.caps.accepted()
+      && self.quantum.accepted()
+      && self.go.accepted()
+      && self.reportPath != ""
+      && !self.liveMeasured
+      && self.comparisonShapeComplete
+      && self.productSpeedClaimBlocked
+  }
+}

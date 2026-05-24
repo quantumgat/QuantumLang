@@ -1,0 +1,29 @@
+pub enum HirAsyncHandoffKind {
+  AsyncFunctionFrame
+  AsyncBlockFrame
+  AwaitSuspend
+  AwaitQuestionUnwrap
+  AsyncClosureFrame
+}
+
+pub struct HirAsyncHandoff {
+  sourceNode: u64,
+  kind: HirAsyncHandoffKind,
+  frameRequired: bool,
+  cleanupRequired: bool,
+  diagnosticsAttached: bool,
+  mirReady: bool,
+}
+
+impl HirAsyncHandoff {
+  pub fn complete(self: HirAsyncHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.diagnosticsAttached
+      && self.mirReady
+  }
+
+  pub fn safeToLower(self: HirAsyncHandoff) -> bool {
+    return self.complete()
+      && (!self.frameRequired || self.cleanupRequired)
+  }
+}

@@ -1,0 +1,49 @@
+pub enum ClassOpenness {
+  Final
+  Sealed
+  Open
+}
+
+pub enum InterfaceSafety {
+  StaticOnly
+  ObjectSafe
+  DynBoundary
+}
+
+pub struct ClassInterfaceSemanticFact {
+  typeId: u64,
+  openness: ClassOpenness,
+  interfaceSafety: InterfaceSafety,
+  abstractMembers: usize,
+  protectedMembers: usize,
+  implementationsKnown: bool,
+}
+
+pub fn classInterfaceSemanticFact(
+  typeId: u64,
+  openness: ClassOpenness,
+  interfaceSafety: InterfaceSafety,
+  abstractMembers: usize,
+  protectedMembers: usize,
+  implementationsKnown: bool,
+) -> ClassInterfaceSemanticFact {
+  return ClassInterfaceSemanticFact {
+    typeId: typeId,
+    openness: openness,
+    interfaceSafety: interfaceSafety,
+    abstractMembers: abstractMembers,
+    protectedMembers: protectedMembers,
+    implementationsKnown: implementationsKnown,
+  }
+}
+
+impl ClassInterfaceSemanticFact {
+  pub fn canDevirtualize(self: ClassInterfaceSemanticFact) -> bool {
+    return self.openness == ClassOpenness.Final
+      || (self.openness == ClassOpenness.Sealed && self.implementationsKnown)
+  }
+
+  pub fn requiresDynRuntime(self: ClassInterfaceSemanticFact) -> bool {
+    return self.interfaceSafety == InterfaceSafety.DynBoundary
+  }
+}

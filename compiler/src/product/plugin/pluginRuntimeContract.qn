@@ -1,0 +1,47 @@
+pub struct PluginRuntimeContract {
+  kernelCount: usize,
+  typedFailure: PluginPolicyRequirement,
+  noCoredump: PluginPolicyRequirement,
+  allocatorBoundaryRequired: bool,
+  unloadLifecycleRequired: bool,
+  targetDispatchRequired: bool,
+}
+
+impl PluginRuntimeContract {
+  pub fn none() -> PluginRuntimeContract {
+    return PluginRuntimeContract {
+      kernelCount: 0,
+      typedFailure: PluginPolicyRequirement.Optional,
+      noCoredump: PluginPolicyRequirement.Required,
+      allocatorBoundaryRequired: false,
+      unloadLifecycleRequired: false,
+      targetDispatchRequired: false,
+    }
+  }
+
+  pub fn kernels(kernelCount: usize) -> PluginRuntimeContract {
+    return PluginRuntimeContract {
+      kernelCount: kernelCount,
+      typedFailure: PluginPolicyRequirement.Required,
+      noCoredump: PluginPolicyRequirement.Required,
+      allocatorBoundaryRequired: true,
+      unloadLifecycleRequired: true,
+      targetDispatchRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginRuntimeContract) -> bool {
+    if self.kernelCount == 0 {
+      return self.noCoredump == PluginPolicyRequirement.Required
+    }
+    return self.typedFailure == PluginPolicyRequirement.Required
+      && self.noCoredump == PluginPolicyRequirement.Required
+      && self.allocatorBoundaryRequired
+      && self.unloadLifecycleRequired
+      && self.targetDispatchRequired
+  }
+
+  pub fn executableExtension(self: PluginRuntimeContract) -> bool {
+    return self.kernelCount > 0
+  }
+}

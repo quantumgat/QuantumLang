@@ -1,0 +1,33 @@
+pub struct PluginFixtureMatrix {
+  executable: PluginExecutableFixture,
+  negative: PluginNegativeFixture,
+  perf: PluginPerfFixture,
+  positiveRows: usize,
+  negativeRows: usize,
+  perfRows: usize,
+  domainNeutral: bool,
+}
+
+impl PluginFixtureMatrix {
+  pub fn generic() -> PluginFixtureMatrix {
+    return PluginFixtureMatrix {
+      executable: PluginExecutableFixture.generic(),
+      negative: PluginNegativeFixture.generic(),
+      perf: PluginPerfFixture.generic(),
+      positiveRows: 1,
+      negativeRows: 3,
+      perfRows: 1,
+      domainNeutral: true,
+    }
+  }
+
+  pub fn accepted(self: PluginFixtureMatrix) -> bool {
+    return self.executable.accepted()
+      && self.negative.accepted()
+      && self.perf.accepted()
+      && self.positiveRows >= 1
+      && self.negativeRows >= 3
+      && self.perfRows >= 1
+      && self.domainNeutral
+  }
+}

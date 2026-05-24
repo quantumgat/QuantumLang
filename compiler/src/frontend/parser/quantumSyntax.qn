@@ -1,0 +1,14 @@
+pub struct QuantumSyntaxParse {
+  parsedQuantumItems: usize,
+  errors: usize,
+}
+
+pub fn quantumSyntaxParse(parsedQuantumItems: usize, errors: usize) -> QuantumSyntaxParse {
+  return QuantumSyntaxParse { parsedQuantumItems: parsedQuantumItems, errors: errors }
+}
+
+impl QuantumSyntaxParse {
+  pub fn quantumItemCount(self: QuantumSyntaxParse) -> usize {
+    return self.parsedQuantumItems
+  }
+}

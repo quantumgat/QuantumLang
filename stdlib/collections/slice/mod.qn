@@ -1,0 +1,8 @@
+pub mod slice
+pub mod iter
+pub mod builder
+
+pub use slice.Slice
+pub use slice.SliceView
+pub use iter.SliceIter
+pub use builder.SliceBuilder

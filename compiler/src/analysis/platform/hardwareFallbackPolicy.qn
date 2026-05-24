@@ -1,0 +1,21 @@
+pub struct HardwareFallbackPolicy {
+  kind: HardwareSafetyKind,
+  instrumentationRequired: bool,
+  trapsAllowed: bool,
+  coredumpAllowed: bool,
+}
+
+impl HardwareFallbackPolicy {
+  pub fn instrumented(kind: HardwareSafetyKind) -> HardwareFallbackPolicy {
+    return HardwareFallbackPolicy {
+      kind: kind,
+      instrumentationRequired: true,
+      trapsAllowed: false,
+      coredumpAllowed: false,
+    }
+  }
+
+  pub fn safe(self: HardwareFallbackPolicy) -> bool {
+    return self.instrumentationRequired && self.trapsAllowed == false && self.coredumpAllowed == false
+  }
+}

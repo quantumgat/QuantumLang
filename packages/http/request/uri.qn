@@ -1,0 +1,39 @@
+pub struct HttpUri {
+  path: string,
+  query: string,
+  fragment: string,
+}
+
+impl HttpUri {
+  pub fn init(path: string, query: string, fragment: string) -> HttpUri {
+    return HttpUri {
+      path: path,
+      query: query,
+      fragment: fragment,
+    }
+  }
+
+  pub fn pathOnly(path: string) -> HttpUri {
+    return HttpUri.init(path, "", "")
+  }
+
+  pub fn withQuery(path: string, query: string) -> HttpUri {
+    return HttpUri.init(path, query, "")
+  }
+
+  pub fn path(self: HttpUri) -> string {
+    return self.path
+  }
+
+  pub fn query(self: HttpUri) -> string {
+    return self.query
+  }
+
+  pub fn fragment(self: HttpUri) -> string {
+    return self.fragment
+  }
+
+  pub fn hasQuery(self: HttpUri) -> bool {
+    return self.query != ""
+  }
+}

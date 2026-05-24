@@ -1,0 +1,209 @@
+pub enum MirWhileLoopOpKind {
+  BranchLoop
+  PatternTestLoop
+  InfiniteLoop
+  BreakValueLoop
+  LabeledControlLoop
+  QuestionBranchLoop
+  AwaitQuestionPollLoop
+  ElseNoBreakLoop
+  UntilInvertedBranchLoop
+  TimeoutCheckedLoop
+  PollStateLoop
+  QirWhileLoop
+}
+
+pub struct MirWhileLoopOp {
+  instruction: u64,
+  kind: MirWhileLoopOpKind,
+  allocationFree: bool,
+  branchesDirect: bool,
+  optionTagDirect: bool,
+  optionPayloadExtractDirect: bool,
+  asyncStateMachineDirect: bool,
+  deadlineCheckDirect: bool,
+  pollReadyDirect: bool,
+  cancellationCheckDirect: bool,
+  cleanupPreserved: bool,
+  qirProfileDirect: bool,
+  qirBoundCheckDirect: bool,
+  qirConditionLowered: bool,
+  qubitOwnershipChecked: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+pub struct MirWhileInput {
+  hir: HirWhileHandoff,
+  instruction: u64,
+  kind: MirWhileLoopOpKind,
+  optionLoop: bool,
+  asyncPollTimeoutLoop: bool,
+  qwhileLoop: bool,
+}
+
+pub struct MirWhileBuild {
+  op: MirWhileLoopOp,
+  nativeSeedInstruction: u64,
+  readyForNative: bool,
+}
+
+pub fn mirWhileLoopOp(
+  instruction: u64,
+  kind: MirWhileLoopOpKind,
+  allocationFree: bool,
+  branchesDirect: bool,
+  optionTagDirect: bool,
+  optionPayloadExtractDirect: bool,
+  asyncStateMachineDirect: bool,
+  deadlineCheckDirect: bool,
+  pollReadyDirect: bool,
+  cancellationCheckDirect: bool,
+  cleanupPreserved: bool,
+  qirProfileDirect: bool,
+  qirBoundCheckDirect: bool,
+  qirConditionLowered: bool,
+  qubitOwnershipChecked: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+) -> MirWhileLoopOp {
+  return MirWhileLoopOp {
+    instruction: instruction,
+    kind: kind,
+    allocationFree: allocationFree,
+    branchesDirect: branchesDirect,
+    optionTagDirect: optionTagDirect,
+    optionPayloadExtractDirect: optionPayloadExtractDirect,
+    asyncStateMachineDirect: asyncStateMachineDirect,
+    deadlineCheckDirect: deadlineCheckDirect,
+    pollReadyDirect: pollReadyDirect,
+    cancellationCheckDirect: cancellationCheckDirect,
+    cleanupPreserved: cleanupPreserved,
+    qirProfileDirect: qirProfileDirect,
+    qirBoundCheckDirect: qirBoundCheckDirect,
+    qirConditionLowered: qirConditionLowered,
+    qubitOwnershipChecked: qubitOwnershipChecked,
+    sourceMapReady: sourceMapReady,
+    safeFailureReady: safeFailureReady,
+  }
+}
+
+pub fn mirWhileInput(
+  hir: HirWhileHandoff,
+  instruction: u64,
+  kind: MirWhileLoopOpKind,
+  optionLoop: bool,
+  asyncPollTimeoutLoop: bool,
+  qwhileLoop: bool,
+) -> MirWhileInput {
+  return MirWhileInput {
+    hir: hir,
+    instruction: instruction,
+    kind: kind,
+    optionLoop: optionLoop,
+    asyncPollTimeoutLoop: asyncPollTimeoutLoop,
+    qwhileLoop: qwhileLoop,
+  }
+}
+
+pub fn buildMirWhile(input: MirWhileInput) -> MirWhileBuild {
+  let hirReady = input.hir.complete()
+  let instruction = whileInstruction(input)
+  let op = mirWhileLoopOp(
+    instruction,
+    input.kind,
+    true,
+    hirReady,
+    !input.optionLoop || hirReady,
+    !input.optionLoop || hirReady,
+    !input.asyncPollTimeoutLoop || hirReady,
+    !input.asyncPollTimeoutLoop || hirReady,
+    !input.asyncPollTimeoutLoop || hirReady,
+    !input.asyncPollTimeoutLoop || hirReady,
+    true,
+    !input.qwhileLoop || hirReady,
+    !input.qwhileLoop || hirReady,
+    !input.qwhileLoop || hirReady,
+    !input.qwhileLoop || hirReady,
+    hirReady,
+    hirReady
+  )
+
+  return MirWhileBuild {
+    op: op,
+    nativeSeedInstruction: instruction + input.hir.formTotal() + 1,
+    readyForNative: op.hotLowerable(),
+  }
+}
+
+pub fn whileInstruction(input: MirWhileInput) -> u64 {
+  if input.instruction > 0 {
+    return input.instruction
+  }
+
+  return input.hir.sourceNodeId() + 1
+}
+
+impl MirWhileLoopOp {
+  pub fn instructionId(self: MirWhileLoopOp) -> u64 {
+    return self.instruction
+  }
+
+  pub fn hotLowerable(self: MirWhileLoopOp) -> bool {
+    return self.instruction > 0
+      && self.allocationFree
+      && self.branchesDirect
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+
+  pub fn whileLetOptionHotPath(self: MirWhileLoopOp) -> bool {
+    return self.kind == MirWhileLoopOpKind.PatternTestLoop
+      && self.allocationFree
+      && self.branchesDirect
+      && self.optionTagDirect
+      && self.optionPayloadExtractDirect
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+
+  pub fn isAsyncPollTimeout(self: MirWhileLoopOp) -> bool {
+    return self.kind == MirWhileLoopOpKind.AwaitQuestionPollLoop
+      || self.kind == MirWhileLoopOpKind.TimeoutCheckedLoop
+      || self.kind == MirWhileLoopOpKind.PollStateLoop
+  }
+
+  pub fn asyncPollTimeoutHotPath(self: MirWhileLoopOp) -> bool {
+    return self.isAsyncPollTimeout()
+      && self.allocationFree
+      && self.branchesDirect
+      && self.asyncStateMachineDirect
+      && self.deadlineCheckDirect
+      && self.pollReadyDirect
+      && self.cancellationCheckDirect
+      && self.cleanupPreserved
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+
+  pub fn qwhileQirHotPath(self: MirWhileLoopOp) -> bool {
+    return self.kind == MirWhileLoopOpKind.QirWhileLoop
+      && self.allocationFree
+      && self.branchesDirect
+      && self.qirProfileDirect
+      && self.qirBoundCheckDirect
+      && self.qirConditionLowered
+      && self.qubitOwnershipChecked
+      && self.cleanupPreserved
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}
+
+impl MirWhileBuild {
+  pub fn complete(self: MirWhileBuild) -> bool {
+    return self.op.hotLowerable()
+      && self.nativeSeedInstruction > 0
+      && self.readyForNative
+  }
+}

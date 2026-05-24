@@ -1,0 +1,23 @@
+pub enum SelectFairness {
+  Biased
+  RoundRobin
+  Randomized
+}
+
+pub struct Select<T> {
+  branchCount: usize,
+  fairness: SelectFairness,
+  cancellationLinked: bool,
+}
+
+impl Select<T> {
+  pub fn recv(self: Select<T>, receiver: Receiver<T>) -> Select<T>
+
+  pub fn send(self: Select<T>, sender: Sender<T>, value: T) -> Select<T>
+
+  pub fn await(self: Select<T>) -> Result<T, ChannelError>
+
+  pub fn fair(self: Select<T>) -> bool {
+    return self.branchCount > 0 && self.cancellationLinked
+  }
+}

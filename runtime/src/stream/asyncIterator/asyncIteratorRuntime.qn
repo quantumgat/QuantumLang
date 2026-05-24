@@ -1,0 +1,21 @@
+pub struct RuntimeAsyncIterator {
+  streamId: u64,
+  cursorPosition: usize,
+  fused: bool,
+  cancellationLinked: bool,
+}
+
+impl RuntimeAsyncIterator {
+  pub fn init(streamId: u64, cursorPosition: usize, fused: bool, cancellationLinked: bool) -> RuntimeAsyncIterator {
+    return RuntimeAsyncIterator {
+      streamId: streamId,
+      cursorPosition: cursorPosition,
+      fused: fused,
+      cancellationLinked: cancellationLinked,
+    }
+  }
+
+  pub fn safe(self: RuntimeAsyncIterator) -> bool {
+    return self.streamId > 0 && self.fused && self.cancellationLinked
+  }
+}

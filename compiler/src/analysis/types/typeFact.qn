@@ -1,0 +1,43 @@
+pub enum TypeFactKind {
+  UnknownType
+  PrimitiveType
+  StructType
+  EnumType
+  TraitType
+  ClassType
+  InterfaceType
+  FunctionType
+  QuantumType
+  UnionType
+  AnyType
+  QAnyType
+}
+
+pub struct TypeFact {
+  node: u64,
+  typeId: u64,
+  kind: TypeFactKind,
+  complete: bool,
+}
+
+pub fn typeFact(node: u64, typeId: u64, kind: TypeFactKind, complete: bool) -> TypeFact {
+  return TypeFact { node: node, typeId: typeId, kind: kind, complete: complete }
+}
+
+impl TypeFact {
+  pub fn nodeId(self: TypeFact) -> u64 {
+    return self.node
+  }
+
+  pub fn resolvedType(self: TypeFact) -> u64 {
+    return self.typeId
+  }
+
+  pub fn typeKind(self: TypeFact) -> TypeFactKind {
+    return self.kind
+  }
+
+  pub fn isComplete(self: TypeFact) -> bool {
+    return self.complete
+  }
+}

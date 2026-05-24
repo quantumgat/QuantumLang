@@ -1,0 +1,13 @@
+pub struct Fingerprint {
+  hash: string,
+  algorithm: string,
+  stableAcrossMachines: bool,
+}
+
+pub fn fingerprint(hash: string) -> Fingerprint {
+  return Fingerprint {
+    hash: hash,
+    algorithm: "sha256",
+    stableAcrossMachines: true,
+  }
+}

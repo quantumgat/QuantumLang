@@ -1,0 +1,580 @@
+pub enum Ordering {
+  Relaxed,
+  Acquire,
+  Release,
+  AcqRel,
+  SeqCst,
+}
+
+pub enum AtomicOperationKind {
+  Load,
+  Store,
+  ReadModifyWrite,
+  CompareExchange,
+  Wait,
+  Wake,
+  Fence,
+}
+
+pub struct MemoryOrderPolicy {
+  operation: AtomicOperationKind,
+  order: Ordering,
+}
+
+pub struct AtomicFence {
+  order: Ordering,
+}
+
+pub struct AtomicCompareExchangeResult<T> {
+  current: T,
+  exchanged: bool,
+}
+
+pub enum AtomicWaitStatus {
+  NotEqual,
+  Woken,
+  TimedOut,
+  Cancelled,
+  Unsupported,
+}
+
+pub struct AtomicCancellationToken {
+  cancelled: bool,
+}
+
+pub struct AtomicWaitOptions {
+  timeoutNanos: usize,
+  hasTimeout: bool,
+  cancellable: bool,
+  guardAware: bool,
+}
+
+pub enum ReclamationStrategy {
+  HazardPointer,
+  Epoch,
+  QuiescentState,
+}
+
+pub struct AbaToken {
+  version: u64,
+  tagBits: usize,
+}
+
+pub struct HazardPointer<T> {
+  ptr: AtomicPtr<T>,
+  protected: bool,
+  epoch: u64,
+  version: u64,
+}
+
+pub struct EpochPin {
+  epoch: u64,
+  active: bool,
+}
+
+pub struct RetiredPointer<T> {
+  ptr: AtomicPtr<T>,
+  retireEpoch: u64,
+  reclaimed: bool,
+}
+
+pub enum AtomicPayloadKind {
+  Bool,
+  Int,
+  Pointer,
+  Reference,
+  Value,
+}
+
+pub struct AtomicTargetSupport {
+  payloadKind: AtomicPayloadKind,
+  lockFree: bool,
+  targetSupported: bool,
+}
+
+pub struct Atomic<T> {
+  value: T,
+  initialized: bool,
+  payloadKind: AtomicPayloadKind,
+  lockFreeRequired: bool,
+  targetSupported: bool,
+}
+
+pub struct AtomicInt<T> {
+  value: T,
+  widthBits: usize,
+  targetSupported: bool,
+}
+
+pub struct AtomicPtr<T> {
+  address: usize,
+  targetSupported: bool,
+}
+
+pub struct AtomicRef<T> {
+  ptr: NonNull<T>,
+  targetSupported: bool,
+}
+
+impl AtomicTargetSupport {
+  pub fn init(payloadKind: AtomicPayloadKind, lockFree: bool, targetSupported: bool) -> AtomicTargetSupport {
+    return AtomicTargetSupport {
+      payloadKind: payloadKind,
+      lockFree: lockFree,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn usable(self: AtomicTargetSupport) -> bool {
+    return self.targetSupported && self.lockFree
+  }
+}
+
+impl MemoryOrderPolicy {
+  pub fn init(operation: AtomicOperationKind, order: Ordering) -> MemoryOrderPolicy {
+    return MemoryOrderPolicy {
+      operation: operation,
+      order: order,
+    }
+  }
+
+  pub fn valid(self: MemoryOrderPolicy) -> bool {
+    if self.operation == AtomicOperationKind.Load {
+      return self.order != Ordering.Release && self.order != Ordering.AcqRel
+    }
+    if self.operation == AtomicOperationKind.Store {
+      return self.order != Ordering.Acquire && self.order != Ordering.AcqRel
+    }
+    if self.operation == AtomicOperationKind.Wait {
+      return self.order != Ordering.Release && self.order != Ordering.AcqRel
+    }
+    return true
+  }
+}
+
+impl AtomicFence {
+  pub fn init(order: Ordering) -> AtomicFence {
+    return AtomicFence {
+      order: order,
+    }
+  }
+
+  pub fn valid(self: AtomicFence) -> bool {
+    return self.order != Ordering.Relaxed
+  }
+}
+
+impl<T> AtomicCompareExchangeResult<T> {
+  pub fn init(current: T, exchanged: bool) -> AtomicCompareExchangeResult<T> {
+    return AtomicCompareExchangeResult<T> {
+      current: current,
+      exchanged: exchanged,
+    }
+  }
+
+  pub fn isOk(self: AtomicCompareExchangeResult<T>) -> bool {
+    return self.exchanged
+  }
+}
+
+impl AtomicCancellationToken {
+  pub fn active() -> AtomicCancellationToken {
+    return AtomicCancellationToken {
+      cancelled: false,
+    }
+  }
+
+  pub fn cancelled() -> AtomicCancellationToken {
+    return AtomicCancellationToken {
+      cancelled: true,
+    }
+  }
+
+  pub fn isCancelled(self: AtomicCancellationToken) -> bool {
+    return self.cancelled
+  }
+}
+
+impl AtomicWaitOptions {
+  pub fn none() -> AtomicWaitOptions {
+    return AtomicWaitOptions {
+      timeoutNanos: 0,
+      hasTimeout: false,
+      cancellable: false,
+      guardAware: false,
+    }
+  }
+
+  pub fn timeout(timeoutNanos: usize) -> AtomicWaitOptions {
+    return AtomicWaitOptions {
+      timeoutNanos: timeoutNanos,
+      hasTimeout: true,
+      cancellable: false,
+      guardAware: false,
+    }
+  }
+
+  pub fn cancellable(timeoutNanos: usize) -> AtomicWaitOptions {
+    return AtomicWaitOptions {
+      timeoutNanos: timeoutNanos,
+      hasTimeout: timeoutNanos > 0,
+      cancellable: true,
+      guardAware: false,
+    }
+  }
+
+  pub fn withGuardAwareness(self: AtomicWaitOptions) -> AtomicWaitOptions {
+    return AtomicWaitOptions {
+      timeoutNanos: self.timeoutNanos,
+      hasTimeout: self.hasTimeout,
+      cancellable: self.cancellable,
+      guardAware: true,
+    }
+  }
+}
+
+impl AbaToken {
+  pub fn init(version: u64, tagBits: usize) -> AbaToken {
+    return AbaToken {
+      version: version,
+      tagBits: tagBits,
+    }
+  }
+
+  pub fn valid(self: AbaToken) -> bool {
+    return self.tagBits > 0
+  }
+}
+
+impl<T> HazardPointer<T> {
+  pub fn protect(ptr: AtomicPtr<T>, epoch: u64, version: u64) -> HazardPointer<T> {
+    return HazardPointer<T> {
+      ptr: ptr,
+      protected: true,
+      epoch: epoch,
+      version: version,
+    }
+  }
+
+  pub fn release(self: HazardPointer<T>) -> HazardPointer<T> {
+    return HazardPointer<T> {
+      ptr: self.ptr,
+      protected: false,
+      epoch: self.epoch,
+      version: self.version,
+    }
+  }
+
+  pub fn isProtected(self: HazardPointer<T>) -> bool {
+    return self.protected
+  }
+}
+
+impl EpochPin {
+  pub fn enter(epoch: u64) -> EpochPin {
+    return EpochPin {
+      epoch: epoch,
+      active: true,
+    }
+  }
+
+  pub fn leave(self: EpochPin) -> EpochPin {
+    return EpochPin {
+      epoch: self.epoch,
+      active: false,
+    }
+  }
+
+  pub fn isActive(self: EpochPin) -> bool {
+    return self.active
+  }
+}
+
+impl<T> RetiredPointer<T> {
+  pub fn init(ptr: AtomicPtr<T>, retireEpoch: u64) -> RetiredPointer<T> {
+    return RetiredPointer<T> {
+      ptr: ptr,
+      retireEpoch: retireEpoch,
+      reclaimed: false,
+    }
+  }
+
+  pub fn canReclaim(self: RetiredPointer<T>, currentEpoch: u64, protected: bool) -> bool {
+    return self.reclaimed == false && protected == false && currentEpoch > self.retireEpoch
+  }
+}
+
+impl<T> Atomic<T> {
+  pub fn init(value: T) -> Atomic<T> {
+    return Atomic<T> {
+      value: value,
+      initialized: true,
+      payloadKind: AtomicPayloadKind.Value,
+      lockFreeRequired: false,
+      targetSupported: true,
+    }
+  }
+
+  pub fn withPayload(value: T, payloadKind: AtomicPayloadKind, lockFreeRequired: bool, targetSupported: bool) -> Atomic<T> {
+    return Atomic<T> {
+      value: value,
+      initialized: true,
+      payloadKind: payloadKind,
+      lockFreeRequired: lockFreeRequired,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn usable(self: Atomic<T>) -> bool {
+    return self.initialized && self.targetSupported
+  }
+
+  pub fn load(self: Atomic<T>, order: Ordering) -> T {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Load, order)
+    if policy.valid() == false {
+      return self.value
+    }
+    return self.value
+  }
+
+  pub fn store(self: Atomic<T>, value: T, order: Ordering) -> Atomic<T> {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Store, order)
+    if policy.valid() == false {
+      return self
+    }
+    return Atomic<T> {
+      value: value,
+      initialized: self.initialized,
+      payloadKind: self.payloadKind,
+      lockFreeRequired: self.lockFreeRequired,
+      targetSupported: self.targetSupported,
+    }
+  }
+
+  pub fn exchange(self: Atomic<T>, value: T, order: Ordering) -> (Atomic<T>, T) {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.ReadModifyWrite, order)
+    if policy.valid() == false {
+      return (self, self.value)
+    }
+    return (self.store(value, order), self.value)
+  }
+
+  pub fn compareExchange(
+    self: Atomic<T>,
+    expected: T,
+    desired: T,
+    success: Ordering,
+    failure: Ordering,
+  ) -> (Atomic<T>, AtomicCompareExchangeResult<T>) {
+    let successPolicy = MemoryOrderPolicy.init(AtomicOperationKind.CompareExchange, success)
+    let failurePolicy = MemoryOrderPolicy.init(AtomicOperationKind.Load, failure)
+    if successPolicy.valid() == false || failurePolicy.valid() == false {
+      return (self, AtomicCompareExchangeResult<T>.init(self.value, false))
+    }
+    if self.value == expected {
+      return (self.store(desired, success), AtomicCompareExchangeResult<T>.init(expected, true))
+    }
+    return (self, AtomicCompareExchangeResult<T>.init(self.value, false))
+  }
+
+  pub fn wait(self: Atomic<T>, expected: T, order: Ordering, options: AtomicWaitOptions) -> AtomicWaitStatus {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Wait, order)
+    if self.targetSupported == false || policy.valid() == false {
+      return AtomicWaitStatus.Unsupported
+    }
+    if self.value != expected {
+      return AtomicWaitStatus.NotEqual
+    }
+    if options.cancellable {
+      return AtomicWaitStatus.Cancelled
+    }
+    if options.hasTimeout {
+      return AtomicWaitStatus.TimedOut
+    }
+    return AtomicWaitStatus.Woken
+  }
+
+  pub fn wakeOne(self: Atomic<T>) -> usize {
+    if self.targetSupported == false {
+      return 0
+    }
+    return 1
+  }
+
+  pub fn wakeAll(self: Atomic<T>) -> usize {
+    if self.targetSupported == false {
+      return 0
+    }
+    return 1
+  }
+}
+
+impl<T> AtomicInt<T> {
+  pub fn init(value: T, widthBits: usize) -> AtomicInt<T> {
+    return AtomicInt<T> {
+      value: value,
+      widthBits: widthBits,
+      targetSupported: true,
+    }
+  }
+
+  pub fn load(self: AtomicInt<T>, order: Ordering) -> T {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Load, order)
+    if policy.valid() == false {
+      return self.value
+    }
+    return self.value
+  }
+
+  pub fn store(self: AtomicInt<T>, value: T, order: Ordering) -> AtomicInt<T> {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Store, order)
+    if policy.valid() == false {
+      return self
+    }
+    return AtomicInt<T> {
+      value: value,
+      widthBits: self.widthBits,
+      targetSupported: self.targetSupported,
+    }
+  }
+
+  pub fn compareExchange(
+    self: AtomicInt<T>,
+    expected: T,
+    desired: T,
+    success: Ordering,
+    failure: Ordering,
+  ) -> (AtomicInt<T>, AtomicCompareExchangeResult<T>) {
+    let successPolicy = MemoryOrderPolicy.init(AtomicOperationKind.CompareExchange, success)
+    let failurePolicy = MemoryOrderPolicy.init(AtomicOperationKind.Load, failure)
+    if successPolicy.valid() == false || failurePolicy.valid() == false {
+      return (self, AtomicCompareExchangeResult<T>.init(self.value, false))
+    }
+    if self.value == expected {
+      return (self.store(desired, success), AtomicCompareExchangeResult<T>.init(expected, true))
+    }
+    return (self, AtomicCompareExchangeResult<T>.init(self.value, false))
+  }
+
+  pub fn wait(self: AtomicInt<T>, expected: T, order: Ordering, options: AtomicWaitOptions) -> AtomicWaitStatus {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Wait, order)
+    if self.targetSupported == false || policy.valid() == false {
+      return AtomicWaitStatus.Unsupported
+    }
+    if self.value != expected {
+      return AtomicWaitStatus.NotEqual
+    }
+    if options.cancellable {
+      return AtomicWaitStatus.Cancelled
+    }
+    if options.hasTimeout {
+      return AtomicWaitStatus.TimedOut
+    }
+    return AtomicWaitStatus.Woken
+  }
+}
+
+impl<T> AtomicPtr<T> {
+  pub fn null() -> AtomicPtr<T> {
+    return AtomicPtr<T> {
+      address: 0,
+      targetSupported: true,
+    }
+  }
+
+  pub fn fromAddress(address: usize) -> AtomicPtr<T> {
+    return AtomicPtr<T> {
+      address: address,
+      targetSupported: true,
+    }
+  }
+
+  pub fn load(self: AtomicPtr<T>, order: Ordering) -> usize {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Load, order)
+    if policy.valid() == false {
+      return self.address
+    }
+    return self.address
+  }
+
+  pub fn store(self: AtomicPtr<T>, address: usize, order: Ordering) -> AtomicPtr<T> {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Store, order)
+    if policy.valid() == false {
+      return self
+    }
+    return AtomicPtr<T> {
+      address: address,
+      targetSupported: self.targetSupported,
+    }
+  }
+
+  pub fn compareExchange(
+    self: AtomicPtr<T>,
+    expected: usize,
+    desired: usize,
+    success: Ordering,
+    failure: Ordering,
+  ) -> (AtomicPtr<T>, AtomicCompareExchangeResult<usize>) {
+    let successPolicy = MemoryOrderPolicy.init(AtomicOperationKind.CompareExchange, success)
+    let failurePolicy = MemoryOrderPolicy.init(AtomicOperationKind.Load, failure)
+    if successPolicy.valid() == false || failurePolicy.valid() == false {
+      return (self, AtomicCompareExchangeResult<usize>.init(self.address, false))
+    }
+    if self.address == expected {
+      return (self.store(desired, success), AtomicCompareExchangeResult<usize>.init(expected, true))
+    }
+    return (self, AtomicCompareExchangeResult<usize>.init(self.address, false))
+  }
+
+  pub fn wait(self: AtomicPtr<T>, expected: usize, order: Ordering, options: AtomicWaitOptions) -> AtomicWaitStatus {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Wait, order)
+    if self.targetSupported == false || policy.valid() == false {
+      return AtomicWaitStatus.Unsupported
+    }
+    if self.address != expected {
+      return AtomicWaitStatus.NotEqual
+    }
+    if options.cancellable {
+      return AtomicWaitStatus.Cancelled
+    }
+    if options.hasTimeout {
+      return AtomicWaitStatus.TimedOut
+    }
+    return AtomicWaitStatus.Woken
+  }
+}
+
+impl<T> AtomicRef<T> {
+  pub fn init(ptr: NonNull<T>) -> AtomicRef<T> {
+    return AtomicRef<T> {
+      ptr: ptr,
+      targetSupported: true,
+    }
+  }
+
+  pub fn load(self: AtomicRef<T>, order: Ordering) -> NonNull<T> {
+    let policy = MemoryOrderPolicy.init(AtomicOperationKind.Load, order)
+    if policy.valid() == false {
+      return self.ptr
+    }
+    return self.ptr
+  }
+
+  pub fn compareExchange(
+    self: AtomicRef<T>,
+    expected: NonNull<T>,
+    desired: NonNull<T>,
+    success: Ordering,
+    failure: Ordering,
+  ) -> (AtomicRef<T>, AtomicCompareExchangeResult<NonNull<T>>) {
+    let successPolicy = MemoryOrderPolicy.init(AtomicOperationKind.CompareExchange, success)
+    let failurePolicy = MemoryOrderPolicy.init(AtomicOperationKind.Load, failure)
+    if successPolicy.valid() == false || failurePolicy.valid() == false {
+      return (self, AtomicCompareExchangeResult<NonNull<T>>.init(self.ptr, false))
+    }
+    if self.ptr == expected {
+      return (AtomicRef<T> { ptr: desired, targetSupported: self.targetSupported }, AtomicCompareExchangeResult<NonNull<T>>.init(expected, true))
+    }
+    return (self, AtomicCompareExchangeResult<NonNull<T>>.init(self.ptr, false))
+  }
+}

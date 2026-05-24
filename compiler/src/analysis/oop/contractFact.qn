@@ -1,0 +1,26 @@
+pub struct ContractFact {
+  implementorTypeId: u64,
+  contractTypeId: u64,
+  obligationCount: usize,
+  satisfied: bool,
+}
+
+pub fn contractFact(
+  implementorTypeId: u64,
+  contractTypeId: u64,
+  obligationCount: usize,
+  satisfied: bool,
+) -> ContractFact {
+  return ContractFact {
+    implementorTypeId: implementorTypeId,
+    contractTypeId: contractTypeId,
+    obligationCount: obligationCount,
+    satisfied: satisfied,
+  }
+}
+
+impl ContractFact {
+  pub fn complete(self: ContractFact) -> bool {
+    return self.satisfied
+  }
+}

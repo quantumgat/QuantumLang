@@ -1,0 +1,19 @@
+pub struct BinaryLayoutRules {
+  littleEndian: bool,
+  stableNodeIds: bool,
+  checkedSpans: bool,
+}
+
+pub fn binaryLayoutRules(littleEndian: bool, stableNodeIds: bool, checkedSpans: bool) -> BinaryLayoutRules {
+  return BinaryLayoutRules {
+    littleEndian: littleEndian,
+    stableNodeIds: stableNodeIds,
+    checkedSpans: checkedSpans,
+  }
+}
+
+impl BinaryLayoutRules {
+  pub fn deterministic(self: BinaryLayoutRules) -> bool {
+    return self.littleEndian && self.stableNodeIds && self.checkedSpans
+  }
+}

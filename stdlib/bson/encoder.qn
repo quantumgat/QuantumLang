@@ -1,0 +1,259 @@
+pub struct Bson {
+}
+
+pub enum BsonCodecMode {
+  Http
+  Mongo
+  Exact
+}
+
+pub struct BsonCodecOptions {
+  mode: BsonCodecMode,
+  mongoCompatibleOnly: bool,
+  preservesQuantumTypeIdentity: bool,
+  rejectPrecisionLoss: bool,
+  rejectLiveResources: bool,
+  stableFieldOrder: bool,
+}
+
+pub trait BsonCodec<T> {
+  pub fn encodeBson(value: T) -> Result<BinaryView, BsonError>
+  pub fn decodeBson(bytes: BinaryView) -> Result<T, BsonError>
+}
+
+pub fn bsonCodecOptions() -> BsonCodecOptions {
+  return BsonCodecOptions {
+    mode: BsonCodecMode.Mongo,
+    mongoCompatibleOnly: true,
+    preservesQuantumTypeIdentity: false,
+    rejectPrecisionLoss: true,
+    rejectLiveResources: true,
+    stableFieldOrder: true,
+  }
+}
+
+pub fn bsonHttpOptions() -> BsonCodecOptions {
+  return BsonCodecOptions {
+    mode: BsonCodecMode.Http,
+    mongoCompatibleOnly: false,
+    preservesQuantumTypeIdentity: false,
+    rejectPrecisionLoss: true,
+    rejectLiveResources: true,
+    stableFieldOrder: true,
+  }
+}
+
+pub fn bsonExactOptions() -> BsonCodecOptions {
+  return BsonCodecOptions {
+    mode: BsonCodecMode.Exact,
+    mongoCompatibleOnly: false,
+    preservesQuantumTypeIdentity: true,
+    rejectPrecisionLoss: true,
+    rejectLiveResources: true,
+    stableFieldOrder: true,
+  }
+}
+
+pub fn bsonOptionsFor(mode: BsonCodecMode) -> BsonCodecOptions {
+  match mode {
+    BsonCodecMode.Http => {
+      return bsonHttpOptions()
+    }
+    BsonCodecMode.Mongo => {
+      return bsonCodecOptions()
+    }
+    BsonCodecMode.Exact => {
+      return bsonExactOptions()
+    }
+  }
+}
+
+impl Bson {
+  /**
+    Encodes a typed value into MongoDB-compatible BSON bytes.
+
+    example:
+      let bytes = Bson.encode(user)?
+      let bytes = user.toBson()?
+
+    mode:
+      Mongo-compatible BSON. Wide QuantumLang values use canonical BSON
+      carriers such as string or binary when the target type can recover them;
+      this path never silently loses precision.
+
+    effects: writes BSON document bytes with checked lengths
+    complexity: O(encoded bytes)
+    allocation: output buffer only
+    stability: public since 0.1
+  */
+  pub fn encode<T>(value: T) -> Result<BinaryView, BsonError> {
+    return bsonEncodeTyped(value, bsonCodecOptions())
+  }
+
+  pub fn encode<T>(value: T, mode: BsonCodecMode) -> Result<BinaryView, BsonError> {
+    return bsonEncodeTyped(value, bsonOptionsFor(mode))
+  }
+
+  pub fn encode(value: JsonValue) -> Result<BinaryView, BsonError> {
+    return bsonEncodeJsonValue(value, bsonCodecOptions())
+  }
+
+  /**
+    Encodes a value in QuantumLang-exact BSON extension mode.
+
+    example:
+      let bytes = Bson.encodeExact(user)?
+      let idBytes = Bson.encodeExact(id256)?
+
+    mode:
+      Preserves QuantumLang type identity. For example i16 and i32 remain
+      different exact types even if a compact BSON storage carrier is used.
+
+    effects: writes BSON bytes with exact type tags and checked lengths
+    complexity: O(encoded bytes)
+    allocation: output buffer only
+    stability: public since 0.1
+  */
+  pub fn encodeExact<T>(value: T) -> Result<BinaryView, BsonError> {
+    return bsonEncodeTyped(value, bsonExactOptions())
+  }
+
+  pub fn encodeWithOptions<T>(value: T, options: BsonCodecOptions) -> Result<BinaryView, BsonError> {
+    return bsonEncodeTyped(value, options)
+  }
+
+  pub fn encodeValue(value: BsonValue) -> Result<BinaryView, BsonError> {
+    return bsonEncodeValue(value)
+  }
+
+  pub fn size<T>(value: T) -> Result<usize, BsonError> {
+    return bsonEncodedSize(value, bsonCodecOptions())
+  }
+
+  pub fn sizeExact<T>(value: T) -> Result<usize, BsonError> {
+    return bsonEncodedSize(value, bsonExactOptions())
+  }
+
+  pub fn validate(bytes: BinaryView) -> Result<Unit, BsonError> {
+    return bsonValidate(bytes)
+  }
+
+  pub fn toJson(bytes: BinaryView) -> Result<JsonValue, BsonError> {
+    return bsonToJson(bytes)
+  }
+
+  pub fn toJson(bytes: BinaryView, mode: BsonCodecMode) -> Result<JsonValue, BsonError> {
+    return bsonToJsonWithMode(bytes, mode)
+  }
+
+  pub fn fromJson(value: JsonValue) -> Result<BinaryView, BsonError> {
+    return Bson.encode(value)
+  }
+
+  pub fn fromJson(value: JsonValue, mode: BsonCodecMode) -> Result<BinaryView, BsonError> {
+    return Bson.encode(value, mode)
+  }
+}
+
+extend<T: BsonCodec<T>> T {
+  /**
+    Encodes this value with the same Mongo-compatible policy as Bson.encode.
+
+    example:
+      let bytes = user.toBson()?
+
+    effects: writes Mongo-compatible BSON bytes
+    complexity: O(encoded bytes)
+    allocation: output buffer only
+    stability: public since 0.1
+  */
+  pub fn toBson(self: T) -> Result<BinaryView, BsonError> {
+    return Bson.encode(self)
+  }
+
+  pub fn toBson(self: T, mode: BsonCodecMode) -> Result<BinaryView, BsonError> {
+    return Bson.encode(self, mode)
+  }
+
+  /**
+    Encodes this value with the same QuantumLang-exact policy as
+    Bson.encodeExact.
+
+    example:
+      let bytes = user.toBsonExact()?
+
+    effects: writes exact BSON extension bytes
+    complexity: O(encoded bytes)
+    allocation: output buffer only
+    stability: public since 0.1
+  */
+  pub fn toBsonExact(self: T) -> Result<BinaryView, BsonError> {
+    return Bson.encodeExact(self)
+  }
+}
+
+extend JsonValue {
+  pub fn toBson(self: JsonValue) -> Result<BinaryView, BsonError> {
+    return Bson.encode(self)
+  }
+
+  pub fn toBsonExact(self: JsonValue) -> Result<BinaryView, BsonError> {
+    return Bson.encodeExact(self)
+  }
+
+  pub fn toBson(self: JsonValue, mode: BsonCodecMode) -> Result<BinaryView, BsonError> {
+    return Bson.encode(self, mode)
+  }
+}
+
+pub fn encode<T>(value: T) -> Result<BinaryView, BsonError> {
+  return Bson.encode(value)
+}
+
+pub fn encode(value: JsonValue) -> Result<BinaryView, BsonError> {
+  return Bson.encode(value)
+}
+
+pub fn encodeExact<T>(value: T) -> Result<BinaryView, BsonError> {
+  return Bson.encodeExact(value)
+}
+
+pub fn encodeValue(value: BsonValue) -> Result<BinaryView, BsonError> {
+  return Bson.encodeValue(value)
+}
+
+pub fn size<T>(value: T) -> Result<usize, BsonError> {
+  return Bson.size(value)
+}
+
+pub fn sizeExact<T>(value: T) -> Result<usize, BsonError> {
+  return Bson.sizeExact(value)
+}
+
+pub fn validate(bytes: BinaryView) -> Result<Unit, BsonError> {
+  return Bson.validate(bytes)
+}
+
+pub fn toJson(bytes: BinaryView) -> Result<JsonValue, BsonError> {
+  return Bson.toJson(bytes)
+}
+
+pub fn toJson(bytes: BinaryView, mode: BsonCodecMode) -> Result<JsonValue, BsonError> {
+  return Bson.toJson(bytes, mode)
+}
+
+pub fn fromJson(value: JsonValue) -> Result<BinaryView, BsonError> {
+  return Bson.fromJson(value)
+}
+
+pub fn fromJson(value: JsonValue, mode: BsonCodecMode) -> Result<BinaryView, BsonError> {
+  return Bson.fromJson(value, mode)
+}
+
+fn bsonEncodeTyped<T>(value: T, options: BsonCodecOptions) -> Result<BinaryView, BsonError>
+fn bsonEncodeJsonValue(value: JsonValue, options: BsonCodecOptions) -> Result<BinaryView, BsonError>
+fn bsonEncodeValue(value: BsonValue) -> Result<BinaryView, BsonError>
+fn bsonEncodedSize<T>(value: T, options: BsonCodecOptions) -> Result<usize, BsonError>
+fn bsonValidate(bytes: BinaryView) -> Result<Unit, BsonError>
+fn bsonToJson(bytes: BinaryView) -> Result<JsonValue, BsonError>
+fn bsonToJsonWithMode(bytes: BinaryView, mode: BsonCodecMode) -> Result<JsonValue, BsonError>

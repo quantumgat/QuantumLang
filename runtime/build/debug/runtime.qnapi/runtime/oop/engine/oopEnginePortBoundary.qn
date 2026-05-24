@@ -1,0 +1,19 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopEnginePortBoundary {
+  memoryHeaderIntegrated: bool
+  allocationFamilyVisible: bool
+  ownershipMetadataVisible: bool
+  ffiOpaqueHandleBridge: bool
+  ffiCallbackObjectSupport: bool
+  interfaceObjectSafe: bool
+}
+pub extern "qnpkg" {
+  pub fn oopEnginePortBoundary(
+  memoryHeaderIntegrated: bool,
+  allocationFamilyVisible: bool,
+  ownershipMetadataVisible: bool,
+  ffiOpaqueHandleBridge: bool,
+  ffiCallbackObjectSupport: bool,
+  interfaceObjectSafe: bool,
+) -> OopEnginePortBoundary
+}

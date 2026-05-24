@@ -1,0 +1,4 @@
+pub trait QueuePolicy {
+  fn policyName(self) -> string
+  fn isHotPathSafe(self) -> bool
+}

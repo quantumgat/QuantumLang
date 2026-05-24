@@ -1,0 +1,6 @@
+[module]
+name = "ptr.relative.relativePtr"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "pointer"

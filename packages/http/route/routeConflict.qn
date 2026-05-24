@@ -1,0 +1,29 @@
+pub struct HttpRouteConflict {
+  method: HttpMethod,
+  path: string,
+  existingHandler: string,
+  newHandler: string,
+}
+
+impl HttpRouteConflict {
+  pub fn init(method: HttpMethod, path: string, existingHandler: string, newHandler: string) -> HttpRouteConflict {
+    return HttpRouteConflict {
+      method: method,
+      path: path,
+      existingHandler: existingHandler,
+      newHandler: newHandler,
+    }
+  }
+
+  pub fn method(self: HttpRouteConflict) -> HttpMethod {
+    return self.method
+  }
+
+  pub fn path(self: HttpRouteConflict) -> string {
+    return self.path
+  }
+
+  pub fn message(self: HttpRouteConflict) -> string {
+    return "duplicate HTTP route " + self.method.text() + " " + self.path
+  }
+}

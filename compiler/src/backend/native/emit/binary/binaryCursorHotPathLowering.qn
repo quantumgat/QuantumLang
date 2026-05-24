@@ -1,0 +1,19 @@
+pub struct BinaryCursorHotPathLowering {
+  aliasCallsErased: bool,
+  linearStateAdvanced: bool,
+  directPointerLoads: bool,
+  byteSwapLowered: bool,
+  boundsCheckHoisted: bool,
+  resultBranchNoAllocation: bool,
+}
+
+impl BinaryCursorHotPathLowering {
+  pub fn hotPath(self: BinaryCursorHotPathLowering) -> bool {
+    return self.aliasCallsErased
+      && self.linearStateAdvanced
+      && self.directPointerLoads
+      && self.byteSwapLowered
+      && self.boundsCheckHoisted
+      && self.resultBranchNoAllocation
+  }
+}

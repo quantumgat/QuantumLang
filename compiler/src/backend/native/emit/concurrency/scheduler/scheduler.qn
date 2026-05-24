@@ -1,0 +1,49 @@
+pub enum NativeSchedulerLoweringKind {
+  SubmitLocal
+  SubmitGlobal
+  SubmitWake
+  PollBudget
+  Park
+  WakeRoute
+  WorkSteal
+  PriorityDispatch
+  BlockingBoundary
+  IncidentReport
+}
+
+pub struct NativeSchedulerLowering {
+  instruction: u64,
+  kind: NativeSchedulerLoweringKind,
+  runtimeAbiReady: bool,
+  noGeneratedFallback: bool,
+  sourceMapReady: bool,
+  safeFailureReady: bool,
+}
+
+impl NativeSchedulerLowering {
+  pub fn init(
+    instruction: u64,
+    kind: NativeSchedulerLoweringKind,
+    runtimeAbiReady: bool,
+    noGeneratedFallback: bool,
+    sourceMapReady: bool,
+    safeFailureReady: bool,
+  ) -> NativeSchedulerLowering {
+    return NativeSchedulerLowering {
+      instruction: instruction,
+      kind: kind,
+      runtimeAbiReady: runtimeAbiReady,
+      noGeneratedFallback: noGeneratedFallback,
+      sourceMapReady: sourceMapReady,
+      safeFailureReady: safeFailureReady,
+    }
+  }
+
+  pub fn complete(self: NativeSchedulerLowering) -> bool {
+    return self.instruction > 0
+      && self.runtimeAbiReady
+      && self.noGeneratedFallback
+      && self.sourceMapReady
+      && self.safeFailureReady
+  }
+}

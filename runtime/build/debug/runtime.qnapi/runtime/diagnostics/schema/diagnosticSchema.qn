@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct DiagnosticSchema {
+  name: string
+  version: u32
+  jsonCompatible: bool
+}
+pub extern "qnpkg" {
+  pub fn diagnosticSchema(name: string, version: u32) -> DiagnosticSchema
+}

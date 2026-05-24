@@ -1,0 +1,48 @@
+pub enum ConstructorFieldInitSource {
+  PrimaryTotal
+  ImplicitFieldConstructor
+  InitBody
+  StructLiteral
+  FieldAssignment
+  BuilderState
+}
+
+pub struct ConstructorFieldInitFact {
+  constructorId: u64,
+  ownerTypeId: u64,
+  fieldId: u64,
+  source: ConstructorFieldInitSource,
+  required: bool,
+  initialized: bool,
+  privateAccessAllowed: bool,
+}
+
+pub fn constructorFieldInitFact(
+  constructorId: u64,
+  ownerTypeId: u64,
+  fieldId: u64,
+  source: ConstructorFieldInitSource,
+  required: bool,
+  initialized: bool,
+  privateAccessAllowed: bool,
+) -> ConstructorFieldInitFact {
+  return ConstructorFieldInitFact {
+    constructorId: constructorId,
+    ownerTypeId: ownerTypeId,
+    fieldId: fieldId,
+    source: source,
+    required: required,
+    initialized: initialized,
+    privateAccessAllowed: privateAccessAllowed,
+  }
+}
+
+impl ConstructorFieldInitFact {
+  pub fn isValid(self: ConstructorFieldInitFact) -> bool {
+    return (self.required == false || self.initialized) && self.privateAccessAllowed
+  }
+
+  pub fn blocksConstruction(self: ConstructorFieldInitFact) -> bool {
+    return self.required && (self.initialized == false || self.privateAccessAllowed == false)
+  }
+}

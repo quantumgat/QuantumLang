@@ -1,0 +1,29 @@
+pub enum AliasErrorKind {
+  DanglingView,
+  MutationConflict,
+  OverlappingMutableBorrow,
+  ReadAfterMutation,
+  InvalidRange,
+}
+
+pub struct AliasError {
+  kind: AliasErrorKind,
+  recoverable: bool,
+}
+
+impl AliasError {
+  pub fn init(kind: AliasErrorKind) -> AliasError {
+    return AliasError {
+      kind: kind,
+      recoverable: true,
+    }
+  }
+
+  pub fn kind(self: AliasError) -> AliasErrorKind {
+    return self.kind
+  }
+
+  pub fn recoverable(self: AliasError) -> bool {
+    return self.recoverable
+  }
+}

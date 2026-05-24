@@ -1,0 +1,129 @@
+pub struct HttpAcceleratedTargetDispatch {
+  simdParserDispatch: bool,
+  routeTrieDispatch: bool,
+  writerDispatch: bool,
+  sendfileDispatch: bool,
+  fallbackDispatch: bool,
+}
+
+pub enum HttpAcceleratedOsBackend {
+  Portable,
+  Epoll,
+  IoUring,
+  Kqueue,
+}
+
+pub struct HttpAcceleratedTargetKernel {
+  parserTarget: HttpParserTarget,
+  osBackend: HttpAcceleratedOsBackend,
+  routeKernel: string,
+  writerKernel: string,
+  sendfileKernel: string,
+  backpressureKernel: string,
+  portableFallback: bool,
+}
+
+impl HttpAcceleratedTargetKernel {
+  pub fn linuxAvx2Epoll() -> HttpAcceleratedTargetKernel {
+    return HttpAcceleratedTargetKernel {
+      parserTarget: HttpParserTarget.avx2(),
+      osBackend: HttpAcceleratedOsBackend.Epoll,
+      routeKernel: "http.route.trie",
+      writerKernel: "http.writer.scatterGather",
+      sendfileKernel: "http.sendfile.splice",
+      backpressureKernel: "http.backpressure.queue",
+      portableFallback: true,
+    }
+  }
+
+  pub fn linuxAvx512IoUring() -> HttpAcceleratedTargetKernel {
+    return HttpAcceleratedTargetKernel {
+      parserTarget: HttpParserTarget.avx512(),
+      osBackend: HttpAcceleratedOsBackend.IoUring,
+      routeKernel: "http.route.trie",
+      writerKernel: "http.writer.scatterGather",
+      sendfileKernel: "http.sendfile.splice",
+      backpressureKernel: "http.backpressure.queue",
+      portableFallback: true,
+    }
+  }
+
+  pub fn darwinNeonKqueue() -> HttpAcceleratedTargetKernel {
+    return HttpAcceleratedTargetKernel {
+      parserTarget: HttpParserTarget.neon(),
+      osBackend: HttpAcceleratedOsBackend.Kqueue,
+      routeKernel: "http.route.trie",
+      writerKernel: "http.writer.scatterGather",
+      sendfileKernel: "http.sendfile.splice",
+      backpressureKernel: "http.backpressure.queue",
+      portableFallback: true,
+    }
+  }
+
+  pub fn portable() -> HttpAcceleratedTargetKernel {
+    return HttpAcceleratedTargetKernel {
+      parserTarget: HttpParserTarget.scalar(),
+      osBackend: HttpAcceleratedOsBackend.Portable,
+      routeKernel: "http.route.trie",
+      writerKernel: "http.writer.scatterGather",
+      sendfileKernel: "http.sendfile.splice",
+      backpressureKernel: "http.backpressure.queue",
+      portableFallback: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedTargetKernel) -> bool {
+    return self.parserTarget.accepted()
+      && self.routeKernel != ""
+      && self.writerKernel != ""
+      && self.sendfileKernel != ""
+      && self.backpressureKernel != ""
+      && self.portableFallback
+  }
+}
+
+pub struct HttpAcceleratedTargetKernelMatrix {
+  linuxAvx2Epoll: HttpAcceleratedTargetKernel,
+  linuxAvx512IoUring: HttpAcceleratedTargetKernel,
+  darwinNeonKqueue: HttpAcceleratedTargetKernel,
+  portable: HttpAcceleratedTargetKernel,
+}
+
+impl HttpAcceleratedTargetKernelMatrix {
+  pub fn required() -> HttpAcceleratedTargetKernelMatrix {
+    return HttpAcceleratedTargetKernelMatrix {
+      linuxAvx2Epoll: HttpAcceleratedTargetKernel.linuxAvx2Epoll(),
+      linuxAvx512IoUring: HttpAcceleratedTargetKernel.linuxAvx512IoUring(),
+      darwinNeonKqueue: HttpAcceleratedTargetKernel.darwinNeonKqueue(),
+      portable: HttpAcceleratedTargetKernel.portable(),
+    }
+  }
+
+  pub fn complete(self: HttpAcceleratedTargetKernelMatrix) -> bool {
+    return self.linuxAvx2Epoll.accepted()
+      && self.linuxAvx512IoUring.accepted()
+      && self.darwinNeonKqueue.accepted()
+      && self.portable.accepted()
+  }
+}
+
+impl HttpAcceleratedTargetDispatch {
+  pub fn required() -> HttpAcceleratedTargetDispatch {
+    return HttpAcceleratedTargetDispatch {
+      simdParserDispatch: true,
+      routeTrieDispatch: true,
+      writerDispatch: true,
+      sendfileDispatch: true,
+      fallbackDispatch: true,
+    }
+  }
+
+  pub fn complete(self: HttpAcceleratedTargetDispatch) -> bool {
+    return self.simdParserDispatch
+      && self.routeTrieDispatch
+      && self.writerDispatch
+      && self.sendfileDispatch
+      && self.fallbackDispatch
+      && HttpAcceleratedTargetKernelMatrix.required().complete()
+  }
+}

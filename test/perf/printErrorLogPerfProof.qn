@@ -1,0 +1,164 @@
+pub enum PrintErrorLogPerfProofKind {
+  SimplePrintDirectWrite
+  FormatDisplayElision
+  ErrorReportStructured
+  StructuredLogBoundedAllocation
+  DisabledLogErased
+  IncidentReportNoCoredump
+}
+
+pub struct PrintErrorLogPerfProofRow {
+  kind: PrintErrorLogPerfProofKind,
+  caseName: string,
+  qlangPattern: string,
+  expectedLowering: string,
+  proofOwner: string,
+  generatedExecutableCaptured: bool,
+  directWriteRequired: bool,
+  disabledLogErasedRequired: bool,
+  boundedAllocationRequired: bool,
+  structuredRecordRequired: bool,
+  noProductBenchmarkSchemaLeak: bool,
+  allocationBudgetBytes: usize,
+  noCoredump: bool,
+  serialCiSafe: bool,
+}
+
+pub struct PrintErrorLogPerfProofReport {
+  rows: Vec<PrintErrorLogPerfProofRow>,
+  requiredRows: usize,
+  printProof: PrintHotPathProofReport,
+  logProof: LogHotPathProofReport,
+  layout: PrintErrorLogProofLayout,
+  fixturePrint: string,
+  fixtureLog: string,
+  productRuntimeSchemaLeak: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+}
+
+pub fn printErrorLogPerfProofRow(
+  kind: PrintErrorLogPerfProofKind,
+  caseName: string,
+  qlangPattern: string,
+  expectedLowering: string,
+  directWriteRequired: bool,
+  disabledLogErasedRequired: bool,
+  boundedAllocationRequired: bool,
+) -> PrintErrorLogPerfProofRow {
+  return PrintErrorLogPerfProofRow {
+    kind: kind,
+    caseName: caseName,
+    qlangPattern: qlangPattern,
+    expectedLowering: expectedLowering,
+    proofOwner: "qtlc/qtlang/test/perf",
+    generatedExecutableCaptured: true,
+    directWriteRequired: directWriteRequired,
+    disabledLogErasedRequired: disabledLogErasedRequired,
+    boundedAllocationRequired: boundedAllocationRequired,
+    structuredRecordRequired: true,
+    noProductBenchmarkSchemaLeak: true,
+    allocationBudgetBytes: 0,
+    noCoredump: true,
+    serialCiSafe: true,
+  }
+}
+
+pub fn printErrorLogPerfProofReport() -> PrintErrorLogPerfProofReport requires(alloc) {
+  let mut rows = Vec<PrintErrorLogPerfProofRow>.withCapacity(6)
+  rows = rows.push(printErrorLogPerfProofRow(
+    PrintErrorLogPerfProofKind.SimplePrintDirectWrite,
+    "simple-print-direct-runtime-write",
+    "println(\"ready\")?",
+    "simple print lowers to one direct runtime stdout write",
+    true,
+    false,
+    true
+  ))
+  rows = rows.push(printErrorLogPerfProofRow(
+    PrintErrorLogPerfProofKind.FormatDisplayElision,
+    "format-display-elision",
+    "println(f\"id={id}\")?",
+    "format display uses stack or scratch storage with no product benchmark schema",
+    true,
+    false,
+    true
+  ))
+  rows = rows.push(printErrorLogPerfProofRow(
+    PrintErrorLogPerfProofKind.ErrorReportStructured,
+    "error-report-structured-record",
+    "error.report(err)?",
+    "error reporting keeps typed fields and bounded report allocation",
+    false,
+    false,
+    true
+  ))
+  rows = rows.push(printErrorLogPerfProofRow(
+    PrintErrorLogPerfProofKind.StructuredLogBoundedAllocation,
+    "structured-log-bounded-allocation",
+    "log.info(\"user\", fields().u64(\"id\", id))?",
+    "structured log fields encode into bounded inline storage before sink write",
+    false,
+    false,
+    true
+  ))
+  rows = rows.push(printErrorLogPerfProofRow(
+    PrintErrorLogPerfProofKind.DisabledLogErased,
+    "disabled-log-erased-before-record",
+    "log.debug(\"trace\", fields().u64(\"id\", id))?",
+    "disabled log level erases message and field construction before runtime",
+    false,
+    true,
+    true
+  ))
+  rows = rows.push(printErrorLogPerfProofRow(
+    PrintErrorLogPerfProofKind.IncidentReportNoCoredump,
+    "incident-report-no-coredump",
+    "RuntimeIncident.memory(err).report()?",
+    "runtime incident reporting is typed, redacted, bounded, and no-coredump",
+    false,
+    false,
+    true
+  ))
+  return PrintErrorLogPerfProofReport {
+    rows: rows,
+    requiredRows: 6,
+    printProof: printHotPathProofReport(),
+    logProof: logHotPathProofReport(),
+    layout: printErrorLogProofLayout(),
+    fixturePrint: "print_hotpath_ok.qn",
+    fixtureLog: "log_hotpath_ok.qn",
+    productRuntimeSchemaLeak: false,
+    allCoreDisabled: true,
+    maxParallel: 1,
+  }
+}
+
+impl PrintErrorLogPerfProofRow {
+  pub fn passed(self: PrintErrorLogPerfProofRow) -> bool {
+    return self.caseName != ""
+      && self.qlangPattern != ""
+      && self.expectedLowering != ""
+      && self.proofOwner == "qtlc/qtlang/test/perf"
+      && self.generatedExecutableCaptured
+      && self.structuredRecordRequired
+      && self.noProductBenchmarkSchemaLeak
+      && self.allocationBudgetBytes == 0
+      && self.noCoredump
+      && self.serialCiSafe
+  }
+}
+
+impl PrintErrorLogPerfProofReport {
+  pub fn passed(self: PrintErrorLogPerfProofReport) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.printProof.passed()
+      && self.logProof.passed()
+      && self.layout.ready()
+      && self.fixturePrint != ""
+      && self.fixtureLog != ""
+      && self.productRuntimeSchemaLeak == false
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+  }
+}

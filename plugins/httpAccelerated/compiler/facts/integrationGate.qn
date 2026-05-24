@@ -1,0 +1,44 @@
+pub struct HttpAcceleratedIntegrationGate {
+  packageName: string,
+  packageManifestKey: string,
+  packageManifestValue: string,
+  pluginName: string,
+  pluginOptional: bool,
+  genericHooksOnly: bool,
+  packageFactBinding: HttpPackageFactBinding,
+  hookRegistration: HttpAcceleratedHookRegistration,
+  noCoreCompilerHttp: bool,
+  noCoreRuntimeHttp: bool,
+  fallbackRequired: bool,
+}
+
+impl HttpAcceleratedIntegrationGate {
+  pub fn required() -> HttpAcceleratedIntegrationGate {
+    return HttpAcceleratedIntegrationGate {
+      packageName: "http",
+      packageManifestKey: "officialPlugin",
+      packageManifestValue: "httpAccelerated",
+      pluginName: "httpAccelerated",
+      pluginOptional: true,
+      genericHooksOnly: true,
+      packageFactBinding: HttpPackageFactBinding.required(),
+      hookRegistration: HttpAcceleratedHookRegistration.required(),
+      noCoreCompilerHttp: true,
+      noCoreRuntimeHttp: true,
+      fallbackRequired: true,
+    }
+  }
+
+  pub fn accepted(self: HttpAcceleratedIntegrationGate) -> bool {
+    return self.packageName == "http"
+      && self.packageManifestKey == "officialPlugin"
+      && self.packageManifestValue == self.pluginName
+      && self.pluginOptional
+      && self.genericHooksOnly
+      && self.packageFactBinding.complete()
+      && self.hookRegistration.genericOnly()
+      && self.noCoreCompilerHttp
+      && self.noCoreRuntimeHttp
+      && self.fallbackRequired
+  }
+}

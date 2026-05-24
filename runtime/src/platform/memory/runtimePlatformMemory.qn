@@ -1,0 +1,12 @@
+pub struct RuntimePlatformMemory {
+  target: string,
+  pagesAvailable: bool,
+  fixedHeap: bool,
+  deviceMemory: bool,
+}
+
+impl RuntimePlatformMemory {
+  pub fn accepted(self: RuntimePlatformMemory) -> bool {
+    return self.target != "" && (self.pagesAvailable || self.fixedHeap)
+  }
+}

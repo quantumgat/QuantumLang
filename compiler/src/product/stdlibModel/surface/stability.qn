@@ -1,0 +1,11 @@
+pub struct StdlibStability {
+  symbolName: string,
+  sinceVersion: string,
+  stable: bool,
+}
+
+impl StdlibStability {
+  pub fn accepted(self: StdlibStability) -> bool {
+    return self.symbolName != "" && self.sinceVersion != "" && self.stable
+  }
+}

@@ -1,0 +1,34 @@
+pub enum HirForPatternControlKind {
+  BreakJump
+  BreakValueCarrier
+  ContinueJump
+  LabelledJump
+  ElseNoBreakBlock
+  DestructureBind
+  PatternGuardBranch
+}
+
+pub struct HirForPatternControlHandoff {
+  sourceNode: u64,
+  kind: HirForPatternControlKind,
+  loopNode: u64,
+  patternNode: u64,
+  bodyNode: u64,
+  analysis: ForPatternControlFact,
+  controlTargetReady: bool,
+  cleanupHandoffReady: bool,
+  mirReady: bool,
+}
+
+impl HirForPatternControlHandoff {
+  pub fn complete(self: HirForPatternControlHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.loopNode > 0
+      && self.patternNode > 0
+      && self.bodyNode > 0
+      && self.analysis.complete()
+      && self.controlTargetReady
+      && self.cleanupHandoffReady
+      && self.mirReady
+  }
+}

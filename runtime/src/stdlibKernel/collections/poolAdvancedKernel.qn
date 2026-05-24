@@ -1,0 +1,42 @@
+pub struct PoolAdvancedKernel {
+  batchInsertLoopStable: bool,
+  batchRemoveLoopStable: bool,
+  updateManyDirectHandleLoop: bool,
+  queryPredicateInlineable: bool,
+  retainDrainUsesHandleSnapshot: bool,
+  lifecycleReplaceDirectSlotStore: bool,
+  leaseCleanupUsesRemove: bool,
+  metricsFreeListWalkStable: bool,
+  parallelForEachOccupiedCursorStable: bool,
+  policySelectionCompileTime: bool,
+}
+
+impl PoolAdvancedKernel {
+  pub fn standard() -> PoolAdvancedKernel {
+    return PoolAdvancedKernel {
+      batchInsertLoopStable: true,
+      batchRemoveLoopStable: true,
+      updateManyDirectHandleLoop: true,
+      queryPredicateInlineable: true,
+      retainDrainUsesHandleSnapshot: true,
+      lifecycleReplaceDirectSlotStore: true,
+      leaseCleanupUsesRemove: true,
+      metricsFreeListWalkStable: true,
+      parallelForEachOccupiedCursorStable: true,
+      policySelectionCompileTime: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: PoolAdvancedKernel) -> bool {
+    return self.batchInsertLoopStable
+      && self.batchRemoveLoopStable
+      && self.updateManyDirectHandleLoop
+      && self.queryPredicateInlineable
+      && self.retainDrainUsesHandleSnapshot
+      && self.lifecycleReplaceDirectSlotStore
+      && self.leaseCleanupUsesRemove
+      && self.metricsFreeListWalkStable
+      && self.parallelForEachOccupiedCursorStable
+      && self.policySelectionCompileTime
+  }
+}

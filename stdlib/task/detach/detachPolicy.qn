@@ -1,0 +1,18 @@
+pub enum DetachPolicy {
+  Reject
+  Supervised
+  UnsafeRaw
+}
+
+pub struct DetachedTask<T> {
+  id: TaskId,
+  supervised: bool,
+}
+
+impl DetachedTask<T> {
+  pub fn cancel(self: DetachedTask<T>) -> Result<Unit, TaskError>
+
+  pub fn isSupervised(self: DetachedTask<T>) -> bool {
+    return self.supervised
+  }
+}

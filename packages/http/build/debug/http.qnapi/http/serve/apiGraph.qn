@@ -1,0 +1,31 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum ApiMemberKind {
+  Api,
+  Controller,
+}
+pub struct ApiMemberFact {
+  ownerApiName: string
+  memberName: string
+  kind: ApiMemberKind
+}
+pub struct ApiFact {
+  typeName: string
+  ownerId: u64
+  root: bool
+  contextType: string
+  capabilityPolicy: ControllerCapabilityPolicy
+  members: Vec<ApiMemberFact>
+}
+pub struct ApiGraph {
+  apis: Vec<ApiFact>
+  rootCount: usize
+  controllerMemberCount: usize
+  nestedApiMemberCount: usize
+}
+pub struct ApiCapabilityResolution {
+  rootCapabilityCount: usize
+  groupCapabilityCount: usize
+  controllerCapabilityCount: usize
+  routeCapabilityCount: usize
+  effectiveCount: usize
+}

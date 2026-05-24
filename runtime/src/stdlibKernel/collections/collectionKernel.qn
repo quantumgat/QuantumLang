@@ -1,0 +1,15 @@
+pub struct CollectionKernel {
+  allocationChecked: bool,
+  iteratorStable: bool,
+  publicApiOwnedByStdlib: bool,
+}
+
+impl CollectionKernel {
+  pub fn standard() -> CollectionKernel {
+    return CollectionKernel { allocationChecked: true, iteratorStable: true, publicApiOwnedByStdlib: true }
+  }
+
+  pub fn canRun(self: CollectionKernel) -> bool {
+    return self.allocationChecked && self.iteratorStable && self.publicApiOwnedByStdlib
+  }
+}

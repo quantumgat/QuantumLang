@@ -1,0 +1,31 @@
+pub struct HeapIter<T, P> {
+  heap: Heap<T, P>,
+  index: usize,
+  len: usize,
+  generation: usize,
+}
+
+impl<T, P> HeapIter<T, P> {
+  pub fn isEmpty(self: HeapIter<T, P>) -> bool {
+    return self.index >= self.len
+  }
+
+  pub fn next(self: HeapIter<T, P>) -> Option<HeapEntry<T, P>> {
+    if self.isEmpty() {
+      return None
+    }
+    return Some(self.heap.entries[self.index])
+  }
+
+  pub fn advance(self: HeapIter<T, P>) -> HeapIter<T, P> {
+    if self.isEmpty() {
+      return self
+    }
+    return HeapIter<T, P> {
+      heap: self.heap,
+      index: self.index + 1,
+      len: self.len,
+      generation: self.generation,
+    }
+  }
+}

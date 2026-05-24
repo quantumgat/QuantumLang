@@ -1,0 +1,33 @@
+pub struct MemoryPool {
+  domain: AllocDomain,
+  blockLayout: Layout,
+  capacityBlocks: usize,
+  stats: MemoryPoolStats,
+}
+
+impl MemoryPool {
+  pub fn withBlocks(domain: AllocDomain, blockLayout: Layout, capacityBlocks: usize) -> MemoryPool {
+    return MemoryPool {
+      domain: domain,
+      blockLayout: blockLayout,
+      capacityBlocks: capacityBlocks,
+      stats: MemoryPoolStats.init(capacityBlocks, capacityBlocks, 0, blockLayout.arraySize(capacityBlocks)),
+    }
+  }
+
+  pub fn domain(self: MemoryPool) -> AllocDomain {
+    return self.domain
+  }
+
+  pub fn blockLayout(self: MemoryPool) -> Layout {
+    return self.blockLayout
+  }
+
+  pub fn stats(self: MemoryPool) -> MemoryPoolStats {
+    return self.stats
+  }
+
+  pub fn asAllocator(self: MemoryPool) -> PoolAllocator {
+    return PoolAllocator.fromPool(self)
+  }
+}

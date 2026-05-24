@@ -1,0 +1,23 @@
+pub struct ReclamationSafetyFact {
+  node: u64,
+  hazardProtected: bool,
+  epochSafe: bool,
+  abaSafe: bool,
+  wakeCovered: bool,
+}
+
+impl ReclamationSafetyFact {
+  pub fn init(node: u64, hazardProtected: bool, epochSafe: bool, abaSafe: bool, wakeCovered: bool) -> ReclamationSafetyFact {
+    return ReclamationSafetyFact {
+      node: node,
+      hazardProtected: hazardProtected,
+      epochSafe: epochSafe,
+      abaSafe: abaSafe,
+      wakeCovered: wakeCovered,
+    }
+  }
+
+  pub fn accepted(self: ReclamationSafetyFact) -> bool {
+    return self.hazardProtected && self.epochSafe && self.abaSafe && self.wakeCovered
+  }
+}

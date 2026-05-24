@@ -1,0 +1,21 @@
+pub struct RuntimeWatchChannel {
+  channelId: u64,
+  version: u64,
+  waiterCount: usize,
+  closed: bool,
+}
+
+impl RuntimeWatchChannel {
+  pub fn init(channelId: u64, version: u64, waiterCount: usize, closed: bool) -> RuntimeWatchChannel {
+    return RuntimeWatchChannel {
+      channelId: channelId,
+      version: version,
+      waiterCount: waiterCount,
+      closed: closed,
+    }
+  }
+
+  pub fn hasChange(self: RuntimeWatchChannel, seenVersion: u64) -> bool {
+    return self.closed == false && self.version > seenVersion
+  }
+}

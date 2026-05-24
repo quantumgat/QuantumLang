@@ -1,0 +1,40 @@
+pub enum AstControlFlowStmtKind {
+  If
+  While
+  ForIn
+  Loop
+  Break
+  Continue
+  Match
+  IfLet
+  WhileLet
+  ParallelFor
+  ParallelReduce
+  DomainLoop
+  Qif
+  Qfor
+}
+
+pub struct AstControlFlowStmt {
+  node: AstNode,
+  kind: AstControlFlowStmtKind,
+  labelId: u64,
+  conditionId: u64,
+  patternId: u64,
+  bodyId: u64,
+  elseBodyId: u64,
+}
+
+impl AstControlFlowStmt {
+  pub fn hasLabel(self: AstControlFlowStmt) -> bool {
+    return self.labelId > 0
+  }
+
+  pub fn hasCondition(self: AstControlFlowStmt) -> bool {
+    return self.conditionId > 0
+  }
+
+  pub fn hasPattern(self: AstControlFlowStmt) -> bool {
+    return self.patternId > 0
+  }
+}

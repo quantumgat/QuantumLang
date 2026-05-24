@@ -1,0 +1,13 @@
+pub struct QirTargetVariants {
+  baseProfile: TargetVariantId,
+  adaptiveProfile: TargetVariantId,
+  providerProfile: TargetVariantId,
+}
+
+impl QirTargetVariants {
+  pub fn coversProviderProfiles(self: QirTargetVariants) -> bool {
+    return self.baseProfile == TargetVariantId.QirBaseProfile
+      && self.adaptiveProfile == TargetVariantId.QirAdaptiveProfile
+      && self.providerProfile == TargetVariantId.QirProviderProfile
+  }
+}

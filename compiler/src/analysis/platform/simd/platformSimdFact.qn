@@ -1,0 +1,12 @@
+pub struct PlatformSimdFact {
+  target: string,
+  laneBits: usize,
+  nativeVector: bool,
+  scalarFallbackAllowed: bool,
+}
+
+impl PlatformSimdFact {
+  pub fn accepted(self: PlatformSimdFact) -> bool {
+    return self.target != "" && self.laneBits > 0
+  }
+}

@@ -1,0 +1,23 @@
+pub struct WhileLetOptionFact {
+  sourceNode: u64,
+  patternName: string,
+  bindingName: string,
+  scrutineeType: string,
+  scrutineeIsOption: bool,
+  payloadType: string,
+  bodyScopedBinding: bool,
+  unsupportedPatternDiagnostic: bool,
+}
+
+impl WhileLetOptionFact {
+  pub fn accepted(self: WhileLetOptionFact) -> bool {
+    return self.sourceNode > 0
+      && self.patternName == "Some"
+      && self.bindingName != ""
+      && self.scrutineeType != ""
+      && self.scrutineeIsOption
+      && self.payloadType != ""
+      && self.bodyScopedBinding
+      && self.unsupportedPatternDiagnostic
+  }
+}

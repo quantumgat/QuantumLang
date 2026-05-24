@@ -1,0 +1,29 @@
+pub enum FastPathPolicyKind {
+  PortableOnly
+  OsFastPath
+  DisabledFastPath
+}
+
+pub struct FastPathPolicy {
+  kind: FastPathPolicyKind,
+  requiresGuard: bool,
+  enabled: bool,
+}
+
+pub fn fastPathPolicy(kind: FastPathPolicyKind, requiresGuard: bool, enabled: bool) -> FastPathPolicy {
+  return FastPathPolicy { kind: kind, requiresGuard: requiresGuard, enabled: enabled }
+}
+
+impl FastPathPolicy {
+  pub fn policyKind(self: FastPathPolicy) -> FastPathPolicyKind {
+    return self.kind
+  }
+
+  pub fn needsGuard(self: FastPathPolicy) -> bool {
+    return self.requiresGuard
+  }
+
+  pub fn isEnabled(self: FastPathPolicy) -> bool {
+    return self.enabled
+  }
+}

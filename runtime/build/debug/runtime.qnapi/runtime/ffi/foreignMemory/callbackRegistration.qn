@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeCallbackRegistration {
+  callbackId: u64
+  signatureId: u64
+  unregisterToken: u64
+  noUnwind: bool
+  active: bool
+}

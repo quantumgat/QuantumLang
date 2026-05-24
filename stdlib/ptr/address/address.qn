@@ -1,0 +1,90 @@
+/**
+  Typed pointer address with its address-space tag.
+
+  example:
+    let address = Address.init(raw, AddressSpace.Host)
+    unsafe {
+      let ptr = Ptr<User>.fromAddress(address)
+    }
+
+  effects: pure
+  complexity: O(1)
+  allocation: none
+  safety: address metadata alone does not prove lifetime or access rights
+  stability: public since 0.1
+*/
+pub struct Address {
+  value: usize,
+  space: AddressSpace,
+}
+
+impl Address {
+  /**
+    Creates a typed address from a raw value and address space.
+
+    example:
+      let address = Address.init(raw, AddressSpace.Host)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: caller must ensure raw belongs to the declared address space
+    stability: public since 0.1
+  */
+  pub fn init(value: usize, space: AddressSpace) -> Address {
+    return Address {
+      value: value,
+      space: space,
+    }
+  }
+
+  /**
+    Returns true when the raw address value is zero.
+
+    example:
+      if address.isZero() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: zero check does not prove non-zero addresses are valid
+    stability: public since 0.1
+  */
+  pub fn isZero(self: Address) -> bool {
+    return self.value == 0
+  }
+
+  /**
+    Returns the raw integer address.
+
+    example:
+      let raw = address.raw()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: raw addresses should not bypass provenance checks
+    stability: public since 0.1
+  */
+  pub fn raw(self: Address) -> usize {
+    return self.value
+  }
+
+  /**
+    Returns the address space tag.
+
+    example:
+      if address.addressSpace() == AddressSpace.Foreign {
+        return
+      }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: address-space metadata is used before pointer lowering
+    stability: public since 0.1
+  */
+  pub fn addressSpace(self: Address) -> AddressSpace {
+    return self.space
+  }
+}

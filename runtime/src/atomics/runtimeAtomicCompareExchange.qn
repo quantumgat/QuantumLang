@@ -1,0 +1,21 @@
+pub struct RuntimeAtomicCompareExchange {
+  successOrder: RuntimeMemoryOrder,
+  failureOrder: RuntimeMemoryOrder,
+  targetSupported: bool,
+}
+
+impl RuntimeAtomicCompareExchange {
+  pub fn init(successOrder: RuntimeMemoryOrder, failureOrder: RuntimeMemoryOrder, targetSupported: bool) -> RuntimeAtomicCompareExchange {
+    return RuntimeAtomicCompareExchange {
+      successOrder: successOrder,
+      failureOrder: failureOrder,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn accepted(self: RuntimeAtomicCompareExchange) -> bool {
+    let success = RuntimeMemoryOrderPolicy.init(RuntimeAtomicOperationKind.CompareExchange, self.successOrder)
+    let failure = RuntimeMemoryOrderPolicy.init(RuntimeAtomicOperationKind.Load, self.failureOrder)
+    return self.targetSupported && success.valid() && failure.valid()
+  }
+}

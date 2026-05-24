@@ -1,0 +1,48 @@
+pub struct RuntimeTerminalCapability {
+  target: RuntimePrintTarget,
+  isTerminalKnown: bool,
+  supportsColor: bool,
+  supportsUnicode: bool,
+  widthKnown: bool,
+  widthColumns: usize,
+  detectionReturnsResult: bool,
+  fallbackPlainText: bool,
+  noPanic: bool,
+}
+
+impl RuntimeTerminalCapability {
+  pub fn unknown(target: RuntimePrintTarget) -> RuntimeTerminalCapability {
+    return RuntimeTerminalCapability {
+      target: target,
+      isTerminalKnown: false,
+      supportsColor: false,
+      supportsUnicode: true,
+      widthKnown: false,
+      widthColumns: 0,
+      detectionReturnsResult: true,
+      fallbackPlainText: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn terminal(target: RuntimePrintTarget, widthColumns: usize) -> RuntimeTerminalCapability {
+    return RuntimeTerminalCapability {
+      target: target,
+      isTerminalKnown: true,
+      supportsColor: true,
+      supportsUnicode: true,
+      widthKnown: true,
+      widthColumns: widthColumns,
+      detectionReturnsResult: true,
+      fallbackPlainText: true,
+      noPanic: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeTerminalCapability) -> bool {
+    return self.target.safe()
+      && self.detectionReturnsResult
+      && self.fallbackPlainText
+      && self.noPanic
+  }
+}

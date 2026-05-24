@@ -1,0 +1,47 @@
+pub enum DowncastMetadataSource {
+  Reflection
+  InterfaceObject
+  TypeMetadata
+  Missing
+}
+
+pub enum DowncastOwnershipShape {
+  Borrow
+  Box
+  Arc
+  Pin
+  Handle
+}
+
+pub struct DowncastMetadataFact {
+  downcastId: u64,
+  sourceTypeId: u64,
+  targetTypeId: u64,
+  metadataSource: DowncastMetadataSource,
+  ownershipShape: DowncastOwnershipShape,
+  checkedResult: bool,
+}
+
+pub fn downcastMetadataFact(
+  downcastId: u64,
+  sourceTypeId: u64,
+  targetTypeId: u64,
+  metadataSource: DowncastMetadataSource,
+  ownershipShape: DowncastOwnershipShape,
+  checkedResult: bool,
+) -> DowncastMetadataFact {
+  return DowncastMetadataFact {
+    downcastId: downcastId,
+    sourceTypeId: sourceTypeId,
+    targetTypeId: targetTypeId,
+    metadataSource: metadataSource,
+    ownershipShape: ownershipShape,
+    checkedResult: checkedResult,
+  }
+}
+
+impl DowncastMetadataFact {
+  pub fn canAttempt(self: DowncastMetadataFact) -> bool {
+    return self.checkedResult && self.metadataSource != DowncastMetadataSource.Missing
+  }
+}

@@ -1,0 +1,33 @@
+pub struct EmitContext {
+  functionId: u64,
+  blockId: u64,
+  instructionCount: usize,
+  textBytes: usize,
+}
+
+pub fn emitContext(functionId: u64, blockId: u64, instructionCount: usize, textBytes: usize) -> EmitContext {
+  return EmitContext {
+    functionId: functionId,
+    blockId: blockId,
+    instructionCount: instructionCount,
+    textBytes: textBytes,
+  }
+}
+
+impl EmitContext {
+  pub fn function(self: EmitContext) -> u64 {
+    return self.functionId
+  }
+
+  pub fn block(self: EmitContext) -> u64 {
+    return self.blockId
+  }
+
+  pub fn instructions(self: EmitContext) -> usize {
+    return self.instructionCount
+  }
+
+  pub fn emittedBytes(self: EmitContext) -> usize {
+    return self.textBytes
+  }
+}

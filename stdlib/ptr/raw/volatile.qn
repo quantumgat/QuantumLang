@@ -1,0 +1,75 @@
+pub enum VolatileAccessKind {
+  Read,
+  Write,
+  ReadWrite,
+}
+
+pub struct VolatilePtr<T> {
+  address: usize,
+  access: VolatileAccessKind,
+  ordered: bool,
+}
+
+pub struct MmioRegion<T> {
+  base: VolatilePtr<T>,
+  bytes: usize,
+  deviceMemory: bool,
+  targetCapable: bool,
+}
+
+pub struct DeviceMemory<T> {
+  region: MmioRegion<T>,
+  coherent: bool,
+  unsafeCapabilityChecked: bool,
+}
+
+impl<T> VolatilePtr<T> {
+  pub fn fromAddress(address: usize, access: VolatileAccessKind) -> VolatilePtr<T> {
+    return VolatilePtr<T> {
+      address: address,
+      access: access,
+      ordered: true,
+    }
+  }
+
+  pub fn read(self: VolatilePtr<T>) -> Result<T, PtrError> {
+    return Err(PtrError.CapabilityDenied)
+  }
+
+  pub fn write(self: VolatilePtr<T>, value: T) -> Result<Unit, PtrError> {
+    return Err(PtrError.CapabilityDenied)
+  }
+
+  pub fn accepted(self: VolatilePtr<T>) -> bool {
+    return self.address > 0 && self.ordered
+  }
+}
+
+impl<T> MmioRegion<T> {
+  pub fn init(base: VolatilePtr<T>, bytes: usize, targetCapable: bool) -> MmioRegion<T> {
+    return MmioRegion<T> {
+      base: base,
+      bytes: bytes,
+      deviceMemory: true,
+      targetCapable: targetCapable,
+    }
+  }
+
+  pub fn accepted(self: MmioRegion<T>) -> bool {
+    return self.base.accepted() && self.bytes > 0 && self.deviceMemory && self.targetCapable
+  }
+}
+
+impl<T> DeviceMemory<T> {
+  pub fn init(region: MmioRegion<T>, coherent: bool, unsafeCapabilityChecked: bool) -> DeviceMemory<T> {
+    return DeviceMemory<T> {
+      region: region,
+      coherent: coherent,
+      unsafeCapabilityChecked: unsafeCapabilityChecked,
+    }
+  }
+
+  pub fn accepted(self: DeviceMemory<T>) -> bool {
+    return self.region.accepted() && self.coherent && self.unsafeCapabilityChecked
+  }
+}

@@ -1,0 +1,39 @@
+pub struct LogRecord {
+  level: LogLevel,
+  target: string,
+  loggerName: string,
+  message: string,
+  template: LogTemplate,
+  fields: LogFields,
+  context: LogContext,
+  redacted: bool,
+  sinkNeutral: bool,
+  staticLevelChecked: bool,
+  disabledAtCompileTime: bool,
+}
+
+impl LogRecord {
+  pub fn core(level: LogLevel, loggerName: string, message: string) -> LogRecord {
+    return LogRecord {
+      level: level,
+      target: loggerName,
+      loggerName: loggerName,
+      message: message,
+      template: LogTemplate.static(message),
+      fields: LogFields.empty(),
+      context: LogContext.empty(),
+      redacted: true,
+      sinkNeutral: true,
+      staticLevelChecked: true,
+      disabledAtCompileTime: false,
+    }
+  }
+
+  pub fn productionSafe(self: LogRecord) -> bool {
+    return self.message != ""
+      && self.template.safe()
+      && self.redacted
+      && self.sinkNeutral
+      && self.staticLevelChecked
+  }
+}

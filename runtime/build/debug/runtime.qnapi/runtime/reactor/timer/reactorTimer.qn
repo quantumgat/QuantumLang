@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeReactorTimer {
+  timerId: u64
+  deadlineMillis: u64
+  cancellationLinked: bool
+  staleWakeSuppressed: bool
+}

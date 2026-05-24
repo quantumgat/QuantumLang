@@ -1,0 +1,11 @@
+pub struct NetworkAwaitFact {
+  stateMachineLowered: bool,
+  cleanupEdgePresent: bool,
+  reactorRegistrationStable: bool,
+}
+
+impl NetworkAwaitFact {
+  pub fn accepted(self: NetworkAwaitFact) -> bool {
+    return self.stateMachineLowered && self.cleanupEdgePresent && self.reactorRegistrationStable
+  }
+}

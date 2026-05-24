@@ -1,0 +1,11 @@
+pub struct StdlibPublicFunction {
+  name: string,
+  returnType: string,
+  effectSurface: string,
+}
+
+impl StdlibPublicFunction {
+  pub fn accepted(self: StdlibPublicFunction) -> bool {
+    return self.name != "" && self.returnType != "" && self.effectSurface != ""
+  }
+}

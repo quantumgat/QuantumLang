@@ -1,0 +1,27 @@
+pub struct ObjectDebugRecord {
+  section: string,
+  recordKind: string,
+  byteCount: usize,
+}
+
+pub fn objectDebugRecord(section: string, recordKind: string, byteCount: usize) -> ObjectDebugRecord {
+  return ObjectDebugRecord {
+    section: section,
+    recordKind: recordKind,
+    byteCount: byteCount,
+  }
+}
+
+impl ObjectDebugRecord {
+  pub fn sectionName(self: ObjectDebugRecord) -> string {
+    return self.section
+  }
+
+  pub fn kind(self: ObjectDebugRecord) -> string {
+    return self.recordKind
+  }
+
+  pub fn bytes(self: ObjectDebugRecord) -> usize {
+    return self.byteCount
+  }
+}

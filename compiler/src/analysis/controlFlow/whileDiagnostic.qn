@@ -1,0 +1,34 @@
+pub enum WhileDiagnosticKind {
+  NonBoolCondition
+  InvalidWhileLetPattern
+  BreakValueTypeMismatch
+  ContinueWithValue
+  UnknownLabel
+  QuestionRequiresResultOrOption
+  AwaitQuestionRequiresAsync
+  ElseUnreachableAfterBreak
+  UntilRequiresBool
+  TimeoutRequiresDuration
+  TimeoutRequiresCancellationSafeCleanup
+  PollRequiresPollable
+  PollRequiresRuntimeHandoff
+  AwaitQuestionRequiresCleanupPreservation
+  QuantumProfileUnsupported
+  WhileLetOptionRequiresSome
+  WhileLetOptionRequiresLocalScrutinee
+}
+
+pub struct WhileDiagnostic {
+  kind: WhileDiagnosticKind,
+  code: string,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+}
+
+impl WhileDiagnostic {
+  pub fn complete(self: WhileDiagnostic) -> bool {
+    return self.code != ""
+      && self.sourceRangeReady
+      && self.fixitReady
+  }
+}

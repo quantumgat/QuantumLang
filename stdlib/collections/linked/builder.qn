@@ -1,0 +1,17 @@
+pub struct LinkedListBuilder<T> {
+  capacity: usize,
+}
+
+impl<T> LinkedListBuilder<T> {
+  pub fn init() -> LinkedListBuilder<T> {
+    return LinkedListBuilder<T> { capacity: 0 }
+  }
+
+  pub fn capacity(self: LinkedListBuilder<T>, capacity: usize) -> LinkedListBuilder<T> {
+    return LinkedListBuilder<T> { capacity: capacity }
+  }
+
+  pub fn build(self: LinkedListBuilder<T>) -> LinkedList<T> requires(alloc) {
+    return LinkedList<T>.withCapacity(self.capacity)
+  }
+}

@@ -1,0 +1,79 @@
+pub enum PrimitiveOperatorNativeLoweringKind {
+  DirectScalar
+  DirectMutatingScalar
+  LimbWideInteger
+  RuntimeKernel
+  SimdTargetDispatch
+  SafeFailure
+}
+
+pub struct PrimitiveOperatorNativeLowering {
+  kind: PrimitiveOperatorNativeLoweringKind,
+  targetFeatureChecked: bool,
+  noHiddenAllocation: bool,
+  sourceMappedDiagnostic: bool,
+  noCoredump: bool,
+  emitsDirectInstruction: bool,
+  callsRuntimeKernel: bool,
+  lvalueChecked: bool,
+  mutationChecked: bool,
+  preservesPrefixPostfixValue: bool,
+}
+
+impl PrimitiveOperatorNativeLowering {
+  pub fn directScalar() -> PrimitiveOperatorNativeLowering {
+    return PrimitiveOperatorNativeLowering {
+      kind: PrimitiveOperatorNativeLoweringKind.DirectScalar,
+      targetFeatureChecked: true,
+      noHiddenAllocation: true,
+      sourceMappedDiagnostic: true,
+      noCoredump: true,
+      emitsDirectInstruction: true,
+      callsRuntimeKernel: false,
+      lvalueChecked: true,
+      mutationChecked: true,
+      preservesPrefixPostfixValue: true,
+    }
+  }
+
+  pub fn directIncrementDecrement() -> PrimitiveOperatorNativeLowering {
+    return PrimitiveOperatorNativeLowering {
+      kind: PrimitiveOperatorNativeLoweringKind.DirectMutatingScalar,
+      targetFeatureChecked: true,
+      noHiddenAllocation: true,
+      sourceMappedDiagnostic: true,
+      noCoredump: true,
+      emitsDirectInstruction: true,
+      callsRuntimeKernel: false,
+      lvalueChecked: true,
+      mutationChecked: true,
+      preservesPrefixPostfixValue: true,
+    }
+  }
+
+  pub fn runtimeKernel(kind: PrimitiveOperatorNativeLoweringKind) -> PrimitiveOperatorNativeLowering {
+    return PrimitiveOperatorNativeLowering {
+      kind: kind,
+      targetFeatureChecked: true,
+      noHiddenAllocation: true,
+      sourceMappedDiagnostic: true,
+      noCoredump: true,
+      emitsDirectInstruction: false,
+      callsRuntimeKernel: true,
+      lvalueChecked: true,
+      mutationChecked: true,
+      preservesPrefixPostfixValue: true,
+    }
+  }
+
+  pub fn accepted(self: PrimitiveOperatorNativeLowering) -> bool {
+    return self.targetFeatureChecked
+      && self.noHiddenAllocation
+      && self.sourceMappedDiagnostic
+      && self.noCoredump
+      && self.lvalueChecked
+      && self.mutationChecked
+      && self.preservesPrefixPostfixValue
+      && (self.emitsDirectInstruction || self.callsRuntimeKernel)
+  }
+}

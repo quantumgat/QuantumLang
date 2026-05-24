@@ -1,0 +1,33 @@
+pub enum MachineOptimizePassKind {
+  PeepholePass
+  DeadMovePass
+  BranchCleanupPass
+}
+
+pub struct MachineOptimizePass {
+  kind: MachineOptimizePassKind,
+  changedInstructionCount: usize,
+  preservesSourceMap: bool,
+}
+
+pub fn machineOptimizePass(kind: MachineOptimizePassKind, changedInstructionCount: usize, preservesSourceMap: bool) -> MachineOptimizePass {
+  return MachineOptimizePass {
+    kind: kind,
+    changedInstructionCount: changedInstructionCount,
+    preservesSourceMap: preservesSourceMap,
+  }
+}
+
+impl MachineOptimizePass {
+  pub fn passKind(self: MachineOptimizePass) -> MachineOptimizePassKind {
+    return self.kind
+  }
+
+  pub fn changedInstructions(self: MachineOptimizePass) -> usize {
+    return self.changedInstructionCount
+  }
+
+  pub fn keepsSourceMap(self: MachineOptimizePass) -> bool {
+    return self.preservesSourceMap
+  }
+}

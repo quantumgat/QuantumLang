@@ -1,0 +1,35 @@
+pub struct DispatchClassification {
+  callId: u64,
+  finalDirect: bool,
+  sealedKnown: bool,
+  cachedBeforeLoop: bool,
+  fullDynamic: bool,
+}
+
+pub fn dispatchClassification(callId: u64, finalDirect: bool, sealedKnown: bool, cachedBeforeLoop: bool, fullDynamic: bool) -> DispatchClassification {
+  return DispatchClassification {
+    callId: callId,
+    finalDirect: finalDirect,
+    sealedKnown: sealedKnown,
+    cachedBeforeLoop: cachedBeforeLoop,
+    fullDynamic: fullDynamic,
+  }
+}
+
+impl DispatchClassification {
+  pub fn dispatchTier(self: DispatchClassification) -> DispatchTier {
+    if self.finalDirect {
+      return DispatchTier.Tier0Direct
+    }
+    if self.sealedKnown {
+      return DispatchTier.Tier2Sealed
+    }
+    if self.cachedBeforeLoop {
+      return DispatchTier.Tier3Cached
+    }
+    if self.fullDynamic {
+      return DispatchTier.Tier4Dynamic
+    }
+    return DispatchTier.Tier1StaticGeneric
+  }
+}

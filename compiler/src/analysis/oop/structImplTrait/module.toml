@@ -1,0 +1,11 @@
+[module]
+name = "structImplTrait"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "oop-struct-impl-trait-boundary"
+
+[policy]
+model = "struct+impl+trait"
+zeroCostDefault = true
+hiddenDynamicDispatchAllowed = false

@@ -1,0 +1,35 @@
+pub enum OopObserverEventKind {
+  StaleHandle
+  AbiPolicyViolation
+  AllocationPolicyViolation
+  InterfaceLifetimeViolation
+  DowncastFailure
+  FfiBoundaryViolation
+}
+
+pub struct OopEngineObserverEvent {
+  kind: OopObserverEventKind,
+  diagnosticCode: string,
+  sourceMapped: bool,
+  valueBound: bool,
+}
+
+pub fn oopEngineObserverEvent(
+  kind: OopObserverEventKind,
+  diagnosticCode: string,
+  sourceMapped: bool,
+  valueBound: bool,
+) -> OopEngineObserverEvent {
+  return OopEngineObserverEvent {
+    kind: kind,
+    diagnosticCode: diagnosticCode,
+    sourceMapped: sourceMapped,
+    valueBound: valueBound,
+  }
+}
+
+impl OopEngineObserverEvent {
+  pub fn isTypedDiagnostic(self: OopEngineObserverEvent) -> bool {
+    return self.diagnosticCode != "" && self.sourceMapped && self.valueBound
+  }
+}

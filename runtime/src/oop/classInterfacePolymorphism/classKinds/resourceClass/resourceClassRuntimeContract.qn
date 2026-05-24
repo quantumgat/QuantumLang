@@ -1,0 +1,17 @@
+pub struct ResourceClassRuntimeContract {
+  typeId: u64,
+  handleLifecycleBound: bool,
+  closeShutdownBound: bool,
+  doubleFreeRejected: bool,
+  noCoredumpFailureBound: bool,
+}
+
+impl ResourceClassRuntimeContract {
+  pub fn complete(self: ResourceClassRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.handleLifecycleBound
+      && self.closeShutdownBound
+      && self.doubleFreeRejected
+      && self.noCoredumpFailureBound
+  }
+}

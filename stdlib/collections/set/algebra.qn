@@ -1,0 +1,86 @@
+impl<T> Set<T> {
+  pub fn union(self: Set<T>, other: Set<T>) -> Set<T> requires(alloc) {
+    let mut result = Set<T>.withCapacity(self.len + other.len)
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      result = result.insert(value)
+      cursor = cursor.next()
+    }
+    cursor = other.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      result = result.insert(value)
+      cursor = cursor.next()
+    }
+    return result
+  }
+
+  pub fn intersection(self: Set<T>, other: Set<T>) -> Set<T> requires(alloc) {
+    let mut result = Set<T>.withCapacity(self.len)
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      if other.contains(value) {
+        result = result.insert(value)
+      }
+      cursor = cursor.next()
+    }
+    return result
+  }
+
+  pub fn difference(self: Set<T>, other: Set<T>) -> Set<T> requires(alloc) {
+    let mut result = Set<T>.withCapacity(self.len)
+    let mut cursor = self.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      if other.contains(value) == false {
+        result = result.insert(value)
+      }
+      cursor = cursor.next()
+    }
+    return result
+  }
+
+  pub fn symmetricDifference(self: Set<T>, other: Set<T>) -> Set<T> requires(alloc) {
+    let leftOnly = self.difference(other)
+    let rightOnly = other.difference(self)
+    return leftOnly.union(rightOnly)
+  }
+
+  pub fn containsAll(self: Set<T>, required: Set<T>) -> bool {
+    let mut cursor = required.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      if self.contains(value) == false {
+        return false
+      }
+      cursor = cursor.next()
+    }
+    return true
+  }
+
+  pub fn containsAny(self: Set<T>, choices: Set<T>) -> bool {
+    let mut cursor = choices.fastCursor()
+    while cursor.hasNext() {
+      let value = cursor.value()
+      if self.contains(value) {
+        return true
+      }
+      cursor = cursor.next()
+    }
+    return false
+  }
+
+  pub fn isSubsetOf(self: Set<T>, other: Set<T>) -> bool {
+    return other.containsAll(self)
+  }
+
+  pub fn isSupersetOf(self: Set<T>, other: Set<T>) -> bool {
+    return self.containsAll(other)
+  }
+
+  pub fn isDisjointFrom(self: Set<T>, other: Set<T>) -> bool {
+    return self.containsAny(other) == false
+  }
+}

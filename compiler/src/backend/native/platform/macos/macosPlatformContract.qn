@@ -1,0 +1,12 @@
+pub struct MacosPlatformContract {
+  target: string,
+  kqueueAvailable: bool,
+  dispatchOptional: bool,
+  sandboxAware: bool,
+}
+
+impl MacosPlatformContract {
+  pub fn accepted(self: MacosPlatformContract) -> bool {
+    return self.target != "" && self.kqueueAvailable && self.sandboxAware
+  }
+}

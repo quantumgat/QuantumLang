@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeSnapshot {
+  subsystemCount: usize
+  eventCount: usize
+  sourceMapped: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeSnapshot(subsystemCount: usize, eventCount: usize) -> RuntimeSnapshot
+}

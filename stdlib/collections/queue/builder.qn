@@ -1,0 +1,17 @@
+pub struct QueueBuilder<T> {
+  capacity: usize,
+}
+
+impl<T> QueueBuilder<T> {
+  pub fn init() -> QueueBuilder<T> {
+    return QueueBuilder<T> { capacity: 0 }
+  }
+
+  pub fn capacity(self: QueueBuilder<T>, capacity: usize) -> QueueBuilder<T> {
+    return QueueBuilder<T> { capacity: capacity }
+  }
+
+  pub fn build(self: QueueBuilder<T>) -> Queue<T> requires(alloc) {
+    return Queue<T>.withCapacity(self.capacity)
+  }
+}

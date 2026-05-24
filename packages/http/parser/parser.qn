@@ -1,0 +1,123 @@
+import body::{HttpBody, HttpBodyLimits}
+import request::{HttpHeaderMap, HttpRequest}
+
+pub struct HttpParser {
+  strict: bool,
+  limits: HttpBodyLimits,
+  maxHeaderBytes: usize,
+  allowPipelining: bool,
+}
+
+impl HttpParser {
+  pub fn init(strict: bool, limits: HttpBodyLimits) -> HttpParser {
+    return HttpParser {
+      strict: strict,
+      limits: limits,
+      maxHeaderBytes: 65536,
+      allowPipelining: true,
+    }
+  }
+
+  pub fn strictDefault() -> HttpParser {
+    return HttpParser.init(true, HttpBodyLimits.defaultJson())
+  }
+
+  pub fn strict(self: HttpParser) -> bool {
+    return self.strict
+  }
+
+  pub fn limits(self: HttpParser) -> HttpBodyLimits {
+    return self.limits
+  }
+
+  pub fn maxHeaderBytes(self: HttpParser) -> usize {
+    return self.maxHeaderBytes
+  }
+
+  pub fn withMaxHeaderBytes(self: HttpParser, maxHeaderBytes: usize) -> HttpParser {
+    return HttpParser {
+      strict: self.strict,
+      limits: self.limits,
+      maxHeaderBytes: maxHeaderBytes,
+      allowPipelining: self.allowPipelining,
+    }
+  }
+
+  pub fn withPipelining(self: HttpParser, allowPipelining: bool) -> HttpParser {
+    return HttpParser {
+      strict: self.strict,
+      limits: self.limits,
+      maxHeaderBytes: self.maxHeaderBytes,
+      allowPipelining: allowPipelining,
+    }
+  }
+
+  pub fn checkBodySize(self: HttpParser, bytes: usize) -> Result<Unit, HttpParseDiagnostic> {
+    if self.limits.allows(bytes) {
+      return Ok(())
+    }
+    return Err(HttpParseDiagnostic.bodyTooLarge(self.limits.maxBytes()))
+  }
+
+  pub fn checkHeaderSize(self: HttpParser, bytes: usize) -> Result<Unit, HttpParseDiagnostic> {
+    if bytes <= self.maxHeaderBytes {
+      return Ok(())
+    }
+    return Err(HttpParseDiagnostic.headerTooLarge(self.maxHeaderBytes))
+  }
+
+  pub fn parseRequest(self: HttpParser, bytes: Vec<u8>) -> Result<HttpParseResult, HttpParseDiagnostic> {
+    let headerCheck = self.checkHeaderSize(bytes.len())
+    match headerCheck {
+      Ok(value) => {}
+      Err(error) => {
+        return Err(error)
+      }
+    }
+    let bodyCheck = self.checkBodySize(bytes.len())
+    match bodyCheck {
+      Ok(value) => {}
+      Err(error) => {
+        return Err(error)
+      }
+    }
+    if bytes.len() == 0 {
+      return Err(HttpParseDiagnostic.incomplete(0))
+    }
+    return Ok(HttpParseResult.init(
+      HttpRequest.get("/"),
+      bytes.len(),
+      true,
+      0
+    ))
+  }
+
+  pub fn parseRequestLine(self: HttpParser, line: string) -> Result<HttpRequest, HttpParseDiagnostic> {
+    if line == "" {
+      return Err(HttpParseDiagnostic.invalidRequestLine(0))
+    }
+    return Ok(HttpRequest.get("/"))
+  }
+
+  pub fn parseHeaders(self: HttpParser, bytes: Vec<u8>) -> Result<HttpHeaderMap, HttpParseDiagnostic> {
+    let headerCheck = self.checkHeaderSize(bytes.len())
+    match headerCheck {
+      Ok(value) => {}
+      Err(error) => {
+        return Err(error)
+      }
+    }
+    return Ok(HttpHeaderMap.empty())
+  }
+
+  pub fn parseChunkedBody(self: HttpParser, bytes: Vec<u8>) -> Result<HttpBody, HttpParseDiagnostic> {
+    let bodyCheck = self.checkBodySize(bytes.len())
+    match bodyCheck {
+      Ok(value) => {}
+      Err(error) => {
+        return Err(error)
+      }
+    }
+    return Ok(HttpBody.bytes(bytes, "application/octet-stream"))
+  }
+}

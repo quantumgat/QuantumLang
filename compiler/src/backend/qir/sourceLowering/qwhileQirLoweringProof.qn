@@ -1,0 +1,19 @@
+pub struct QwhileQirLoweringProof {
+  qmirRegionReady: bool,
+  sourceLowering: QirSourceLoweringPlan,
+  profileValidation: QirProfileValidation,
+  moduleEmission: QirModuleEmission,
+  runtimeBridgeReady: bool,
+  diagnosticsReady: bool,
+}
+
+impl QwhileQirLoweringProof {
+  pub fn complete(self: QwhileQirLoweringProof) -> bool {
+    return self.qmirRegionReady
+      && self.sourceLowering.qwhileReady()
+      && self.profileValidation.qwhileAccepted()
+      && self.moduleEmission.qwhileReady()
+      && self.runtimeBridgeReady
+      && self.diagnosticsReady
+  }
+}

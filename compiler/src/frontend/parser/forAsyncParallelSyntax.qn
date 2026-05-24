@@ -1,0 +1,34 @@
+pub enum ForAsyncParallelSyntaxKind {
+  AsyncStream
+  AsyncQuestion
+  Concurrent
+  ConcurrentLimit
+  ParallelFor
+  ParallelChunk
+  ParallelReduce
+  ParallelMap
+  ParallelFind
+  CancelAware
+}
+
+pub struct ForAsyncParallelSyntax {
+  kind: ForAsyncParallelSyntaxKind,
+  loopHeaderParsed: bool,
+  awaitParsed: bool,
+  concurrencyLimitParsed: bool,
+  schedulerOptionsParsed: bool,
+  cancellationParsed: bool,
+  reducerParsed: bool,
+  bodyParsed: bool,
+  sourceRangeReady: bool,
+  recoveryReady: bool,
+}
+
+impl ForAsyncParallelSyntax {
+  pub fn parsed(self: ForAsyncParallelSyntax) -> bool {
+    return self.loopHeaderParsed
+      && self.bodyParsed
+      && self.sourceRangeReady
+      && self.recoveryReady
+  }
+}

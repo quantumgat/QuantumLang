@@ -1,0 +1,43 @@
+pub enum PluginLoadStage {
+  Discovered,
+  ManifestValidated,
+  GraphResolved,
+  HooksRegistered,
+  Sandboxed,
+}
+
+pub struct PluginLoadPlan {
+  pluginCount: usize,
+  manifestCount: usize,
+  validatedManifestCount: usize,
+  graphResolved: bool,
+  deterministicOrder: bool,
+  lockfileFingerprintRequired: bool,
+  cacheFingerprintRequired: bool,
+  sandboxRequired: bool,
+}
+
+impl PluginLoadPlan {
+  pub fn fromManifests(pluginCount: usize, validatedManifestCount: usize) -> PluginLoadPlan {
+    return PluginLoadPlan {
+      pluginCount: pluginCount,
+      manifestCount: pluginCount,
+      validatedManifestCount: validatedManifestCount,
+      graphResolved: true,
+      deterministicOrder: true,
+      lockfileFingerprintRequired: true,
+      cacheFingerprintRequired: true,
+      sandboxRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginLoadPlan) -> bool {
+    return self.pluginCount == self.manifestCount
+      && self.manifestCount == self.validatedManifestCount
+      && self.graphResolved
+      && self.deterministicOrder
+      && self.lockfileFingerprintRequired
+      && self.cacheFingerprintRequired
+      && self.sandboxRequired
+  }
+}

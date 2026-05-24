@@ -1,0 +1,67 @@
+pub enum BackpressurePolicy {
+  Adaptive
+  Wait
+  Drop
+  Fail
+  Shed
+}
+
+pub enum OverloadPolicy {
+  Wait
+  DropLowPriority
+  FailFast
+  ShedNew
+}
+
+pub struct NetTimeout {
+  millis: u64,
+}
+
+pub struct NetDeadline {
+  unixNanos: u64,
+}
+
+pub struct SafeNetworkDefaults {
+  timeout: NetTimeout,
+  backpressure: BackpressurePolicy,
+  overload: OverloadPolicy,
+  cancellation: NetCancellationPolicy,
+  tlsVerificationRequired: bool,
+  protocolParsingDeferred: bool,
+}
+
+pub struct NetPublicApiPolicy {
+  safeByDefault: bool,
+  noPublicNetAsyncModule: bool,
+  noHttpInCoreNet: bool,
+  explicitUnsafeTlsDisableOnly: bool,
+  stdlibOwnsShortApi: bool,
+  compilerOwnsLowering: bool,
+  runtimeOwnsHandles: bool,
+}
+
+impl NetTimeout {
+  pub fn enabled(self: NetTimeout) -> bool {
+    return self.millis > 0
+  }
+}
+
+impl SafeNetworkDefaults {
+  pub fn accepted(self: SafeNetworkDefaults) -> bool {
+    return self.timeout.enabled()
+      && self.tlsVerificationRequired
+      && self.protocolParsingDeferred
+  }
+}
+
+impl NetPublicApiPolicy {
+  pub fn accepted(self: NetPublicApiPolicy) -> bool {
+    return self.safeByDefault
+      && self.noPublicNetAsyncModule
+      && self.noHttpInCoreNet
+      && self.explicitUnsafeTlsDisableOnly
+      && self.stdlibOwnsShortApi
+      && self.compilerOwnsLowering
+      && self.runtimeOwnsHandles
+  }
+}

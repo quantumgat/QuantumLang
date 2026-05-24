@@ -1,0 +1,271 @@
+import body::{HttpBody, HttpStreamBody}
+import middleware::{CachePolicy}
+import request::{HttpHeaderMap}
+import session::{HttpSessionHandle}
+
+pub struct HttpResponse {
+  status: HttpStatus,
+  headers: HttpHeaderMap,
+  body: HttpBody,
+}
+
+impl HttpResponse {
+  pub fn init(status: HttpStatus, headers: HttpHeaderMap, body: HttpBody) -> HttpResponse {
+    return HttpResponse {
+      status: status,
+      headers: headers,
+      body: body,
+    }
+  }
+
+  pub fn ok(text: string) -> HttpResponse {
+    return HttpResponse.init(
+      HttpStatus.ok(),
+      HttpHeaderMap.empty().add("content-type", "text/plain; charset=utf-8"),
+      HttpBody.text(text)
+    )
+  }
+
+  pub fn json(body: string) -> HttpResponse {
+    return HttpResponse.init(
+      HttpStatus.ok(),
+      HttpHeaderMap.empty().add("content-type", "application/json"),
+      HttpBody.json(body)
+    )
+  }
+
+  pub fn json(body: json) -> Result<HttpResponse, JsonError> {
+    return IntoHttpResponse.ok().json(body)
+  }
+
+  pub fn rawJson(body: string) -> HttpResponse {
+    return HttpResponse.init(
+      HttpStatus.ok(),
+      HttpHeaderMap.empty().add("content-type", "application/json"),
+      HttpBody.json(body)
+    )
+  }
+
+  pub fn rawJson(body: RawJson) -> HttpResponse {
+    return HttpResponse.init(
+      HttpStatus.ok(),
+      HttpHeaderMap.empty().add("content-type", "application/json"),
+      HttpBody.text(body.text())
+    )
+  }
+
+  pub fn empty(status: HttpStatus) -> HttpResponse {
+    return HttpResponse.init(status, HttpHeaderMap.empty(), HttpBody.empty())
+  }
+
+  pub fn status(self: HttpResponse) -> HttpStatus {
+    return self.status
+  }
+
+  pub fn headers(self: HttpResponse) -> HttpHeaderMap {
+    return self.headers
+  }
+
+  pub fn body(self: HttpResponse) -> HttpBody {
+    return self.body
+  }
+
+  pub fn withHeader(self: HttpResponse, name: string, value: string) -> HttpResponse {
+    return HttpResponse {
+      status: self.status,
+      headers: self.headers.add(name, value),
+      body: self.body,
+    }
+  }
+
+  pub fn header(self: HttpResponse, name: string, value: string) -> HttpResponse {
+    return self.withHeader(name, value)
+  }
+
+  pub fn cookie(self: HttpResponse, cookie: HttpCookie) -> HttpResponse {
+    return self.withHeader("set-cookie", cookie.headerValue())
+  }
+
+  pub fn cookie(self: HttpResponse, name: string, value: string) -> HttpResponse {
+    return self.cookie(Cookie.session(name, value))
+  }
+
+  pub fn cookie(self: HttpResponse, name: string, value: string, httpOnly: bool) -> HttpResponse {
+    let cookie = httpResponseCookieHttpOnlySurface(Cookie.session(name, value), httpOnly)
+    return self.cookie(cookie)
+  }
+
+  pub fn cookie(self: HttpResponse, name: string, value: string, maxAge: Duration) -> HttpResponse {
+    return self.cookie(Cookie.session(name, value).maxAge(maxAge))
+  }
+
+  pub fn deleteCookie(self: HttpResponse, name: string) -> HttpResponse {
+    return self.cookie(Cookie.delete(name))
+  }
+
+  pub fn deleteCookie(self: HttpResponse, name: string, path: string) -> HttpResponse {
+    return self.cookie(Cookie.delete(name).path(path))
+  }
+
+  pub fn deleteCookie(self: HttpResponse, name: string, domain: string, path: string) -> HttpResponse {
+    return self.cookie(Cookie.delete(name).domain(domain).path(path))
+  }
+
+  pub fn session(self: HttpResponse, session: HttpSessionHandle) -> HttpResponse {
+    return self.cookie(Cookie.session("sid", session.id().value()).signed().encrypted())
+  }
+
+  pub fn cache(self: HttpResponse, policy: CachePolicy) -> HttpResponse {
+    return self.withHeader("cache-control", policy.headerValue())
+  }
+
+  pub fn download(self: HttpResponse, filename: string) -> HttpResponse {
+    return self.withHeader("content-disposition", "attachment; filename=" + filename)
+  }
+}
+
+pub struct Response {
+}
+
+pub enum ResponseStatus {
+  Ok,
+  Created,
+  Accepted,
+  NoContent,
+  BadRequest,
+  Unauthorized,
+  Forbidden,
+  NotFound,
+  Conflict,
+  TooManyRequests,
+  Internal,
+  Unavailable,
+}
+
+impl ResponseStatus {
+  pub fn toHttp(self: ResponseStatus) -> HttpStatus {
+    match self {
+      ResponseStatus.Ok => return HttpStatus.ok()
+      ResponseStatus.Created => return HttpStatus.created()
+      ResponseStatus.Accepted => return HttpStatus.accepted()
+      ResponseStatus.NoContent => return HttpStatus.noContent()
+      ResponseStatus.BadRequest => return HttpStatus.badRequest()
+      ResponseStatus.Unauthorized => return HttpStatus.unauthorized()
+      ResponseStatus.Forbidden => return HttpStatus.forbidden()
+      ResponseStatus.NotFound => return HttpStatus.notFound()
+      ResponseStatus.Conflict => return HttpStatus.conflict()
+      ResponseStatus.TooManyRequests => return HttpStatus.tooManyRequests()
+      ResponseStatus.Internal => return HttpStatus.internalServerError()
+      ResponseStatus.Unavailable => return HttpStatus.serviceUnavailable()
+    }
+  }
+}
+
+impl Response {
+  pub fn status<T>(status: HttpStatus, value: T) -> Result<HttpResponse, JsonError> {
+    return Response.envelope(status, value)
+  }
+
+  pub fn raw<T>(status: HttpStatus, value: T) -> Result<HttpResponse, JsonError> {
+    let bodyResult = responseJsonText(value)
+	    match bodyResult {
+	      Ok(body) => {
+	        let emptyHeaders = HttpHeaderMap.empty()
+	        let headers = emptyHeaders.add("content-type", "application/json")
+	        return Ok(HttpResponse.init(
+	          status,
+	          headers,
+	          HttpBody.json(body)
+	        ))
+	      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn status<T>(status: ResponseStatus, value: T) -> Result<HttpResponse, JsonError> {
+    return Response.status(status.toHttp(), value)
+  }
+
+  pub fn raw<T>(status: ResponseStatus, value: T) -> Result<HttpResponse, JsonError> {
+    return Response.raw(status.toHttp(), value)
+  }
+
+  pub fn ok<T>(value: T) -> Result<HttpResponse, JsonError> {
+    return Response.status(HttpStatus.ok(), value)
+  }
+
+  pub fn json<T>(value: T) -> Result<HttpResponse, JsonError> {
+    return Response.ok(value)
+  }
+
+  pub fn envelope<T>(status: HttpStatus, value: T) -> Result<HttpResponse, JsonError> {
+    return Response.envelope(status, value, "", 0)
+  }
+
+  pub fn envelope<T>(status: HttpStatus, value: T, traceId: string, ms: usize) -> Result<HttpResponse, JsonError> {
+    let bodyResult = responseEnvelopeJsonText(status, value, traceId, ms)
+	    match bodyResult {
+	      Ok(body) => {
+	        let emptyHeaders = HttpHeaderMap.empty()
+	        let headers = emptyHeaders.add("content-type", "application/json")
+	        return Ok(HttpResponse.init(
+	          status,
+	          headers,
+	          HttpBody.json(body)
+	        ))
+	      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn error(error: HttpError) -> Result<HttpResponse, JsonError> {
+    return Response.error(error, "", 0)
+  }
+
+  pub fn error(error: HttpError, traceId: string, ms: usize) -> Result<HttpResponse, JsonError> {
+    let bodyResult = responseErrorEnvelopeJsonText(error, traceId, ms)
+	    match bodyResult {
+	      Ok(body) => {
+	        let emptyHeaders = HttpHeaderMap.empty()
+	        let headers = emptyHeaders.add("content-type", "application/json")
+	        return Ok(HttpResponse.init(
+	          error.status(),
+	          headers,
+	          HttpBody.json(body)
+	        ))
+	      }
+      Err(jsonError) => {
+        return Err(jsonError)
+      }
+    }
+  }
+
+  pub fn empty(status: HttpStatus) -> HttpResponse {
+    return HttpResponse.empty(status)
+  }
+
+  pub fn empty(status: ResponseStatus) -> HttpResponse {
+    return HttpResponse.empty(status.toHttp())
+  }
+
+  pub fn stream(body: HttpStreamBody) -> HttpResponse {
+    return HttpResponse.init(
+      HttpStatus.ok(),
+      HttpHeaderMap.empty().add("transfer-encoding", "chunked"),
+      HttpBody.empty()
+    )
+  }
+
+  pub fn download(body: HttpBody, filename: string) -> HttpResponse {
+    return HttpResponse.init(HttpStatus.ok(), HttpHeaderMap.empty(), body).download(filename)
+  }
+}
+
+fn responseJsonText<T>(value: T) -> Result<string, JsonError>
+fn responseEnvelopeJsonText<T>(status: HttpStatus, value: T, traceId: string, ms: usize) -> Result<string, JsonError>
+fn responseErrorEnvelopeJsonText(error: HttpError, traceId: string, ms: usize) -> Result<string, JsonError>
+fn httpResponseCookieHttpOnlySurface(cookie: HttpCookie, httpOnly: bool) -> HttpCookie

@@ -1,0 +1,44 @@
+pub enum InterfaceObligationStatus {
+  Unique
+  MissingMethod
+  DuplicateImpl
+  HiddenByVisibility
+  CapabilityMismatch
+}
+
+pub struct InterfaceObligationFact {
+  implId: u64,
+  interfaceTypeId: u64,
+  implementerTypeId: u64,
+  status: InterfaceObligationStatus,
+  requiredMethodCount: usize,
+  boundMethodCount: usize,
+  defaultMethodCount: usize,
+}
+
+pub fn interfaceObligationFact(
+  implId: u64,
+  interfaceTypeId: u64,
+  implementerTypeId: u64,
+  status: InterfaceObligationStatus,
+  requiredMethodCount: usize,
+  boundMethodCount: usize,
+  defaultMethodCount: usize,
+) -> InterfaceObligationFact {
+  return InterfaceObligationFact {
+    implId: implId,
+    interfaceTypeId: interfaceTypeId,
+    implementerTypeId: implementerTypeId,
+    status: status,
+    requiredMethodCount: requiredMethodCount,
+    boundMethodCount: boundMethodCount,
+    defaultMethodCount: defaultMethodCount,
+  }
+}
+
+impl InterfaceObligationFact {
+  pub fn satisfied(self: InterfaceObligationFact) -> bool {
+    return self.status == InterfaceObligationStatus.Unique
+      && self.boundMethodCount + self.defaultMethodCount >= self.requiredMethodCount
+  }
+}

@@ -1,0 +1,39 @@
+pub enum IncludeKind {
+  Direct,
+  Reexport,
+  Generated,
+}
+
+pub struct IncludeEdge {
+  fromFileId: u32,
+  toFileId: u32,
+  kind: IncludeKind,
+}
+
+pub struct IncludeGraph {
+  fileCount: usize,
+  edgeCount: usize,
+  hasCycle: bool,
+}
+
+pub fn includeEdge(fromFileId: u32, toFileId: u32, kind: IncludeKind) -> IncludeEdge {
+  return IncludeEdge { fromFileId: fromFileId, toFileId: toFileId, kind: kind }
+}
+
+pub fn emptyIncludeGraph() -> IncludeGraph {
+  return IncludeGraph { fileCount: 0, edgeCount: 0, hasCycle: false }
+}
+
+impl IncludeGraph {
+  pub fn files(self: IncludeGraph) -> usize {
+    return self.fileCount
+  }
+
+  pub fn edges(self: IncludeGraph) -> usize {
+    return self.edgeCount
+  }
+
+  pub fn acyclic(self: IncludeGraph) -> bool {
+    return self.hasCycle == false
+  }
+}

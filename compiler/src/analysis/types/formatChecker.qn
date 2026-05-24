@@ -1,0 +1,267 @@
+pub enum FormatCallKind {
+  Print
+  Println
+  Eprint
+  Eprintln
+  DebugPrint
+  LogField
+  FString
+  FormatFunction
+}
+
+pub enum FormatTraitRequirement {
+  Display
+  Debug
+  Hex
+  Binary
+  Octal
+  Bits
+  Fixed
+  Scientific
+  Text
+}
+
+pub struct FormatArgumentCheck {
+  expressionTypeId: u64,
+  requirement: FormatTraitRequirement,
+  sourceRange: SourceRange,
+  printableTraitAvailable: bool,
+  debugAllowed: bool,
+  secretLike: bool,
+  redacted: bool,
+  allocationFree: bool,
+}
+
+impl FormatArgumentCheck {
+  pub fn init(
+    expressionTypeId: u64,
+    requirement: FormatTraitRequirement,
+    file: u32,
+    start: usize,
+    end: usize,
+  ) -> FormatArgumentCheck {
+    return FormatArgumentCheck {
+      expressionTypeId: expressionTypeId,
+      requirement: requirement,
+      sourceRange: SourceRange.init(file, start, end),
+      printableTraitAvailable: true,
+      debugAllowed: requirement != FormatTraitRequirement.Debug,
+      secretLike: false,
+      redacted: true,
+      allocationFree: true,
+    }
+  }
+
+  pub fn secret(expressionTypeId: u64, file: u32, start: usize, end: usize) -> FormatArgumentCheck {
+    return FormatArgumentCheck {
+      expressionTypeId: expressionTypeId,
+      requirement: FormatTraitRequirement.Display,
+      sourceRange: SourceRange.init(file, start, end),
+      printableTraitAvailable: true,
+      debugAllowed: false,
+      secretLike: true,
+      redacted: true,
+      allocationFree: true,
+    }
+  }
+
+  pub fn accepted(self: FormatArgumentCheck) -> bool {
+    return self.expressionTypeId > 0
+      && self.sourceRange.exact()
+      && self.printableTraitAvailable
+      && self.debugAllowed
+      && self.redacted
+      && self.allocationFree
+  }
+
+  pub fn protectsSecret(self: FormatArgumentCheck) -> bool {
+    if self.secretLike {
+      return self.redacted
+    }
+    return true
+  }
+}
+
+pub struct FormatTemplateCheck {
+  callKind: FormatCallKind,
+  sourceRange: SourceRange,
+  placeholderCount: usize,
+  argumentCount: usize,
+  namedFieldCount: usize,
+  formatSpecifierCount: usize,
+  placeholdersMatched: bool,
+  namedFieldsResolved: bool,
+  formatSpecifiersValid: bool,
+  noExtraArguments: bool,
+}
+
+impl FormatTemplateCheck {
+  pub fn init(
+    callKind: FormatCallKind,
+    file: u32,
+    start: usize,
+    end: usize,
+    placeholderCount: usize,
+    argumentCount: usize,
+  ) -> FormatTemplateCheck {
+    return FormatTemplateCheck {
+      callKind: callKind,
+      sourceRange: SourceRange.init(file, start, end),
+      placeholderCount: placeholderCount,
+      argumentCount: argumentCount,
+      namedFieldCount: 0,
+      formatSpecifierCount: placeholderCount,
+      placeholdersMatched: placeholderCount == argumentCount,
+      namedFieldsResolved: true,
+      formatSpecifiersValid: true,
+      noExtraArguments: argumentCount <= placeholderCount,
+    }
+  }
+
+  pub fn withNamedFields(self: FormatTemplateCheck, namedFieldCount: usize, resolved: bool) -> FormatTemplateCheck {
+    return FormatTemplateCheck {
+      callKind: self.callKind,
+      sourceRange: self.sourceRange,
+      placeholderCount: self.placeholderCount,
+      argumentCount: self.argumentCount,
+      namedFieldCount: namedFieldCount,
+      formatSpecifierCount: self.formatSpecifierCount,
+      placeholdersMatched: self.placeholdersMatched,
+      namedFieldsResolved: resolved,
+      formatSpecifiersValid: self.formatSpecifiersValid,
+      noExtraArguments: self.noExtraArguments,
+    }
+  }
+
+  pub fn accepted(self: FormatTemplateCheck) -> bool {
+    return self.sourceRange.exact()
+      && self.placeholdersMatched
+      && self.namedFieldsResolved
+      && self.formatSpecifiersValid
+      && self.noExtraArguments
+  }
+}
+
+pub struct FormatCheckDiagnostic {
+  kind: FormatDiagnosticKind,
+  diagnostic: Diagnostic,
+  machine: MachineDiagnostic,
+  fixIt: FixIt,
+  sourceRange: SourceRange,
+  redacted: bool,
+  noAllocationMode: bool,
+}
+
+impl FormatCheckDiagnostic {
+  pub fn init(
+    kind: FormatDiagnosticKind,
+    code: FormatDiagnosticCode,
+    file: u32,
+    start: usize,
+    end: usize,
+    message: string,
+    fix: string,
+  ) -> FormatCheckDiagnostic {
+    let range = SourceRange.init(file, start, end)
+    let diagnostic = Diagnostic.model(
+      diagnosticCode(code.namespaceName(), code.number()),
+      DiagnosticCategory.Format,
+      DiagnosticSeverity.Error,
+      range,
+      message
+    )
+    return FormatCheckDiagnostic {
+      kind: kind,
+      diagnostic: diagnostic,
+      machine: MachineDiagnostic.fromDiagnostic(diagnostic),
+      fixIt: FixIt.init(range, fix, FixItSafety.Safe),
+      sourceRange: range,
+      redacted: true,
+      noAllocationMode: true,
+    }
+  }
+
+  pub fn reportable(self: FormatCheckDiagnostic) -> bool {
+    return self.diagnostic.complete()
+      && self.machine.safe()
+      && self.fixIt.applicable()
+      && self.sourceRange.exact()
+      && self.redacted
+      && self.noAllocationMode
+  }
+}
+
+pub struct FormatChecker {
+  templateCheck: FormatTemplateCheck,
+  displayArgument: FormatArgumentCheck,
+  debugArgument: FormatArgumentCheck,
+  secretArgument: FormatArgumentCheck,
+  invalidSpecifierDiagnostic: FormatCheckDiagnostic,
+  unknownFieldDiagnostic: FormatCheckDiagnostic,
+  secretDiagnostic: FormatCheckDiagnostic,
+  placeholdersChecked: bool,
+  printableTraitsChecked: bool,
+  debugFormattingChecked: bool,
+  secretRedactionChecked: bool,
+  noAllocationModeChecked: bool,
+}
+
+impl FormatChecker {
+  pub fn printCall(file: u32) -> FormatChecker {
+    return FormatChecker {
+      templateCheck: FormatTemplateCheck.init(FormatCallKind.Println, file, 1, 12, 2, 2)
+        .withNamedFields(1, true),
+      displayArgument: FormatArgumentCheck.init(1, FormatTraitRequirement.Display, file, 13, 18),
+      debugArgument: FormatArgumentCheck.init(2, FormatTraitRequirement.Hex, file, 19, 22),
+      secretArgument: FormatArgumentCheck.secret(3, file, 23, 29),
+      invalidSpecifierDiagnostic: FormatCheckDiagnostic.init(
+        FormatDiagnosticKind.InvalidFormatSpecifier,
+        invalidFormatSpecifierCode(),
+        file,
+        30,
+        31,
+        "invalid format specifier",
+        "use a supported format specifier"
+      ),
+      unknownFieldDiagnostic: FormatCheckDiagnostic.init(
+        FormatDiagnosticKind.UnknownField,
+        interpolationUnknownFieldCode(),
+        file,
+        32,
+        36,
+        "format field does not exist on this type",
+        "use an existing field name"
+      ),
+      secretDiagnostic: FormatCheckDiagnostic.init(
+        FormatDiagnosticKind.SecretRequiresRedaction,
+        secretFormatRequiresRedactionCode(),
+        file,
+        37,
+        43,
+        "secret value requires explicit redaction",
+        "redacted(value)"
+      ),
+      placeholdersChecked: true,
+      printableTraitsChecked: true,
+      debugFormattingChecked: true,
+      secretRedactionChecked: true,
+      noAllocationModeChecked: true,
+    }
+  }
+
+  pub fn complete(self: FormatChecker) -> bool {
+    return self.templateCheck.accepted()
+      && self.displayArgument.accepted()
+      && self.debugArgument.accepted()
+      && self.secretArgument.accepted()
+      && self.secretArgument.protectsSecret()
+      && self.invalidSpecifierDiagnostic.reportable()
+      && self.unknownFieldDiagnostic.reportable()
+      && self.secretDiagnostic.reportable()
+      && self.placeholdersChecked
+      && self.printableTraitsChecked
+      && self.debugFormattingChecked
+      && self.secretRedactionChecked
+      && self.noAllocationModeChecked
+  }
+}

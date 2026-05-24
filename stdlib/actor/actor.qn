@@ -1,0 +1,29 @@
+pub struct ActorId {
+  value: u64,
+}
+
+pub struct ActorOptions {
+  mailboxLimit: usize,
+}
+
+pub enum ActorError {
+  Closed
+  MailboxFull
+  Timeout
+  Cancelled
+  RestartLimit
+  StaleActor
+}
+
+pub fn spawn<T>(handler: ActorHandler<T>, options: ActorOptions) -> Result<ActorRef<T>, ActorError>
+pub fn pool<T>(workers: usize, mailbox: MailboxOptions) -> ActorPool<T>
+pub fn service<T>(actor: ActorRef<T>) -> Service<T>
+
+pub use actorRef.actorRef.ActorRef
+pub use mailbox.mailbox.MailboxOptions
+pub use mailbox.mailbox.MailboxPolicy
+pub use supervision.supervision.RestartPolicy
+pub use supervision.supervision.Supervisor
+pub use pool.actorPool.ActorPool
+pub use service.service.Service
+pub use service.service.ServiceState

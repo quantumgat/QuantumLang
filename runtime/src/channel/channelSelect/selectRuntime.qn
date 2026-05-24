@@ -1,0 +1,35 @@
+pub enum RuntimeSelectFairness {
+  Biased
+  RoundRobin
+  Randomized
+}
+
+pub struct RuntimeSelect {
+  selectId: u64,
+  branchCount: usize,
+  fairness: RuntimeSelectFairness,
+  cleanupRegistered: bool,
+  lostWakePrevented: bool,
+}
+
+impl RuntimeSelect {
+  pub fn init(
+    selectId: u64,
+    branchCount: usize,
+    fairness: RuntimeSelectFairness,
+    cleanupRegistered: bool,
+    lostWakePrevented: bool,
+  ) -> RuntimeSelect {
+    return RuntimeSelect {
+      selectId: selectId,
+      branchCount: branchCount,
+      fairness: fairness,
+      cleanupRegistered: cleanupRegistered,
+      lostWakePrevented: lostWakePrevented,
+    }
+  }
+
+  pub fn safe(self: RuntimeSelect) -> bool {
+    return self.selectId > 0 && self.branchCount > 0 && self.cleanupRegistered && self.lostWakePrevented
+  }
+}

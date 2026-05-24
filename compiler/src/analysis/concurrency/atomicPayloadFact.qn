@@ -1,0 +1,29 @@
+pub enum AtomicPayloadKind {
+  Bool,
+  Int,
+  Pointer,
+  Reference,
+  Value,
+}
+
+pub struct AtomicPayloadFact {
+  node: u64,
+  kind: AtomicPayloadKind,
+  widthBits: usize,
+  lockFreeRequired: bool,
+}
+
+impl AtomicPayloadFact {
+  pub fn init(node: u64, kind: AtomicPayloadKind, widthBits: usize, lockFreeRequired: bool) -> AtomicPayloadFact {
+    return AtomicPayloadFact {
+      node: node,
+      kind: kind,
+      widthBits: widthBits,
+      lockFreeRequired: lockFreeRequired,
+    }
+  }
+
+  pub fn pointerLike(self: AtomicPayloadFact) -> bool {
+    return self.kind == AtomicPayloadKind.Pointer || self.kind == AtomicPayloadKind.Reference
+  }
+}

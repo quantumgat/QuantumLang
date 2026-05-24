@@ -1,0 +1,131 @@
+pub enum AstForLoopFormKind {
+  BasicCollection
+  IndexValue
+  MutableItem
+  ReferenceItem
+  MutableReferenceItem
+  Range
+  InclusiveRange
+  OpenEndedRange
+  ReverseRange
+  StepRange
+  OneLineBody
+  MapStyle
+  FilterStyle
+  FilterMap
+  Collect
+  Count
+  Sum
+  Any
+  All
+  Find
+  Break
+  BreakValue
+  Continue
+  Labeled
+  ElseNoBreak
+  TupleDestructure
+  StructDestructure
+  EnumPattern
+  ResultPattern
+  GuardedPattern
+  Vec
+  MapKeys
+  MapValues
+  MapEntries
+  Set
+  Chunks
+  Zip
+  Enumerate
+  Chain
+  TakeSkip
+  Unique
+  AsyncStream
+  AsyncQuestion
+  Concurrent
+  ConcurrentLimit
+  ParallelFor
+  ParallelChunk
+  ParallelReduce
+  ParallelMap
+  ParallelFind
+  CancelAware
+  RowScan
+  ProjectionScan
+  PredicatePushdown
+  IndexedScan
+  PageScan
+  BinaryPackets
+  BinaryViews
+  ColumnBlocks
+  Deltas
+  SimdData
+  PageLoop
+  DecodeLoop
+  BitLoop
+  BitRunLoop
+  ProbeLoop
+  MergeLoop
+  PipelineLoop
+  Qfor
+  IndexedQfor
+  ControlledQfor
+  MeasurementLoop
+  QifNestedQfor
+  PointerRangeUnsafe
+  CheckedPointerSlice
+  MemoryBlocks
+  AtomicRetry
+  LockFreeCursor
+  VolatileMmio
+  Chars
+  Bytes
+  Lines
+  Tokens
+  Graphemes
+  ResultItems
+  SkipErrors
+  CaptureErrors
+  RetryLoop
+  Batch
+  Throttle
+  Debounce
+  Grouped
+  WindowedAggregate
+  TimeBounded
+  ResourceScoped
+  Transaction
+  Progress
+  HotLoop
+  Comptime
+  Reflection
+  BuilderLoop
+}
+
+pub struct AstForLoopForm {
+  node: AstNode,
+  kind: AstForLoopFormKind,
+  patternId: u64,
+  iterableId: u64,
+  bodyId: u64,
+  hotPathCandidate: bool,
+  executableCovered: bool,
+  directHotPath: bool,
+  cursorOrCounterReady: bool,
+  asyncParallelQforBoundaryReady: bool,
+}
+
+impl AstForLoopForm {
+  pub fn complete(self: AstForLoopForm) -> bool {
+    return self.node.nodeId() > 0 && self.iterableId > 0 && self.bodyId > 0
+  }
+
+  pub fn executableHotPathReady(self: AstForLoopForm) -> bool {
+    return self.complete()
+      && self.hotPathCandidate
+      && self.executableCovered
+      && self.directHotPath
+      && self.cursorOrCounterReady
+      && self.asyncParallelQforBoundaryReady
+  }
+}

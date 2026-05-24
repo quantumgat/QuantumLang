@@ -1,0 +1,33 @@
+pub struct LinkOutputPolicy {
+  outputKind: string,
+  sharedAllowed: bool,
+  staticAllowed: bool,
+  executableAllowed: bool,
+}
+
+pub fn linkOutputPolicy(outputKind: string, sharedAllowed: bool, staticAllowed: bool, executableAllowed: bool) -> LinkOutputPolicy {
+  return LinkOutputPolicy {
+    outputKind: outputKind,
+    sharedAllowed: sharedAllowed,
+    staticAllowed: staticAllowed,
+    executableAllowed: executableAllowed,
+  }
+}
+
+impl LinkOutputPolicy {
+  pub fn kind(self: LinkOutputPolicy) -> string {
+    return self.outputKind
+  }
+
+  pub fn allowsShared(self: LinkOutputPolicy) -> bool {
+    return self.sharedAllowed
+  }
+
+  pub fn allowsStatic(self: LinkOutputPolicy) -> bool {
+    return self.staticAllowed
+  }
+
+  pub fn allowsExecutable(self: LinkOutputPolicy) -> bool {
+    return self.executableAllowed
+  }
+}

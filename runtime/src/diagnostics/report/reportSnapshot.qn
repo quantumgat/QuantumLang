@@ -1,0 +1,48 @@
+pub struct RuntimeReportSnapshot {
+  reportId: u64,
+  incidentId: DeterministicIncidentId,
+  runtime: RuntimeSnapshot,
+  logEventSequence: u64,
+  replayPath: string,
+  schemaName: string,
+  redacted: bool,
+  deterministic: bool,
+  privacySafe: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeReportSnapshot {
+  pub fn capture(
+    reportId: u64,
+    incidentId: DeterministicIncidentId,
+    runtime: RuntimeSnapshot,
+    logEventSequence: u64,
+    replayPath: string,
+  ) -> RuntimeReportSnapshot {
+    return RuntimeReportSnapshot {
+      reportId: reportId,
+      incidentId: incidentId,
+      runtime: runtime,
+      logEventSequence: logEventSequence,
+      replayPath: replayPath,
+      schemaName: "qtreport-json",
+      redacted: true,
+      deterministic: true,
+      privacySafe: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn publishable(self: RuntimeReportSnapshot) -> bool {
+    return self.reportId > 0
+      && self.incidentId.safe()
+      && self.runtime.sourceMapped
+      && self.logEventSequence > 0
+      && self.replayPath != ""
+      && self.schemaName != ""
+      && self.redacted
+      && self.deterministic
+      && self.privacySafe
+      && self.noCoredump
+  }
+}

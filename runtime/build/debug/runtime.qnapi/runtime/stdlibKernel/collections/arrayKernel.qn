@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ArrayKernel {
+  fixedCapacityTracked: bool
+  contiguousStorageStable: bool
+  directIndexLoadStable: bool
+  directIndexStoreStable: bool
+  boundsProofRequired: bool
+  sliceViewZeroCopy: bool
+  iteratorIndexCursorStable: bool
+  builderContiguousInitStable: bool
+  literalTargetStable: bool
+  noGrowthOnSet: bool
+}

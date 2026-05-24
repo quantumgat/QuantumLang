@@ -1,0 +1,31 @@
+pub class WorkerPool {
+  workers: usize,
+  directDispatch: bool,
+  dynamicBoundary: bool,
+  running: bool,
+
+  pub init(workers: usize) {
+    self.workers = workers
+    self.directDispatch = true
+    self.dynamicBoundary = false
+    self.running = false
+  }
+
+  pub fn start(self: &mut WorkerPool) -> bool {
+    self.running = true
+    return self.running
+  }
+
+  pub fn shutdown(self: &mut WorkerPool) -> bool {
+    self.running = false
+    return self.running == false
+  }
+
+  pub fn drop(self: &mut WorkerPool) -> bool {
+    return self.shutdown()
+  }
+
+  pub fn isHotPathSafe(self: &WorkerPool) -> bool {
+    return self.directDispatch && self.dynamicBoundary == false
+  }
+}

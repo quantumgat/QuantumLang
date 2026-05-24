@@ -1,0 +1,8 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct ControllerFact {
+  typeName: string
+  ownerId: u64
+}
+pub struct ControllerGraph {
+  controllers: Vec<ControllerFact>
+}

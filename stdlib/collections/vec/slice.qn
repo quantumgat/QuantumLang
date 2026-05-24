@@ -1,0 +1,140 @@
+/**
+  Borrow-style view over a contiguous Vec range.
+
+  example:
+    let active = users.slice(0, limit)
+
+  effects: pure
+  complexity: O(1) to create the view
+  allocation: none
+  stability: public since 0.1
+*/
+pub struct Slice<T> {
+  data: usize,
+  start: usize,
+  len: usize,
+}
+
+impl<T> Slice<T> {
+  /**
+    Returns the number of visible elements in the slice.
+
+    example:
+      let count = active.len()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn len(self: Slice<T>) -> usize {
+    return self.len
+  }
+
+  /**
+    Returns true when the slice has no visible elements.
+
+    example:
+      if active.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: Slice<T>) -> bool {
+    return self.len == 0
+  }
+
+  /**
+    Copies the visible slice range into a new Vec.
+
+    example:
+      let copied = active.toVec()
+
+    effects: alloc
+    complexity: O(n)
+    allocation: allocates capacity for the slice length
+    stability: public since 0.1
+  */
+  pub fn toVec(self: Slice<T>) -> Vec<T> requires(alloc) {
+    return Vec<T> {
+      data: self.data,
+      len: self.len,
+      capacity: self.len,
+      generation: 0,
+    }
+  }
+}
+
+impl<T> Vec<T> {
+  /**
+    Creates a bounded view over a Vec range.
+
+    example:
+      let page = users.slice(offset, limit)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn slice(self: Vec<T>, start: usize, len: usize) -> Slice<T> {
+    if start >= self.len {
+      return Slice<T> { data: self.data, start: self.len, len: 0 }
+    }
+    let remaining = self.len - start
+    if len > remaining {
+      return Slice<T> { data: self.data, start: start, len: remaining }
+    }
+    return Slice<T> { data: self.data, start: start, len: len }
+  }
+
+  /**
+    Creates a slice containing the first len elements.
+
+    example:
+      let firstUsers = users.take(10)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn take(self: Vec<T>, len: usize) -> Slice<T> {
+    return self.slice(0, len)
+  }
+
+  /**
+    Creates a slice after skipping len leading elements.
+
+    example:
+      let rest = users.drop(10)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn drop(self: Vec<T>, len: usize) -> Slice<T> {
+    if len >= self.len {
+      return Slice<T> { data: self.data, start: self.len, len: 0 }
+    }
+    return self.slice(len, self.len - len)
+  }
+
+  /**
+    Views the whole Vec as a slice.
+
+    example:
+      let view = users.asSlice()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn asSlice(self: Vec<T>) -> Slice<T> {
+    return self.slice(0, self.len)
+  }
+}

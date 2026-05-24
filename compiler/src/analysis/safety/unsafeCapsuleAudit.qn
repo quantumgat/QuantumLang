@@ -1,0 +1,38 @@
+pub struct UnsafeCapsuleAudit {
+  node: u64,
+  operation: string,
+  capability: UnsafeCapabilityKind,
+  hasPermit: bool,
+  hasProof: bool,
+  hasReason: bool,
+  hasDiagnostic: bool,
+  targetAllowed: bool,
+}
+
+impl UnsafeCapsuleAudit {
+  pub fn init(
+    node: u64,
+    operation: string,
+    capability: UnsafeCapabilityKind,
+    hasPermit: bool,
+    hasProof: bool,
+    hasReason: bool,
+    hasDiagnostic: bool,
+    targetAllowed: bool,
+  ) -> UnsafeCapsuleAudit {
+    return UnsafeCapsuleAudit {
+      node: node,
+      operation: operation,
+      capability: capability,
+      hasPermit: hasPermit,
+      hasProof: hasProof,
+      hasReason: hasReason,
+      hasDiagnostic: hasDiagnostic,
+      targetAllowed: targetAllowed,
+    }
+  }
+
+  pub fn accepted(self: UnsafeCapsuleAudit) -> bool {
+    return self.hasPermit && self.hasProof && self.hasReason && self.hasDiagnostic && self.targetAllowed
+  }
+}

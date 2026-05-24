@@ -1,0 +1,85 @@
+pub struct HttpControllerKeywordEndpointPolicyProof {
+  structControllerComplete: bool,
+  classControllerComplete: bool,
+  magicKeywordsNoImport: bool,
+  manualKeywordsNoImport: bool,
+  classMagicRouteReady: bool,
+  structMagicRouteReady: bool,
+  actionInferenceReady: bool,
+  rawEndpointRequiresPubFn: bool,
+  routeGraphReady: bool,
+}
+
+impl HttpControllerKeywordEndpointPolicyProof {
+  pub fn init(
+    classCreate: EndpointFact,
+    structGet: EndpointFact,
+    actionPost: EndpointFact,
+    rawGet: EndpointFact,
+    routes: RouteGraph,
+  ) -> HttpControllerKeywordEndpointPolicyProof {
+    let magicGet = EndpointKeywordPolicy.magic("get", HttpMethod.Get)
+    let magicCreate = EndpointKeywordPolicy.magic("create", HttpMethod.Post)
+    let magicPut = EndpointKeywordPolicy.magic("put", HttpMethod.Put)
+    let magicDelete = EndpointKeywordPolicy.magic("delete", HttpMethod.Delete)
+    let manualGet = EndpointKeywordPolicy.manual("get", HttpMethod.Get)
+    let actionPolicy = EndpointDerivedActionPolicy.init(EndpointActionInference.BodyMeansPost)
+
+    return HttpControllerKeywordEndpointPolicyProof {
+      structControllerComplete: EndpointControllerSyntaxPolicy.structController().complete(),
+      classControllerComplete: EndpointControllerSyntaxPolicy.classController().complete(),
+      magicKeywordsNoImport: magicGet.magicComplete()
+        && magicCreate.magicComplete()
+        && magicPut.magicComplete()
+        && magicDelete.magicComplete(),
+      manualKeywordsNoImport: manualGet.manualComplete(),
+      classMagicRouteReady: classCreate.routePath() == "/product"
+        && classCreate.route().method() == HttpMethod.Post,
+      structMagicRouteReady: structGet.routePath() == "/product"
+        && structGet.route().method() == HttpMethod.Get,
+      actionInferenceReady: actionPolicy.complete()
+        && actionPost.routePath() == "/product/test"
+        && actionPost.route().method() == HttpMethod.Post,
+      rawEndpointRequiresPubFn: rawGet.manualRoute()
+        && rawGet.routePath() == "/products"
+        && rawGet.route().method() == HttpMethod.Get,
+      routeGraphReady: routes.acceleratorReady(),
+    }
+  }
+
+  pub fn complete(self: HttpControllerKeywordEndpointPolicyProof) -> bool {
+    return self.structControllerComplete
+      && self.classControllerComplete
+      && self.magicKeywordsNoImport
+      && self.manualKeywordsNoImport
+      && self.classMagicRouteReady
+      && self.structMagicRouteReady
+      && self.actionInferenceReady
+      && self.rawEndpointRequiresPubFn
+      && self.routeGraphReady
+  }
+}
+
+pub fn httpControllerKeywordEndpointPolicyProof() -> HttpControllerKeywordEndpointPolicyProof {
+  let classCreate = EndpointFact
+    .simple("product", EndpointMethod.create(), EndpointReturn.json("ProductResponse"))
+    .withParam(EndpointParam.body("body", "CreateProductRequest"))
+    .withParam(EndpointParam.capability("auth", "AuthenticatedUser"))
+
+  let structGet = EndpointFact
+    .simple("product", EndpointMethod.magicGet(), EndpointReturn.json("ProductResponse"))
+    .withParam(EndpointParam.path("id", "ProductId"))
+
+  let actionPost = EndpointFact
+    .simple("product", EndpointMethod.actionPost("test"), EndpointReturn.json("TestResponse"))
+    .withParam(EndpointParam.body("body", "Vec<CreateProductRequest>"))
+
+  let rawGet = EndpointFact
+    .manual("ProductController", EndpointMethod.get("getProduct"), EndpointRouteSpec.get("/products"), EndpointReturn.json("ProductResponse"))
+    .withParam(EndpointParam.query("query", "ProductQuery"))
+
+  let endpoints = EndpointGraph.empty().add(classCreate).add(structGet).add(actionPost).add(rawGet)
+  let routes = RouteGraph.fromEndpoints(endpoints)?
+
+  return HttpControllerKeywordEndpointPolicyProof.init(classCreate, structGet, actionPost, rawGet, routes)
+}

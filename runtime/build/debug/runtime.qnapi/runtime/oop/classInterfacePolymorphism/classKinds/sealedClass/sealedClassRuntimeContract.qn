@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct SealedClassRuntimeContract {
+  typeId: u64
+  permittedSubtypeTableBound: bool
+  externalSubtypeRejected: bool
+  closedDispatchSetBound: bool
+  exhaustiveRuntimeTagBound: bool
+}

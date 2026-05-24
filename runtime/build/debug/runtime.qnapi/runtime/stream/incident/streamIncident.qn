@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeStreamIncidentKind {
+  BackpressureOverflow
+  Timeout
+  RetryLimit
+  PartialError
+  ClosedStream
+  FrameBoundaryLost
+}
+pub struct RuntimeStreamIncident {
+  streamId: u64
+  kind: RuntimeStreamIncidentKind
+  diagnosticCode: string
+  noAllocationRequired: bool
+}

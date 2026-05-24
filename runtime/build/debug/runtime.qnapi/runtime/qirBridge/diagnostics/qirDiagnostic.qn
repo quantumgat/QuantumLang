@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct QirDiagnostic {
+  code: string
+  sourceMapped: bool
+  providerOwned: bool
+}
+pub extern "qnpkg" {
+  pub fn qirDiagnostic(code: string) -> QirDiagnostic
+}

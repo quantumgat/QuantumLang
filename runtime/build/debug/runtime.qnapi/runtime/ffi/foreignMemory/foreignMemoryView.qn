@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeForeignMemoryView {
+  address: usize
+  bytes: usize
+  lifetimeToken: u64
+  aliasChecked: bool
+  deleterRequired: bool
+}

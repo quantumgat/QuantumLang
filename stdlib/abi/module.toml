@@ -1,0 +1,6 @@
+[module]
+name = "abi"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "runtime-abi"

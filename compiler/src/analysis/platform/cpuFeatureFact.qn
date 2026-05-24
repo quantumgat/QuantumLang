@@ -1,0 +1,23 @@
+pub struct CpuFeatureFact {
+  target: string,
+  feature: string,
+  required: bool,
+  available: bool,
+  fallbackAvailable: bool,
+}
+
+impl CpuFeatureFact {
+  pub fn init(target: string, feature: string, required: bool, available: bool, fallbackAvailable: bool) -> CpuFeatureFact {
+    return CpuFeatureFact {
+      target: target,
+      feature: feature,
+      required: required,
+      available: available,
+      fallbackAvailable: fallbackAvailable,
+    }
+  }
+
+  pub fn accepted(self: CpuFeatureFact) -> bool {
+    return self.required == false || self.available || self.fallbackAvailable
+  }
+}

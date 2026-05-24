@@ -1,0 +1,25 @@
+pub struct JsonViewLifetimeFact {
+  typeName: string,
+  sourceOutlivesView: bool,
+  borrowedStringsProven: bool,
+  borrowedContainersProven: bool,
+  escapedStringFallback: bool,
+  ownedConversionExplicit: bool,
+  noDanglingBorrow: bool,
+  noImplicitAllocation: bool,
+  unsupportedFieldDiagnostic: bool,
+}
+
+impl JsonViewLifetimeFact {
+  pub fn accepted(self: JsonViewLifetimeFact) -> bool {
+    return self.typeName != ""
+      && self.sourceOutlivesView
+      && self.borrowedStringsProven
+      && self.borrowedContainersProven
+      && self.escapedStringFallback
+      && self.ownedConversionExplicit
+      && self.noDanglingBorrow
+      && self.noImplicitAllocation
+      && self.unsupportedFieldDiagnostic
+  }
+}

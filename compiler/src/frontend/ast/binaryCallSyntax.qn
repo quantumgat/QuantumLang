@@ -1,0 +1,45 @@
+pub enum AstBinaryCallKind {
+  CursorFixedWidthRead,
+  CursorBytesRead,
+  CursorVarU64Read,
+  WriterFixedWidthWrite,
+  WriterBytesWrite,
+  WriterVarU64Write,
+  WriterFinish,
+}
+
+pub struct AstBinaryCallSyntax {
+  node: u64,
+  kind: AstBinaryCallKind,
+  methodName: string,
+  widthBits: u16,
+  endian: BinaryEndian,
+  questionMark: bool,
+  chainedReceiver: bool,
+}
+
+impl AstBinaryCallSyntax {
+  pub fn isCursorRead(self: AstBinaryCallSyntax) -> bool {
+    return self.node > 0
+      && self.methodName != ""
+      && self.questionMark
+      && (self.kind == AstBinaryCallKind.CursorFixedWidthRead
+        || self.kind == AstBinaryCallKind.CursorBytesRead
+        || self.kind == AstBinaryCallKind.CursorVarU64Read)
+  }
+
+  pub fn isWriterStep(self: AstBinaryCallSyntax) -> bool {
+    return self.node > 0
+      && self.methodName != ""
+      && self.questionMark
+      && (self.kind == AstBinaryCallKind.WriterFixedWidthWrite
+        || self.kind == AstBinaryCallKind.WriterBytesWrite
+        || self.kind == AstBinaryCallKind.WriterVarU64Write)
+  }
+
+  pub fn isWriterFinish(self: AstBinaryCallSyntax) -> bool {
+    return self.node > 0
+      && self.kind == AstBinaryCallKind.WriterFinish
+      && self.methodName == "finish"
+  }
+}

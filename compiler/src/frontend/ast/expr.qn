@@ -1,0 +1,30 @@
+pub enum ExprKind {
+  Missing
+  Literal
+  Name
+  Call
+  Field
+  Binary
+  Block
+  InterpolatedString
+  Pointer
+}
+
+pub struct Expr {
+  node: AstNode,
+  kind: ExprKind,
+}
+
+pub fn expr(node: AstNode, kind: ExprKind) -> Expr {
+  return Expr { node: node, kind: kind }
+}
+
+impl Expr {
+  pub fn ast(self: Expr) -> AstNode {
+    return self.node
+  }
+
+  pub fn exprKind(self: Expr) -> ExprKind {
+    return self.kind
+  }
+}

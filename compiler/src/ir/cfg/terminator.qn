@@ -1,0 +1,26 @@
+pub enum CfgTerminatorKind {
+  Return
+  Goto
+  ConditionalBranch
+  Switch
+  MatchDispatch
+  LoopBackedge
+  BreakExit
+  ContinueBackedge
+  Cleanup
+  ParallelJoin
+  QuantumControl
+}
+
+pub struct CfgTerminator {
+  block: u64,
+  kind: CfgTerminatorKind,
+  successorCount: usize,
+  sourceRangeReady: bool,
+}
+
+impl CfgTerminator {
+  pub fn valid(self: CfgTerminator) -> bool {
+    return self.block > 0 && self.successorCount > 0 && self.sourceRangeReady
+  }
+}

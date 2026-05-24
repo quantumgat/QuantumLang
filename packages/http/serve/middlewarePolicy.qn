@@ -1,0 +1,122 @@
+pub enum PolicyScope {
+  Global,
+  AppContext,
+  Controller,
+  Endpoint,
+}
+
+pub struct PolicyFact {
+  scope: PolicyScope,
+  policyType: string,
+  contextType: string,
+}
+
+impl PolicyFact {
+  pub fn init(scope: PolicyScope, policyType: string, contextType: string) -> PolicyFact {
+    return PolicyFact {
+      scope: scope,
+      policyType: policyType,
+      contextType: contextType,
+    }
+  }
+
+  pub fn global<T>() -> PolicyFact {
+    return PolicyFact.init(PolicyScope.Global, typeName<T>(), "")
+  }
+
+  pub fn appContext<Ctx>() -> PolicyFact {
+    return PolicyFact.init(PolicyScope.AppContext, "HttpCtx", typeName<Ctx>())
+  }
+
+  pub fn controller<T, Ctx>() -> PolicyFact {
+    return PolicyFact.init(PolicyScope.Controller, typeName<T>(), typeName<Ctx>())
+  }
+
+  pub fn endpoint<T>() -> PolicyFact {
+    return PolicyFact.init(PolicyScope.Endpoint, typeName<T>(), "")
+  }
+
+  pub fn scope(self: PolicyFact) -> PolicyScope {
+    return self.scope
+  }
+
+  pub fn contextType(self: PolicyFact) -> string {
+    return self.contextType
+  }
+}
+
+pub struct MiddlewarePolicyGraph {
+  policies: Vec<PolicyFact>,
+  globalCount: usize,
+  appContextCount: usize,
+  controllerCount: usize,
+  endpointCount: usize,
+}
+
+impl MiddlewarePolicyGraph {
+  pub fn empty() -> MiddlewarePolicyGraph {
+    return MiddlewarePolicyGraph {
+      policies: [],
+      globalCount: 0,
+      appContextCount: 0,
+      controllerCount: 0,
+      endpointCount: 0,
+    }
+  }
+
+  pub fn addGlobal(self: MiddlewarePolicyGraph, policy: PolicyFact) -> MiddlewarePolicyGraph {
+    return MiddlewarePolicyGraph {
+      policies: self.policies.push(policy),
+      globalCount: self.globalCount + 1,
+      appContextCount: self.appContextCount,
+      controllerCount: self.controllerCount,
+      endpointCount: self.endpointCount,
+    }
+  }
+
+  pub fn addAppContext(self: MiddlewarePolicyGraph, policy: PolicyFact) -> MiddlewarePolicyGraph {
+    return MiddlewarePolicyGraph {
+      policies: self.policies.push(policy),
+      globalCount: self.globalCount,
+      appContextCount: self.appContextCount + 1,
+      controllerCount: self.controllerCount,
+      endpointCount: self.endpointCount,
+    }
+  }
+
+  pub fn addController(self: MiddlewarePolicyGraph, policy: PolicyFact) -> MiddlewarePolicyGraph {
+    return MiddlewarePolicyGraph {
+      policies: self.policies.push(policy),
+      globalCount: self.globalCount,
+      appContextCount: self.appContextCount,
+      controllerCount: self.controllerCount + 1,
+      endpointCount: self.endpointCount,
+    }
+  }
+
+  pub fn addEndpoint(self: MiddlewarePolicyGraph, policy: PolicyFact) -> MiddlewarePolicyGraph {
+    return MiddlewarePolicyGraph {
+      policies: self.policies.push(policy),
+      globalCount: self.globalCount,
+      appContextCount: self.appContextCount,
+      controllerCount: self.controllerCount,
+      endpointCount: self.endpointCount + 1,
+    }
+  }
+
+  pub fn policyCount(self: MiddlewarePolicyGraph) -> usize {
+    return self.policies.len()
+  }
+
+  pub fn appContextPolicies(self: MiddlewarePolicyGraph) -> usize {
+    return self.appContextCount
+  }
+
+  pub fn globalPolicies(self: MiddlewarePolicyGraph) -> usize {
+    return self.globalCount
+  }
+
+  pub fn defaultContextChainReady(self: MiddlewarePolicyGraph) -> bool {
+    return self.appContextCount > 0
+  }
+}

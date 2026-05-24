@@ -1,0 +1,11 @@
+pub struct Tensor<T> {
+  rank: usize,
+}
+
+impl<T> Tensor<T> {
+  pub fn rank(self: Tensor<T>) -> usize {
+    return self.rank
+  }
+
+  pub fn reduce(self: Tensor<T>) -> T
+}

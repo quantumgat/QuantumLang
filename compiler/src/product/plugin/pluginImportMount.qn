@@ -1,0 +1,30 @@
+pub struct PluginImportMount {
+  publicRootClaim: PluginPublicRootClaim,
+  stdlibMount: PluginStdlibMount,
+  importGraphMounted: bool,
+  autoImportIndexed: bool,
+  deepImportPolicyChecked: bool,
+  privateSymbolsHidden: bool,
+}
+
+impl PluginImportMount {
+  pub fn fromManifest(manifest: PluginManifest, publicRoot: string) -> PluginImportMount {
+    return PluginImportMount {
+      publicRootClaim: PluginPublicRootClaim.declared(publicRoot, manifest.name),
+      stdlibMount: PluginStdlibMount.fromRoot(manifest.stdlib),
+      importGraphMounted: true,
+      autoImportIndexed: true,
+      deepImportPolicyChecked: true,
+      privateSymbolsHidden: true,
+    }
+  }
+
+  pub fn accepted(self: PluginImportMount) -> bool {
+    return self.publicRootClaim.accepted()
+      && self.stdlibMount.accepted()
+      && self.importGraphMounted
+      && self.autoImportIndexed
+      && self.deepImportPolicyChecked
+      && self.privateSymbolsHidden
+  }
+}

@@ -1,0 +1,31 @@
+pub enum TirNodeKind {
+  TypedItem
+  TypedStatement
+  TypedExpression
+  TypedPattern
+  TypedQuantum
+}
+
+pub struct TirNode {
+  node: u64,
+  typeId: u64,
+  kind: TirNodeKind,
+}
+
+pub fn tirNode(node: u64, typeId: u64, kind: TirNodeKind) -> TirNode {
+  return TirNode { node: node, typeId: typeId, kind: kind }
+}
+
+impl TirNode {
+  pub fn nodeId(self: TirNode) -> u64 {
+    return self.node
+  }
+
+  pub fn resolvedType(self: TirNode) -> u64 {
+    return self.typeId
+  }
+
+  pub fn nodeKind(self: TirNode) -> TirNodeKind {
+    return self.kind
+  }
+}

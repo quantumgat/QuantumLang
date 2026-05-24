@@ -1,0 +1,60 @@
+pub struct PathBuf {
+  value: string,
+}
+
+pub fn path(value: string) -> PathBuf
+pub fn path(value: string, style: PathStyle) -> PathBuf
+pub fn posix(value: string) -> PathBuf
+pub fn windows(value: string) -> PathBuf
+pub fn url(value: string) -> PathBuf
+pub fn currentDir() -> PathBuf
+
+impl PathBuf {
+  pub fn text(self: PathBuf) -> string {
+    return self.value
+  }
+
+  pub fn join(self: PathBuf, right: string) -> PathBuf {
+    return join(self, right)
+  }
+
+  pub fn child(self: PathBuf, name: string) -> PathBuf {
+    return safeJoin(self, name)
+  }
+
+  pub fn normalize(self: PathBuf) -> PathBuf {
+    return normalize(self)
+  }
+
+  pub fn parent(self: PathBuf) -> Option<PathBuf> {
+    return parent(self)
+  }
+
+  pub fn fileName(self: PathBuf) -> Option<string> {
+    return fileName(self)
+  }
+
+  pub fn stem(self: PathBuf) -> Option<string> {
+    return stem(self)
+  }
+
+  pub fn extension(self: PathBuf) -> Option<string> {
+    return extension(self)
+  }
+
+  pub fn withFileName(self: PathBuf, name: string) -> PathBuf {
+    return withFileName(self, name)
+  }
+
+  pub fn withExtension(self: PathBuf, extension: string) -> PathBuf {
+    return withExtension(self, extension)
+  }
+
+  pub fn relativeTo(self: PathBuf, base: PathBuf) -> Option<PathBuf> {
+    return relative(self, base)
+  }
+
+  pub fn safe(self: PathBuf) -> bool {
+    return self.value != ""
+  }
+}

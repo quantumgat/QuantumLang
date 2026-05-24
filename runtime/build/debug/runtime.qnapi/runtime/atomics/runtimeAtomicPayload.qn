@@ -1,0 +1,17 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeAtomicPayloadKind {
+  Bool,
+  Int8,
+  Int16,
+  Int32,
+  Int64,
+  Int128,
+  Pointer,
+  Reference,
+  Value,
+}
+pub struct RuntimeAtomicPayload {
+  kind: RuntimeAtomicPayloadKind
+  widthBits: usize
+  lockFreeRequired: bool
+}

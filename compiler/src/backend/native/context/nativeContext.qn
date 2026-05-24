@@ -1,0 +1,35 @@
+pub struct NativeContext {
+  targetId: u64,
+  abiId: u64,
+  artifactId: u64,
+  diagnosticCount: usize,
+  pureNative: bool,
+}
+
+pub fn nativeContext(targetId: u64, abiId: u64, artifactId: u64, diagnosticCount: usize, pureNative: bool) -> NativeContext {
+  return NativeContext {
+    targetId: targetId,
+    abiId: abiId,
+    artifactId: artifactId,
+    diagnosticCount: diagnosticCount,
+    pureNative: pureNative,
+  }
+}
+
+impl NativeContext {
+  pub fn target(self: NativeContext) -> u64 {
+    return self.targetId
+  }
+
+  pub fn abi(self: NativeContext) -> u64 {
+    return self.abiId
+  }
+
+  pub fn artifact(self: NativeContext) -> u64 {
+    return self.artifactId
+  }
+
+  pub fn canEmit(self: NativeContext) -> bool {
+    return self.pureNative && self.diagnosticCount == 0
+  }
+}

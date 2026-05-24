@@ -1,0 +1,4 @@
+pub interface QuantumProvider {
+  pub fn providerName(self: &QuantumProvider) -> string
+  pub fn supportsShots(self: &QuantumProvider) -> bool
+}

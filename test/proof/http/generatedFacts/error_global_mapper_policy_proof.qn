@@ -1,0 +1,48 @@
+pub struct HttpGlobalErrorMapperPolicyProof {
+  coreErrorShortCtor: bool,
+  httpErrorShortCtor: bool,
+  coreToHttpStatus: bool,
+  defaultMapperComplete: bool,
+  customMapperAllowed: bool,
+  appPlanChecksErrorPolicy: bool,
+  unexpectedSafe: bool,
+}
+
+impl HttpGlobalErrorMapperPolicyProof {
+  pub fn complete(self: HttpGlobalErrorMapperPolicyProof) -> bool {
+    return self.coreErrorShortCtor
+      && self.httpErrorShortCtor
+      && self.coreToHttpStatus
+      && self.defaultMapperComplete
+      && self.customMapperAllowed
+      && self.appPlanChecksErrorPolicy
+      && self.unexpectedSafe
+  }
+}
+
+pub fn httpGlobalErrorMapperPolicyProof() -> HttpGlobalErrorMapperPolicyProof {
+  let core = Error(ErrorKind.NotFound, "PRODUCT_NOT_FOUND", "product not found")
+  let http = HttpError.notFound("PRODUCT_NOT_FOUND", "product not found")
+  let mapped = HttpError.fromError(core)
+  let mapper = HttpErrorMapper.default()
+  let custom = HttpErrorPolicy.custom<ApiErrorMapper>()
+  let app = App()
+    .state(Database(config.db))
+    .context<ApiCtx>()
+    .error<ApiErrorMapper>()
+    .controller<ProductController>()
+    .plan(8080)
+
+  return HttpGlobalErrorMapperPolicyProof {
+    coreErrorShortCtor: core.kind() == ErrorKind.NotFound
+      && core.publicCode() == "PRODUCT_NOT_FOUND",
+    httpErrorShortCtor: http.status().code() == 404
+      && http.toError().kind() == ErrorKind.NotFound,
+    coreToHttpStatus: mapped.status().code() == 404
+      && mapper.map(core).status().code() == 404,
+    defaultMapperComplete: mapper.complete(),
+    customMapperAllowed: custom.custom() && custom.complete(),
+    appPlanChecksErrorPolicy: app.errorPolicyComplete() && app.customErrorMapper(),
+    unexpectedSafe: mapper.unexpected("PANIC").status().code() == 500,
+  }
+}

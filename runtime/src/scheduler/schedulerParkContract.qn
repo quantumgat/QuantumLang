@@ -1,0 +1,21 @@
+pub struct SchedulerParkContract {
+  canPark: bool,
+  guardHeld: bool,
+  guardAware: bool,
+  cancellationSafe: bool,
+}
+
+impl SchedulerParkContract {
+  pub fn init(canPark: bool, guardHeld: bool, guardAware: bool, cancellationSafe: bool) -> SchedulerParkContract {
+    return SchedulerParkContract {
+      canPark: canPark,
+      guardHeld: guardHeld,
+      guardAware: guardAware,
+      cancellationSafe: cancellationSafe,
+    }
+  }
+
+  pub fn accepted(self: SchedulerParkContract) -> bool {
+    return self.canPark && self.cancellationSafe && (self.guardHeld == false || self.guardAware)
+  }
+}

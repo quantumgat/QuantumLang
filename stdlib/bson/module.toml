@@ -1,0 +1,15 @@
+[module]
+name = "bson"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "mongodb-bson-codec"
+
+[policy]
+defaultMode = "mongo-compatible"
+exactMode = "quantum-type-preserving"
+silentPrecisionLoss = false
+liveResourceEncoding = "rejected"
+
+[dependencies]
+modules = ["std::binary", "std::bytes", "std::collections", "std::serde", "std::json"]

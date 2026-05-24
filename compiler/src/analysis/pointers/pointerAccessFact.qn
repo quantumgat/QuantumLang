@@ -1,0 +1,33 @@
+pub struct PointerAccessFact {
+  node: u64,
+  bytes: usize,
+  nonNull: bool,
+  boundsChecked: bool,
+  provenanceChecked: bool,
+  aligned: bool,
+  readable: bool,
+  writable: bool,
+}
+
+impl PointerAccessFact {
+  pub fn init(node: u64, bytes: usize, nonNull: bool, boundsChecked: bool, provenanceChecked: bool, aligned: bool, readable: bool, writable: bool) -> PointerAccessFact {
+    return PointerAccessFact {
+      node: node,
+      bytes: bytes,
+      nonNull: nonNull,
+      boundsChecked: boundsChecked,
+      provenanceChecked: provenanceChecked,
+      aligned: aligned,
+      readable: readable,
+      writable: writable,
+    }
+  }
+
+  pub fn permitsRead(self: PointerAccessFact) -> bool {
+    return self.node > 0 && self.bytes > 0 && self.nonNull && self.boundsChecked && self.provenanceChecked && self.aligned && self.readable
+  }
+
+  pub fn permitsWrite(self: PointerAccessFact) -> bool {
+    return self.permitsRead() && self.writable
+  }
+}

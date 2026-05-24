@@ -1,0 +1,15 @@
+pub struct QirDiagnostic {
+  code: string,
+  sourceMapped: bool,
+  providerOwned: bool,
+}
+
+pub fn qirDiagnostic(code: string) -> QirDiagnostic {
+  return QirDiagnostic { code: code, sourceMapped: true, providerOwned: true }
+}
+
+impl QirDiagnostic {
+  pub fn canReport(self: QirDiagnostic) -> bool {
+    return self.sourceMapped && self.providerOwned
+  }
+}

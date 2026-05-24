@@ -1,0 +1,45 @@
+pub enum RuntimeLogSinkKind {
+  Console,
+  File,
+  RingBuffer,
+  Memory,
+  Json,
+  Test,
+  Incident,
+}
+
+pub struct RuntimeLogSink {
+  kind: RuntimeLogSinkKind,
+  transport: RuntimeLogTransport,
+  backpressure: RuntimeLogBackpressure,
+  bounded: bool,
+  backpressureAware: bool,
+  redactsBeforeWrite: bool,
+  panicSafe: bool,
+  noCoredump: bool,
+}
+
+impl RuntimeLogSink {
+  pub fn sink(kind: RuntimeLogSinkKind) -> RuntimeLogSink {
+    return RuntimeLogSink {
+      kind: kind,
+      transport: RuntimeLogTransport.bounded(1024),
+      backpressure: RuntimeLogBackpressure.dropOldest(1024),
+      bounded: true,
+      backpressureAware: true,
+      redactsBeforeWrite: true,
+      panicSafe: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn safe(self: RuntimeLogSink) -> bool {
+    return self.transport.safe()
+      && self.backpressure.safe()
+      && self.bounded
+      && self.backpressureAware
+      && self.redactsBeforeWrite
+      && self.panicSafe
+      && self.noCoredump
+  }
+}

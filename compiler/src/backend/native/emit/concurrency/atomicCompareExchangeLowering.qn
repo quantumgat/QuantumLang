@@ -1,0 +1,21 @@
+pub struct AtomicCompareExchangeLowering {
+  successOrdering: AtomicOrdering,
+  failureOrdering: AtomicOrdering,
+  nativeInstruction: string,
+  preservesOrdering: bool,
+}
+
+impl AtomicCompareExchangeLowering {
+  pub fn init(successOrdering: AtomicOrdering, failureOrdering: AtomicOrdering, nativeInstruction: string, preservesOrdering: bool) -> AtomicCompareExchangeLowering {
+    return AtomicCompareExchangeLowering {
+      successOrdering: successOrdering,
+      failureOrdering: failureOrdering,
+      nativeInstruction: nativeInstruction,
+      preservesOrdering: preservesOrdering,
+    }
+  }
+
+  pub fn accepted(self: AtomicCompareExchangeLowering) -> bool {
+    return self.nativeInstruction != "" && self.preservesOrdering
+  }
+}

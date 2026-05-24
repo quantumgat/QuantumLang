@@ -1,0 +1,17 @@
+pub struct ForeignClassRuntimeContract {
+  typeId: u64,
+  abiBound: bool,
+  handleOwnershipBound: bool,
+  finalizerBound: bool,
+  noUnwindBoundaryBound: bool,
+}
+
+impl ForeignClassRuntimeContract {
+  pub fn complete(self: ForeignClassRuntimeContract) -> bool {
+    return self.typeId > 0
+      && self.abiBound
+      && self.handleOwnershipBound
+      && self.finalizerBound
+      && self.noUnwindBoundaryBound
+  }
+}

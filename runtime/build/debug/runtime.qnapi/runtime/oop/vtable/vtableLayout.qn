@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct VtableLayout {
+  methodCount: usize
+  sealedWhenPossible: bool
+  sourceMapped: bool
+}
+pub extern "qnpkg" {
+  pub fn vtableLayout(methodCount: usize) -> VtableLayout
+}

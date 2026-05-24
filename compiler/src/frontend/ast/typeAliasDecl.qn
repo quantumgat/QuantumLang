@@ -1,0 +1,39 @@
+pub struct TypeAliasDecl {
+  node: AstNode,
+  aliasName: string,
+  target: AstTypeSyntax,
+  genericParameterCount: usize,
+  publicVisible: bool,
+}
+
+pub fn typeAliasDecl(
+  node: AstNode,
+  aliasName: string,
+  target: AstTypeSyntax,
+  genericParameterCount: usize,
+  publicVisible: bool,
+) -> TypeAliasDecl {
+  return TypeAliasDecl {
+    node: node,
+    aliasName: aliasName,
+    target: target,
+    genericParameterCount: genericParameterCount,
+    publicVisible: publicVisible,
+  }
+}
+
+impl TypeAliasDecl {
+  pub fn valid(self: TypeAliasDecl) -> bool {
+    return self.node.nodeKind() == NodeKind.Item
+      && self.aliasName != ""
+      && self.target.valid()
+  }
+
+  pub fn generic(self: TypeAliasDecl) -> bool {
+    return self.genericParameterCount > 0
+  }
+
+  pub fn public(self: TypeAliasDecl) -> bool {
+    return self.publicVisible
+  }
+}

@@ -1,0 +1,6 @@
+[module]
+name = "traitKind"
+visibility = "internal"
+owner = "runtime"
+role = "oop-struct-impl-trait-class-kind"
+root = "mod.qn"

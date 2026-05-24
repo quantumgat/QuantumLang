@@ -1,0 +1,119 @@
+pub fn memoryIncidentKindFromError(error: RuntimeMemoryError) -> MemoryIncidentKind {
+  match error {
+    RuntimeMemoryError.OutOfMemory => {
+      return MemoryIncidentKind.OutOfMemory
+    }
+    RuntimeMemoryError.PressureDenied => {
+      return MemoryIncidentKind.PressureDenied
+    }
+    RuntimeMemoryError.WrongAllocatorDomain => {
+      return MemoryIncidentKind.WrongAllocator
+    }
+    RuntimeMemoryError.WrongGeneration => {
+      return MemoryIncidentKind.StaleHandle
+    }
+    RuntimeMemoryError.DoubleFree => {
+      return MemoryIncidentKind.DoubleFree
+    }
+    RuntimeMemoryError.StaleAllocation => {
+      return MemoryIncidentKind.UseAfterFree
+    }
+    RuntimeMemoryError.InvalidLayout => {
+      return MemoryIncidentKind.InvalidLayout
+    }
+    RuntimeMemoryError.AllocatorStopped => {
+      return MemoryIncidentKind.AllocatorStopped
+    }
+  }
+}
+
+pub fn memoryIncidentFromError(
+  error: RuntimeMemoryError,
+  incidentId: u64,
+  allocationId: u64,
+  handleId: u64,
+) -> MemoryIncident {
+  return MemoryIncident.init(
+    incidentId,
+    memoryIncidentKindFromError(error),
+    allocationId,
+    handleId,
+  )
+}
+
+pub fn arenaIncidentKindFromError(error: ArenaRuntimeError) -> MemoryIncidentKind {
+  match error {
+    ArenaRuntimeError.Released => {
+      return MemoryIncidentKind.StaleHandle
+    }
+    ArenaRuntimeError.WrongGeneration => {
+      return MemoryIncidentKind.ArenaUseAfterReset
+    }
+    ArenaRuntimeError.WrongRegion => {
+      return MemoryIncidentKind.WrongRegion
+    }
+    ArenaRuntimeError.UseAfterReset => {
+      return MemoryIncidentKind.ArenaUseAfterReset
+    }
+    ArenaRuntimeError.DoubleRelease => {
+      return MemoryIncidentKind.ArenaDoubleRelease
+    }
+    ArenaRuntimeError.DanglingArenaBox => {
+      return MemoryIncidentKind.DanglingArenaBox
+    }
+    ArenaRuntimeError.DanglingArenaSlice => {
+      return MemoryIncidentKind.DanglingArenaSlice
+    }
+    ArenaRuntimeError.InvalidLayout => {
+      return MemoryIncidentKind.InvalidLayout
+    }
+  }
+}
+
+pub fn arenaIncidentFromError(
+  error: ArenaRuntimeError,
+  incidentId: u64,
+  allocationId: u64,
+  handleId: u64,
+) -> MemoryIncident {
+  return MemoryIncident.init(
+    incidentId,
+    arenaIncidentKindFromError(error),
+    allocationId,
+    handleId,
+  )
+}
+
+pub fn borrowIncidentKindFromError(error: BorrowRuntimeError) -> MemoryIncidentKind {
+  match error {
+    BorrowRuntimeError.DanglingView => {
+      return MemoryIncidentKind.ZeroCopyDanglingView
+    }
+    BorrowRuntimeError.MutationConflict => {
+      return MemoryIncidentKind.ZeroCopyMutationConflict
+    }
+    BorrowRuntimeError.OverlappingMutableBorrow => {
+      return MemoryIncidentKind.ZeroCopyOverlappingMutableBorrow
+    }
+    BorrowRuntimeError.ReadAfterMutation => {
+      return MemoryIncidentKind.ZeroCopyReadAfterMutation
+    }
+    BorrowRuntimeError.InvalidRange => {
+      return MemoryIncidentKind.ZeroCopyInvalidRange
+    }
+  }
+}
+
+pub fn borrowIncidentFromError(
+  error: BorrowRuntimeError,
+  incidentId: u64,
+  allocationId: u64,
+  handleId: u64,
+) -> MemoryIncident {
+  return MemoryIncident.init(
+    incidentId,
+    borrowIncidentKindFromError(error),
+    allocationId,
+    handleId,
+  )
+}

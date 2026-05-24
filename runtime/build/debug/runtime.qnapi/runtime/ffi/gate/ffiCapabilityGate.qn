@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct FfiCapabilityGate {
+  effectsRequired: bool
+  unsafeRequired: bool
+  targetAllowed: bool
+}
+pub extern "qnpkg" {
+  pub fn ffiCapabilityGate() -> FfiCapabilityGate
+}

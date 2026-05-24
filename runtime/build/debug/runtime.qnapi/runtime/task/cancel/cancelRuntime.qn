@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeTaskCancellation {
+  tokenId: u64
+  parentTokenId: u64
+  cleanupEdgeCount: usize
+  propagated: bool
+}

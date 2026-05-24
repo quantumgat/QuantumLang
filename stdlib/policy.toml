@@ -1,0 +1,14 @@
+[policy]
+root = "qtlc/qtlang/stdlib"
+canonicalImport = "std"
+cleanSelfHostedMetadata = true
+allowOldIntrinsicsToml = false
+allowOldInternalBindings = false
+allowBootstrapPublicRuntimeNames = false
+allowGeneratedSourceFallback = false
+maxSourceLines = 1500
+maxModLines = 300
+
+[runtimeBoundary]
+hiddenRuntimeAbi = true
+publicStdlibOwnsApiShape = true

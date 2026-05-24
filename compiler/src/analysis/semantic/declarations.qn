@@ -1,0 +1,28 @@
+pub enum DeclarationKind {
+  FunctionDecl
+  TypeDecl
+  TypeAliasDecl
+  ClassDecl
+  InterfaceDecl
+  TraitDecl
+}
+
+pub struct DeclarationFact {
+  node: u64,
+  symbol: u64,
+  kind: DeclarationKind,
+}
+
+pub fn declarationFact(node: u64, symbol: u64, kind: DeclarationKind) -> DeclarationFact {
+  return DeclarationFact { node: node, symbol: symbol, kind: kind }
+}
+
+impl DeclarationFact {
+  pub fn nodeId(self: DeclarationFact) -> u64 {
+    return self.node
+  }
+
+  pub fn symbolId(self: DeclarationFact) -> u64 {
+    return self.symbol
+  }
+}

@@ -1,0 +1,31 @@
+pub enum ItemKind {
+  Missing
+  FunctionItem
+  StructItem
+  EnumItem
+  TraitItem
+  ClassItem
+  InterfaceItem
+  ImportItem
+  ModuleItem
+  TypeAliasItem
+}
+
+pub struct Item {
+  node: AstNode,
+  kind: ItemKind,
+}
+
+pub fn item(node: AstNode, kind: ItemKind) -> Item {
+  return Item { node: node, kind: kind }
+}
+
+impl Item {
+  pub fn ast(self: Item) -> AstNode {
+    return self.node
+  }
+
+  pub fn itemKind(self: Item) -> ItemKind {
+    return self.kind
+  }
+}

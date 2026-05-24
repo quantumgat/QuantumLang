@@ -1,0 +1,68 @@
+pub enum PackageCommandKind {
+  Add,
+  Remove,
+  Update,
+  Search,
+  Info,
+  Audit,
+  Doctor,
+  Vendor,
+  Cache,
+}
+
+pub struct PackageCommandLayout {
+  manifestPath: string,
+  lockfilePath: string,
+  packageCacheRoot: string,
+  buildDependencyRoot: string,
+}
+
+impl PackageCommandLayout {
+  pub fn projectDefault(projectRoot: string) -> PackageCommandLayout {
+    return PackageCommandLayout {
+      manifestPath: projectRoot + "/quantum.toml",
+      lockfilePath: projectRoot + "/quantum.lock",
+      packageCacheRoot: "~/.qtlc/packages",
+      buildDependencyRoot: projectRoot + "/build/deps",
+    }
+  }
+
+  pub fn keepsSourceCacheGlobal(self: PackageCommandLayout) -> bool {
+    return self.packageCacheRoot == "~/.qtlc/packages"
+      && self.buildDependencyRoot != self.packageCacheRoot
+  }
+}
+
+pub struct PackageCommandRequest {
+  kind: PackageCommandKind,
+  packageSpec: string,
+  mutatesManifest: bool,
+  refreshesLockfile: bool,
+  binaryInstallSeparate: bool,
+}
+
+impl PackageCommandRequest {
+  pub fn add(packageSpec: string) -> PackageCommandRequest {
+    return PackageCommandRequest {
+      kind: PackageCommandKind.Add,
+      packageSpec: packageSpec,
+      mutatesManifest: true,
+      refreshesLockfile: true,
+      binaryInstallSeparate: true,
+    }
+  }
+
+  pub fn remove(packageSpec: string) -> PackageCommandRequest {
+    return PackageCommandRequest {
+      kind: PackageCommandKind.Remove,
+      packageSpec: packageSpec,
+      mutatesManifest: true,
+      refreshesLockfile: true,
+      binaryInstallSeparate: true,
+    }
+  }
+
+  pub fn isDependencyCommand(self: PackageCommandRequest) -> bool {
+    return self.binaryInstallSeparate
+  }
+}

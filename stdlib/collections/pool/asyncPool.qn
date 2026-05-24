@@ -1,0 +1,29 @@
+pub struct PoolAsyncJob<T> {
+  pool: Pool<T>,
+  scheduled: usize,
+}
+
+impl<T> Pool<T> {
+  pub fn forEach(self: Pool<T>, worker: fn(T) -> Unit) -> Pool<T> {
+    let mut cursor = self.occupiedCursor()
+    while cursor.hasNext() {
+      worker(cursor.valueUnchecked())
+      cursor = cursor.next()
+    }
+    return self
+  }
+
+  pub fn parallelForEach(self: Pool<T>, worker: fn(T) -> Unit) -> PoolAsyncJob<T> requires(parallel) {
+    return PoolAsyncJob<T> {
+      pool: self.forEach(worker),
+      scheduled: self.len,
+    }
+  }
+
+  pub fn forEachAsync(self: Pool<T>, worker: async fn(T) -> Unit) -> PoolAsyncJob<T> requires(async) {
+    return PoolAsyncJob<T> {
+      pool: self,
+      scheduled: self.len,
+    }
+  }
+}

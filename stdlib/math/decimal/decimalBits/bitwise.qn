@@ -1,0 +1,69 @@
+pub struct UnsafeDec<T> {
+  value: T,
+}
+
+pub struct DecCoeff<T> {
+  value: T,
+}
+
+pub trait DecBits<T> {
+  pub fn bitAnd(self: T, right: T) -> Result<T, DecimalError>
+  pub fn bitOr(self: T, right: T) -> Result<T, DecimalError>
+  pub fn bitXor(self: T, right: T) -> Result<T, DecimalError>
+  pub fn bitNot(self: T) -> Result<T, DecimalError>
+  pub fn shiftLeft(self: T, bits: u32) -> Result<T, DecimalError>
+  pub fn shiftRight(self: T, bits: u32) -> Result<T, DecimalError>
+  pub fn unchecked(self: T) -> UnsafeDec<T> requires(unsafe)
+  pub fn coeff(self: T) -> DecCoeff<T>
+}
+
+pub trait UnsafeDecBits<T> {
+  pub fn bitAnd(self: UnsafeDec<T>, right: T) -> UnsafeDec<T>
+  pub fn bitOr(self: UnsafeDec<T>, right: T) -> UnsafeDec<T>
+  pub fn bitXor(self: UnsafeDec<T>, right: T) -> UnsafeDec<T>
+  pub fn bitNot(self: UnsafeDec<T>) -> UnsafeDec<T>
+  pub fn shiftLeft(self: UnsafeDec<T>, bits: u32) -> UnsafeDec<T>
+  pub fn shiftRight(self: UnsafeDec<T>, bits: u32) -> UnsafeDec<T>
+  pub fn value(self: UnsafeDec<T>) -> T
+}
+
+pub trait DecCoeffBits<T> {
+  pub fn bitAnd(self: DecCoeff<T>, right: DecCoeff<T>) -> Result<DecCoeff<T>, DecimalError>
+  pub fn bitOr(self: DecCoeff<T>, right: DecCoeff<T>) -> Result<DecCoeff<T>, DecimalError>
+  pub fn bitXor(self: DecCoeff<T>, right: DecCoeff<T>) -> Result<DecCoeff<T>, DecimalError>
+  pub fn bitNot(self: DecCoeff<T>) -> Result<DecCoeff<T>, DecimalError>
+  pub fn shiftLeft(self: DecCoeff<T>, bits: u32) -> Result<DecCoeff<T>, DecimalError>
+  pub fn shiftRight(self: DecCoeff<T>, bits: u32) -> Result<DecCoeff<T>, DecimalError>
+  pub fn value(self: DecCoeff<T>) -> T
+}
+
+extend<T: DecBits<T>> T {
+  pub fn bitAnd(self: T, right: T) -> Result<T, DecimalError>
+  pub fn bitOr(self: T, right: T) -> Result<T, DecimalError>
+  pub fn bitXor(self: T, right: T) -> Result<T, DecimalError>
+  pub fn bitNot(self: T) -> Result<T, DecimalError>
+  pub fn shiftLeft(self: T, bits: u32) -> Result<T, DecimalError>
+  pub fn shiftRight(self: T, bits: u32) -> Result<T, DecimalError>
+  pub fn unchecked(self: T) -> UnsafeDec<T> requires(unsafe)
+  pub fn coeff(self: T) -> DecCoeff<T>
+}
+
+extend<T: UnsafeDecBits<T>> UnsafeDec<T> {
+  pub fn bitAnd(self: UnsafeDec<T>, right: T) -> UnsafeDec<T>
+  pub fn bitOr(self: UnsafeDec<T>, right: T) -> UnsafeDec<T>
+  pub fn bitXor(self: UnsafeDec<T>, right: T) -> UnsafeDec<T>
+  pub fn bitNot(self: UnsafeDec<T>) -> UnsafeDec<T>
+  pub fn shiftLeft(self: UnsafeDec<T>, bits: u32) -> UnsafeDec<T>
+  pub fn shiftRight(self: UnsafeDec<T>, bits: u32) -> UnsafeDec<T>
+  pub fn value(self: UnsafeDec<T>) -> T
+}
+
+extend<T: DecCoeffBits<T>> DecCoeff<T> {
+  pub fn bitAnd(self: DecCoeff<T>, right: DecCoeff<T>) -> Result<DecCoeff<T>, DecimalError>
+  pub fn bitOr(self: DecCoeff<T>, right: DecCoeff<T>) -> Result<DecCoeff<T>, DecimalError>
+  pub fn bitXor(self: DecCoeff<T>, right: DecCoeff<T>) -> Result<DecCoeff<T>, DecimalError>
+  pub fn bitNot(self: DecCoeff<T>) -> Result<DecCoeff<T>, DecimalError>
+  pub fn shiftLeft(self: DecCoeff<T>, bits: u32) -> Result<DecCoeff<T>, DecimalError>
+  pub fn shiftRight(self: DecCoeff<T>, bits: u32) -> Result<DecCoeff<T>, DecimalError>
+  pub fn value(self: DecCoeff<T>) -> T
+}

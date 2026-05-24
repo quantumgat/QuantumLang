@@ -1,0 +1,29 @@
+pub struct SourceRange {
+  file: u32,
+  start: usize,
+  end: usize,
+  stable: bool,
+  line: u32,
+  column: u32,
+  redacted: bool,
+}
+
+impl SourceRange {
+  pub fn init(file: u32, start: usize, end: usize) -> SourceRange {
+    return SourceRange {
+      file: file,
+      start: start,
+      end: end,
+      stable: end >= start,
+      line: 0,
+      column: 0,
+      redacted: true,
+    }
+  }
+
+  pub fn exact(self: SourceRange) -> bool {
+    return self.stable
+      && self.end > self.start
+      && self.redacted
+  }
+}

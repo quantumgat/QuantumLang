@@ -1,0 +1,6 @@
+[module]
+name = "collections.iterator"
+visibility = "public"
+root = "mod.qn"
+owner = "stdlib"
+role = "iterator"

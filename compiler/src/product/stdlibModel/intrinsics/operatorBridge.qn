@@ -1,0 +1,45 @@
+pub enum StdlibOperatorBridgeKind {
+  Arithmetic
+  Comparison
+  Bitwise
+  Assignment
+  Unary
+  IncrementDecrement
+}
+
+pub struct StdlibOperatorBridge {
+  operatorName: string,
+  symbolName: string,
+  kind: StdlibOperatorBridgeKind,
+  overloadChecked: bool,
+  noImport: bool,
+  compilerOwned: bool,
+  stdlibWrapperAllowed: bool,
+}
+
+impl StdlibOperatorBridge {
+  pub fn compilerOperator(
+    operatorName: string,
+    symbolName: string,
+    kind: StdlibOperatorBridgeKind,
+  ) -> StdlibOperatorBridge {
+    return StdlibOperatorBridge {
+      operatorName: operatorName,
+      symbolName: symbolName,
+      kind: kind,
+      overloadChecked: true,
+      noImport: true,
+      compilerOwned: true,
+      stdlibWrapperAllowed: false,
+    }
+  }
+
+  pub fn accepted(self: StdlibOperatorBridge) -> bool {
+    return self.operatorName != ""
+      && self.symbolName != ""
+      && self.overloadChecked
+      && self.noImport
+      && self.compilerOwned
+      && !self.stdlibWrapperAllowed
+  }
+}

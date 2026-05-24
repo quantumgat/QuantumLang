@@ -1,0 +1,68 @@
+pub struct HttpAppStateOopProjectionProof {
+  ownerTracked: bool,
+  familyProjected: bool,
+  lifecycleProjected: bool,
+  capabilityFactsBound: bool,
+  dataRegionFactsBound: bool,
+  actorServiceFactsBound: bool,
+  noNameClassification: bool,
+  factComplete: bool,
+}
+
+impl HttpAppStateOopProjectionProof {
+  pub fn init(projection: AppStateOopProjection) -> HttpAppStateOopProjectionProof {
+    let fact = projection.toFact()
+    return HttpAppStateOopProjectionProof {
+      ownerTracked: fact.ownerId() == projection.oopOwnerId,
+      familyProjected: fact.lifecycleOwned() && fact.family == AppStateFamily.Service,
+      lifecycleProjected: fact.requiresLifecyclePlan() && fact.lifecycle.reconnectAvailable,
+      capabilityFactsBound: projection.capabilityEffect.complete(),
+      dataRegionFactsBound: projection.dataRegionFactsAccepted(),
+      actorServiceFactsBound: projection.actorServiceFactsAccepted(),
+      noNameClassification: projection.displayTypeName != "",
+      factComplete: fact.complete() && projection.complete(),
+    }
+  }
+
+  pub fn complete(self: HttpAppStateOopProjectionProof) -> bool {
+    return self.ownerTracked
+      && self.familyProjected
+      && self.lifecycleProjected
+      && self.capabilityFactsBound
+      && self.dataRegionFactsBound
+      && self.actorServiceFactsBound
+      && self.noNameClassification
+      && self.factComplete
+  }
+}
+
+pub fn httpAppStateOopProjectionProof() -> HttpAppStateOopProjectionProof {
+  let ownerId: u64 = 7001
+  let advanced = advancedOopFamilyFact(
+    AdvancedOopFamily.AppState,
+    AdvancedOopDisposition.PackageLayer,
+    true,
+    true,
+    true
+  )
+  let appState = stateAppStateFact(ownerId, 3, 2, 2, 1, 0, true, true, true, false)
+  let lifecycle = lifecycleFact(ownerId, LifecyclePhase.Active, true)
+  let manual = manualLifecycleFact(9001, ownerId, ManualLifecycleKind.AsyncCleanup, true, true, true, false)
+  let capability = capabilityEffectFact(ownerId, 2, 2, 1, 1, true, true, true, true, true)
+  let region = dataRegionFact(ownerId, true, true, true, true, true, true, true, true, true)
+  let service = actorServiceFact(ownerId, 0, 1, true, true, true, true, true, true, true)
+
+  let projection = AppStateOopProjection.init(
+    "ExampleService",
+    advanced,
+    appState,
+    lifecycle,
+    manual,
+    capability,
+    region,
+    service,
+    2
+  )
+
+  return HttpAppStateOopProjectionProof.init(projection)
+}

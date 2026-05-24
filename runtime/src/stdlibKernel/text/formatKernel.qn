@@ -1,0 +1,30 @@
+pub struct FormatKernel {
+  literalValidation: bool,
+  displayRoute: bool,
+  debugRoute: bool,
+  precisionRoute: bool,
+  widthRoute: bool,
+  redactionAware: bool,
+}
+
+impl FormatKernel {
+  pub fn standard() -> FormatKernel {
+    return FormatKernel {
+      literalValidation: true,
+      displayRoute: true,
+      debugRoute: true,
+      precisionRoute: true,
+      widthRoute: true,
+      redactionAware: true,
+    }
+  }
+
+  pub fn supportsInterpolation(self: FormatKernel) -> bool {
+    return self.literalValidation
+      && self.displayRoute
+      && self.debugRoute
+      && self.precisionRoute
+      && self.widthRoute
+      && self.redactionAware
+  }
+}

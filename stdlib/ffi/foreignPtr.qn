@@ -1,0 +1,38 @@
+pub struct ForeignPtr<T> {
+  address: usize,
+  hasDeleter: bool,
+  lifetimeActive: bool,
+  allocatorDomainChecked: bool,
+}
+
+impl<T> ForeignPtr<T> {
+  pub fn fromAddress(address: usize, hasDeleter: bool) -> ForeignPtr<T> {
+    return ForeignPtr<T> {
+      address: address,
+      hasDeleter: hasDeleter,
+      lifetimeActive: true,
+      allocatorDomainChecked: hasDeleter,
+    }
+  }
+
+  pub fn owned(self: ForeignPtr<T>) -> bool {
+    return self.hasDeleter
+  }
+
+  pub fn accepted(self: ForeignPtr<T>) -> bool {
+    return self.address > 0 && self.hasDeleter && self.lifetimeActive && self.allocatorDomainChecked
+  }
+
+  pub fn validate(self: ForeignPtr<T>) -> Result<ForeignPtr<T>, FfiError> {
+    if self.address == 0 {
+      return Err(FfiError.init(FfiErrorKind.InvalidHandle, "QLFFI0003"))
+    }
+    if self.lifetimeActive == false {
+      return Err(FfiError.init(FfiErrorKind.ForeignLifetimeExpired, "QLFFI0007"))
+    }
+    if self.hasDeleter == false || self.allocatorDomainChecked == false {
+      return Err(FfiError.init(FfiErrorKind.CapabilityDenied, "QLFFI0004"))
+    }
+    return Ok(self)
+  }
+}

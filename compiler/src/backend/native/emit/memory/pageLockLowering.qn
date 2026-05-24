@@ -1,0 +1,19 @@
+pub struct PageLockLowering {
+  emitsPageLock: bool,
+  emitsUnlockCleanup: bool,
+  preservesCancellationPath: bool,
+}
+
+impl PageLockLowering {
+  pub fn init(emitsPageLock: bool, emitsUnlockCleanup: bool, preservesCancellationPath: bool) -> PageLockLowering {
+    return PageLockLowering {
+      emitsPageLock: emitsPageLock,
+      emitsUnlockCleanup: emitsUnlockCleanup,
+      preservesCancellationPath: preservesCancellationPath,
+    }
+  }
+
+  pub fn accepted(self: PageLockLowering) -> bool {
+    return self.emitsPageLock && self.emitsUnlockCleanup && self.preservesCancellationPath
+  }
+}

@@ -1,0 +1,6 @@
+pub use core.option.Option
+pub use core.option.Some
+pub use core.option.None
+pub use core.option.isSome
+pub use core.option.isNone
+pub use core.option.unwrapOr

@@ -1,0 +1,21 @@
+pub struct PrematureReclaimFact {
+  allocationId: u64,
+  retired: bool,
+  protected: bool,
+  epochSafe: bool,
+}
+
+impl PrematureReclaimFact {
+  pub fn init(allocationId: u64, retired: bool, protected: bool, epochSafe: bool) -> PrematureReclaimFact {
+    return PrematureReclaimFact {
+      allocationId: allocationId,
+      retired: retired,
+      protected: protected,
+      epochSafe: epochSafe,
+    }
+  }
+
+  pub fn mustReject(self: PrematureReclaimFact) -> bool {
+    return self.retired == false || self.protected || self.epochSafe == false
+  }
+}

@@ -1,0 +1,68 @@
+pub struct LogSpan {
+  name: string,
+  spanId: u64,
+  parentId: u64,
+  traceId: u64,
+  causalParentId: u64,
+  asyncBoundary: bool,
+  cancellationBoundary: bool,
+  context: LogContext,
+}
+
+impl LogSpan {
+  /**
+    Creates a log span with trace context.
+
+    example:
+      let span = LogSpan.start("load-user", traceId, parentId)
+
+    effects: pure
+    complexity: O(1)
+    allocation: stores caller-provided name
+    stability: public since 0.1
+  */
+  pub fn start(name: string, traceId: u64, parentId: u64) -> LogSpan {
+    let spanId = traceId + parentId + 1
+    return LogSpan {
+      name: name,
+      spanId: spanId,
+      parentId: parentId,
+      traceId: traceId,
+      causalParentId: parentId,
+      asyncBoundary: false,
+      cancellationBoundary: false,
+      context: LogContext.task(traceId, spanId, 0),
+    }
+  }
+
+  pub fn asyncChild(self: LogSpan, name: string, taskId: u64) -> LogSpan {
+    let childId = self.spanId + taskId + 1
+    return LogSpan {
+      name: name,
+      spanId: childId,
+      parentId: self.spanId,
+      traceId: self.traceId,
+      causalParentId: self.spanId,
+      asyncBoundary: true,
+      cancellationBoundary: false,
+      context: LogContext.task(self.traceId, childId, taskId),
+    }
+  }
+
+  pub fn cancellation(self: LogSpan, cancellationId: u64) -> LogSpan {
+    return LogSpan {
+      name: self.name,
+      spanId: self.spanId,
+      parentId: self.parentId,
+      traceId: self.traceId,
+      causalParentId: self.causalParentId,
+      asyncBoundary: self.asyncBoundary,
+      cancellationBoundary: true,
+      context: self.context.withCancellation(cancellationId),
+    }
+  }
+
+  pub fn active(self: LogSpan) -> bool {
+    return self.name != "" && self.spanId > 0 && self.traceId > 0 && self.context.safe()
+  }
+}

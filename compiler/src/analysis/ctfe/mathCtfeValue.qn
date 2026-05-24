@@ -1,0 +1,86 @@
+pub enum MathCtfeValueKind {
+  Bool
+  I64
+  U64
+  F64
+  DecimalLiteral
+  BigIntLiteral
+  ComplexPairF64
+  Error
+}
+
+pub struct MathCtfeValue {
+  kind: MathCtfeValueKind,
+  i64Value: i64,
+  u64Value: u64,
+  f64Value: f64,
+  textValue: string,
+  evaluated: bool,
+  exactMath: bool,
+}
+
+impl MathCtfeValue {
+  pub fn u64(value: u64) -> MathCtfeValue {
+    return MathCtfeValue {
+      kind: MathCtfeValueKind.U64,
+      i64Value: 0,
+      u64Value: value,
+      f64Value: 0.0,
+      textValue: "",
+      evaluated: true,
+      exactMath: true,
+    }
+  }
+
+  pub fn i64(value: i64) -> MathCtfeValue {
+    return MathCtfeValue {
+      kind: MathCtfeValueKind.I64,
+      i64Value: value,
+      u64Value: 0,
+      f64Value: 0.0,
+      textValue: "",
+      evaluated: true,
+      exactMath: true,
+    }
+  }
+
+  pub fn f64(value: f64) -> MathCtfeValue {
+    return MathCtfeValue {
+      kind: MathCtfeValueKind.F64,
+      i64Value: 0,
+      u64Value: 0,
+      f64Value: value,
+      textValue: "",
+      evaluated: true,
+      exactMath: true,
+    }
+  }
+
+  pub fn decimalLiteral(text: string) -> MathCtfeValue {
+    return MathCtfeValue {
+      kind: MathCtfeValueKind.DecimalLiteral,
+      i64Value: 0,
+      u64Value: 0,
+      f64Value: 0.0,
+      textValue: text,
+      evaluated: true,
+      exactMath: true,
+    }
+  }
+
+  pub fn error() -> MathCtfeValue {
+    return MathCtfeValue {
+      kind: MathCtfeValueKind.Error,
+      i64Value: 0,
+      u64Value: 0,
+      f64Value: 0.0,
+      textValue: "",
+      evaluated: false,
+      exactMath: false,
+    }
+  }
+
+  pub fn complete(self: MathCtfeValue) -> bool {
+    return self.evaluated && self.exactMath && self.kind != MathCtfeValueKind.Error
+  }
+}

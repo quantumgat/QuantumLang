@@ -1,0 +1,31 @@
+pub struct HttpCtxExtensionFact {
+  contextType: string,
+  methodName: string,
+  capabilityType: string,
+}
+
+impl HttpCtxExtensionFact {
+  pub fn init(contextType: string, methodName: string, capabilityType: string) -> HttpCtxExtensionFact {
+    return HttpCtxExtensionFact {
+      contextType: contextType,
+      methodName: methodName,
+      capabilityType: capabilityType,
+    }
+  }
+
+  pub fn of<Ctx, T>(methodName: string) -> HttpCtxExtensionFact {
+    return HttpCtxExtensionFact.init(typeName<Ctx>(), methodName, typeName<T>())
+  }
+
+  pub fn contextType(self: HttpCtxExtensionFact) -> string {
+    return self.contextType
+  }
+
+  pub fn methodName(self: HttpCtxExtensionFact) -> string {
+    return self.methodName
+  }
+
+  pub fn capabilityType(self: HttpCtxExtensionFact) -> string {
+    return self.capabilityType
+  }
+}

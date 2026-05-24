@@ -1,0 +1,10 @@
+pub enum ClearMode {
+  Screen
+  Line
+  FromCursor
+}
+
+pub fn clear(fd: i64) -> Result<Unit, OsError>
+pub fn clear(fd: i64, mode: ClearMode) -> Result<Unit, OsError>
+pub fn enterAlternateScreen(fd: i64) -> Result<Unit, OsError>
+pub fn leaveAlternateScreen(fd: i64) -> Result<Unit, OsError>

@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct DowncastCheck {
+  sourceTypeId: u64
+  targetTypeId: u64
+  runtimeChecked: bool
+}
+pub extern "qnpkg" {
+  pub fn downcastCheck(sourceTypeId: u64, targetTypeId: u64) -> DowncastCheck
+}

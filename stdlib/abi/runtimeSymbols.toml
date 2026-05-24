@@ -1,0 +1,17 @@
+[runtimeSymbols]
+schema = "self-hosted-stdlib-runtime-abi-v1"
+hiddenRuntimeBoundary = true
+publicBootstrapNames = false
+
+[families]
+io = "runtime"
+async = "runtime"
+task = "runtime"
+channel = "runtime"
+sync = "runtime"
+actor = "runtime"
+time = "runtime"
+random = "runtime"
+crypto = "runtime"
+quantum = "runtime-qir"
+

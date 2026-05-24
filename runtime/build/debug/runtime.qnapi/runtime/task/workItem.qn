@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct WorkItem {
+  task: TaskId
+  priority: u32
+  cancellable: bool
+}
+pub extern "qnpkg" {
+  pub fn workItem(task: TaskId, priority: u32, cancellable: bool) -> WorkItem
+}

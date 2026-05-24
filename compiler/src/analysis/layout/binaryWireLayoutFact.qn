@@ -1,0 +1,17 @@
+pub struct BinaryWireLayoutFact {
+  fieldOffset: usize,
+  fieldAlignment: usize,
+  endianKnown: bool,
+  packed: bool,
+}
+
+impl BinaryWireLayoutFact {
+  pub fn offsetValid(self: BinaryWireLayoutFact) -> bool {
+    if self.packed {
+      return self.endianKnown
+    }
+    return self.endianKnown
+      && self.fieldAlignment > 0
+      && self.fieldOffset % self.fieldAlignment == 0
+  }
+}

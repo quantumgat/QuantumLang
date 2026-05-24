@@ -1,0 +1,37 @@
+pub struct SchedulerBlockingBoundary {
+  poolId: u64,
+  maxThreads: usize,
+  queueBound: usize,
+  isolated: bool,
+  cancellationAware: bool,
+  saturationDiagnosticReady: bool,
+}
+
+impl SchedulerBlockingBoundary {
+  pub fn init(
+    poolId: u64,
+    maxThreads: usize,
+    queueBound: usize,
+    isolated: bool,
+    cancellationAware: bool,
+    saturationDiagnosticReady: bool,
+  ) -> SchedulerBlockingBoundary {
+    return SchedulerBlockingBoundary {
+      poolId: poolId,
+      maxThreads: maxThreads,
+      queueBound: queueBound,
+      isolated: isolated,
+      cancellationAware: cancellationAware,
+      saturationDiagnosticReady: saturationDiagnosticReady,
+    }
+  }
+
+  pub fn safe(self: SchedulerBlockingBoundary) -> bool {
+    return self.poolId > 0
+      && self.maxThreads > 0
+      && self.queueBound > 0
+      && self.isolated
+      && self.cancellationAware
+      && self.saturationDiagnosticReady
+  }
+}

@@ -1,0 +1,19 @@
+pub struct AtomicFenceLowering {
+  ordering: AtomicOrdering,
+  emitsFence: bool,
+  preservesOrdering: bool,
+}
+
+impl AtomicFenceLowering {
+  pub fn init(ordering: AtomicOrdering, emitsFence: bool, preservesOrdering: bool) -> AtomicFenceLowering {
+    return AtomicFenceLowering {
+      ordering: ordering,
+      emitsFence: emitsFence,
+      preservesOrdering: preservesOrdering,
+    }
+  }
+
+  pub fn accepted(self: AtomicFenceLowering) -> bool {
+    return self.emitsFence && self.preservesOrdering
+  }
+}

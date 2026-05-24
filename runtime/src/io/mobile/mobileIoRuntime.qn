@@ -1,0 +1,12 @@
+pub struct MobileIoRuntime {
+  target: string,
+  permissionChecked: bool,
+  sandboxAware: bool,
+  backgroundRestricted: bool,
+}
+
+impl MobileIoRuntime {
+  pub fn accepted(self: MobileIoRuntime) -> bool {
+    return self.target != "" && self.permissionChecked && self.sandboxAware
+  }
+}

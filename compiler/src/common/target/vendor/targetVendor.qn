@@ -1,0 +1,20 @@
+pub enum TargetVendorKind {
+  UnknownVendor,
+  Pc,
+  Apple,
+  Google,
+  Espressif,
+  Wasi,
+}
+
+pub struct TargetVendorModel {
+  kind: TargetVendorKind,
+  vendorName: string,
+  supported: bool,
+}
+
+impl TargetVendorModel {
+  pub fn accepted(self: TargetVendorModel) -> bool {
+    return self.vendorName != "" && self.supported
+  }
+}

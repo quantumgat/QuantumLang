@@ -1,0 +1,15 @@
+pub struct SchemaModel {
+  typeCount: usize,
+  fieldCount: usize,
+  ownsAnalysisFacts: bool,
+}
+
+pub fn schemaModel(typeCount: usize, fieldCount: usize) -> SchemaModel {
+  return SchemaModel { typeCount: typeCount, fieldCount: fieldCount, ownsAnalysisFacts: false }
+}
+
+impl SchemaModel {
+  pub fn sourceLevelOnly(self: SchemaModel) -> bool {
+    return self.ownsAnalysisFacts == false
+  }
+}

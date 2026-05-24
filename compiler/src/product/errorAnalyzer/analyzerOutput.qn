@@ -1,0 +1,75 @@
+pub struct ErrorAnalyzerOutput {
+  group: ErrorFailureGroup,
+  idePayload: IdeDiagnosticPayload,
+  reportRow: ReportExplainRow,
+  rootCause: ErrorRootCauseExplanation,
+  fixPlan: ErrorFixPlan,
+  groupedFailuresReady: bool,
+  memoryIncidentsReady: bool,
+  runtimeDiagnosticsReady: bool,
+  nextActionReady: bool,
+  linkedDocsReady: bool,
+  noCoredump: bool,
+  readOnly: bool,
+  redacted: bool,
+}
+
+pub fn errorAnalyzerOutput(file: u32) -> ErrorAnalyzerOutput {
+  let reportRow = reportExplainRow(
+    ReportExplainRowKind.MemoryIncident,
+    file,
+    1,
+    2,
+    "LOW",
+    2009,
+    "allocation can be released twice"
+  )
+  let diagnostic = reportRow.diagnostic
+  let rootCause = errorRootCauseExplanation(
+    ErrorAnalyzerCauseKind.MemoryIncident,
+    diagnostic,
+    "same allocation reaches release twice",
+    "ownership proof found two release paths for one allocation id",
+    "memory"
+  )
+  let fixPlan = errorFixPlan(
+    diagnostic,
+    "remove the second release or transfer ownership before freeing",
+    "split ownership with a unique handle or arena lifetime proof",
+    "apply the safe fix, then rerun the focused diagnostic gate",
+    "docs/complete/self_hosting/lowlevel_leak_double_free_proof.md"
+  )
+  return ErrorAnalyzerOutput {
+    group: errorFailureGroup("memory.double-free", diagnostic, rootCause, fixPlan),
+    idePayload: ideDiagnosticPayload(diagnostic),
+    reportRow: reportRow,
+    rootCause: rootCause,
+    fixPlan: fixPlan,
+    groupedFailuresReady: true,
+    memoryIncidentsReady: true,
+    runtimeDiagnosticsReady: true,
+    nextActionReady: true,
+    linkedDocsReady: true,
+    noCoredump: true,
+    readOnly: true,
+    redacted: true,
+  }
+}
+
+impl ErrorAnalyzerOutput {
+  pub fn useful(self: ErrorAnalyzerOutput) -> bool {
+    return self.group.useful()
+      && self.idePayload.ready()
+      && self.reportRow.renderable()
+      && self.rootCause.useful()
+      && self.fixPlan.useful()
+      && self.groupedFailuresReady
+      && self.memoryIncidentsReady
+      && self.runtimeDiagnosticsReady
+      && self.nextActionReady
+      && self.linkedDocsReady
+      && self.noCoredump
+      && self.readOnly
+      && self.redacted
+  }
+}

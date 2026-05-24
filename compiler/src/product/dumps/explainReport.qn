@@ -1,0 +1,25 @@
+pub struct ExplainReport {
+  subject: string,
+  diagnosticCode: string,
+  sourceMapped: bool,
+  deterministic: bool,
+  mutatesCompilerFacts: bool,
+}
+
+pub fn explainReport(subject: string, diagnosticCode: string) -> ExplainReport {
+  return ExplainReport { subject: subject, diagnosticCode: diagnosticCode, sourceMapped: true, deterministic: true, mutatesCompilerFacts: false }
+}
+
+impl ExplainReport {
+  pub fn subjectName(self: ExplainReport) -> string {
+    return self.subject
+  }
+
+  pub fn code(self: ExplainReport) -> string {
+    return self.diagnosticCode
+  }
+
+  pub fn isReadOnly(self: ExplainReport) -> bool {
+    return self.sourceMapped && self.mutatesCompilerFacts == false
+  }
+}

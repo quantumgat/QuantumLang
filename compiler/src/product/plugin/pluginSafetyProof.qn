@@ -1,0 +1,49 @@
+pub struct PluginSafetyContract {
+  sandbox: PluginPolicyRequirement,
+  unsafeCapsules: PluginPolicyRequirement,
+  capabilityAudit: PluginPolicyRequirement,
+  noDomainHardcoding: bool,
+}
+
+impl PluginSafetyContract {
+  pub fn required() -> PluginSafetyContract {
+    return PluginSafetyContract {
+      sandbox: PluginPolicyRequirement.Required,
+      unsafeCapsules: PluginPolicyRequirement.Required,
+      capabilityAudit: PluginPolicyRequirement.Required,
+      noDomainHardcoding: true,
+    }
+  }
+
+  pub fn accepted(self: PluginSafetyContract) -> bool {
+    return self.sandbox == PluginPolicyRequirement.Required
+      && self.unsafeCapsules == PluginPolicyRequirement.Required
+      && self.capabilityAudit == PluginPolicyRequirement.Required
+      && self.noDomainHardcoding
+  }
+}
+
+pub struct PluginProofContract {
+  benchmarks: PluginPolicyRequirement,
+  negativeTests: PluginPolicyRequirement,
+  fallbackTests: PluginPolicyRequirement,
+  reproducibleBuild: PluginPolicyRequirement,
+}
+
+impl PluginProofContract {
+  pub fn required() -> PluginProofContract {
+    return PluginProofContract {
+      benchmarks: PluginPolicyRequirement.Required,
+      negativeTests: PluginPolicyRequirement.Required,
+      fallbackTests: PluginPolicyRequirement.Required,
+      reproducibleBuild: PluginPolicyRequirement.Required,
+    }
+  }
+
+  pub fn accepted(self: PluginProofContract) -> bool {
+    return self.benchmarks == PluginPolicyRequirement.Required
+      && self.negativeTests == PluginPolicyRequirement.Required
+      && self.fallbackTests == PluginPolicyRequirement.Required
+      && self.reproducibleBuild == PluginPolicyRequirement.Required
+  }
+}

@@ -1,0 +1,21 @@
+pub enum CodeActionKind {
+  QuickFixAction,
+  RefactorAction,
+  SourceAction,
+}
+
+pub struct CodeAction {
+  title: string,
+  kind: CodeActionKind,
+  sourceMapped: bool,
+  mutatesCompilerFacts: bool,
+}
+
+pub fn codeAction(title: string, kind: CodeActionKind) -> CodeAction {
+  return CodeAction {
+    title: title,
+    kind: kind,
+    sourceMapped: true,
+    mutatesCompilerFacts: false,
+  }
+}

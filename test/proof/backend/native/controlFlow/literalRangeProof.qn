@@ -1,0 +1,22 @@
+pub enum LiteralRangeProofKind {
+  LiteralInferenceProof
+  RangeInferenceProof
+  AmbiguityDiagnosticProof
+  NoImplicitAnyProof
+  NoGeneratedFallback
+}
+
+pub struct LiteralRangeProof {
+  kind: LiteralRangeProofKind,
+  fixture: string,
+  nativeLowering: NativeLiteralRangeLowering,
+  negativeFixtureCaptured: bool,
+}
+
+impl LiteralRangeProof {
+  pub fn complete(self: LiteralRangeProof) -> bool {
+    return self.fixture != ""
+      && self.nativeLowering.complete()
+      && self.negativeFixtureCaptured
+  }
+}

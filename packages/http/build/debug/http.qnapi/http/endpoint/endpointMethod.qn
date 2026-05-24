@@ -1,0 +1,24 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum EndpointMethodKind {
+  Get,
+  Post,
+  Put,
+  Patch,
+  Delete,
+  Head,
+  Options,
+  Create,
+  List,
+  Search,
+  Find,
+  Upload,
+  Replace,
+  Update,
+  Remove,
+}
+pub struct EndpointMethod {
+  name: string
+  httpMethod: HttpMethod
+  kind: EndpointMethodKind
+  routeName: string
+}

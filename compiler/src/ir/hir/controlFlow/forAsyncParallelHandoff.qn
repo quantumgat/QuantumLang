@@ -1,0 +1,37 @@
+pub enum HirForAsyncParallelKind {
+  AsyncPollStream
+  AsyncQuestionUnwrap
+  ConcurrentTaskFanout
+  LimitedConcurrentFanout
+  ParallelShardFor
+  ParallelChunkedFor
+  ParallelReduction
+  ParallelMap
+  ParallelFind
+  CancellationHandoff
+}
+
+pub struct HirForAsyncParallelHandoff {
+  sourceNode: u64,
+  kind: HirForAsyncParallelKind,
+  iterableNode: u64,
+  bodyNode: u64,
+  analysis: ForAsyncParallelFact,
+  frameHandoffReady: bool,
+  shardHandoffReady: bool,
+  cancellationHandoffReady: bool,
+  mirReady: bool,
+}
+
+impl HirForAsyncParallelHandoff {
+  pub fn complete(self: HirForAsyncParallelHandoff) -> bool {
+    return self.sourceNode > 0
+      && self.iterableNode > 0
+      && self.bodyNode > 0
+      && self.analysis.complete()
+      && self.frameHandoffReady
+      && self.shardHandoffReady
+      && self.cancellationHandoffReady
+      && self.mirReady
+  }
+}

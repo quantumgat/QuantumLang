@@ -1,0 +1,94 @@
+pub enum BodyParseKind {
+  Json,
+  Form,
+  Multipart,
+  Text,
+  Bytes,
+  Stream,
+}
+
+pub struct UploadedFile {
+  fieldName: string,
+  filename: string,
+  contentType: string,
+  size: usize,
+}
+
+impl UploadedFile {
+  pub fn init(fieldName: string, filename: string, contentType: string, size: usize) -> UploadedFile {
+    return UploadedFile {
+      fieldName: fieldName,
+      filename: filename,
+      contentType: contentType,
+      size: size,
+    }
+  }
+
+  pub fn field(self: UploadedFile) -> string {
+    return self.fieldName
+  }
+
+  pub fn name(self: UploadedFile) -> string {
+    return self.filename
+  }
+
+  pub fn len(self: UploadedFile) -> usize {
+    return self.size
+  }
+}
+
+pub struct MultipartForm {
+  fieldCount: usize,
+  files: Vec<UploadedFile>,
+}
+
+impl MultipartForm {
+  pub fn init(fieldCount: usize, files: Vec<UploadedFile>) -> MultipartForm {
+    return MultipartForm {
+      fieldCount: fieldCount,
+      files: files,
+    }
+  }
+
+  pub fn empty() -> MultipartForm {
+    return MultipartForm.init(0, [])
+  }
+
+  pub fn len(self: MultipartForm) -> usize {
+    return self.fieldCount
+  }
+
+  pub fn fileCount(self: MultipartForm) -> usize {
+    return self.files.len()
+  }
+}
+
+pub struct BodyParsePlan {
+  kind: BodyParseKind,
+  contentType: string,
+  maxBytes: usize,
+  streaming: bool,
+}
+
+impl BodyParsePlan {
+  pub fn init(kind: BodyParseKind, contentType: string, maxBytes: usize, streaming: bool) -> BodyParsePlan {
+    return BodyParsePlan {
+      kind: kind,
+      contentType: contentType,
+      maxBytes: maxBytes,
+      streaming: streaming,
+    }
+  }
+
+  pub fn json(maxBytes: usize) -> BodyParsePlan {
+    return BodyParsePlan.init(BodyParseKind.Json, "application/json", maxBytes, false)
+  }
+
+  pub fn multipart(maxBytes: usize) -> BodyParsePlan {
+    return BodyParsePlan.init(BodyParseKind.Multipart, "multipart/form-data", maxBytes, true)
+  }
+
+  pub fn safe(self: BodyParsePlan) -> bool {
+    return self.maxBytes > 0
+  }
+}

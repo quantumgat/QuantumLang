@@ -1,0 +1,7 @@
+pub fn isTty(fd: i64) -> bool
+pub fn stdin() -> i64
+pub fn stdout() -> i64
+pub fn stderr() -> i64
+pub fn stdinIsTty() -> bool
+pub fn stdoutIsTty() -> bool
+pub fn stderrIsTty() -> bool

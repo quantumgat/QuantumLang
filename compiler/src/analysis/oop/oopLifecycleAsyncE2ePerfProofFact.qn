@@ -1,0 +1,45 @@
+pub struct OopLifecycleAsyncE2ePerfProofFact {
+  constructorSugarFixtureBound: bool,
+  initDropFixtureBound: bool,
+  asyncServiceShutdownFixtureBound: bool,
+  actorMailboxAsyncFixtureBound: bool,
+  asyncInterfaceDynFixtureBound: bool,
+  illegalAsyncDropNegativeBound: bool,
+  awaitQuestionErgonomicsBound: bool,
+  directHotPathLoweringBound: bool,
+  dynBoundaryExplicitBound: bool,
+  runtimeGuardBound: bool,
+  typedFailureNoCoredumpBound: bool,
+  perfProofRowsBound: bool,
+  focusedSerialRunnerBound: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+}
+
+impl OopLifecycleAsyncE2ePerfProofFact {
+  pub fn fixturesComplete(self: OopLifecycleAsyncE2ePerfProofFact) -> bool {
+    return self.constructorSugarFixtureBound
+      && self.initDropFixtureBound
+      && self.asyncServiceShutdownFixtureBound
+      && self.actorMailboxAsyncFixtureBound
+      && self.asyncInterfaceDynFixtureBound
+      && self.illegalAsyncDropNegativeBound
+      && self.awaitQuestionErgonomicsBound
+  }
+
+  pub fn hotPathProven(self: OopLifecycleAsyncE2ePerfProofFact) -> bool {
+    return self.directHotPathLoweringBound
+      && self.dynBoundaryExplicitBound
+      && self.runtimeGuardBound
+      && self.perfProofRowsBound
+      && self.focusedSerialRunnerBound
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+  }
+
+  pub fn complete(self: OopLifecycleAsyncE2ePerfProofFact) -> bool {
+    return self.fixturesComplete()
+      && self.hotPathProven()
+      && self.typedFailureNoCoredumpBound
+  }
+}

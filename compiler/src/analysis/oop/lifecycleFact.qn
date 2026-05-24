@@ -1,0 +1,22 @@
+pub enum LifecyclePhase {
+  Init
+  Active
+  Drop
+  Cleanup
+}
+
+pub struct LifecycleFact {
+  typeId: u64,
+  phase: LifecyclePhase,
+  resourceOwning: bool,
+}
+
+pub fn lifecycleFact(typeId: u64, phase: LifecyclePhase, resourceOwning: bool) -> LifecycleFact {
+  return LifecycleFact { typeId: typeId, phase: phase, resourceOwning: resourceOwning }
+}
+
+impl LifecycleFact {
+  pub fn requiresDrop(self: LifecycleFact) -> bool {
+    return self.resourceOwning
+  }
+}

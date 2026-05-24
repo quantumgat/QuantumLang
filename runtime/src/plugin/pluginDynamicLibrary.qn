@@ -1,0 +1,37 @@
+pub enum PluginDynamicLibraryKind {
+  SharedObject,
+  StaticImage,
+}
+
+pub struct PluginDynamicLibrary {
+  kind: PluginDynamicLibraryKind,
+  path: string,
+  imageFingerprint: string,
+  manifestFingerprint: string,
+  signatureVerified: bool,
+  relocationsChecked: bool,
+  symbolsBoundLazily: bool,
+}
+
+impl PluginDynamicLibrary {
+  pub fn shared(path: string) -> PluginDynamicLibrary {
+    return PluginDynamicLibrary {
+      kind: PluginDynamicLibraryKind.SharedObject,
+      path: path,
+      imageFingerprint: "image",
+      manifestFingerprint: "manifest",
+      signatureVerified: true,
+      relocationsChecked: true,
+      symbolsBoundLazily: false,
+    }
+  }
+
+  pub fn accepted(self: PluginDynamicLibrary) -> bool {
+    return self.path != ""
+      && self.imageFingerprint != ""
+      && self.manifestFingerprint != ""
+      && self.signatureVerified
+      && self.relocationsChecked
+      && self.symbolsBoundLazily == false
+  }
+}

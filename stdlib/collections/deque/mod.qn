@@ -1,0 +1,7 @@
+pub mod deque
+pub mod iter
+pub mod builder
+
+pub use deque.Deque
+pub use iter.DequeIter
+pub use builder.DequeBuilder

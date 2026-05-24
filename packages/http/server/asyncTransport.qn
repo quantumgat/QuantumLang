@@ -1,0 +1,222 @@
+pub enum HttpTransportEventKind {
+  Accept
+  Read
+  Parse
+  Dispatch
+  Write
+  Disconnect
+  Timeout
+  Cancel
+}
+
+pub enum HttpBackpressurePolicy {
+  Adaptive
+  Wait
+  FailFast
+  Shed
+  CloseSlowClient
+}
+
+pub struct HttpAsyncTransportPlan {
+  workers: usize,
+  reactorShards: usize,
+  perCore: bool,
+  backpressure: HttpBackpressurePolicy,
+  cancellationSafe: bool,
+  noBlockingRequestThreads: bool,
+  genericRuntimeTransport: bool,
+  pluginConsumableFacts: bool,
+}
+
+impl HttpAsyncTransportPlan {
+  pub fn init(
+    workers: usize,
+    reactorShards: usize,
+    perCore: bool,
+    backpressure: HttpBackpressurePolicy,
+    cancellationSafe: bool,
+    noBlockingRequestThreads: bool,
+    genericRuntimeTransport: bool,
+    pluginConsumableFacts: bool,
+  ) -> HttpAsyncTransportPlan {
+    return HttpAsyncTransportPlan {
+      workers: workers,
+      reactorShards: reactorShards,
+      perCore: perCore,
+      backpressure: backpressure,
+      cancellationSafe: cancellationSafe,
+      noBlockingRequestThreads: noBlockingRequestThreads,
+      genericRuntimeTransport: genericRuntimeTransport,
+      pluginConsumableFacts: pluginConsumableFacts,
+    }
+  }
+
+  pub fn fromPolicy(policy: ServerPolicy) -> HttpAsyncTransportPlan {
+    return HttpTransportModePlan.fromPolicy(policy).asyncTransportPlan()
+  }
+
+  pub fn schedulerWorkerCount(self: HttpAsyncTransportPlan) -> usize {
+    return self.workers
+  }
+
+  pub fn mapsToGenericRuntimeReactor(self: HttpAsyncTransportPlan) -> bool {
+    return self.reactorShards == self.workers && self.perCore && self.genericRuntimeTransport
+  }
+
+  pub fn runtimeReactorBinding(self: HttpAsyncTransportPlan) -> HttpRuntimeReactorBinding {
+    return HttpRuntimeReactorBinding.init(
+      self.reactorShards,
+      self.perCore,
+      self.workers,
+      self.genericRuntimeTransport
+    )
+  }
+
+  pub fn safeForMillionConnections(self: HttpAsyncTransportPlan) -> bool {
+    return self.accepted() && self.noBlockingRequestThreads
+  }
+
+  pub fn accepted(self: HttpAsyncTransportPlan) -> bool {
+    return self.workers > 0
+      && self.reactorShards > 0
+      && self.perCore
+      && self.cancellationSafe
+      && self.noBlockingRequestThreads
+      && self.genericRuntimeTransport
+      && self.pluginConsumableFacts
+  }
+}
+
+pub struct HttpRuntimeReactorBinding {
+  shardCount: usize,
+  perCoreSharding: bool,
+  schedulerWorkers: usize,
+  packageOwnedProtocol: bool,
+}
+
+impl HttpRuntimeReactorBinding {
+  pub fn init(
+    shardCount: usize,
+    perCoreSharding: bool,
+    schedulerWorkers: usize,
+    packageOwnedProtocol: bool,
+  ) -> HttpRuntimeReactorBinding {
+    return HttpRuntimeReactorBinding {
+      shardCount: shardCount,
+      perCoreSharding: perCoreSharding,
+      schedulerWorkers: schedulerWorkers,
+      packageOwnedProtocol: packageOwnedProtocol,
+    }
+  }
+
+  pub fn accepted(self: HttpRuntimeReactorBinding) -> bool {
+    return self.shardCount == self.schedulerWorkers
+      && self.shardCount > 0
+      && self.perCoreSharding
+      && self.packageOwnedProtocol
+  }
+}
+
+pub struct HttpReactorShardPlan {
+  shard: usize,
+  accepts: bool,
+  reads: bool,
+  writes: bool,
+  timers: bool,
+  cancellation: bool,
+}
+
+impl HttpReactorShardPlan {
+  pub fn init(shard: usize) -> HttpReactorShardPlan {
+    return HttpReactorShardPlan {
+      shard: shard,
+      accepts: true,
+      reads: true,
+      writes: true,
+      timers: true,
+      cancellation: true,
+    }
+  }
+
+  pub fn ready(self: HttpReactorShardPlan) -> bool {
+    return self.accepts && self.reads && self.writes && self.timers && self.cancellation
+  }
+}
+
+pub struct HttpAcceptedSocketPlan {
+  asyncParser: bool,
+  routeLookup: bool,
+  extractorGraph: bool,
+  handlerThunk: bool,
+  noDedicatedThread: bool,
+}
+
+impl HttpAcceptedSocketPlan {
+  pub fn init() -> HttpAcceptedSocketPlan {
+    return HttpAcceptedSocketPlan {
+      asyncParser: true,
+      routeLookup: true,
+      extractorGraph: true,
+      handlerThunk: true,
+      noDedicatedThread: true,
+    }
+  }
+
+  pub fn hotPathReady(self: HttpAcceptedSocketPlan) -> bool {
+    return self.asyncParser
+      && self.routeLookup
+      && self.extractorGraph
+      && self.handlerThunk
+      && self.noDedicatedThread
+  }
+}
+
+pub struct HttpResponseWritePlan {
+  asyncWrite: bool,
+  writeQueueBackpressure: bool,
+  zeroCopyEligible: bool,
+  disconnectAware: bool,
+}
+
+impl HttpResponseWritePlan {
+  pub fn init() -> HttpResponseWritePlan {
+    return HttpResponseWritePlan {
+      asyncWrite: true,
+      writeQueueBackpressure: true,
+      zeroCopyEligible: true,
+      disconnectAware: true,
+    }
+  }
+
+  pub fn accepted(self: HttpResponseWritePlan) -> bool {
+    return self.asyncWrite && self.writeQueueBackpressure && self.disconnectAware
+  }
+}
+
+pub struct HttpDisconnectCleanupPlan {
+  cancellationToken: bool,
+  deadline: bool,
+  bufferReturn: bool,
+  stateCleanup: bool,
+  typedFailure: bool,
+}
+
+impl HttpDisconnectCleanupPlan {
+  pub fn init() -> HttpDisconnectCleanupPlan {
+    return HttpDisconnectCleanupPlan {
+      cancellationToken: true,
+      deadline: true,
+      bufferReturn: true,
+      stateCleanup: true,
+      typedFailure: true,
+    }
+  }
+
+  pub fn crashless(self: HttpDisconnectCleanupPlan) -> bool {
+    return self.cancellationToken
+      && self.deadline
+      && self.bufferReturn
+      && self.stateCleanup
+      && self.typedFailure
+  }
+}

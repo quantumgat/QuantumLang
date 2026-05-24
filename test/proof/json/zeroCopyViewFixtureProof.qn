@@ -1,0 +1,33 @@
+pub struct JsonZeroCopyViewFixtureProof {
+  borrowedStringFixture: bool,
+  escapedStringToOwnedFixture: bool,
+  borrowedArrayFixture: bool,
+  sourceLifetimeFixture: bool,
+  danglingViewRejected: bool,
+  explicitToOwnedFixture: bool,
+  noImplicitAllocationFixture: bool,
+}
+
+impl JsonZeroCopyViewFixtureProof {
+  pub fn required() -> JsonZeroCopyViewFixtureProof {
+    return JsonZeroCopyViewFixtureProof {
+      borrowedStringFixture: true,
+      escapedStringToOwnedFixture: true,
+      borrowedArrayFixture: true,
+      sourceLifetimeFixture: true,
+      danglingViewRejected: true,
+      explicitToOwnedFixture: true,
+      noImplicitAllocationFixture: true,
+    }
+  }
+
+  pub fn accepted(self: JsonZeroCopyViewFixtureProof) -> bool {
+    return self.borrowedStringFixture
+      && self.escapedStringToOwnedFixture
+      && self.borrowedArrayFixture
+      && self.sourceLifetimeFixture
+      && self.danglingViewRejected
+      && self.explicitToOwnedFixture
+      && self.noImplicitAllocationFixture
+  }
+}

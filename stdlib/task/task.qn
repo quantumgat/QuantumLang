@@ -1,0 +1,18 @@
+pub struct TaskId {
+  value: u64,
+}
+
+pub struct Task<T> {
+  id: TaskId,
+}
+
+pub fn spawn<T>(work: TaskFn<T>) -> Task<T>
+pub fn join<T>(task: Task<T>) -> T
+
+pub use handle.joinHandle.JoinHandle
+pub use handle.joinHandle.JoinState
+pub use scope.taskScope.TaskScope
+pub use taskGroup.taskGroup.TaskGroup
+pub use detach.detachPolicy.DetachPolicy
+pub use detach.detachPolicy.DetachedTask
+pub use blocking.blockingTask.BlockingTask

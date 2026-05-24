@@ -1,0 +1,35 @@
+pub struct Message {
+  text: string,
+  binaryBytes: usize,
+}
+
+impl Message {
+  pub fn text(value: string) -> Message {
+    return Message {
+      text: value,
+      binaryBytes: 0,
+    }
+  }
+
+  pub fn binary(bytes: usize) -> Message {
+    return Message {
+      text: "",
+      binaryBytes: bytes,
+    }
+  }
+
+  pub fn isText(self: Message) -> bool {
+    return self.text != ""
+  }
+
+  pub fn textValue(self: Message) -> string {
+    return self.text
+  }
+
+  pub fn payloadBytes(self: Message) -> usize {
+    if self.text != "" {
+      return self.text.len()
+    }
+    return self.binaryBytes
+  }
+}

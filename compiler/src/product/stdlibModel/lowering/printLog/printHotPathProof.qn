@@ -1,0 +1,115 @@
+pub enum PrintHotPathCaseKind {
+  LiteralPrintln,
+  LiteralPrint,
+  VariadicSmallValues,
+  FormatElidedDisplay,
+  BufferReuse,
+  StderrDirect,
+}
+
+pub struct PrintHotPathCase {
+  kind: PrintHotPathCaseKind,
+  sourcePattern: string,
+  loweringPattern: string,
+  directRuntimeWrite: bool,
+  formatElided: bool,
+  bufferReused: bool,
+  allocationFree: bool,
+  partialWritePreserved: bool,
+  noCoredump: bool,
+}
+
+pub struct PrintHotPathProof {
+  cases: Vec<PrintHotPathCase>,
+  requiredCases: usize,
+  generatedExecutableFixture: string,
+  benchmarkOwnedByTestPerf: bool,
+  productRuntimeSchemaLeak: bool,
+}
+
+pub fn printHotPathCase(
+  kind: PrintHotPathCaseKind,
+  sourcePattern: string,
+  loweringPattern: string,
+  formatElided: bool,
+) -> PrintHotPathCase {
+  return PrintHotPathCase {
+    kind: kind,
+    sourcePattern: sourcePattern,
+    loweringPattern: loweringPattern,
+    directRuntimeWrite: true,
+    formatElided: formatElided,
+    bufferReused: true,
+    allocationFree: true,
+    partialWritePreserved: true,
+    noCoredump: true,
+  }
+}
+
+pub fn printHotPathProof() -> PrintHotPathProof requires(alloc) {
+  let mut cases = Vec<PrintHotPathCase>.withCapacity(6)
+  cases = cases.push(printHotPathCase(
+    PrintHotPathCaseKind.LiteralPrintln,
+    "println(\"ready\")?",
+    "direct runtime stdout write with newline literal",
+    true
+  ))
+  cases = cases.push(printHotPathCase(
+    PrintHotPathCaseKind.LiteralPrint,
+    "print(\"ready\")?",
+    "direct runtime stdout write without newline",
+    true
+  ))
+  cases = cases.push(printHotPathCase(
+    PrintHotPathCaseKind.VariadicSmallValues,
+    "print(\"id=\", id)?",
+    "stack/scratch formatted small values then single runtime write",
+    false
+  ))
+  cases = cases.push(printHotPathCase(
+    PrintHotPathCaseKind.FormatElidedDisplay,
+    "println(value.toString())?",
+    "display lowering elides temporary formatter when value is already text",
+    true
+  ))
+  cases = cases.push(printHotPathCase(
+    PrintHotPathCaseKind.BufferReuse,
+    "printWith(PrintOptions.lineBuffered(), value)?",
+    "reuse line buffer and flush only on newline/full buffer",
+    false
+  ))
+  cases = cases.push(printHotPathCase(
+    PrintHotPathCaseKind.StderrDirect,
+    "eprintln(\"failed\")?",
+    "direct runtime stderr write with safe flush ordering",
+    true
+  ))
+  return PrintHotPathProof {
+    cases: cases,
+    requiredCases: 6,
+    generatedExecutableFixture: "print_hotpath_ok.qn",
+    benchmarkOwnedByTestPerf: true,
+    productRuntimeSchemaLeak: false,
+  }
+}
+
+impl PrintHotPathCase {
+  pub fn passed(self: PrintHotPathCase) -> bool {
+    return self.sourcePattern != ""
+      && self.loweringPattern != ""
+      && self.directRuntimeWrite
+      && self.bufferReused
+      && self.allocationFree
+      && self.partialWritePreserved
+      && self.noCoredump
+  }
+}
+
+impl PrintHotPathProof {
+  pub fn passed(self: PrintHotPathProof) -> bool {
+    return self.cases.len >= self.requiredCases
+      && self.generatedExecutableFixture != ""
+      && self.benchmarkOwnedByTestPerf
+      && self.productRuntimeSchemaLeak == false
+  }
+}

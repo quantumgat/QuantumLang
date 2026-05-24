@@ -1,0 +1,41 @@
+pub struct ErrorFailureGroup {
+  groupKey: string,
+  representative: Diagnostic,
+  groupCount: usize,
+  highestSeverity: DiagnosticSeverity,
+  rootCause: ErrorRootCauseExplanation,
+  fixPlan: ErrorFixPlan,
+  memoryIncidentGrouped: bool,
+  runtimeIncidentGrouped: bool,
+  redacted: bool,
+}
+
+pub fn errorFailureGroup(
+  groupKey: string,
+  representative: Diagnostic,
+  rootCause: ErrorRootCauseExplanation,
+  fixPlan: ErrorFixPlan,
+) -> ErrorFailureGroup {
+  return ErrorFailureGroup {
+    groupKey: groupKey,
+    representative: representative,
+    groupCount: 1,
+    highestSeverity: representative.severity,
+    rootCause: rootCause,
+    fixPlan: fixPlan,
+    memoryIncidentGrouped: representative.category == DiagnosticCategory.Memory,
+    runtimeIncidentGrouped: representative.category == DiagnosticCategory.Runtime,
+    redacted: representative.redacted,
+  }
+}
+
+impl ErrorFailureGroup {
+  pub fn useful(self: ErrorFailureGroup) -> bool {
+    return self.groupKey != ""
+      && self.representative.complete()
+      && self.groupCount > 0
+      && self.rootCause.useful()
+      && self.fixPlan.useful()
+      && self.redacted
+  }
+}

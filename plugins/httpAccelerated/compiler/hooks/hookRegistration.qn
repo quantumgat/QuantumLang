@@ -1,0 +1,27 @@
+pub struct HttpAcceleratedHookRegistration {
+  packageFactLowering: bool,
+  intrinsicLowering: bool,
+  targetSpecialize: bool,
+  nativeEmitSpecialize: bool,
+  runtimeKernelBinding: bool,
+}
+
+impl HttpAcceleratedHookRegistration {
+  pub fn required() -> HttpAcceleratedHookRegistration {
+    return HttpAcceleratedHookRegistration {
+      packageFactLowering: true,
+      intrinsicLowering: true,
+      targetSpecialize: true,
+      nativeEmitSpecialize: true,
+      runtimeKernelBinding: true,
+    }
+  }
+
+  pub fn genericOnly(self: HttpAcceleratedHookRegistration) -> bool {
+    return self.packageFactLowering
+      && self.intrinsicLowering
+      && self.targetSpecialize
+      && self.nativeEmitSpecialize
+      && self.runtimeKernelBinding
+  }
+}

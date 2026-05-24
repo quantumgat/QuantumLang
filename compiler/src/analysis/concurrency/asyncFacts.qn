@@ -1,0 +1,19 @@
+pub struct AsyncFacts {
+  callable: u64,
+  suspensionCount: usize,
+  cancellationSafe: bool,
+}
+
+pub fn asyncFacts(callable: u64, suspensionCount: usize, cancellationSafe: bool) -> AsyncFacts {
+  return AsyncFacts {
+    callable: callable,
+    suspensionCount: suspensionCount,
+    cancellationSafe: cancellationSafe,
+  }
+}
+
+impl AsyncFacts {
+  pub fn needsStateMachine(self: AsyncFacts) -> bool {
+    return self.suspensionCount > 0
+  }
+}

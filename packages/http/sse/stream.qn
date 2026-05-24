@@ -1,0 +1,28 @@
+pub struct Stream {
+  isOpen: bool,
+  eventCount: usize,
+}
+
+impl Stream {
+  pub fn open() -> Stream {
+    return Stream {
+      isOpen: true,
+      eventCount: 0,
+    }
+  }
+
+  pub fn closed() -> Stream {
+    return Stream {
+      isOpen: false,
+      eventCount: 0,
+    }
+  }
+
+  pub fn isOpen(self: Stream) -> bool {
+    return self.isOpen
+  }
+
+  pub fn eventCount(self: Stream) -> usize {
+    return self.eventCount
+  }
+}

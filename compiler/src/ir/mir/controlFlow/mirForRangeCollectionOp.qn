@@ -1,0 +1,33 @@
+pub enum MirForRangeCollectionOpKind {
+  CounterRange
+  ArrayIndex
+  BytesIndex
+  CollectionCursor
+}
+
+pub struct MirForRangeCollectionOp {
+  instruction: u64,
+  kind: MirForRangeCollectionOpKind,
+  lowerBoundReady: bool,
+  upperBoundReady: bool,
+  strideReady: bool,
+  elementBindReady: bool,
+  boundsHoisted: bool,
+  cursorGenerationChecked: bool,
+  directBranchReady: bool,
+  safeFailureReady: bool,
+}
+
+impl MirForRangeCollectionOp {
+  pub fn complete(self: MirForRangeCollectionOp) -> bool {
+    return self.instruction > 0
+      && self.lowerBoundReady
+      && self.upperBoundReady
+      && self.strideReady
+      && self.elementBindReady
+      && self.boundsHoisted
+      && self.cursorGenerationChecked
+      && self.directBranchReady
+      && self.safeFailureReady
+  }
+}

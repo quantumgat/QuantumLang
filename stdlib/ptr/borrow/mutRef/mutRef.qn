@@ -1,0 +1,43 @@
+/**
+  Exclusive borrowed reference backed by a checked non-null pointer.
+
+  example:
+    let ref = box.borrowMut()
+    ref.set(user)?
+
+  effects: reads or writes memory through checked pointer lowering
+  complexity: O(1)
+  allocation: none
+  safety: compiler rejects aliasing mutable borrows and dangling access
+  stability: public since 0.1
+*/
+pub struct MutRef<T> {
+  ptr: NonNull<T>,
+  generation: u64,
+}
+
+impl<T> MutRef<T> {
+  pub fn fromPtr(ptr: NonNull<T>, generation: u64) -> MutRef<T> {
+    return MutRef<T> {
+      ptr: ptr,
+      generation: generation,
+    }
+  }
+
+  pub fn get(self: MutRef<T>) -> Result<T, PtrError> {
+    return self.ptr.get()
+  }
+
+  pub fn set(self: MutRef<T>, value: T) -> Result<MutRef<T>, PtrError> {
+    self.ptr.set(value)?
+    return Ok(self)
+  }
+
+  pub fn asPtr(self: MutRef<T>) -> Ptr<T> {
+    return self.ptr.asPtr()
+  }
+
+  pub fn generation(self: MutRef<T>) -> u64 {
+    return self.generation
+  }
+}

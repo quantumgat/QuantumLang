@@ -1,0 +1,22 @@
+pub struct LinuxTargetVariants {
+  x8664Gnu: TargetVariantId,
+  x8664Musl: TargetVariantId,
+  i686Gnu: TargetVariantId,
+  aarch64Gnu: TargetVariantId,
+  armv7Gnueabihf: TargetVariantId,
+  riscv64Gnu: TargetVariantId,
+}
+
+impl LinuxTargetVariants {
+  pub fn coversDesktop(self: LinuxTargetVariants) -> bool {
+    return self.x8664Gnu == TargetVariantId.LinuxX8664Gnu
+      && self.x8664Musl == TargetVariantId.LinuxX8664Musl
+      && self.aarch64Gnu == TargetVariantId.LinuxAarch64Gnu
+  }
+
+  pub fn coversCrossCompile(self: LinuxTargetVariants) -> bool {
+    return self.i686Gnu == TargetVariantId.LinuxI686Gnu
+      && self.armv7Gnueabihf == TargetVariantId.LinuxArmv7Gnueabihf
+      && self.riscv64Gnu == TargetVariantId.LinuxRiscv64Gnu
+  }
+}

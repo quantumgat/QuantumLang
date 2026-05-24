@@ -1,0 +1,8 @@
+pub struct QuantumCircuit {
+  qubits: usize,
+  operations: usize,
+}
+
+pub fn circuit(qubits: usize) -> QuantumCircuit
+pub fn appendH(circuit: QuantumCircuit, target: usize) -> QuantumCircuit
+pub fn appendCnot(circuit: QuantumCircuit, control: usize, target: usize) -> QuantumCircuit

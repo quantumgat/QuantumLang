@@ -1,0 +1,167 @@
+pub struct OrderedSet<T> {
+  map: OrderedMap<T, bool>,
+  len: usize,
+  generation: usize,
+}
+
+pub struct OrderedSetRange<T> {
+  items: Vec<T>,
+  index: usize,
+  generation: usize,
+}
+
+impl<T> OrderedSet<T> {
+  pub fn init() -> OrderedSet<T> requires(alloc) {
+    return OrderedSet<T>.withNodeCapacity(16)
+  }
+
+  pub fn empty() -> OrderedSet<T> requires(alloc) {
+    return OrderedSet<T>.init()
+  }
+
+  pub fn withNodeCapacity(nodeCapacity: usize) -> OrderedSet<T> requires(alloc) {
+    return OrderedSet<T> {
+      map: OrderedMap<T, bool>.withNodeCapacity(nodeCapacity),
+      len: 0,
+      generation: 0,
+    }
+  }
+
+  pub fn len(self: OrderedSet<T>) -> usize {
+    return self.len
+  }
+
+  pub fn isEmpty(self: OrderedSet<T>) -> bool {
+    return self.len == 0
+  }
+
+  pub fn contains(self: OrderedSet<T>, item: T) -> bool {
+    return self.map.containsKey(item)
+  }
+
+  pub fn insert(self: OrderedSet<T>, item: T) -> OrderedSet<T> requires(alloc) {
+    let existed = self.contains(item)
+    let map = self.map.put(item, true)
+    let nextLen = if existed { self.len } else { self.len + 1 }
+    return OrderedSet<T> {
+      map: map,
+      len: nextLen,
+      generation: self.generation + 1,
+    }
+  }
+
+  pub fn remove(self: OrderedSet<T>, item: T) -> OrderedSet<T> requires(alloc) {
+    let removed = self.map.remove(item)
+    let nextMap = removed.0
+    match removed.1 {
+      Some(value) => {
+        return OrderedSet<T> {
+          map: nextMap,
+          len: self.len - 1,
+          generation: self.generation + 1,
+        }
+      }
+      None => {
+        return self
+      }
+    }
+  }
+
+  pub fn range(self: OrderedSet<T>, start: T, end: T) -> Vec<T> requires(alloc) {
+    return self.rangeCursor(start, end).toVec()
+  }
+
+  pub fn rangeInclusive(self: OrderedSet<T>, start: T, end: T) -> Vec<T> requires(alloc) {
+    return self.rangeInclusiveCursor(start, end).toVec()
+  }
+
+  pub fn rangeCursor(self: OrderedSet<T>, start: T, end: T) -> OrderedSetRange<T> requires(alloc) {
+    return OrderedSetRange<T> {
+      items: self.projectKeys(self.map.rangeCursor(start, end)),
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  pub fn rangeInclusiveCursor(self: OrderedSet<T>, start: T, end: T) -> OrderedSetRange<T> requires(alloc) {
+    return OrderedSetRange<T> {
+      items: self.projectKeys(self.map.rangeInclusiveCursor(start, end)),
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  pub fn first(self: OrderedSet<T>) -> Option<T> {
+    let entry = self.map.first()
+    match entry {
+      Some(pair) => {
+        return Some(pair.0)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn last(self: OrderedSet<T>) -> Option<T> {
+    let entry = self.map.last()
+    match entry {
+      Some(pair) => {
+        return Some(pair.0)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn values(self: OrderedSet<T>) -> Vec<T> requires(alloc) {
+    return self.iter().toVec()
+  }
+
+  pub fn iter(self: OrderedSet<T>) -> OrderedSetRange<T> requires(alloc) {
+    return OrderedSetRange<T> {
+      items: self.map.keys(),
+      index: 0,
+      generation: self.generation,
+    }
+  }
+
+  fn projectKeys(self: OrderedSet<T>, pairs: OrderedMapRange<T, bool>) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut cursor = pairs
+    let mut next = cursor.next()
+    while next.1 != None {
+      match next.1 {
+        Some(pair) => {
+          result = result.push(pair.0)
+        }
+        None => {
+        }
+      }
+      cursor = next.0
+      next = cursor.next()
+    }
+    return result
+  }
+}
+
+impl<T> OrderedSetRange<T> {
+  pub fn next(self: OrderedSetRange<T>) -> (OrderedSetRange<T>, Option<T>) {
+    if self.index >= self.items.len {
+      return (self, None)
+    }
+    return (
+      OrderedSetRange<T> {
+        items: self.items,
+        index: self.index + 1,
+        generation: self.generation,
+      },
+      Some(self.items[self.index])
+    )
+  }
+
+  pub fn toVec(self: OrderedSetRange<T>) -> Vec<T> {
+    return self.items
+  }
+}

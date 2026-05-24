@@ -1,0 +1,12 @@
+pub struct EmbeddedAbiContract {
+  target: string,
+  freestanding: bool,
+  interruptAbiRequired: bool,
+  noHostRuntime: bool,
+}
+
+impl EmbeddedAbiContract {
+  pub fn accepted(self: EmbeddedAbiContract) -> bool {
+    return self.target != "" && self.freestanding && self.noHostRuntime
+  }
+}

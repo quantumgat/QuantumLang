@@ -1,0 +1,30 @@
+pub struct PluginExecutableFixture {
+  packageRoot: string,
+  manifestPath: string,
+  positiveFixture: string,
+  generatedExecutableExpected: bool,
+  sandboxLoaderExpected: bool,
+  runtimeKernelExpected: bool,
+}
+
+impl PluginExecutableFixture {
+  pub fn generic() -> PluginExecutableFixture {
+    return PluginExecutableFixture {
+      packageRoot: "qtlc/tests/fixtures/plugin/generic_capability_pack",
+      manifestPath: "qtlc/tests/fixtures/plugin/generic_capability_pack/plugin.toml",
+      positiveFixture: "qtlc/tests/fixtures/plugin/generic_capability_pack/test/proof/positive.qn",
+      generatedExecutableExpected: true,
+      sandboxLoaderExpected: true,
+      runtimeKernelExpected: true,
+    }
+  }
+
+  pub fn accepted(self: PluginExecutableFixture) -> bool {
+    return self.packageRoot != ""
+      && self.manifestPath != ""
+      && self.positiveFixture != ""
+      && self.generatedExecutableExpected
+      && self.sandboxLoaderExpected
+      && self.runtimeKernelExpected
+  }
+}

@@ -1,0 +1,33 @@
+pub struct BsonSchemaTableLowering {
+  schemaIdStable: bool,
+  fieldRowsEmitted: bool,
+  fieldNamesInterned: bool,
+  aliasesEmitted: bool,
+  defaultsEmitted: bool,
+  optionalPresenceEmitted: bool,
+  nestedStructRowsLinked: bool,
+  arrayElementRowsLinked: bool,
+  mapStringKeyRowsLinked: bool,
+  enumVariantRowsLinked: bool,
+  encodeUsesSchemaTable: bool,
+  decodeUsesSchemaTable: bool,
+  noDedicatedFixtureWriter: bool,
+}
+
+impl BsonSchemaTableLowering {
+  pub fn accepted(self: BsonSchemaTableLowering) -> bool {
+    return self.schemaIdStable
+      && self.fieldRowsEmitted
+      && self.fieldNamesInterned
+      && self.aliasesEmitted
+      && self.defaultsEmitted
+      && self.optionalPresenceEmitted
+      && self.nestedStructRowsLinked
+      && self.arrayElementRowsLinked
+      && self.mapStringKeyRowsLinked
+      && self.enumVariantRowsLinked
+      && self.encodeUsesSchemaTable
+      && self.decodeUsesSchemaTable
+      && self.noDedicatedFixtureWriter
+  }
+}

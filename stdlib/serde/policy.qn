@@ -1,0 +1,75 @@
+pub enum UnknownFieldPolicy {
+  Reject
+  Ignore
+  Preserve
+  Warn
+}
+
+pub enum SerdeNumberPolicy {
+  Exact
+  StrictJsonNumber
+  StringWideNumbers
+}
+
+pub struct SerdePolicy {
+  format: SerdeFormat,
+  unknownFields: UnknownFieldPolicy,
+  missingRequiredIsError: bool,
+  noImplicitLossyNumber: bool,
+  numberPolicy: SerdeNumberPolicy,
+  wideNumbersAsString: bool,
+  decimalsAsString: bool,
+  bigIntegersAsString: bool,
+  rejectNonFiniteFloat: bool,
+  deterministicFieldOrder: bool,
+  pathDiagnostics: bool,
+  rejectResourceHandles: bool,
+  rejectQuantumHandles: bool,
+}
+
+impl SerdePolicy {
+  pub fn jsonDefault() -> SerdePolicy {
+    return SerdePolicy {
+      format: SerdeFormat.Json,
+      unknownFields: UnknownFieldPolicy.Reject,
+      missingRequiredIsError: true,
+      noImplicitLossyNumber: true,
+      numberPolicy: SerdeNumberPolicy.Exact,
+      wideNumbersAsString: true,
+      decimalsAsString: true,
+      bigIntegersAsString: true,
+      rejectNonFiniteFloat: true,
+      deterministicFieldOrder: true,
+      pathDiagnostics: true,
+      rejectResourceHandles: true,
+      rejectQuantumHandles: true,
+    }
+  }
+
+  pub fn strictNumbers() -> SerdePolicy {
+    return SerdePolicy {
+      format: SerdeFormat.Json,
+      unknownFields: UnknownFieldPolicy.Reject,
+      missingRequiredIsError: true,
+      noImplicitLossyNumber: true,
+      numberPolicy: SerdeNumberPolicy.StrictJsonNumber,
+      wideNumbersAsString: false,
+      decimalsAsString: false,
+      bigIntegersAsString: false,
+      rejectNonFiniteFloat: true,
+      deterministicFieldOrder: true,
+      pathDiagnostics: true,
+      rejectResourceHandles: true,
+      rejectQuantumHandles: true,
+    }
+  }
+
+  pub fn exact(self: SerdePolicy) -> bool {
+    return self.noImplicitLossyNumber
+      && self.rejectNonFiniteFloat
+      && self.deterministicFieldOrder
+      && self.pathDiagnostics
+      && self.rejectResourceHandles
+      && self.rejectQuantumHandles
+  }
+}

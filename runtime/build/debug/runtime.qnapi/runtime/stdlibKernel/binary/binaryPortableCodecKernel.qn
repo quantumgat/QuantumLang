@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct BinaryPortableCodecKernel {
+  portableDefault: bool
+  fieldOrderStable: bool
+  paddingRejected: bool
+  nestedStructsRecursive: bool
+  unsafeRawSeparated: bool
+  diagnosticsNoCoredump: bool
+}

@@ -1,0 +1,4 @@
+pub interface Clock {
+  pub fn clockName(self: &Clock) -> string
+  pub fn isMonotonic(self: &Clock) -> bool
+}

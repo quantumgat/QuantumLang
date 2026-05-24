@@ -1,0 +1,23 @@
+pub struct PointerIntrinsicLowering {
+  intrinsic: string,
+  emitsNativeLoadStore: bool,
+  emitsMemcpyMoveMemset: bool,
+  erasesStdlibCall: bool,
+  preservesDiagnostics: bool,
+}
+
+impl PointerIntrinsicLowering {
+  pub fn init(intrinsic: string, emitsNativeLoadStore: bool, emitsMemcpyMoveMemset: bool, erasesStdlibCall: bool, preservesDiagnostics: bool) -> PointerIntrinsicLowering {
+    return PointerIntrinsicLowering {
+      intrinsic: intrinsic,
+      emitsNativeLoadStore: emitsNativeLoadStore,
+      emitsMemcpyMoveMemset: emitsMemcpyMoveMemset,
+      erasesStdlibCall: erasesStdlibCall,
+      preservesDiagnostics: preservesDiagnostics,
+    }
+  }
+
+  pub fn accepted(self: PointerIntrinsicLowering) -> bool {
+    return self.intrinsic != "" && self.erasesStdlibCall && self.preservesDiagnostics && (self.emitsNativeLoadStore || self.emitsMemcpyMoveMemset)
+  }
+}

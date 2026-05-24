@@ -1,0 +1,5 @@
+pub mod asyncResourceLifecycleFact
+pub mod resourceClassKindPolicyFact
+
+pub use asyncResourceLifecycleFact.AsyncResourceLifecycleFact
+pub use resourceClassKindPolicyFact.ResourceClassKindPolicyFact

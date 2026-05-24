@@ -1,0 +1,61 @@
+pub enum MirMathKernelCallKind {
+  ExactNumeric
+  DecimalContext
+  LimbArithmetic
+  ComplexExceptional
+  FiniteField
+  SimdMath
+  SafeFailure
+}
+
+pub enum MirMathOperation {
+  CheckedInteger
+  Decimal
+  LimbArithmetic
+  Complex
+  FiniteField
+  Rational
+  LinearAlgebra
+  Simd
+}
+
+pub struct MirMathKernelCall {
+  kind: MirMathKernelCallKind,
+  operation: MirMathOperation,
+  runtimeSymbol: string,
+  typedResult: bool,
+  wrapperErased: bool,
+  boundsHoisted: bool,
+  sourceMappedDiagnostic: bool,
+  noFakeFallback: bool,
+  noCoredump: bool,
+  nativeReady: bool,
+}
+
+impl MirMathKernelCall {
+  pub fn runtime(kind: MirMathKernelCallKind, operation: MirMathOperation, runtimeSymbol: string) -> MirMathKernelCall {
+    return MirMathKernelCall {
+      kind: kind,
+      operation: operation,
+      runtimeSymbol: runtimeSymbol,
+      typedResult: true,
+      wrapperErased: true,
+      boundsHoisted: true,
+      sourceMappedDiagnostic: true,
+      noFakeFallback: true,
+      noCoredump: true,
+      nativeReady: true,
+    }
+  }
+
+  pub fn accepted(self: MirMathKernelCall) -> bool {
+    return self.runtimeSymbol != ""
+      && self.typedResult
+      && self.wrapperErased
+      && self.boundsHoisted
+      && self.sourceMappedDiagnostic
+      && self.noFakeFallback
+      && self.noCoredump
+      && self.nativeReady
+  }
+}

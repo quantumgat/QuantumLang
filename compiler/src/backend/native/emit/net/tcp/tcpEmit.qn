@@ -1,0 +1,12 @@
+pub struct NativeNetTcpEmit {
+  acceptLowered: bool,
+  readWriteLowered: bool,
+  deadlineLowered: bool,
+  backpressureLowered: bool,
+}
+
+impl NativeNetTcpEmit {
+  pub fn accepted(self: NativeNetTcpEmit) -> bool {
+    return self.acceptLowered && self.readWriteLowered && self.deadlineLowered && self.backpressureLowered
+  }
+}

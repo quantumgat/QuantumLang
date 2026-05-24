@@ -1,0 +1,24 @@
+pub struct DiagnosticNote {
+  range: SourceRange,
+  message: string,
+  relatedCode: DiagnosticCode,
+  redacted: bool,
+}
+
+impl DiagnosticNote {
+  pub fn related(range: SourceRange, message: string, relatedCode: DiagnosticCode) -> DiagnosticNote {
+    return DiagnosticNote {
+      range: range,
+      message: message,
+      relatedCode: relatedCode,
+      redacted: true,
+    }
+  }
+
+  pub fn safe(self: DiagnosticNote) -> bool {
+    return self.range.exact()
+      && self.message != ""
+      && self.relatedCode.valid()
+      && self.redacted
+  }
+}

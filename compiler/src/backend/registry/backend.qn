@@ -1,0 +1,4 @@
+pub interface Backend {
+  pub fn name(self: &Backend) -> string
+  pub fn supportsNative(self: &Backend) -> bool
+}

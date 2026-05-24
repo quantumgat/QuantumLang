@@ -1,0 +1,71 @@
+pub struct GraphTraversal {
+  generation: usize,
+}
+
+impl GraphTraversal {
+  pub fn breadthFirst<T>(graph: Graph<T>, start: NodeId) -> Vec<NodeId> requires(alloc) {
+    return GraphTraversal.collect(graph.breadthFirstCursor(start), graph.len)
+  }
+
+  pub fn depthFirst<T>(graph: Graph<T>, start: NodeId) -> Vec<NodeId> requires(alloc) {
+    return GraphTraversal.collect(graph.depthFirstCursor(start), graph.len)
+  }
+
+  pub fn topologicalSort<T>(graph: Graph<T>) -> Result<Vec<NodeId>, GraphError> requires(alloc) {
+    let mut indegree = Vec<usize>.withCapacity(graph.nodes.len)
+    let mut index: usize = 0
+    while index < graph.nodes.len {
+      indegree = indegree.push(0)
+      index = index + 1
+    }
+    index = 0
+    while index < graph.nodes.len {
+      let edges = graph.nodes[index].edges
+      let mut edgeIndex: usize = 0
+      while edgeIndex < edges.len {
+        let to = edges[edgeIndex].to.value
+        indegree = indegree.set(to, indegree[to] + 1)
+        edgeIndex = edgeIndex + 1
+      }
+      index = index + 1
+    }
+    let mut ready = Vec<NodeId>.empty()
+    index = 0
+    while index < indegree.len {
+      if indegree[index] == 0 && graph.nodes[index].alive {
+        ready = ready.push(NodeId.new(index))
+      }
+      index = index + 1
+    }
+    let mut result = Vec<NodeId>.withCapacity(graph.len)
+    while ready.len > 0 {
+      let node = ready[ready.len - 1]
+      ready = ready.removeAt(ready.len - 1)
+      result = result.push(node)
+      let edges = graph.nodes[node.value].edges
+      let mut edgeIndex: usize = 0
+      while edgeIndex < edges.len {
+        let to = edges[edgeIndex].to.value
+        indegree = indegree.set(to, indegree[to] - 1)
+        if indegree[to] == 0 {
+          ready = ready.push(NodeId.new(to))
+        }
+        edgeIndex = edgeIndex + 1
+      }
+    }
+    if result.len != graph.len {
+      return Err(GraphError.CycleDetected)
+    }
+    return Ok(result)
+  }
+
+  pub fn collect<T>(cursor: GraphTraversalCursor<T>, capacity: usize) -> Vec<NodeId> requires(alloc) {
+    let mut result = Vec<NodeId>.withCapacity(capacity)
+    let mut scan = cursor
+    while scan.hasNext() {
+      result = result.push(scan.nodeUnchecked())
+      scan = scan.next()
+    }
+    return result
+  }
+}

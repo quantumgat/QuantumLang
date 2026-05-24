@@ -1,0 +1,21 @@
+pub struct RuntimeThreadAffineHandle {
+  handleId: u64,
+  ownerThread: u64,
+  currentThread: u64,
+  lifetimeToken: u64,
+}
+
+impl RuntimeThreadAffineHandle {
+  pub fn init(handleId: u64, ownerThread: u64, currentThread: u64, lifetimeToken: u64) -> RuntimeThreadAffineHandle {
+    return RuntimeThreadAffineHandle {
+      handleId: handleId,
+      ownerThread: ownerThread,
+      currentThread: currentThread,
+      lifetimeToken: lifetimeToken,
+    }
+  }
+
+  pub fn accepted(self: RuntimeThreadAffineHandle) -> bool {
+    return self.handleId > 0 && self.ownerThread > 0 && self.ownerThread == self.currentThread && self.lifetimeToken > 0
+  }
+}

@@ -1,0 +1,9 @@
+pub struct Values<V> {
+  mapLength: usize,
+}
+
+impl<V> Values<V> {
+  pub fn len(self: Values<V>) -> usize {
+    return self.mapLength
+  }
+}

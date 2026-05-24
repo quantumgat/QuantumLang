@@ -1,0 +1,37 @@
+pub struct ConstructorSyntaxLifecyclePolicyFact {
+  initCanonical: bool,
+  classNameSugarAllowed: bool,
+  classNameSugarLowersToInit: bool,
+  implicitFieldConstructorAllowed: bool,
+  implicitFieldConstructorLowersToInit: bool,
+  explicitInitOverridesImplicit: bool,
+  parserAstBound: bool,
+  hirMirBound: bool,
+  constructorFactsBound: bool,
+  lifecycleFactsBound: bool,
+  partialInitCleanupBound: bool,
+  virtualDispatchRejectedBeforeFullInit: bool,
+  fakeWrapperFactoriesRejected: bool,
+  sourceMapsRequired: bool,
+  directHotPathLoweringRequired: bool,
+}
+
+impl ConstructorSyntaxLifecyclePolicyFact {
+  pub fn complete(self: ConstructorSyntaxLifecyclePolicyFact) -> bool {
+    return self.initCanonical
+      && self.classNameSugarAllowed
+      && self.classNameSugarLowersToInit
+      && self.implicitFieldConstructorAllowed
+      && self.implicitFieldConstructorLowersToInit
+      && self.explicitInitOverridesImplicit
+      && self.parserAstBound
+      && self.hirMirBound
+      && self.constructorFactsBound
+      && self.lifecycleFactsBound
+      && self.partialInitCleanupBound
+      && self.virtualDispatchRejectedBeforeFullInit
+      && self.fakeWrapperFactoriesRejected
+      && self.sourceMapsRequired
+      && self.directHotPathLoweringRequired
+  }
+}

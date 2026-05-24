@@ -1,0 +1,16 @@
+pub struct RuntimeDeviceMemoryContract {
+  target: string,
+  addressSpace: string,
+  hostTransferRequired: bool,
+  pinnedBufferSupported: bool,
+}
+
+impl RuntimeDeviceMemoryContract {
+  pub fn accepted(self: RuntimeDeviceMemoryContract) -> bool {
+    return self.target != "" && self.addressSpace != ""
+  }
+
+  pub fn needsTransfer(self: RuntimeDeviceMemoryContract) -> bool {
+    return self.hostTransferRequired
+  }
+}

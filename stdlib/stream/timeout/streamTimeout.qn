@@ -1,0 +1,10 @@
+pub struct StreamTimeout {
+  deadlineMillis: u64,
+  cancellationLinked: bool,
+}
+
+impl StreamTimeout {
+  pub fn safe(self: StreamTimeout) -> bool {
+    return self.deadlineMillis > 0 && self.cancellationLinked
+  }
+}

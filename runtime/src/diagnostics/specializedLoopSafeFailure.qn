@@ -1,0 +1,25 @@
+pub enum SpecializedLoopSafeFailureKind {
+  AsyncViolation
+  ParallelReductionViolation
+  DomainLayoutViolation
+  LowLevelSafetyViolation
+  QuantumProfileViolation
+  ComptimeExpansionViolation
+}
+
+pub struct SpecializedLoopSafeFailure {
+  kind: SpecializedLoopSafeFailureKind,
+  sourceRangeReady: bool,
+  fixitReady: bool,
+  noCoredump: bool,
+  recoverable: bool,
+}
+
+impl SpecializedLoopSafeFailure {
+  pub fn safe(self: SpecializedLoopSafeFailure) -> bool {
+    return self.sourceRangeReady
+      && self.fixitReady
+      && self.noCoredump
+      && self.recoverable
+  }
+}

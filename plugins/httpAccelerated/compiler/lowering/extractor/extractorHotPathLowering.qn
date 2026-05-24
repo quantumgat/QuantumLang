@@ -1,0 +1,27 @@
+pub struct HttpExtractorHotPathLowering {
+  extractorCount: usize,
+  capabilityCount: usize,
+  contextSlotDirectLoad: bool,
+  rawEscapeHatchGuarded: bool,
+  flattenedChain: bool,
+}
+
+impl HttpExtractorHotPathLowering {
+  pub fn fromGraphs(extractors: ExtractorGraph, capabilities: CapabilityGraph) -> HttpExtractorHotPathLowering {
+    return HttpExtractorHotPathLowering {
+      extractorCount: extractors.factCount(),
+      capabilityCount: capabilities.factCount(),
+      contextSlotDirectLoad: true,
+      rawEscapeHatchGuarded: true,
+      flattenedChain: true,
+    }
+  }
+
+  pub fn accepted(self: HttpExtractorHotPathLowering) -> bool {
+    return self.extractorCount > 0
+      && self.capabilityCount > 0
+      && self.contextSlotDirectLoad
+      && self.rawEscapeHatchGuarded
+      && self.flattenedChain
+  }
+}

@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeTcpContract {
+  acceptBackpressure: bool
+  halfClose: bool
+  deadlineAware: bool
+  noCoredump: bool
+  zeroCopyWrite: bool
+  cancellationCleanup: bool
+}

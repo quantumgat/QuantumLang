@@ -1,0 +1,37 @@
+pub enum ResultConversionDiagnosticKind {
+  MissingConversion,
+  NonResultQuestionMark,
+  ErrorTypeMismatch,
+  AwaitQuestionMarkOnNonAsyncResult,
+  NonExhaustiveResultMatch,
+}
+
+pub struct ResultConversionDiagnostic {
+  kind: ResultConversionDiagnosticKind,
+  fromError: string,
+  toError: string,
+  sourceRangeAvailable: bool,
+  suggestsExplicitConversion: bool,
+  noCoredump: bool,
+}
+
+impl ResultConversionDiagnostic {
+  pub fn missing(fromError: string, toError: string) -> ResultConversionDiagnostic {
+    return ResultConversionDiagnostic {
+      kind: ResultConversionDiagnosticKind.MissingConversion,
+      fromError: fromError,
+      toError: toError,
+      sourceRangeAvailable: true,
+      suggestsExplicitConversion: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn useful(self: ResultConversionDiagnostic) -> bool {
+    return self.fromError != ""
+      && self.toError != ""
+      && self.sourceRangeAvailable
+      && self.suggestsExplicitConversion
+      && self.noCoredump
+  }
+}

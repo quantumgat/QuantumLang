@@ -1,0 +1,59 @@
+pub enum OopAsyncInterfaceTraitDynSafetyLoweringKind {
+  InterfaceAsyncObligation
+  TraitAsyncObligation
+  ImplAsyncParity
+  StaticTraitAsyncCall
+  SealedInterfaceDirectCall
+  DynAdapterBoundary
+  DynFutureAbiObject
+  DynPollResume
+  ObjectSafetyDiagnostic
+  SourceMapDiagnostic
+}
+
+pub struct OopAsyncInterfaceTraitDynSafetyLowering {
+  ownerTypeId: u64,
+  methodId: u64,
+  kind: OopAsyncInterfaceTraitDynSafetyLoweringKind,
+  asyncObligationBound: bool,
+  implParityBound: bool,
+  objectSafetyBound: bool,
+  explicitDynAdapterBound: bool,
+  dynFutureAbiBound: bool,
+  sealedStaticDirectLoweringBound: bool,
+  stateMachineHandoffBound: bool,
+  noHiddenAllocation: bool,
+  typedFailureBound: bool,
+  sourceMapBound: bool,
+}
+
+impl OopAsyncInterfaceTraitDynSafetyLowering {
+  pub fn complete(self: OopAsyncInterfaceTraitDynSafetyLowering) -> bool {
+    return self.ownerTypeId > 0
+      && self.methodId > 0
+      && self.asyncObligationBound
+      && self.implParityBound
+      && self.objectSafetyBound
+      && self.explicitDynAdapterBound
+      && self.dynFutureAbiBound
+      && self.sealedStaticDirectLoweringBound
+      && self.stateMachineHandoffBound
+      && self.noHiddenAllocation
+      && self.typedFailureBound
+      && self.sourceMapBound
+  }
+
+  pub fn staticHotPathReady(self: OopAsyncInterfaceTraitDynSafetyLowering) -> bool {
+    return self.complete()
+      && self.noHiddenAllocation
+      && (
+        self.kind == OopAsyncInterfaceTraitDynSafetyLoweringKind.StaticTraitAsyncCall
+        || self.kind == OopAsyncInterfaceTraitDynSafetyLoweringKind.SealedInterfaceDirectCall
+      )
+  }
+
+  pub fn dynBoundary(self: OopAsyncInterfaceTraitDynSafetyLowering) -> bool {
+    return self.complete()
+      && self.kind == OopAsyncInterfaceTraitDynSafetyLoweringKind.DynAdapterBoundary
+  }
+}

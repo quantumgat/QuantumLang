@@ -1,0 +1,45 @@
+pub enum RateLimitKind {
+  FixedWindow,
+  TokenBucket,
+}
+
+pub struct RateLimitPolicy {
+  kind: RateLimitKind,
+  limit: usize,
+  windowSeconds: usize,
+  emitStandardHeaders: bool,
+  retryAfter: bool,
+}
+
+pub struct RateLimit {
+}
+
+impl RateLimit {
+  pub fn fixedWindow(limit: usize, per: usize) -> RateLimitPolicy {
+    return RateLimitPolicy.init(RateLimitKind.FixedWindow, limit, per, true, true)
+  }
+
+  pub fn tokenBucket(limit: usize, refillSeconds: usize) -> RateLimitPolicy {
+    return RateLimitPolicy.init(RateLimitKind.TokenBucket, limit, refillSeconds, true, true)
+  }
+}
+
+impl RateLimitPolicy {
+  pub fn init(kind: RateLimitKind, limit: usize, windowSeconds: usize, emitStandardHeaders: bool, retryAfter: bool) -> RateLimitPolicy {
+    return RateLimitPolicy {
+      kind: kind,
+      limit: limit,
+      windowSeconds: windowSeconds,
+      emitStandardHeaders: emitStandardHeaders,
+      retryAfter: retryAfter,
+    }
+  }
+
+  pub fn complete(self: RateLimitPolicy) -> bool {
+    return self.limit > 0 && self.windowSeconds > 0 && self.emitStandardHeaders && self.retryAfter
+  }
+
+  pub fn standardHeaders(self: RateLimitPolicy) -> Vec<string> {
+    return ["RateLimit-Limit", "RateLimit-Remaining", "RateLimit-Reset", "Retry-After"]
+  }
+}

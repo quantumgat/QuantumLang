@@ -1,0 +1,41 @@
+pub struct OrderedMapKernel {
+  btreeBacked: bool,
+  rangeQueryFastPath: bool,
+  lowerBoundFastPath: bool,
+  upperBoundFastPath: bool,
+  rangeAllCursorFastPath: bool,
+  orderedSetCursorProjection: bool,
+  repeatedEntryAtScanRejected: bool,
+  orderedIterationStable: bool,
+  nodeCapacityTracked: bool,
+}
+
+impl OrderedMapKernel {
+  pub fn init() -> OrderedMapKernel {
+    return OrderedMapKernel {
+      btreeBacked: true,
+      rangeQueryFastPath: true,
+      lowerBoundFastPath: true,
+      upperBoundFastPath: true,
+      rangeAllCursorFastPath: true,
+      orderedSetCursorProjection: true,
+      repeatedEntryAtScanRejected: true,
+      orderedIterationStable: true,
+      nodeCapacityTracked: true,
+    }
+  }
+
+  pub fn canRunRangeFastPath(self: OrderedMapKernel) -> bool {
+    return self.btreeBacked
+      && self.rangeQueryFastPath
+      && self.rangeAllCursorFastPath
+      && self.orderedSetCursorProjection
+      && self.repeatedEntryAtScanRejected
+      && self.orderedIterationStable
+      && self.nodeCapacityTracked
+  }
+
+  pub fn canRunLowerBoundFastPath(self: OrderedMapKernel) -> bool {
+    return self.canRunRangeFastPath() && self.lowerBoundFastPath && self.upperBoundFastPath
+  }
+}

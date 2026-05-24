@@ -1,0 +1,19 @@
+pub struct Deleted {
+  status: HttpStatus,
+}
+
+impl Deleted {
+  pub fn init(status: HttpStatus) -> Deleted {
+    return Deleted {
+      status: status,
+    }
+  }
+
+  pub fn done() -> Deleted {
+    return Deleted.init(HttpStatus.noContent())
+  }
+
+  pub fn response(self: Deleted) -> HttpResponse {
+    return HttpResponse.empty(self.status)
+  }
+}

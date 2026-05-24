@@ -1,0 +1,21 @@
+pub struct RuntimeContext {
+  target: string,
+  started: bool,
+  diagnosticsEnabled: bool,
+  handleValidation: bool,
+}
+
+pub fn runtimeContext(target: string) -> RuntimeContext {
+  return RuntimeContext {
+    target: target,
+    started: false,
+    diagnosticsEnabled: true,
+    handleValidation: true,
+  }
+}
+
+impl RuntimeContext {
+  pub fn canStart(self) -> bool {
+    return self.started == false && self.handleValidation
+  }
+}

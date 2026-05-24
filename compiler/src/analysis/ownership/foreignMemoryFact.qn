@@ -1,0 +1,23 @@
+pub struct ForeignMemoryFact {
+  address: usize,
+  bytes: usize,
+  lifetimeTokenValid: bool,
+  aliasPolicyAccepted: bool,
+  deleterRequired: bool,
+}
+
+impl ForeignMemoryFact {
+  pub fn init(address: usize, bytes: usize, lifetimeTokenValid: bool, aliasPolicyAccepted: bool, deleterRequired: bool) -> ForeignMemoryFact {
+    return ForeignMemoryFact {
+      address: address,
+      bytes: bytes,
+      lifetimeTokenValid: lifetimeTokenValid,
+      aliasPolicyAccepted: aliasPolicyAccepted,
+      deleterRequired: deleterRequired,
+    }
+  }
+
+  pub fn accepted(self: ForeignMemoryFact) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.lifetimeTokenValid && self.aliasPolicyAccepted && self.deleterRequired
+  }
+}

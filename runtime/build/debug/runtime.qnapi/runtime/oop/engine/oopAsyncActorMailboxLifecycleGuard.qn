@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct OopAsyncActorMailboxLifecycleGuard {
+  objectId: u64
+  actorTypeName: string
+  generation: u64
+  mailboxOpen: bool
+  processingMessage: bool
+  stateBorrowActive: bool
+  stopRequested: bool
+  drained: bool
+  shutdownCompleted: bool
+  backpressureDiagnosticBound: bool
+  typedFailureBound: bool
+  noCoredumpFailure: bool
+}

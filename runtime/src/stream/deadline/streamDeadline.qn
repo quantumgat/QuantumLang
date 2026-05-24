@@ -1,0 +1,15 @@
+pub struct StreamDeadline {
+  deadlineMillis: u64,
+  cancellable: bool,
+  expired: bool,
+}
+
+pub fn streamDeadline(deadlineMillis: u64) -> StreamDeadline {
+  return StreamDeadline { deadlineMillis: deadlineMillis, cancellable: true, expired: false }
+}
+
+impl StreamDeadline {
+  pub fn canCancel(self: StreamDeadline) -> bool {
+    return self.cancellable && self.expired == false
+  }
+}

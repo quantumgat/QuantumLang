@@ -1,0 +1,40 @@
+pub enum NativeStreamLoweringKind {
+  PollNext
+  FusedMap
+  FusedFilter
+  BackpressureCheck
+  TimeoutCheck
+  RetryLoop
+  PartialErrorPreserve
+  ZeroCopyFrame
+}
+
+pub struct NativeStreamLowering {
+  instruction: u64,
+  kind: NativeStreamLoweringKind,
+  runtimeAbiReady: bool,
+  asyncFrameReady: bool,
+  noGeneratedFallback: bool,
+}
+
+impl NativeStreamLowering {
+  pub fn init(
+    instruction: u64,
+    kind: NativeStreamLoweringKind,
+    runtimeAbiReady: bool,
+    asyncFrameReady: bool,
+    noGeneratedFallback: bool,
+  ) -> NativeStreamLowering {
+    return NativeStreamLowering {
+      instruction: instruction,
+      kind: kind,
+      runtimeAbiReady: runtimeAbiReady,
+      asyncFrameReady: asyncFrameReady,
+      noGeneratedFallback: noGeneratedFallback,
+    }
+  }
+
+  pub fn complete(self: NativeStreamLowering) -> bool {
+    return self.instruction > 0 && self.runtimeAbiReady && self.asyncFrameReady && self.noGeneratedFallback
+  }
+}

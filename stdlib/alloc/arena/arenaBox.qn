@@ -1,0 +1,52 @@
+pub struct ArenaBox<T> {
+  value: Option<T>,
+  regionId: u64,
+  generation: u64,
+}
+
+impl<T> ArenaBox<T> {
+  pub fn init(value: T, region: Region) -> ArenaBox<T> {
+    return ArenaBox<T> {
+      value: Some(value),
+      regionId: region.id(),
+      generation: region.generation(),
+    }
+  }
+
+  /**
+    Reads an arena-owned value after checking the arena generation.
+
+    example:
+      let user = arena.box(User(...))?.get(arena.region())?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: rejects stale values after arena reset or release
+    stability: public since 0.1
+  */
+  pub fn get(self: ArenaBox<T>, region: Region) -> Result<T, ArenaError> {
+    self.check(region)?
+    match self.value {
+      Some(value) => {
+        return Ok(value)
+      }
+      None => {
+        return Err(ArenaError.init(ArenaErrorKind.DanglingReference))
+      }
+    }
+  }
+
+  pub fn check(self: ArenaBox<T>, region: Region) -> Result<ArenaBox<T>, ArenaError> {
+    if region.isReleased() {
+      return Err(ArenaError.init(ArenaErrorKind.Released))
+    }
+    if self.regionId != region.id() {
+      return Err(ArenaError.init(ArenaErrorKind.WrongRegion))
+    }
+    if self.generation != region.generation() {
+      return Err(ArenaError.init(ArenaErrorKind.ResetGeneration))
+    }
+    return Ok(self)
+  }
+}

@@ -1,0 +1,27 @@
+pub enum OopEngineErrorKind {
+  None
+  StaleHandle
+  AbiMismatch
+  AllocationPolicyViolation
+  DispatchUnavailable
+  DowncastFailed
+  ReflectionColdPathViolation
+  FfiBoundaryViolation
+  InterfaceLifetimeViolation
+}
+
+pub struct OopEngineError {
+  kind: OopEngineErrorKind,
+  diagnosticCode: string,
+  reportable: bool,
+}
+
+pub fn oopEngineError(kind: OopEngineErrorKind, diagnosticCode: string) -> OopEngineError {
+  return OopEngineError { kind: kind, diagnosticCode: diagnosticCode, reportable: kind != OopEngineErrorKind.None }
+}
+
+impl OopEngineError {
+  pub fn ok(self: OopEngineError) -> bool {
+    return self.kind == OopEngineErrorKind.None && self.reportable == false
+  }
+}

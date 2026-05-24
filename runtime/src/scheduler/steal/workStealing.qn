@@ -1,0 +1,33 @@
+pub struct SchedulerWorkStealing {
+  victimCount: usize,
+  batchSize: usize,
+  totalSteals: usize,
+  failedSteals: usize,
+  fairnessCounter: bool,
+}
+
+impl SchedulerWorkStealing {
+  pub fn init(
+    victimCount: usize,
+    batchSize: usize,
+    totalSteals: usize,
+    failedSteals: usize,
+    fairnessCounter: bool,
+  ) -> SchedulerWorkStealing {
+    return SchedulerWorkStealing {
+      victimCount: victimCount,
+      batchSize: batchSize,
+      totalSteals: totalSteals,
+      failedSteals: failedSteals,
+      fairnessCounter: fairnessCounter,
+    }
+  }
+
+  pub fn enabled(self: SchedulerWorkStealing) -> bool {
+    return self.victimCount > 1 && self.batchSize > 0
+  }
+
+  pub fn balanced(self: SchedulerWorkStealing) -> bool {
+    return self.enabled() && self.fairnessCounter
+  }
+}

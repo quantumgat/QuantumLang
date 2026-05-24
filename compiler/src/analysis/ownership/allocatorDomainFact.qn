@@ -1,0 +1,23 @@
+pub struct AllocatorDomainFact {
+  allocationId: u64,
+  domainId: u64,
+  generation: u64,
+  live: bool,
+}
+
+impl AllocatorDomainFact {
+  pub fn init(allocationId: u64, domainId: u64, generation: u64) -> AllocatorDomainFact {
+    return AllocatorDomainFact {
+      allocationId: allocationId,
+      domainId: domainId,
+      generation: generation,
+      live: true,
+    }
+  }
+
+  pub fn allowsFree(self: AllocatorDomainFact, domainId: u64, generation: u64) -> bool {
+    return self.live
+      && self.domainId == domainId
+      && self.generation == generation
+  }
+}

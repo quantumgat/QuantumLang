@@ -1,0 +1,30 @@
+pub struct SysCapability {
+  kind: OsCapabilityKind,
+  target: OsTarget,
+  allowed: bool,
+  diagnosticCode: string,
+}
+
+pub fn capability(kind: OsCapabilityKind) -> SysCapability
+pub fn capabilityFor(target: OsTarget, kind: OsCapabilityKind) -> SysCapability
+
+impl SysCapability {
+  pub fn allowed(self: SysCapability) -> bool {
+    return self.allowed
+  }
+
+  pub fn denied(self: SysCapability) -> bool {
+    return self.allowed == false
+  }
+
+  pub fn require(self: SysCapability) -> Result<SysCapability, OsError> {
+    if self.allowed {
+      return Ok(self)
+    }
+    return Err(OsError.init(OsErrorKind.CapabilityDenied, self.diagnosticCode))
+  }
+
+  pub fn unsupported(self: SysCapability, feature: string) -> SysUnsupported {
+    return unsupportedWithCode(self.target, feature, self.diagnosticCode)
+  }
+}

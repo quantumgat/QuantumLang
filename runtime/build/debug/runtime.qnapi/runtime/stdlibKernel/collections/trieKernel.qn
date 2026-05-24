@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct TrieKernel {
+  prefixNodeBacked: bool
+  childMapEdges: bool
+  insertUsesPrefixWalk: bool
+  getUsesPrefixWalk: bool
+  prefixSearchUsesNodeWalk: bool
+  startsWithUsesSubtreeCollect: bool
+  iteratorTerminalNodeCursorStable: bool
+  terminalValueDirectLoad: bool
+  keyCharsDirectIndexed: bool
+  callableLoopsInlineable: bool
+}

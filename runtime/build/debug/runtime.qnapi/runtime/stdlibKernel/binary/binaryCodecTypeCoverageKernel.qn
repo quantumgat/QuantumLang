@@ -1,0 +1,9 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct BinaryCodecTypeCoverageKernel {
+  primitiveFamiliesAccepted: bool
+  nestedFamiliesAccepted: bool
+  deterministicCollectionsAccepted: bool
+  unorderedCollectionsRejected: bool
+  liveResourcesRejected: bool
+  diagnosticsNoCoredump: bool
+}

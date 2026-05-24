@@ -1,0 +1,102 @@
+pub enum PackagePluginCommandExecutionStage {
+  TemplateMaterialize,
+  ManifestValidate,
+  GraphLoad,
+  ProofGate,
+  PackageArchive,
+  PublishGate,
+}
+
+pub struct PackagePluginCommandExecutionPlan {
+  request: PackagePluginCommandRequest,
+  stage: PackagePluginCommandExecutionStage,
+  loadsManifest: bool,
+  loadsPackageGraph: bool,
+  loadsPluginGraph: bool,
+  verifiesProof: bool,
+  verifiesNoCoredump: bool,
+  usesSdkTemplates: bool,
+  mutatesCompilerFacts: bool,
+}
+
+impl PackagePluginCommandExecutionPlan {
+  pub fn fromRequest(request: PackagePluginCommandRequest) -> PackagePluginCommandExecutionPlan {
+    let stage = PackagePluginCommandExecutionPlan.stageFor(request.kind)
+    return PackagePluginCommandExecutionPlan {
+      request: request,
+      stage: stage,
+      loadsManifest: request.kind != PackagePluginCommandKind.New
+        && request.kind != PackagePluginCommandKind.Create,
+      loadsPackageGraph: request.kind != PackagePluginCommandKind.New
+        && request.kind != PackagePluginCommandKind.Create,
+      loadsPluginGraph: request.kind != PackagePluginCommandKind.New
+        && request.kind != PackagePluginCommandKind.Create,
+      verifiesProof: request.kind != PackagePluginCommandKind.New
+        && request.kind != PackagePluginCommandKind.Create,
+      verifiesNoCoredump: request.requireNoCoredump,
+      usesSdkTemplates: request.usesSdkTemplates(),
+      mutatesCompilerFacts: false,
+    }
+  }
+
+  pub fn stageFor(kind: PackagePluginCommandKind) -> PackagePluginCommandExecutionStage {
+    if kind == PackagePluginCommandKind.Create {
+      return PackagePluginCommandExecutionStage.TemplateMaterialize
+    }
+    if kind == PackagePluginCommandKind.New {
+      return PackagePluginCommandExecutionStage.TemplateMaterialize
+    }
+    if kind == PackagePluginCommandKind.Check {
+      return PackagePluginCommandExecutionStage.ManifestValidate
+    }
+    if kind == PackagePluginCommandKind.Test {
+      return PackagePluginCommandExecutionStage.ProofGate
+    }
+    if kind == PackagePluginCommandKind.Package {
+      return PackagePluginCommandExecutionStage.PackageArchive
+    }
+    return PackagePluginCommandExecutionStage.PublishGate
+  }
+
+  pub fn accepted(self: PackagePluginCommandExecutionPlan) -> bool {
+    return self.request.packageName != ""
+      && self.request.manifestPath != ""
+      && self.request.pluginRoot != ""
+      && self.usesSdkTemplates
+      && self.verifiesNoCoredump
+      && self.mutatesCompilerFacts == false
+  }
+}
+
+pub struct PackagePluginCommandExecutionResult {
+  plan: PackagePluginCommandExecutionPlan,
+  manifestAccepted: bool,
+  graphAccepted: bool,
+  proofAccepted: bool,
+  archiveReady: bool,
+  publishReady: bool,
+  typedDiagnostics: bool,
+  noCoredump: bool,
+}
+
+impl PackagePluginCommandExecutionResult {
+  pub fn fromPlan(plan: PackagePluginCommandExecutionPlan) -> PackagePluginCommandExecutionResult {
+    return PackagePluginCommandExecutionResult {
+      plan: plan,
+      manifestAccepted: plan.stage != PackagePluginCommandExecutionStage.TemplateMaterialize,
+      graphAccepted: plan.loadsPluginGraph,
+      proofAccepted: plan.verifiesProof,
+      archiveReady: plan.stage == PackagePluginCommandExecutionStage.PackageArchive
+        || plan.stage == PackagePluginCommandExecutionStage.PublishGate,
+      publishReady: plan.stage == PackagePluginCommandExecutionStage.PublishGate,
+      typedDiagnostics: true,
+      noCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: PackagePluginCommandExecutionResult) -> bool {
+    return self.plan.accepted()
+      && self.typedDiagnostics
+      && self.noCoredump
+  }
+}

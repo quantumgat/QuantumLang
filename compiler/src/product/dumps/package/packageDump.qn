@@ -1,0 +1,15 @@
+pub struct PackageDump {
+  packageRows: usize,
+  artifactRows: usize,
+  cacheRows: usize,
+}
+
+pub fn packageDump(packageRows: usize, artifactRows: usize, cacheRows: usize) -> PackageDump {
+  return PackageDump { packageRows: packageRows, artifactRows: artifactRows, cacheRows: cacheRows }
+}
+
+impl PackageDump {
+  pub fn rowCount(self: PackageDump) -> usize {
+    return self.packageRows + self.artifactRows + self.cacheRows
+  }
+}

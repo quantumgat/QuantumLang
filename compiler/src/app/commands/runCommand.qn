@@ -1,0 +1,19 @@
+pub class RunCommand {
+  commandName: string,
+  delegatesToPipeline: bool,
+  buildsBeforeRun: bool,
+  executesPublicBinary: bool,
+
+  pub init() {
+    self.commandName = "run"
+    self.delegatesToPipeline = true
+    self.buildsBeforeRun = true
+    self.executesPublicBinary = true
+  }
+
+  pub fn execute(self: &RunCommand) -> bool {
+    return self.delegatesToPipeline &&
+      self.buildsBeforeRun &&
+      self.executesPublicBinary
+  }
+}

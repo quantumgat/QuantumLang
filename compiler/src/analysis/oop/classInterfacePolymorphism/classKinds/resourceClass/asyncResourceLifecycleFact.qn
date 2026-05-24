@@ -1,0 +1,25 @@
+pub struct AsyncResourceLifecycleFact {
+  ownerId: u64,
+  asyncInitBound: bool,
+  startBound: bool,
+  shutdownCloseBound: bool,
+  cancellationCleanupBound: bool,
+  shutdownBeforeDropBound: bool,
+  generationGuardBound: bool,
+  staleHandleDiagnosticBound: bool,
+  typedFailureNoCoredumpBound: bool,
+}
+
+impl AsyncResourceLifecycleFact {
+  pub fn complete(self: AsyncResourceLifecycleFact) -> bool {
+    return self.ownerId > 0
+      && self.asyncInitBound
+      && self.startBound
+      && self.shutdownCloseBound
+      && self.cancellationCleanupBound
+      && self.shutdownBeforeDropBound
+      && self.generationGuardBound
+      && self.staleHandleDiagnosticBound
+      && self.typedFailureNoCoredumpBound
+  }
+}

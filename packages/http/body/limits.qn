@@ -1,0 +1,23 @@
+pub struct HttpBodyLimits {
+  maxBytes: usize,
+}
+
+impl HttpBodyLimits {
+  pub fn init(maxBytes: usize) -> HttpBodyLimits {
+    return HttpBodyLimits {
+      maxBytes: maxBytes,
+    }
+  }
+
+  pub fn maxBytes(self: HttpBodyLimits) -> usize {
+    return self.maxBytes
+  }
+
+  pub fn defaultJson() -> HttpBodyLimits {
+    return HttpBodyLimits.init(1048576)
+  }
+
+  pub fn allows(self: HttpBodyLimits, bytes: usize) -> bool {
+    return bytes <= self.maxBytes
+  }
+}

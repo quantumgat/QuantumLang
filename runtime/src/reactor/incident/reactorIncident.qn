@@ -1,0 +1,30 @@
+pub enum RuntimeReactorIncidentKind {
+  UnsupportedBackend
+  RegistrationFailed
+  LostWake
+  TimerRace
+  CancellationRace
+  BackendPanicPrevented
+}
+
+pub struct RuntimeReactorIncident {
+  kind: RuntimeReactorIncidentKind,
+  subject: string,
+  diagnosticCode: string,
+  noAllocationRequired: bool,
+}
+
+impl RuntimeReactorIncident {
+  pub fn init(kind: RuntimeReactorIncidentKind, subject: string, diagnosticCode: string, noAllocationRequired: bool) -> RuntimeReactorIncident {
+    return RuntimeReactorIncident {
+      kind: kind,
+      subject: subject,
+      diagnosticCode: diagnosticCode,
+      noAllocationRequired: noAllocationRequired,
+    }
+  }
+
+  pub fn reportable(self: RuntimeReactorIncident) -> bool {
+    return self.subject != "" && self.diagnosticCode != "" && self.noAllocationRequired
+  }
+}

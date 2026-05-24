@@ -1,0 +1,13 @@
+pub struct FixIt {
+  message: string,
+  editCount: usize,
+  deterministic: bool,
+}
+
+pub fn fixIt(message: string) -> FixIt {
+  return FixIt {
+    message: message,
+    editCount: 0,
+    deterministic: true,
+  }
+}

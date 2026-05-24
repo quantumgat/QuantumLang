@@ -1,0 +1,27 @@
+pub struct PluginNegativeFixture {
+  legacySchemaFixture: string,
+  missingProofFixture: string,
+  staleLockfileFixture: string,
+  typedDiagnosticsExpected: bool,
+  noCoredumpExpected: bool,
+}
+
+impl PluginNegativeFixture {
+  pub fn generic() -> PluginNegativeFixture {
+    return PluginNegativeFixture {
+      legacySchemaFixture: "qtlc/tests/fixtures/plugin/negative/legacy_schema/plugin.toml",
+      missingProofFixture: "qtlc/tests/fixtures/plugin/negative/missing_proof/plugin.toml",
+      staleLockfileFixture: "qtlc/tests/fixtures/plugin/negative/stale_lockfile/plugin.toml",
+      typedDiagnosticsExpected: true,
+      noCoredumpExpected: true,
+    }
+  }
+
+  pub fn accepted(self: PluginNegativeFixture) -> bool {
+    return self.legacySchemaFixture != ""
+      && self.missingProofFixture != ""
+      && self.staleLockfileFixture != ""
+      && self.typedDiagnosticsExpected
+      && self.noCoredumpExpected
+  }
+}

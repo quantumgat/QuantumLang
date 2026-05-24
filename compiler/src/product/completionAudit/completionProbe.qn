@@ -1,0 +1,13 @@
+pub struct CompletionProbe {
+  name: string,
+  deterministic: bool,
+  usesEditorState: bool,
+}
+
+pub fn completionProbe(name: string) -> CompletionProbe {
+  return CompletionProbe {
+    name: name,
+    deterministic: true,
+    usesEditorState: false,
+  }
+}

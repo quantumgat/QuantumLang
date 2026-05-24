@@ -1,0 +1,25 @@
+pub struct TempFile {
+  path: PathBuf,
+  file: File,
+  deleteOnDrop: bool,
+}
+
+pub struct TempDir {
+  path: PathBuf,
+  deleteOnDrop: bool,
+}
+
+pub fn tempFile() -> FsResult<TempFile>
+pub fn tempDir() -> FsResult<TempDir>
+
+impl TempFile {
+  pub fn path(self: TempFile) -> PathBuf {
+    return self.path
+  }
+}
+
+impl TempDir {
+  pub fn path(self: TempDir) -> PathBuf {
+    return self.path
+  }
+}

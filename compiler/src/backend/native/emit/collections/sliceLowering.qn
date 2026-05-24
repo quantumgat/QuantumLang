@@ -1,0 +1,42 @@
+pub struct SliceLowering {
+  borrowedViewBacked: bool,
+  startLenTracked: bool,
+  directIndexLoadLowered: bool,
+  subSliceLoweredToOffsetLen: bool,
+  toVecLoweredToTightCopyLoop: bool,
+  iteratorLoweredToIndexCursor: bool,
+  boundsProofRequired: bool,
+  zeroCopyViewCreation: bool,
+  arrayViewCompatible: bool,
+  noOwnershipTransferOnView: bool,
+}
+
+pub fn sliceLowering() -> SliceLowering {
+  return SliceLowering {
+    borrowedViewBacked: true,
+    startLenTracked: true,
+    directIndexLoadLowered: true,
+    subSliceLoweredToOffsetLen: true,
+    toVecLoweredToTightCopyLoop: true,
+    iteratorLoweredToIndexCursor: true,
+    boundsProofRequired: true,
+    zeroCopyViewCreation: true,
+    arrayViewCompatible: true,
+    noOwnershipTransferOnView: true,
+  }
+}
+
+impl SliceLowering {
+  pub fn hotPathReady(self: SliceLowering) -> bool {
+    return self.borrowedViewBacked
+      && self.startLenTracked
+      && self.directIndexLoadLowered
+      && self.subSliceLoweredToOffsetLen
+      && self.toVecLoweredToTightCopyLoop
+      && self.iteratorLoweredToIndexCursor
+      && self.boundsProofRequired
+      && self.zeroCopyViewCreation
+      && self.arrayViewCompatible
+      && self.noOwnershipTransferOnView
+  }
+}

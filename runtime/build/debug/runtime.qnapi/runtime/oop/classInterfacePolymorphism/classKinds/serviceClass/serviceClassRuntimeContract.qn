@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ServiceClassRuntimeContract {
+  typeId: u64
+  dependencyGraphBound: bool
+  startupBound: bool
+  shutdownBound: bool
+  healthCheckBound: bool
+}

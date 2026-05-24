@@ -1,0 +1,24 @@
+pub struct JsonFieldMatcherFact {
+  typeName: string,
+  fieldCount: usize,
+  generatedPerType: bool,
+  noRuntimeHashMap: bool,
+  collisionFallback: bool,
+  serdeFieldPolicyChecked: bool,
+  duplicateFieldDiagnostic: bool,
+  missingFieldDiagnostic: bool,
+  unknownFieldPolicyChecked: bool,
+}
+
+impl JsonFieldMatcherFact {
+  pub fn hotPathReady(self: JsonFieldMatcherFact) -> bool {
+    return self.typeName != ""
+      && self.fieldCount > 0
+      && self.generatedPerType
+      && self.noRuntimeHashMap
+      && self.serdeFieldPolicyChecked
+      && self.duplicateFieldDiagnostic
+      && self.missingFieldDiagnostic
+      && self.unknownFieldPolicyChecked
+  }
+}

@@ -1,0 +1,81 @@
+impl<T> Pool<T> {
+  pub fn find(self: Pool<T>, predicate: fn(T) -> bool) -> Option<T> {
+    let mut cursor = self.occupiedCursor()
+    while cursor.hasNext() {
+      let value = cursor.valueUnchecked()
+      if predicate(value) {
+        return Some(value)
+      }
+      cursor = cursor.next()
+    }
+    return None
+  }
+
+  pub fn filter(self: Pool<T>, predicate: fn(T) -> bool) -> Vec<T> requires(alloc) {
+    let mut result = Vec<T>.withCapacity(self.len)
+    let mut cursor = self.occupiedCursor()
+    while cursor.hasNext() {
+      let value = cursor.valueUnchecked()
+      if predicate(value) {
+        result = result.push(value)
+      }
+      cursor = cursor.next()
+    }
+    return result
+  }
+
+  pub fn countWhere(self: Pool<T>, predicate: fn(T) -> bool) -> usize {
+    let mut count: usize = 0
+    let mut cursor = self.occupiedCursor()
+    while cursor.hasNext() {
+      let value = cursor.valueUnchecked()
+      if predicate(value) {
+        count = count + 1
+      }
+      cursor = cursor.next()
+    }
+    return count
+  }
+
+  pub fn any(self: Pool<T>, predicate: fn(T) -> bool) -> bool {
+    return self.find(predicate) != None
+  }
+
+  pub fn all(self: Pool<T>, predicate: fn(T) -> bool) -> bool {
+    let mut cursor = self.occupiedCursor()
+    while cursor.hasNext() {
+      let value = cursor.valueUnchecked()
+      if predicate(value) == false {
+        return false
+      }
+      cursor = cursor.next()
+    }
+    return true
+  }
+
+  pub fn retain(self: Pool<T>, predicate: fn(T) -> bool) -> Pool<T> requires(alloc) {
+    let mut removed = Vec<PoolHandle<T>>.empty()
+    let mut cursor = self.occupiedCursor()
+    while cursor.hasNext() {
+      let value = cursor.valueUnchecked()
+      if predicate(value) == false {
+        removed = removed.push(cursor.handleUnchecked())
+      }
+      cursor = cursor.next()
+    }
+    return self.removeMany(removed).pool
+  }
+
+  pub fn drain(self: Pool<T>, predicate: fn(T) -> bool) -> PoolRemoveMany<T> requires(alloc) {
+    let mut matches = Vec<PoolHandle<T>>.empty()
+    let mut cursor = self.occupiedCursor()
+    while cursor.hasNext() {
+      let value = cursor.valueUnchecked()
+      if predicate(value) {
+        matches = matches.push(cursor.handleUnchecked())
+      }
+      cursor = cursor.next()
+    }
+    return self.removeMany(matches)
+  }
+}

@@ -1,0 +1,37 @@
+pub enum MirDropShutdownLifecycleOpKind {
+  DropValue
+  DropFieldsReverse
+  DropBaseReverse
+  CloseResource
+  ShutdownAsyncResource
+  RejectDoubleDrop
+  RejectUseAfterDrop
+  MarkDropped
+}
+
+pub struct MirDropShutdownLifecycleOp {
+  instruction: u64,
+  ownerTypeName: string,
+  kind: MirDropShutdownLifecycleOpKind,
+  directDropGlue: bool,
+  reverseCleanup: bool,
+  generationChecked: bool,
+  shutdownBeforeDrop: bool,
+  typedFailure: bool,
+  noCoredump: bool,
+  sourceMapBound: bool,
+}
+
+impl MirDropShutdownLifecycleOp {
+  pub fn accepted(self: MirDropShutdownLifecycleOp) -> bool {
+    return self.instruction > 0
+      && self.ownerTypeName != ""
+      && self.directDropGlue
+      && self.reverseCleanup
+      && self.generationChecked
+      && self.shutdownBeforeDrop
+      && self.typedFailure
+      && self.noCoredump
+      && self.sourceMapBound
+  }
+}

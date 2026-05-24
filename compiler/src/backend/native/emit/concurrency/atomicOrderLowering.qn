@@ -1,0 +1,19 @@
+pub struct AtomicOrderLowering {
+  sourceOrdering: AtomicOrdering,
+  nativeOrdering: string,
+  preservesOrdering: bool,
+}
+
+impl AtomicOrderLowering {
+  pub fn init(sourceOrdering: AtomicOrdering, nativeOrdering: string, preservesOrdering: bool) -> AtomicOrderLowering {
+    return AtomicOrderLowering {
+      sourceOrdering: sourceOrdering,
+      nativeOrdering: nativeOrdering,
+      preservesOrdering: preservesOrdering,
+    }
+  }
+
+  pub fn accepted(self: AtomicOrderLowering) -> bool {
+    return self.nativeOrdering != "" && self.preservesOrdering
+  }
+}

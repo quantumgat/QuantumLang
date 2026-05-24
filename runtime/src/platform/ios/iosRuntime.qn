@@ -1,0 +1,12 @@
+pub struct IosRuntime {
+  target: string,
+  sandboxRequired: bool,
+  entitlementChecked: bool,
+  processSpawnForbidden: bool,
+}
+
+impl IosRuntime {
+  pub fn accepted(self: IosRuntime) -> bool {
+    return self.target != "" && self.sandboxRequired && self.entitlementChecked
+  }
+}

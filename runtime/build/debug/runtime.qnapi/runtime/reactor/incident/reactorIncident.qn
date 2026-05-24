@@ -1,0 +1,15 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeReactorIncidentKind {
+  UnsupportedBackend
+  RegistrationFailed
+  LostWake
+  TimerRace
+  CancellationRace
+  BackendPanicPrevented
+}
+pub struct RuntimeReactorIncident {
+  kind: RuntimeReactorIncidentKind
+  subject: string
+  diagnosticCode: string
+  noAllocationRequired: bool
+}

@@ -1,0 +1,41 @@
+pub struct OopAsyncMethodNativeLowering {
+  mirOpId: u64,
+  ownerTypeName: string,
+  methodName: string,
+  emitsDirectStateMachine: bool,
+  emitsStackFrameWhenProven: bool,
+  erasesBoxedFutureWhenProven: bool,
+  emitsSelfCapture: bool,
+  emitsReceiverBorrowCheck: bool,
+  emitsMutableBorrowDiagnostic: bool,
+  emitsCancellationCleanup: bool,
+  emitsPartialInitCleanup: bool,
+  emitsTypedFailurePath: bool,
+  noCoredumpFailure: bool,
+  sourceMapBound: bool,
+}
+
+impl OopAsyncMethodNativeLowering {
+  pub fn complete(self: OopAsyncMethodNativeLowering) -> bool {
+    return self.mirOpId > 0
+      && self.ownerTypeName != ""
+      && self.methodName != ""
+      && self.emitsDirectStateMachine
+      && self.emitsStackFrameWhenProven
+      && self.erasesBoxedFutureWhenProven
+      && self.emitsSelfCapture
+      && self.emitsReceiverBorrowCheck
+      && self.emitsMutableBorrowDiagnostic
+      && self.emitsCancellationCleanup
+      && self.emitsPartialInitCleanup
+      && self.emitsTypedFailurePath
+      && self.noCoredumpFailure
+      && self.sourceMapBound
+  }
+
+  pub fn hotPathReady(self: OopAsyncMethodNativeLowering) -> bool {
+    return self.complete()
+      && self.emitsDirectStateMachine
+      && self.erasesBoxedFutureWhenProven
+  }
+}

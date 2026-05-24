@@ -1,0 +1,21 @@
+pub struct RuntimeEvent {
+  handle: SyncHandle,
+  signaled: bool,
+  manualReset: bool,
+  waiterCount: usize,
+}
+
+impl RuntimeEvent {
+  pub fn init(handle: SyncHandle, signaled: bool, manualReset: bool, waiterCount: usize) -> RuntimeEvent {
+    return RuntimeEvent {
+      handle: handle,
+      signaled: signaled,
+      manualReset: manualReset,
+      waiterCount: waiterCount,
+    }
+  }
+
+  pub fn wakesWaiter(self: RuntimeEvent) -> bool {
+    return self.signaled && self.waiterCount > 0
+  }
+}

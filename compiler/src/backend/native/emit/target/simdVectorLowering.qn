@@ -1,0 +1,19 @@
+pub struct SimdVectorLowering {
+  emitsVectorInstruction: bool,
+  preservesLaneCount: bool,
+  preservesMask: bool,
+}
+
+impl SimdVectorLowering {
+  pub fn init(emitsVectorInstruction: bool, preservesLaneCount: bool, preservesMask: bool) -> SimdVectorLowering {
+    return SimdVectorLowering {
+      emitsVectorInstruction: emitsVectorInstruction,
+      preservesLaneCount: preservesLaneCount,
+      preservesMask: preservesMask,
+    }
+  }
+
+  pub fn accepted(self: SimdVectorLowering) -> bool {
+    return self.emitsVectorInstruction && self.preservesLaneCount && self.preservesMask
+  }
+}

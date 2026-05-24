@@ -1,0 +1,48 @@
+pub enum NativeBreakContinueLoweringKind {
+  BreakJump
+  BreakValueJump
+  ContinueJump
+  LabeledBreakJump
+  LabeledContinueJump
+}
+
+pub struct NativeBreakContinueLowering {
+  kind: NativeBreakContinueLoweringKind,
+  mirOp: MirBreakContinueOp,
+  emitsDirectJump: bool,
+  emitsValueCarrier: bool,
+  cleanupEdgesPreserved: bool,
+  noGeneratedFallback: bool,
+}
+
+pub fn nativeBreakContinueLowering(
+  kind: NativeBreakContinueLoweringKind,
+  mirOp: MirBreakContinueOp,
+  emitsDirectJump: bool,
+  emitsValueCarrier: bool,
+  cleanupEdgesPreserved: bool,
+  noGeneratedFallback: bool,
+) -> NativeBreakContinueLowering {
+  return NativeBreakContinueLowering {
+    kind: kind,
+    mirOp: mirOp,
+    emitsDirectJump: emitsDirectJump,
+    emitsValueCarrier: emitsValueCarrier,
+    cleanupEdgesPreserved: cleanupEdgesPreserved,
+    noGeneratedFallback: noGeneratedFallback,
+  }
+}
+
+impl NativeBreakContinueLowering {
+  pub fn complete(self: NativeBreakContinueLowering) -> bool {
+    return self.mirOp.lowerable()
+      && self.emitsDirectJump
+      && self.cleanupEdgesPreserved
+      && self.noGeneratedFallback
+  }
+
+  pub fn valueCarrierReady(self: NativeBreakContinueLowering) -> bool {
+    return self.kind == NativeBreakContinueLoweringKind.BreakValueJump
+      && self.emitsValueCarrier
+  }
+}

@@ -1,0 +1,16 @@
+pub use constantTimeEqualityLowering.ConstantTimeEqualityLowering
+pub use constantTimeSelectLowering.ConstantTimeSelectLowering
+pub use safeFailureLowering.SafeFailureLowering
+pub use secretMemoryLowering.SecretMemoryLowering
+
+pub struct SafetyEmitPlan {
+  boundsChecked: bool,
+  provenanceChecked: bool,
+  unsafeProofChecked: bool,
+}
+
+impl SafetyEmitPlan {
+  pub fn ready(self: SafetyEmitPlan) -> bool {
+    return self.boundsChecked && self.provenanceChecked && self.unsafeProofChecked
+  }
+}

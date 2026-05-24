@@ -1,0 +1,19 @@
+pub enum TargetDiagnosticKind {
+  UnsupportedArch,
+  UnsupportedOs,
+  UnsupportedAbi,
+  UnsupportedEnvironment,
+  UnsupportedCapability,
+}
+
+pub struct TargetDiagnostic {
+  kind: TargetDiagnosticKind,
+  code: string,
+  blocksBuild: bool,
+}
+
+impl TargetDiagnostic {
+  pub fn reportable(self: TargetDiagnostic) -> bool {
+    return self.code != "" && self.blocksBuild
+  }
+}

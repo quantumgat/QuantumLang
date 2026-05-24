@@ -1,0 +1,7 @@
+pub interface ProcessRunner {
+  pub fn runnerName(self: &ProcessRunner) -> string
+  pub fn supportsSpawn(self: &ProcessRunner) -> bool
+  pub fn supportsPipes(self: &ProcessRunner) -> bool
+  pub fn supportsSignals(self: &ProcessRunner) -> bool
+  pub fn noCoredump(self: &ProcessRunner) -> bool
+}

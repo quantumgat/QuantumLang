@@ -1,0 +1,21 @@
+pub enum MemoryOwner {
+  RuntimeOwned,
+  CompilerOwned,
+  UserOwned,
+}
+
+pub struct MemoryOwnership {
+  owner: MemoryOwner,
+  trackedBytes: usize,
+  accountingEnabled: bool,
+  transferable: bool,
+}
+
+pub fn runtimeMemoryOwnership(bytes: usize) -> MemoryOwnership {
+  return MemoryOwnership {
+    owner: MemoryOwner.RuntimeOwned,
+    trackedBytes: bytes,
+    accountingEnabled: true,
+    transferable: false,
+  }
+}

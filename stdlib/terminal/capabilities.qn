@@ -1,0 +1,22 @@
+pub struct TerminalCapabilities {
+  isTty: bool,
+  color: TerminalColorMode,
+  rawModeSupported: bool,
+  cursorSupported: bool,
+  sizeSupported: bool,
+  alternateScreenSupported: bool,
+}
+
+pub fn capabilities(fd: i64) -> TerminalCapabilities
+pub fn stdoutCapabilities() -> TerminalCapabilities
+pub fn stderrCapabilities() -> TerminalCapabilities
+
+impl TerminalCapabilities {
+  pub fn interactive(self: TerminalCapabilities) -> bool {
+    return self.isTty
+  }
+
+  pub fn colorReady(self: TerminalCapabilities) -> bool {
+    return self.isTty && self.color != TerminalColorMode.None
+  }
+}

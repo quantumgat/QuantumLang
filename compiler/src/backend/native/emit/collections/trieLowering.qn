@@ -1,0 +1,45 @@
+pub struct TrieLowering {
+  prefixNodeBacked: bool,
+  childMapEdges: bool,
+  insertLoweredToPrefixWalk: bool,
+  getLoweredToPrefixWalk: bool,
+  prefixSearchLoweredToNodeWalk: bool,
+  startsWithLoweredToSubtreeCollect: bool,
+  iteratorLoweredToTerminalNodeCursor: bool,
+  terminalValueDirectLoad: bool,
+  keyCharsDirectIndexed: bool,
+  callableLoopsInlined: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn trieLowering() -> TrieLowering {
+  return TrieLowering {
+    prefixNodeBacked: true,
+    childMapEdges: true,
+    insertLoweredToPrefixWalk: true,
+    getLoweredToPrefixWalk: true,
+    prefixSearchLoweredToNodeWalk: true,
+    startsWithLoweredToSubtreeCollect: true,
+    iteratorLoweredToTerminalNodeCursor: true,
+    terminalValueDirectLoad: true,
+    keyCharsDirectIndexed: true,
+    callableLoopsInlined: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl TrieLowering {
+  pub fn hotPathReady(self: TrieLowering) -> bool {
+    return self.prefixNodeBacked
+      && self.childMapEdges
+      && self.insertLoweredToPrefixWalk
+      && self.getLoweredToPrefixWalk
+      && self.prefixSearchLoweredToNodeWalk
+      && self.startsWithLoweredToSubtreeCollect
+      && self.iteratorLoweredToTerminalNodeCursor
+      && self.terminalValueDirectLoad
+      && self.keyCharsDirectIndexed
+      && self.callableLoopsInlined
+      && self.boundsProofRequired
+  }
+}

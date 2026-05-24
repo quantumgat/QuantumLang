@@ -1,0 +1,12 @@
+pub struct WindowsPlatformContract {
+  target: string,
+  iocpAvailable: bool,
+  handleModelRequired: bool,
+  fiberOptional: bool,
+}
+
+impl WindowsPlatformContract {
+  pub fn accepted(self: WindowsPlatformContract) -> bool {
+    return self.target != "" && self.iocpAvailable && self.handleModelRequired
+  }
+}

@@ -1,0 +1,6 @@
+[module]
+name = "http.generated"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-generated-facts"

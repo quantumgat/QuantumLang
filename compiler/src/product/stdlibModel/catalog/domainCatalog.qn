@@ -1,0 +1,14 @@
+pub struct StdlibDomainCatalog {
+  domainName: string,
+  moduleCount: usize,
+  generatedFromSource: bool,
+  hardcodedRuntimeList: bool,
+}
+
+impl StdlibDomainCatalog {
+  pub fn accepted(self: StdlibDomainCatalog) -> bool {
+    return self.domainName != ""
+      && self.generatedFromSource
+      && self.hardcodedRuntimeList == false
+  }
+}

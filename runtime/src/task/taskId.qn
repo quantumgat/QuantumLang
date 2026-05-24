@@ -1,0 +1,13 @@
+pub struct TaskId {
+  value: u64,
+}
+
+pub fn taskId(value: u64) -> TaskId {
+  return TaskId { value: value }
+}
+
+impl TaskId {
+  pub fn raw(self: TaskId) -> u64 {
+    return self.value
+  }
+}

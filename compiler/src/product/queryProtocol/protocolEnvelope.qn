@@ -1,0 +1,13 @@
+pub struct ProtocolEnvelope {
+  protocol: string,
+  version: string,
+  jsonCompatible: bool,
+}
+
+pub fn protocolEnvelope() -> ProtocolEnvelope {
+  return ProtocolEnvelope {
+    protocol: "qtlc-query",
+    version: "0.1",
+    jsonCompatible: true,
+  }
+}

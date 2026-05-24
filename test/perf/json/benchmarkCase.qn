@@ -1,0 +1,52 @@
+pub enum JsonBenchmarkKind {
+  TypedDecodeSmallObject
+  TypedDecodeMediumResponse
+  TypedDecodeLargeArray
+  DynamicParse
+  TypedEncodeFreshBuffer
+  TypedEncodeExistingWriter
+  ZeroCopyViewDecode
+  UnknownFieldSkip
+  DeepNestedObject
+  UnicodeStringValidation
+  MalformedInputDiagnostics
+  ScalarVsSimdScanner
+}
+
+pub struct JsonBenchmarkCase {
+  kind: JsonBenchmarkKind,
+  name: string,
+  inputBytes: usize,
+  warmupIterations: usize,
+  measurementIterations: usize,
+  allocationCountRecorded: bool,
+  bytesPerSecondRecorded: bool,
+  cyclesPerByteRecorded: bool,
+  malformedErrorRateRecorded: bool,
+}
+
+impl JsonBenchmarkCase {
+  pub fn required(kind: JsonBenchmarkKind, name: string, inputBytes: usize) -> JsonBenchmarkCase {
+    return JsonBenchmarkCase {
+      kind: kind,
+      name: name,
+      inputBytes: inputBytes,
+      warmupIterations: 0,
+      measurementIterations: 0,
+      allocationCountRecorded: false,
+      bytesPerSecondRecorded: false,
+      cyclesPerByteRecorded: false,
+      malformedErrorRateRecorded: false,
+    }
+  }
+
+  pub fn measured(self: JsonBenchmarkCase) -> bool {
+    return self.name != ""
+      && self.inputBytes > 0
+      && self.warmupIterations > 0
+      && self.measurementIterations > 0
+      && self.allocationCountRecorded
+      && self.bytesPerSecondRecorded
+      && self.cyclesPerByteRecorded
+  }
+}

@@ -1,0 +1,13 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub enum HeaderPolicyKind {
+  Set,
+  Remove,
+}
+pub struct HeaderPolicy {
+  kind: HeaderPolicyKind
+  name: string
+  value: string
+  safe: bool
+}
+pub struct Header {
+}

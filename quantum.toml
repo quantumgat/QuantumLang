@@ -1,0 +1,43 @@
+[package]
+name = "qtlang"
+version = "0.1.0"
+edition = "2026"
+description = "Clean QuantumLang self-hosted compiler/runtime workspace"
+
+[workspace]
+members = ["compiler", "runtime", "stdlib"]
+
+[self_hosting]
+canonical = true
+stage = "source-root-scaffold"
+compiler_root = "compiler"
+runtime_root = "runtime"
+stdlib_root = "stdlib"
+bootstrap_compiler_root = "../compiler"
+bootstrap_runtime_root = "../runtime"
+generated_c_fallback = false
+generated_cpp_fallback = false
+generated_header_fallback = false
+native_backend_required = true
+
+[nativeBuild]
+publicBinary = "qtlc"
+compilerPackage = "qtlc"
+runtimePackage = "runtime"
+stdlibPackage = "stdlib"
+onePublicBinary = true
+hiddenRuntimeArchive = true
+generatedSourceFallback = false
+
+[publicBinaryPolicy]
+command = "qtlc"
+role = "workspace-policy"
+onePublicCompilerBinary = true
+debugCompiler = "build/debug/qtlc"
+releaseCompiler = "build/release/qtlc"
+publishedCompiler = "release/qtlc"
+nativeBackendOnly = true
+defaultAppOutput = "static-one-executable"
+embeddedCompilerCapabilities = ["frontend", "analysis", "ir", "native-backend", "linker-driver", "package-commands", "plugin-loader", "stdlib-api-model", "runtime-abi-model"]
+shippedArtifacts = ["stdlib-qnapi-qna-a", "runtime-qna-a", "official-packages", "official-plugins", "third-party-package-plugin-cache"]
+forbiddenEmbeddedArtifacts = ["stdlib-implementation-bodies", "runtime-implementation-bodies", "packages", "plugins"]

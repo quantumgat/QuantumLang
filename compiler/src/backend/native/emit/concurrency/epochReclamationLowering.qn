@@ -1,0 +1,19 @@
+pub struct EpochReclamationLowering {
+  emitsPin: bool,
+  emitsQuiescentCheck: bool,
+  emitsRetireListScan: bool,
+}
+
+impl EpochReclamationLowering {
+  pub fn init(emitsPin: bool, emitsQuiescentCheck: bool, emitsRetireListScan: bool) -> EpochReclamationLowering {
+    return EpochReclamationLowering {
+      emitsPin: emitsPin,
+      emitsQuiescentCheck: emitsQuiescentCheck,
+      emitsRetireListScan: emitsRetireListScan,
+    }
+  }
+
+  pub fn accepted(self: EpochReclamationLowering) -> bool {
+    return self.emitsPin && self.emitsQuiescentCheck && self.emitsRetireListScan
+  }
+}

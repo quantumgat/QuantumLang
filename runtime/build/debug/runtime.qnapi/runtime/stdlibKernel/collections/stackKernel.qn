@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct StackKernel {
+  vecBacked: bool
+  topIndexDirect: bool
+  pushUsesVecStorage: bool
+  popUsesTopLoadAndLenDec: bool
+  peekUsesDirectLoad: bool
+  reverseIteratorStable: bool
+  zeroCopyFromVec: bool
+  callableLoopsInlineable: bool
+}

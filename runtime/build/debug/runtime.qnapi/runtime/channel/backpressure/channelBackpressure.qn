@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeChannelBackpressureKind {
+  Block
+  DropNewest
+  DropOldest
+  Fail
+}
+pub struct RuntimeChannelBackpressure {
+  channelId: u64
+  kind: RuntimeChannelBackpressureKind
+  pressureEvents: usize
+  diagnosticReady: bool
+}

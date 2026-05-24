@@ -1,0 +1,19 @@
+pub struct RegionScopeFact {
+  regionId: u64,
+  scopeDepth: usize,
+  active: bool,
+}
+
+impl RegionScopeFact {
+  pub fn init(regionId: u64, scopeDepth: usize, active: bool) -> RegionScopeFact {
+    return RegionScopeFact {
+      regionId: regionId,
+      scopeDepth: scopeDepth,
+      active: active,
+    }
+  }
+
+  pub fn contains(self: RegionScopeFact, regionId: u64, scopeDepth: usize) -> bool {
+    return self.active && self.regionId == regionId && scopeDepth >= self.scopeDepth
+  }
+}

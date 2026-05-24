@@ -1,0 +1,92 @@
+pub struct SetDirectCursorHotPathProof {
+  caseName: string,
+  sourcePattern: string,
+  generatedNativeLoopCaptured: bool,
+  cppEquivalentLoopCaptured: bool,
+  cursorObjectErased: bool,
+  cursorStateScalarized: bool,
+  directBucketLoad: bool,
+  optionWrapErased: bool,
+  predicateInlineOrCheapThunk: bool,
+  boundsProof: bool,
+  probeChecksMinimized: bool,
+  iteratorCursorLowered: bool,
+  toVecCursorLowered: bool,
+  lookupInsertRemoveRawProbe: bool,
+  growRehashRawBuckets: bool,
+  nativeNsPerElement: u64,
+  cppNsPerElement: u64,
+  maxSlowdownPercent: u64,
+  samples: usize,
+  noFallback: bool,
+}
+
+pub fn setDirectCursorHotPathProof(
+  caseName: string,
+  sourcePattern: string,
+  nativeNsPerElement: u64,
+  cppNsPerElement: u64,
+  maxSlowdownPercent: u64,
+) -> SetDirectCursorHotPathProof {
+  return SetDirectCursorHotPathProof {
+    caseName: caseName,
+    sourcePattern: sourcePattern,
+    generatedNativeLoopCaptured: true,
+    cppEquivalentLoopCaptured: true,
+    cursorObjectErased: true,
+    cursorStateScalarized: true,
+    directBucketLoad: true,
+    optionWrapErased: true,
+    predicateInlineOrCheapThunk: true,
+    boundsProof: true,
+    probeChecksMinimized: true,
+    iteratorCursorLowered: true,
+    toVecCursorLowered: true,
+    lookupInsertRemoveRawProbe: true,
+    growRehashRawBuckets: true,
+    nativeNsPerElement: nativeNsPerElement,
+    cppNsPerElement: cppNsPerElement,
+    maxSlowdownPercent: maxSlowdownPercent,
+    samples: 3,
+    noFallback: true,
+  }
+}
+
+impl SetDirectCursorHotPathProof {
+  pub fn loweringProven(self: SetDirectCursorHotPathProof) -> bool {
+    return self.generatedNativeLoopCaptured
+      && self.cursorObjectErased
+      && self.cursorStateScalarized
+      && self.directBucketLoad
+      && self.optionWrapErased
+      && self.predicateInlineOrCheapThunk
+      && self.boundsProof
+      && self.probeChecksMinimized
+      && self.iteratorCursorLowered
+      && self.toVecCursorLowered
+      && self.lookupInsertRemoveRawProbe
+      && self.growRehashRawBuckets
+      && self.noFallback
+  }
+
+  pub fn benchmarkCompared(self: SetDirectCursorHotPathProof) -> bool {
+    return self.cppEquivalentLoopCaptured
+      && self.nativeNsPerElement > 0
+      && self.cppNsPerElement > 0
+      && self.samples >= 3
+  }
+
+  pub fn withinCppBudget(self: SetDirectCursorHotPathProof) -> bool {
+    let budget = self.cppNsPerElement
+      + ((self.cppNsPerElement * self.maxSlowdownPercent) / 100)
+    return self.nativeNsPerElement <= budget
+  }
+
+  pub fn passed(self: SetDirectCursorHotPathProof) -> bool {
+    return self.caseName != ""
+      && self.sourcePattern != ""
+      && self.loweringProven()
+      && self.benchmarkCompared()
+      && self.withinCppBudget()
+  }
+}

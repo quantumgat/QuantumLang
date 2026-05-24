@@ -1,0 +1,31 @@
+pub struct SlotVecBuilder<T> {
+  capacity: usize,
+}
+
+pub struct SlotMapBuilder<K, V> {
+  capacity: usize,
+}
+
+impl<T> SlotVecBuilder<T> {
+  pub fn capacity(self: SlotVecBuilder<T>, capacity: usize) -> SlotVecBuilder<T> {
+    return SlotVecBuilder<T> {
+      capacity: capacity,
+    }
+  }
+
+  pub fn build(self: SlotVecBuilder<T>) -> SlotVec<T> requires(alloc) {
+    return SlotVec<T>.withCapacity(self.capacity)
+  }
+}
+
+impl<K, V> SlotMapBuilder<K, V> {
+  pub fn capacity(self: SlotMapBuilder<K, V>, capacity: usize) -> SlotMapBuilder<K, V> {
+    return SlotMapBuilder<K, V> {
+      capacity: capacity,
+    }
+  }
+
+  pub fn build(self: SlotMapBuilder<K, V>) -> SlotMap<K, V> requires(alloc) {
+    return SlotMap<K, V>.withCapacity(self.capacity)
+  }
+}

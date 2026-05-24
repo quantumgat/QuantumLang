@@ -1,0 +1,53 @@
+pub struct ArenaSlice<T> {
+  values: Vec<T>,
+  regionId: u64,
+  generation: u64,
+}
+
+impl<T> ArenaSlice<T> {
+  pub fn init(values: Vec<T>, region: Region) -> ArenaSlice<T> {
+    return ArenaSlice<T> {
+      values: values,
+      regionId: region.id(),
+      generation: region.generation(),
+    }
+  }
+
+  /**
+    Returns an arena-owned slice length after checking region validity.
+
+    example:
+      let count = users.len(arena.region())?
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    safety: rejects stale slices after arena reset or release
+    stability: public since 0.1
+  */
+  pub fn len(self: ArenaSlice<T>, region: Region) -> Result<usize, ArenaError> {
+    self.check(region)?
+    return Ok(self.values.len)
+  }
+
+  pub fn get(self: ArenaSlice<T>, region: Region, index: usize) -> Result<T, ArenaError> {
+    self.check(region)?
+    if index >= self.values.len {
+      return Err(ArenaError.init(ArenaErrorKind.DanglingReference))
+    }
+    return Ok(self.values[index])
+  }
+
+  pub fn check(self: ArenaSlice<T>, region: Region) -> Result<ArenaSlice<T>, ArenaError> {
+    if region.isReleased() {
+      return Err(ArenaError.init(ArenaErrorKind.Released))
+    }
+    if self.regionId != region.id() {
+      return Err(ArenaError.init(ArenaErrorKind.WrongRegion))
+    }
+    if self.generation != region.generation() {
+      return Err(ArenaError.init(ArenaErrorKind.ResetGeneration))
+    }
+    return Ok(self)
+  }
+}

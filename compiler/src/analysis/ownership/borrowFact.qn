@@ -1,0 +1,34 @@
+pub enum BorrowKind {
+  Shared
+  Mutable
+  Temporary
+}
+
+pub struct BorrowFact {
+  borrower: u64,
+  borrowed: u64,
+  kind: BorrowKind,
+  active: bool,
+}
+
+pub fn borrowFact(borrower: u64, borrowed: u64, kind: BorrowKind, active: bool) -> BorrowFact {
+  return BorrowFact { borrower: borrower, borrowed: borrowed, kind: kind, active: active }
+}
+
+impl BorrowFact {
+  pub fn borrowerId(self: BorrowFact) -> u64 {
+    return self.borrower
+  }
+
+  pub fn borrowedId(self: BorrowFact) -> u64 {
+    return self.borrowed
+  }
+
+  pub fn borrowKind(self: BorrowFact) -> BorrowKind {
+    return self.kind
+  }
+
+  pub fn isActive(self: BorrowFact) -> bool {
+    return self.active
+  }
+}

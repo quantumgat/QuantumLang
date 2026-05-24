@@ -1,0 +1,21 @@
+pub struct PageLockFact {
+  address: usize,
+  bytes: usize,
+  locked: bool,
+  releaseOnCancel: bool,
+}
+
+impl PageLockFact {
+  pub fn init(address: usize, bytes: usize, locked: bool, releaseOnCancel: bool) -> PageLockFact {
+    return PageLockFact {
+      address: address,
+      bytes: bytes,
+      locked: locked,
+      releaseOnCancel: releaseOnCancel,
+    }
+  }
+
+  pub fn accepted(self: PageLockFact) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.locked && self.releaseOnCancel
+  }
+}

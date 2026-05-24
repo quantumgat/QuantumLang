@@ -1,0 +1,12 @@
+pub struct AndroidRuntime {
+  target: string,
+  bionic: bool,
+  permissionAware: bool,
+  appSandbox: bool,
+}
+
+impl AndroidRuntime {
+  pub fn accepted(self: AndroidRuntime) -> bool {
+    return self.target != "" && self.bionic && self.appSandbox
+  }
+}

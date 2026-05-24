@@ -1,0 +1,13 @@
+[module]
+name = "http.websocket"
+visibility = "package"
+root = "mod.qn"
+owner = "packages/http"
+role = "http-websocket"
+
+
+[policy]
+siblingVisible = true
+exportsViaMod = true
+crossModuleImportRequired = true
+outsidePackageRootOnly = true

@@ -1,0 +1,13 @@
+pub struct FileStream {
+  file: File,
+  chunkBytes: usize,
+}
+
+pub fn stream(path: PathBuf) -> FsResult<FileStream>
+pub fn stream(path: PathBuf, chunkBytes: usize) -> FsResult<FileStream>
+
+impl FileStream {
+  pub fn chunkSize(self: FileStream) -> usize {
+    return self.chunkBytes
+  }
+}

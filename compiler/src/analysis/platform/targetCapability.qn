@@ -1,0 +1,31 @@
+pub enum TargetCapabilityKind {
+  Mmio,
+  Simd,
+  Atomic,
+  PointerAuthentication,
+  MemoryTagging,
+  DirectIo,
+  ForeignMemory,
+}
+
+pub struct TargetCapability {
+  target: string,
+  kind: TargetCapabilityKind,
+  available: bool,
+  diagnosticCode: string,
+}
+
+impl TargetCapability {
+  pub fn init(target: string, kind: TargetCapabilityKind, available: bool, diagnosticCode: string) -> TargetCapability {
+    return TargetCapability {
+      target: target,
+      kind: kind,
+      available: available,
+      diagnosticCode: diagnosticCode,
+    }
+  }
+
+  pub fn allowed(self: TargetCapability) -> bool {
+    return self.available && self.diagnosticCode != ""
+  }
+}

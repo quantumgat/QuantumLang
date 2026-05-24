@@ -1,0 +1,10 @@
+pub enum SyncPoint {
+  Statement
+  Item
+  Block
+  TopLevel
+}
+
+pub fn syncPoint(value: SyncPoint) -> SyncPoint {
+  return value
+}

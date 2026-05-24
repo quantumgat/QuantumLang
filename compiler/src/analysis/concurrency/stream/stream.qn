@@ -1,0 +1,43 @@
+pub enum StreamDiagnosticKind {
+  None
+  BackpressureMissing
+  TimeoutWithoutCancellation
+  RetryDropsPartialError
+  AsyncIteratorNotFused
+  TransformLosesProvenance
+  FrameBoundaryLost
+}
+
+pub struct StreamSafety {
+  nodeId: u64,
+  backpressureDefined: bool,
+  timeoutCancellationLinked: bool,
+  partialErrorsPreserved: bool,
+  diagnostic: StreamDiagnosticKind,
+}
+
+impl StreamSafety {
+  pub fn init(
+    nodeId: u64,
+    backpressureDefined: bool,
+    timeoutCancellationLinked: bool,
+    partialErrorsPreserved: bool,
+    diagnostic: StreamDiagnosticKind,
+  ) -> StreamSafety {
+    return StreamSafety {
+      nodeId: nodeId,
+      backpressureDefined: backpressureDefined,
+      timeoutCancellationLinked: timeoutCancellationLinked,
+      partialErrorsPreserved: partialErrorsPreserved,
+      diagnostic: diagnostic,
+    }
+  }
+
+  pub fn accepted(self: StreamSafety) -> bool {
+    return self.nodeId > 0
+      && self.backpressureDefined
+      && self.timeoutCancellationLinked
+      && self.partialErrorsPreserved
+      && self.diagnostic == StreamDiagnosticKind.None
+  }
+}

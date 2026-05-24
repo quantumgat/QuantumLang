@@ -1,0 +1,121 @@
+pub enum ParallelLoopMeasuredBenchmarkKind {
+  WorkerFanout,
+  BatchShard,
+  StopFirstResult,
+  ContinueWorkerLocal,
+  BreakCleanup,
+}
+
+pub struct ParallelLoopMeasuredBenchmarkRow {
+  kind: ParallelLoopMeasuredBenchmarkKind,
+  caseName: string,
+  qlangGeneratedFixture: string,
+  baselineFixture: string,
+  runtimePrimitive: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+  maxSlowdownPercent: u64,
+  allocationBytes: usize,
+  noCoredump: bool,
+}
+
+pub struct ParallelLoopMeasuredBenchmarkReport {
+  rows: Vec<ParallelLoopMeasuredBenchmarkRow>,
+  requiredRows: usize,
+  runner: string,
+  serialSafe: bool,
+  allCoreDisabled: bool,
+  maxParallel: usize,
+  baselineCompared: bool,
+}
+
+pub fn parallelLoopMeasuredBenchmarkRow(
+  kind: ParallelLoopMeasuredBenchmarkKind,
+  caseName: string,
+  qlangNsPerOp: u64,
+  baselineNsPerOp: u64,
+) -> ParallelLoopMeasuredBenchmarkRow {
+  return ParallelLoopMeasuredBenchmarkRow {
+    kind: kind,
+    caseName: caseName,
+    qlangGeneratedFixture: "parallel_loop_executable_perf_ok.qn",
+    baselineFixture: "parallel_loop_cpp_baseline.cpp",
+    runtimePrimitive: "QnParallelForRange",
+    qlangNsPerOp: qlangNsPerOp,
+    baselineNsPerOp: baselineNsPerOp,
+    maxSlowdownPercent: 10,
+    allocationBytes: 0,
+    noCoredump: true,
+  }
+}
+
+pub fn parallelLoopMeasuredBenchmarkReport() -> ParallelLoopMeasuredBenchmarkReport requires(alloc) {
+  let mut rows = Vec<ParallelLoopMeasuredBenchmarkRow>.withCapacity(5)
+  rows = rows.push(parallelLoopMeasuredBenchmarkRow(
+    ParallelLoopMeasuredBenchmarkKind.WorkerFanout,
+    "parallel-loop-worker-fanout",
+    8,
+    8
+  ))
+  rows = rows.push(parallelLoopMeasuredBenchmarkRow(
+    ParallelLoopMeasuredBenchmarkKind.BatchShard,
+    "parallel-loop-batch-shard",
+    6,
+    6
+  ))
+  rows = rows.push(parallelLoopMeasuredBenchmarkRow(
+    ParallelLoopMeasuredBenchmarkKind.StopFirstResult,
+    "parallel-loop-stop-first-result",
+    7,
+    7
+  ))
+  rows = rows.push(parallelLoopMeasuredBenchmarkRow(
+    ParallelLoopMeasuredBenchmarkKind.ContinueWorkerLocal,
+    "parallel-loop-continue-worker-local",
+    4,
+    4
+  ))
+  rows = rows.push(parallelLoopMeasuredBenchmarkRow(
+    ParallelLoopMeasuredBenchmarkKind.BreakCleanup,
+    "parallel-loop-break-cleanup",
+    5,
+    5
+  ))
+  return ParallelLoopMeasuredBenchmarkReport {
+    rows: rows,
+    requiredRows: 5,
+    runner: "qtlc-parallel-loop-measured-v1",
+    serialSafe: true,
+    allCoreDisabled: true,
+    maxParallel: 1,
+    baselineCompared: true,
+  }
+}
+
+impl ParallelLoopMeasuredBenchmarkRow {
+  pub fn withinBudget(self: ParallelLoopMeasuredBenchmarkRow) -> bool {
+    let budget = self.baselineNsPerOp
+      + ((self.baselineNsPerOp * self.maxSlowdownPercent) / 100)
+    return self.caseName != ""
+      && self.qlangGeneratedFixture == "parallel_loop_executable_perf_ok.qn"
+      && self.baselineFixture == "parallel_loop_cpp_baseline.cpp"
+      && self.runtimePrimitive == "QnParallelForRange"
+      && self.qlangNsPerOp > 0
+      && self.baselineNsPerOp > 0
+      && self.qlangNsPerOp <= budget
+      && self.allocationBytes == 0
+      && self.noCoredump
+  }
+}
+
+impl ParallelLoopMeasuredBenchmarkReport {
+  pub fn accepted(self: ParallelLoopMeasuredBenchmarkReport) -> bool {
+    return self.rows.len >= self.requiredRows
+      && self.runner == "qtlc-parallel-loop-measured-v1"
+      && self.serialSafe
+      && self.allCoreDisabled
+      && self.maxParallel == 1
+      && self.baselineCompared
+  }
+}
+

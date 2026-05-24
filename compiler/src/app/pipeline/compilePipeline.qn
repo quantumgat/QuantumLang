@@ -1,0 +1,28 @@
+pub class CompilePipeline {
+  phaseCount: usize,
+  nativeBackendRequired: bool,
+  commandOwned: bool,
+  emitsGeneratedSource: bool,
+
+  pub init() {
+    self.phaseCount = 6
+    self.nativeBackendRequired = true
+    self.commandOwned = false
+    self.emitsGeneratedSource = false
+  }
+
+  pub fn runBuild(self: &CompilePipeline) -> bool {
+    return self.isStrictNative()
+  }
+
+  pub fn runCheck(self: &CompilePipeline) -> bool {
+    return self.phaseCount == 6 && self.emitsGeneratedSource == false
+  }
+}
+impl CompilePipeline {
+  pub fn isStrictNative(self: &CompilePipeline) -> bool {
+    return self.nativeBackendRequired &&
+      self.commandOwned == false &&
+      self.emitsGeneratedSource == false
+  }
+}

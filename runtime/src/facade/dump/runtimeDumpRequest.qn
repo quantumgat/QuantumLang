@@ -1,0 +1,21 @@
+pub struct RuntimeDumpRequest {
+  dumpName: string,
+  structuredFacts: bool,
+  presentationOnly: bool,
+  redacted: bool,
+}
+
+pub fn runtimeDumpRequest(dumpName: string) -> RuntimeDumpRequest {
+  return RuntimeDumpRequest {
+    dumpName: dumpName,
+    structuredFacts: true,
+    presentationOnly: true,
+    redacted: true,
+  }
+}
+
+impl RuntimeDumpRequest {
+  pub fn isSafeToRender(self: RuntimeDumpRequest) -> bool {
+    return self.structuredFacts && self.presentationOnly && self.redacted
+  }
+}

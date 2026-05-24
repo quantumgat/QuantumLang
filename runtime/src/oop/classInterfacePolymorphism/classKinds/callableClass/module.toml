@@ -1,0 +1,9 @@
+[module]
+name = "callableClass"
+visibility = "internal"
+owner = "runtime"
+role = "oop-class-interface-polymorphism-class-kind"
+root = "mod.qn"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots", "qtlc_qtlang_language_closure_callable_lambda_real_impl"]

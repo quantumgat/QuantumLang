@@ -1,0 +1,42 @@
+pub struct ParallelLoopPerfRuntime {
+  primitive: string,
+  maxWorkers: usize,
+  batch: usize,
+  stopChecked: bool,
+  workerCleanup: bool,
+  incidentCounters: bool,
+  noCoredump: bool,
+}
+
+pub fn parallelLoopPerfRuntime(
+  primitive: string,
+  maxWorkers: usize,
+  batch: usize,
+  stopChecked: bool,
+  workerCleanup: bool,
+  incidentCounters: bool,
+  noCoredump: bool,
+) -> ParallelLoopPerfRuntime {
+  return ParallelLoopPerfRuntime {
+    primitive: primitive,
+    maxWorkers: maxWorkers,
+    batch: batch,
+    stopChecked: stopChecked,
+    workerCleanup: workerCleanup,
+    incidentCounters: incidentCounters,
+    noCoredump: noCoredump,
+  }
+}
+
+impl ParallelLoopPerfRuntime {
+  pub fn accepted(self: ParallelLoopPerfRuntime) -> bool {
+    return self.primitive == "QnParallelForRange"
+      && self.maxWorkers <= 8
+      && self.batch > 0
+      && self.stopChecked
+      && self.workerCleanup
+      && self.incidentCounters
+      && self.noCoredump
+  }
+}
+

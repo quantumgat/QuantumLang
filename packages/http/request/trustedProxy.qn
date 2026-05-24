@@ -1,0 +1,173 @@
+pub enum TrustedProxyVendor {
+  None,
+  Loopback,
+  PrivateNetwork,
+  Cloudflare,
+  Fastly,
+  Fly,
+  AwsAlb,
+  Nginx,
+  Custom,
+}
+
+pub struct TrustedProxyPolicy {
+  vendor: TrustedProxyVendor,
+  cidrRanges: Vec<string>,
+  maxHops: usize,
+  parseForwarded: bool,
+  parseXForwarded: bool,
+  rejectSpoofedHeaders: bool,
+  requireTrustedRemote: bool,
+}
+
+impl TrustedProxyPolicy {
+  pub fn init(
+    vendor: TrustedProxyVendor,
+    cidrRanges: Vec<string>,
+    maxHops: usize,
+    parseForwarded: bool,
+    parseXForwarded: bool,
+    rejectSpoofedHeaders: bool,
+    requireTrustedRemote: bool,
+  ) -> TrustedProxyPolicy {
+    return TrustedProxyPolicy {
+      vendor: vendor,
+      cidrRanges: cidrRanges,
+      maxHops: maxHops,
+      parseForwarded: parseForwarded,
+      parseXForwarded: parseXForwarded,
+      rejectSpoofedHeaders: rejectSpoofedHeaders,
+      requireTrustedRemote: requireTrustedRemote,
+    }
+  }
+
+  pub fn none() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(TrustedProxyVendor.None, [], 0, false, false, true, true)
+  }
+
+  pub fn privateNetworks() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(TrustedProxyVendor.PrivateNetwork, ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"], 8, true, true, true, true)
+  }
+
+  pub fn loopback() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(TrustedProxyVendor.Loopback, ["127.0.0.1/32", "::1/128"], 2, true, true, true, true)
+  }
+
+  pub fn cloudflare() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(TrustedProxyVendor.Cloudflare, [], 8, true, true, true, true)
+  }
+
+  pub fn fastly() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(TrustedProxyVendor.Fastly, [], 8, true, true, true, true)
+  }
+
+  pub fn fly() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(TrustedProxyVendor.Fly, [], 8, true, true, true, true)
+  }
+
+  pub fn awsAlb() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(TrustedProxyVendor.AwsAlb, [], 8, true, true, true, true)
+  }
+
+  pub fn nginx() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(TrustedProxyVendor.Nginx, [], 8, true, true, true, true)
+  }
+
+  pub fn custom(cidrRanges: Vec<string>) -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(TrustedProxyVendor.Custom, cidrRanges, 8, true, true, true, true)
+  }
+
+  pub fn withMaxHops(self: TrustedProxyPolicy, maxHops: usize) -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.init(
+      self.vendor,
+      self.cidrRanges,
+      maxHops,
+      self.parseForwarded,
+      self.parseXForwarded,
+      self.rejectSpoofedHeaders,
+      self.requireTrustedRemote
+    )
+  }
+
+  pub fn complete(self: TrustedProxyPolicy) -> bool {
+    if self.vendor == TrustedProxyVendor.None {
+      return self.rejectSpoofedHeaders
+    }
+    return self.maxHops > 0 && self.rejectSpoofedHeaders && self.requireTrustedRemote
+  }
+
+  pub fn parsesProxyHeaders(self: TrustedProxyPolicy) -> bool {
+    return self.parseForwarded || self.parseXForwarded
+  }
+
+  pub fn rejectsSpoofedHeaders(self: TrustedProxyPolicy) -> bool {
+    return self.rejectSpoofedHeaders
+  }
+
+  pub fn requiresTrustedRemote(self: TrustedProxyPolicy) -> bool {
+    return self.requireTrustedRemote
+  }
+
+  pub fn maxHopCount(self: TrustedProxyPolicy) -> usize {
+    return self.maxHops
+  }
+
+  pub fn cidrCount(self: TrustedProxyPolicy) -> usize {
+    return self.cidrRanges.len()
+  }
+
+  pub fn vendorName(self: TrustedProxyPolicy) -> string {
+    match self.vendor {
+      TrustedProxyVendor.None => return "none"
+      TrustedProxyVendor.Loopback => return "loopback"
+      TrustedProxyVendor.PrivateNetwork => return "private"
+      TrustedProxyVendor.Cloudflare => return "cloudflare"
+      TrustedProxyVendor.Fastly => return "fastly"
+      TrustedProxyVendor.Fly => return "fly"
+      TrustedProxyVendor.AwsAlb => return "aws-alb"
+      TrustedProxyVendor.Nginx => return "nginx"
+      TrustedProxyVendor.Custom => return "custom"
+    }
+  }
+}
+
+pub struct TrustedProxy {
+}
+
+impl TrustedProxy {
+  pub fn none() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.none()
+  }
+
+  pub fn privateNetworks() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.privateNetworks()
+  }
+
+  pub fn loopback() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.loopback()
+  }
+
+  pub fn cloudflare() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.cloudflare()
+  }
+
+  pub fn fastly() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.fastly()
+  }
+
+  pub fn fly() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.fly()
+  }
+
+  pub fn awsAlb() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.awsAlb()
+  }
+
+  pub fn nginx() -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.nginx()
+  }
+
+  pub fn custom(cidrRanges: Vec<string>) -> TrustedProxyPolicy {
+    return TrustedProxyPolicy.custom(cidrRanges)
+  }
+}

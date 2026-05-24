@@ -1,0 +1,21 @@
+pub struct WorkspaceGraph {
+  rootManifest: string,
+  packageCount: usize,
+  hasCompilerPackage: bool,
+  hasRuntimePackage: bool,
+}
+
+pub fn workspaceGraph() -> WorkspaceGraph {
+  return WorkspaceGraph {
+    rootManifest: "qtlc/qtlang/quantum.toml",
+    packageCount: 2,
+    hasCompilerPackage: true,
+    hasRuntimePackage: true,
+  }
+}
+
+impl WorkspaceGraph {
+  pub fn isSelfHostedWorkspace(self) -> bool {
+    return self.hasCompilerPackage && self.hasRuntimePackage
+  }
+}

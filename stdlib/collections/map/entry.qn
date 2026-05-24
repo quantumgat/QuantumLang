@@ -1,0 +1,55 @@
+pub enum Entry<K, V> {
+  Occupied(K, V),
+  Vacant(K),
+}
+
+impl<K, V> Entry<K, V> {
+  pub fn orInsert(self: Entry<K, V>, value: V) -> V {
+    match self {
+      Occupied(key, existing) => {
+        return existing
+      }
+      Vacant(key) => {
+        return value
+      }
+    }
+  }
+}
+
+impl<K, V> Map<K, V> {
+  pub fn entry(self: Map<K, V>, key: K) -> Entry<K, V> {
+    let found = self.get(key)
+    match found {
+      Some(value) => {
+        return Entry<K, V>.Occupied(key, value)
+      }
+      None => {
+        return Entry<K, V>.Vacant(key)
+      }
+    }
+  }
+
+  pub fn getOrInsert(self: Map<K, V>, key: K, fallback: V) -> (Map<K, V>, V) requires(alloc) {
+    let found = self.get(key)
+    match found {
+      Some(value) => {
+        return (self, value)
+      }
+      None => {
+        return (self.put(key, fallback), fallback)
+      }
+    }
+  }
+
+  pub fn update(self: Map<K, V>, key: K, updater: fn(V) -> V) -> Map<K, V> requires(alloc) {
+    let found = self.get(key)
+    match found {
+      Some(value) => {
+        return self.put(key, updater(value))
+      }
+      None => {
+        return self
+      }
+    }
+  }
+}

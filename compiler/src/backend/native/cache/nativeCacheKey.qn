@@ -1,0 +1,23 @@
+pub struct NativeCacheKey {
+  hash: string,
+  target: string,
+  profile: string,
+}
+
+pub fn nativeCacheKey(hash: string, target: string, profile: string) -> NativeCacheKey {
+  return NativeCacheKey { hash: hash, target: target, profile: profile }
+}
+
+impl NativeCacheKey {
+  pub fn contentHash(self: NativeCacheKey) -> string {
+    return self.hash
+  }
+
+  pub fn targetName(self: NativeCacheKey) -> string {
+    return self.target
+  }
+
+  pub fn buildProfile(self: NativeCacheKey) -> string {
+    return self.profile
+  }
+}

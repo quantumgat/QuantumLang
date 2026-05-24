@@ -1,0 +1,35 @@
+pub class CompilerSession {
+  workspaceRoot: string,
+  profile: string,
+  backend: string,
+  diagnosticsEnabled: bool,
+  nativeOnly: bool,
+  active: bool,
+
+  pub init(workspaceRoot: string) {
+    self.workspaceRoot = workspaceRoot
+    self.profile = "debug"
+    self.backend = "native"
+    self.diagnosticsEnabled = true
+    self.nativeOnly = true
+    self.active = false
+  }
+
+  pub fn start(self: &mut CompilerSession) -> bool {
+    self.active = true
+    return self.active
+  }
+
+  pub fn shutdown(self: &mut CompilerSession) -> bool {
+    self.active = false
+    return self.active == false
+  }
+
+  pub fn drop(self: &mut CompilerSession) -> bool {
+    return self.shutdown()
+  }
+
+  pub fn isNativeOnly(self: &CompilerSession) -> bool {
+    return self.backend == "native" && self.nativeOnly
+  }
+}

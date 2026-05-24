@@ -1,0 +1,5 @@
+pub struct ProcessId {
+  value: u64,
+}
+
+pub fn current() -> ProcessId

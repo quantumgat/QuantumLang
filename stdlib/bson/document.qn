@@ -1,0 +1,111 @@
+pub struct BsonDocument {
+  elements: Vec<BsonElement>,
+}
+
+impl BsonDocument {
+  pub fn init() -> BsonDocument {
+    return BsonDocument {
+      elements: Vec<BsonElement>(),
+    }
+  }
+
+  pub fn fromElements(elements: Vec<BsonElement>) -> BsonDocument {
+    return BsonDocument {
+      elements: elements,
+    }
+  }
+
+  pub fn len(self: BsonDocument) -> usize {
+    return self.elements.len
+  }
+
+  pub fn isEmpty(self: BsonDocument) -> bool {
+    return self.elements.len == 0
+  }
+
+  pub fn get(self: BsonDocument, name: string) -> Result<BsonValue, BsonError> {
+    let mut index: usize = 0
+    while index < self.elements.len {
+      let element = self.elements[index]
+      if element.name == name {
+        return Ok(element.value)
+      }
+      index = index + 1
+    }
+    return Err(BsonError.missingField("$", name))
+  }
+
+  pub fn set(self: BsonDocument, name: string, value: BsonValue) -> Result<BsonDocument, BsonError> requires(alloc) {
+    let element = BsonElement.init(name, value)
+    let mut index: usize = 0
+    while index < self.elements.len {
+      let current = self.elements[index]
+      if current.name == name {
+        return Ok(BsonDocument {
+          elements: self.elements.set(index, element),
+        })
+      }
+      index = index + 1
+    }
+    return Ok(BsonDocument {
+      elements: self.elements.push(element),
+    })
+  }
+
+  pub fn set<T>(self: BsonDocument, name: string, value: T) -> Result<BsonDocument, BsonError> requires(alloc) {
+    return self.set(name, BsonValue.from(value)?)
+  }
+
+  pub fn has(self: BsonDocument, name: string) -> bool {
+    let mut index: usize = 0
+    while index < self.elements.len {
+      let element = self.elements[index]
+      if element.name == name {
+        return true
+      }
+      index = index + 1
+    }
+    return false
+  }
+
+  pub fn remove(self: BsonDocument, name: string) -> Result<BsonDocument, BsonError> requires(alloc) {
+    let mut index: usize = 0
+    while index < self.elements.len {
+      let element = self.elements[index]
+      if element.name == name {
+        return Ok(BsonDocument {
+          elements: self.elements.removeAt(index),
+        })
+      }
+      index = index + 1
+    }
+    return Err(BsonError.missingField("$", name))
+  }
+
+  pub fn merge(self: BsonDocument, other: BsonDocument) -> Result<BsonDocument, BsonError> requires(alloc) {
+    let mut result = self
+    let mut index: usize = 0
+    while index < other.elements.len {
+      let element = other.elements[index]
+      result = result.set(element.name, element.value)?
+      index = index + 1
+    }
+    return Ok(result)
+  }
+
+  pub fn toJson(self: BsonDocument) -> Result<JsonValue, BsonError> {
+    return BsonValue.document(self).toJson(BsonCodecMode.Mongo)
+  }
+
+  pub fn toJson(self: BsonDocument, mode: BsonCodecMode) -> Result<JsonValue, BsonError> {
+    return BsonValue.document(self).toJson(mode)
+  }
+
+  pub fn toJsonExact(self: BsonDocument) -> Result<JsonValue, BsonError> {
+    return BsonValue.document(self).toJson(BsonCodecMode.Exact)
+  }
+
+  pub fn elements(self: BsonDocument) -> Vec<BsonElement> {
+    return self.elements
+  }
+}

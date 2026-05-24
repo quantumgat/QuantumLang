@@ -1,0 +1,54 @@
+pub struct ArenaRegion {
+  regionId: u64,
+  generation: u64,
+  resetEpoch: u64,
+  released: bool,
+}
+
+impl ArenaRegion {
+  pub fn init(regionId: u64) -> ArenaRegion {
+    return ArenaRegion {
+      regionId: regionId,
+      generation: 1,
+      resetEpoch: 0,
+      released: false,
+    }
+  }
+
+  pub fn validate(self: ArenaRegion, generation: u64, resetEpoch: u64) -> Result<ArenaRegion, ArenaRuntimeError> {
+    if self.released {
+      return Err(ArenaRuntimeError.Released)
+    }
+    if self.generation != generation {
+      return Err(ArenaRuntimeError.WrongGeneration)
+    }
+    if self.resetEpoch != resetEpoch {
+      return Err(ArenaRuntimeError.UseAfterReset)
+    }
+    return Ok(self)
+  }
+
+  pub fn reset(self: ArenaRegion) -> Result<ArenaRegion, ArenaRuntimeError> {
+    if self.released {
+      return Err(ArenaRuntimeError.Released)
+    }
+    return Ok(ArenaRegion {
+      regionId: self.regionId,
+      generation: self.generation + 1,
+      resetEpoch: self.resetEpoch + 1,
+      released: false,
+    })
+  }
+
+  pub fn release(self: ArenaRegion) -> Result<ArenaRegion, ArenaRuntimeError> {
+    if self.released {
+      return Err(ArenaRuntimeError.DoubleRelease)
+    }
+    return Ok(ArenaRegion {
+      regionId: self.regionId,
+      generation: self.generation,
+      resetEpoch: self.resetEpoch,
+      released: true,
+    })
+  }
+}

@@ -1,0 +1,31 @@
+pub class QirBridge {
+  ownsHandleTables: bool,
+  ownsProviderDispatch: bool,
+  ownsShotExecution: bool,
+  running: bool,
+
+  pub init() {
+    self.ownsHandleTables = true
+    self.ownsProviderDispatch = true
+    self.ownsShotExecution = true
+    self.running = false
+  }
+
+  pub fn start(self: &mut QirBridge) -> bool {
+    self.running = true
+    return self.running
+  }
+
+  pub fn shutdown(self: &mut QirBridge) -> bool {
+    self.running = false
+    return self.running == false
+  }
+
+  pub fn drop(self: &mut QirBridge) -> bool {
+    return self.shutdown()
+  }
+
+  pub fn hasProviderBoundary(self: &QirBridge) -> bool {
+    return self.ownsProviderDispatch && self.ownsShotExecution
+  }
+}

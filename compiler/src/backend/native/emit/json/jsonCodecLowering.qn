@@ -1,0 +1,29 @@
+pub struct JsonCodecLowering {
+  typedCodec: bool,
+  dynamicValueCodec: bool,
+  typedDeriveLowering: bool,
+  fieldMatcherLowering: bool,
+  primitiveCodecLowering: bool,
+  directWriter: bool,
+  exactSizeWhenPossible: bool,
+  dynamicTreeBypass: bool,
+  exactNumberPolicy: bool,
+  sourceMappedErrors: bool,
+  unsupportedTypeDiagnostic: bool,
+}
+
+impl JsonCodecLowering {
+  pub fn hotPathReady(self: JsonCodecLowering) -> bool {
+    return self.typedCodec
+      && self.dynamicValueCodec
+      && self.typedDeriveLowering
+      && self.fieldMatcherLowering
+      && self.primitiveCodecLowering
+      && self.directWriter
+      && self.exactSizeWhenPossible
+      && self.dynamicTreeBypass
+      && self.exactNumberPolicy
+      && self.sourceMappedErrors
+      && self.unsupportedTypeDiagnostic
+  }
+}

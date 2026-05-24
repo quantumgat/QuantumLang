@@ -1,0 +1,28 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeConcurrencyIncidentKind {
+  DataRacePrevented
+  SendBoundaryRejected
+  SyncBoundaryRejected
+  BorrowAcrossAwaitRejected
+  BlockingInAsyncRejected
+  OrphanTaskRejected
+  ActorMessageRejected
+  CloseAfterSendRejected
+}
+pub struct RuntimeConcurrencyIncident {
+  taskId: u64
+  kind: RuntimeConcurrencyIncidentKind
+  subject: string
+  sourceMapped: bool
+  fixItAvailable: bool
+  noAllocationRequired: bool
+  noCoredump: bool
+}
+pub struct RuntimeConcurrencyDiagnosticSnapshot {
+  incidentCount: usize
+  dataRacePreventedCount: usize
+  blockingInAsyncCount: usize
+  orphanTaskRejectedCount: usize
+  actorMessageRejectedCount: usize
+  noCoredump: bool
+}

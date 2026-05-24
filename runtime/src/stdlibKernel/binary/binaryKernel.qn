@@ -1,0 +1,33 @@
+pub struct BinaryKernel {
+  cursorNoAllocation: bool,
+  writerBorrowedBuffer: bool,
+  writerChainNoAllocation: bool,
+  cursorLinearState: bool,
+  fixedWidthI8ToI256: bool,
+  endianChecked: bool,
+  diagnosticsNoCoredump: bool,
+}
+
+impl BinaryKernel {
+  pub fn standard() -> BinaryKernel {
+    return BinaryKernel {
+      cursorNoAllocation: true,
+      writerBorrowedBuffer: true,
+      writerChainNoAllocation: true,
+      cursorLinearState: true,
+      fixedWidthI8ToI256: true,
+      endianChecked: true,
+      diagnosticsNoCoredump: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: BinaryKernel) -> bool {
+    return self.cursorNoAllocation
+      && self.writerBorrowedBuffer
+      && self.writerChainNoAllocation
+      && self.cursorLinearState
+      && self.fixedWidthI8ToI256
+      && self.endianChecked
+      && self.diagnosticsNoCoredump
+  }
+}

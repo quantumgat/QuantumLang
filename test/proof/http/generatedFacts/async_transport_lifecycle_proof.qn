@@ -1,0 +1,202 @@
+pub struct HttpAsyncTransportLifecycleProof {
+  transportPlan: bool,
+  schedulerWorkers: bool,
+  reactorShard: bool,
+  acceptedSocket: bool,
+  responseWrite: bool,
+  disconnectCleanup: bool,
+  modePolicy: bool,
+  defaultModePolicy: bool,
+  modeConflictDiagnostic: bool,
+  bindRunSurface: bool,
+  syncHandlerThunk: bool,
+  asyncHandlerThunk: bool,
+  middlewareNext: bool,
+  clientSend: bool,
+  websocketSession: bool,
+  sseStream: bool,
+  appLifecycle: bool,
+}
+
+impl HttpAsyncTransportLifecycleProof {
+  pub fn complete(self: HttpAsyncTransportLifecycleProof) -> bool {
+    return self.transportPlan
+      && self.schedulerWorkers
+      && self.reactorShard
+      && self.acceptedSocket
+      && self.responseWrite
+      && self.disconnectCleanup
+      && self.modePolicy
+      && self.defaultModePolicy
+      && self.modeConflictDiagnostic
+      && self.bindRunSurface
+      && self.syncHandlerThunk
+      && self.asyncHandlerThunk
+      && self.middlewareNext
+      && self.clientSend
+      && self.websocketSession
+      && self.sseStream
+      && self.appLifecycle
+  }
+}
+
+pub struct AsyncTransportController {
+}
+
+pub async fn httpAsyncTransportLifecycleProof() -> Result<HttpAsyncTransportLifecycleProof, AppBuilderDiagnostic> {
+  let app = App()
+    .workers(16)
+    .timeout(30)
+    .controller<AsyncTransportController>()
+
+  let defaultPlan = App()
+    .controller<AsyncTransportController>()
+    .plan(8080)
+    .transportModePlan()
+  let autoHybridPlan = App()
+    .blockingPool(64)
+    .controller<AsyncTransportController>()
+    .plan(8080)
+    .transportModePlan()
+  let explicitAsyncConflict = ServerPolicy
+    .init()
+    .withMode(HttpTransportMode.Async)
+    .withBlockingPool(64)
+  let explicitBlockingConflict = ServerPolicy
+    .init()
+    .withMode(HttpTransportMode.Blocking)
+    .withBlockingPool(64)
+  let conflictDiagnostic = explicitAsyncConflict.transportModeDiagnostic()
+  let localBindPlan = App()
+    .controller<AsyncTransportController>()
+    .plan(8080)
+  let stringBindPlan = App()
+    .controller<AsyncTransportController>()
+    .plan("0.0.0.0:8080")?
+  let explicitIpv4BindPlan = App()
+    .bind("0.0.0.0", 8080)
+    .controller<AsyncTransportController>()
+    .plan()
+  let explicitIpv6BindPlan = App()
+    .bind("[::]", 8080)
+    .controller<AsyncTransportController>()
+    .plan()
+  let explicitLocalhostPlan = App()
+    .bind("localhost", 8080)
+    .controller<AsyncTransportController>()
+    .plan()
+  let plan = app.plan(8080)
+  let modePlan = app.transportModePlan(8080)?
+  let hybridPlan = App()
+    .mode(HttpTransportMode.Hybrid)
+    .blockingPool(64)
+    .controller<AsyncTransportController>()
+    .transportModePlan(8080)?
+  let blockingPlan = App()
+    .mode(HttpTransportMode.Blocking)
+    .controller<AsyncTransportController>()
+    .transportModePlan(8080)?
+  let asyncPlan = app.asyncTransportPlan(8080)?
+  let reactorBinding = asyncPlan.runtimeReactorBinding()
+  let lifecycle = plan.asyncLifecyclePlan()
+  let shard = HttpReactorShardPlan.init(0)
+  let socket = HttpAcceptedSocketPlan.init()
+  let write = HttpResponseWritePlan.init()
+  let cleanup = HttpDisconnectCleanupPlan.init()
+  let syncThunk = HandlerThunk.init(
+    "AsyncTransportController.get",
+    "AsyncTransportController.get",
+    HandlerThunkKind.Sync,
+    1,
+    1,
+    1,
+    0,
+    true,
+    "async-transport:sync"
+  )
+  let asyncThunk = HandlerThunk.init(
+    "AsyncTransportController.stream",
+    "AsyncTransportController.stream",
+    HandlerThunkKind.Async,
+    1,
+    1,
+    1,
+    0,
+    true,
+    "async-transport:async"
+  )
+  let syncPlan = HandlerThunkAsyncPlan.sync(syncThunk)
+  let asyncHandlerPlan = HandlerThunkAsyncPlan.async(asyncThunk)
+  let middlewareNext = HttpNext {}
+  let ctx = HttpCtx.fromRequest(HttpRequest.get("/async"))
+  let client = HttpClient.init("https://api.example.com", 16)
+  let request = client.get("/async")
+  let sendTask = request.sendTask()
+  let socketSession = WebSocket.init()
+  let events = SseStream.init()
+  let clientMethod = "send"
+  let websocketMethod = "sendText"
+  let sseMethod = "emitText"
+  let appMethod = "run"
+
+  return Ok(HttpAsyncTransportLifecycleProof {
+    transportPlan: asyncPlan.accepted()
+      && asyncPlan.mapsToGenericRuntimeReactor()
+      && reactorBinding.accepted()
+      && asyncPlan.safeForMillionConnections(),
+    schedulerWorkers: asyncPlan.schedulerWorkerCount() == 16
+      && plan.schedulerWorkerCount() == 16
+      && plan.perCoreReactorShards() == 16,
+    reactorShard: shard.ready(),
+    acceptedSocket: socket.hotPathReady(),
+    responseWrite: write.accepted(),
+    disconnectCleanup: cleanup.crashless(),
+    modePolicy: modePlan.modeName() == "async"
+      && modePlan.highPerformance()
+      && modePlan.noThreadPerConnection()
+      && modePlan.productionRecommended()
+      && hybridPlan.modeName() == "hybrid"
+      && hybridPlan.usesBlockingPool()
+      && hybridPlan.highPerformance()
+      && blockingPlan.modeName() == "blocking"
+      && !blockingPlan.noThreadPerConnection()
+      && !blockingPlan.productionRecommended(),
+    defaultModePolicy: defaultPlan.modeName() == "async"
+      && defaultPlan.workersAuto()
+      && defaultPlan.highPerformance()
+      && autoHybridPlan.modeName() == "hybrid"
+      && autoHybridPlan.usesBlockingPool()
+      && autoHybridPlan.accepted(),
+    modeConflictDiagnostic: !explicitAsyncConflict.transportModePlan().accepted()
+      && !explicitBlockingConflict.transportModePlan().accepted()
+      && conflictDiagnostic.code() == "HTTP001"
+      && conflictDiagnostic.help() != "",
+    bindRunSurface: localBindPlan.bindText() == "127.0.0.1:8080"
+      && localBindPlan.loopbackBind()
+      && stringBindPlan.bindText() == "0.0.0.0:8080"
+      && stringBindPlan.publicBind()
+      && explicitIpv4BindPlan.publicBind()
+      && explicitIpv6BindPlan.publicBind()
+      && explicitLocalhostPlan.loopbackBind(),
+    syncHandlerThunk: syncPlan.complete()
+      && !syncThunk.asyncFrameRequired()
+      && syncThunk.directStaticCallEligible(),
+    asyncHandlerThunk: asyncHandlerPlan.complete()
+      && asyncThunk.asyncFrameRequired()
+      && !asyncThunk.directStaticCallEligible(),
+    middlewareNext: typeName<HttpAsyncMiddleware<AsyncTransportController>>() != ""
+      && typeName<HttpNext>() != ""
+      && ctx.path() == "/async",
+    clientSend: sendTask.complete()
+      && clientMethod == "send",
+    websocketSession: socketSession.open()
+      && socketSession.backpressureAware()
+      && websocketMethod == "sendText",
+    sseStream: events.open()
+      && events.backpressureAware()
+      && sseMethod == "emitText",
+    appLifecycle: lifecycle.complete()
+      && plan.asyncLifecycleReady()
+      && appMethod == "run",
+  })
+}

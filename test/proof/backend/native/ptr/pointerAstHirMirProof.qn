@@ -1,0 +1,21 @@
+pub struct PointerAstHirMirProof {
+  astSyntaxCovered: bool,
+  hirLoweringCovered: bool,
+  analysisProofCovered: bool,
+  mirLoweringCovered: bool,
+  targetVariantCovered: bool,
+  nativeEmissionCovered: bool,
+  diagnosticsCovered: bool,
+}
+
+impl PointerAstHirMirProof {
+  pub fn accepted(self: PointerAstHirMirProof) -> bool {
+    return self.astSyntaxCovered
+      && self.hirLoweringCovered
+      && self.analysisProofCovered
+      && self.mirLoweringCovered
+      && self.targetVariantCovered
+      && self.nativeEmissionCovered
+      && self.diagnosticsCovered
+  }
+}

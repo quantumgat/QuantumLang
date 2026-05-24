@@ -1,0 +1,45 @@
+import response::{IntoHttpError}
+
+pub struct CsrfToken {
+  value: string,
+}
+
+pub struct CsrfPolicy {
+  headerName: string,
+  fieldName: string,
+  sameSiteRequired: bool,
+}
+
+impl CsrfToken {
+  pub fn init(value: string) -> CsrfToken {
+    return CsrfToken { value: value }
+  }
+
+  pub fn value(self: CsrfToken) -> string {
+    return self.value
+  }
+
+  pub fn valid(self: CsrfToken) -> bool {
+    return self.value != ""
+  }
+}
+
+impl CsrfPolicy {
+  pub fn default() -> CsrfPolicy {
+    return CsrfPolicy {
+      headerName: "x-csrf-token",
+      fieldName: "_csrf",
+      sameSiteRequired: true,
+    }
+  }
+
+  pub fn validate(self: CsrfPolicy, ctx: HttpCtx, session: HttpSessionHandle) -> Result<CsrfChecked, HttpError> {
+    return httpCsrfValidateSurface(self, ctx, session)
+  }
+
+  pub fn complete(self: CsrfPolicy) -> bool {
+    return self.headerName != "" && self.fieldName != "" && self.sameSiteRequired
+  }
+}
+
+fn httpCsrfValidateSurface(policy: CsrfPolicy, ctx: HttpCtx, session: HttpSessionHandle) -> Result<CsrfChecked, HttpError>

@@ -1,0 +1,67 @@
+pub struct HttpErrorMapper {
+  mapperType: string,
+  custom: bool,
+  catchesCoreError: bool,
+  catchesHttpError: bool,
+  catchesTypedError: bool,
+  catchesUnexpected: bool,
+  safeJson: bool,
+}
+
+impl HttpErrorMapper {
+  pub fn default() -> HttpErrorMapper {
+    return HttpErrorMapper {
+      mapperType: "HttpDefaultErrorMapper",
+      custom: false,
+      catchesCoreError: true,
+      catchesHttpError: true,
+      catchesTypedError: true,
+      catchesUnexpected: true,
+      safeJson: true,
+    }
+  }
+
+  pub fn custom<T>() -> HttpErrorMapper {
+    return HttpErrorMapper {
+      mapperType: typeName<T>(),
+      custom: true,
+      catchesCoreError: true,
+      catchesHttpError: true,
+      catchesTypedError: true,
+      catchesUnexpected: true,
+      safeJson: true,
+    }
+  }
+
+  pub fn map(self: HttpErrorMapper, error: Error) -> HttpResponse {
+    return HttpError.fromError(error).response()
+  }
+
+  pub fn mapHttp(self: HttpErrorMapper, error: HttpError) -> HttpResponse {
+    return error.response()
+  }
+
+  pub fn mapTyped<T>(self: HttpErrorMapper, code: string, message: string) -> HttpResponse {
+    return HttpError.internal(code, message).response()
+  }
+
+  pub fn unexpected(self: HttpErrorMapper, code: string) -> HttpResponse {
+    return HttpError.internal(code, "internal server error").response()
+  }
+
+  pub fn mapperType(self: HttpErrorMapper) -> string {
+    return self.mapperType
+  }
+
+  pub fn isCustom(self: HttpErrorMapper) -> bool {
+    return self.custom
+  }
+
+  pub fn complete(self: HttpErrorMapper) -> bool {
+    return self.catchesCoreError
+      && self.catchesHttpError
+      && self.catchesTypedError
+      && self.catchesUnexpected
+      && self.safeJson
+  }
+}

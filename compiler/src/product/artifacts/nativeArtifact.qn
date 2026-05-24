@@ -1,0 +1,46 @@
+pub enum ArtifactKind {
+  ExecutableArtifact,
+  ObjectArtifact,
+  StaticArchiveArtifact,
+  SharedLibraryArtifact,
+  CacheMetadataArtifact,
+}
+
+pub enum ArtifactVisibility {
+  PublicArtifact,
+  HiddenArtifact,
+}
+
+pub struct NativeArtifact {
+  path: string,
+  kind: ArtifactKind,
+  visibility: ArtifactVisibility,
+  generatedSource: bool,
+}
+
+pub fn nativeArtifact(
+  path: string,
+  kind: ArtifactKind,
+  visibility: ArtifactVisibility,
+) -> NativeArtifact {
+  return NativeArtifact {
+    path: path,
+    kind: kind,
+    visibility: visibility,
+    generatedSource: false,
+  }
+}
+
+impl NativeArtifact {
+  pub fn isNativeOnly(self) -> bool {
+    return self.generatedSource == false
+  }
+
+  pub fn isPublic(self) -> bool {
+    return self.visibility == ArtifactVisibility.PublicArtifact
+  }
+
+  pub fn isHidden(self) -> bool {
+    return self.visibility == ArtifactVisibility.HiddenArtifact
+  }
+}

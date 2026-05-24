@@ -1,0 +1,20 @@
+pub struct UnixStream {
+  handle: u64,
+  path: string,
+}
+
+pub struct UnixListener {
+  handle: u64,
+  path: string,
+}
+
+pub struct UnixDatagram {
+  handle: u64,
+  path: string,
+}
+
+impl UnixStream {
+  pub fn accepted(self: UnixStream) -> bool {
+    return self.handle > 0
+  }
+}

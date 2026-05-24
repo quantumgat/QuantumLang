@@ -1,0 +1,7 @@
+[module]
+name = "serde"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "serde-analysis-facts"
+

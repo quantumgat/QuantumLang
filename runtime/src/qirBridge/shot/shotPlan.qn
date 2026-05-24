@@ -1,0 +1,15 @@
+pub struct ShotPlan {
+  shotCount: usize,
+  providerDispatchBoundary: bool,
+  hotShotLoopDispatch: bool,
+}
+
+pub fn shotPlan(shotCount: usize) -> ShotPlan {
+  return ShotPlan { shotCount: shotCount, providerDispatchBoundary: true, hotShotLoopDispatch: false }
+}
+
+impl ShotPlan {
+  pub fn canExecute(self: ShotPlan) -> bool {
+    return self.shotCount > 0 && self.providerDispatchBoundary && self.hotShotLoopDispatch == false
+  }
+}

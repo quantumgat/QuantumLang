@@ -1,0 +1,48 @@
+pub struct PriorityQueueLowering {
+  heapArrayBacked: bool,
+  comparatorPolicyLowered: bool,
+  pushLoweredToAppendAndSiftUp: bool,
+  popLoweredToRootSwapAndSiftDown: bool,
+  peekLoweredToRootLoad: bool,
+  replaceTopLoweredToRootStoreAndSiftDown: bool,
+  heapifyLoweredToBottomUpSiftDown: bool,
+  sortedDrainLoweredToRepeatedPop: bool,
+  iteratorLoweredToHeapArrayCursor: bool,
+  stableTieBreakLowered: bool,
+  callableComparatorInlined: bool,
+  boundsProofRequired: bool,
+}
+
+pub fn priorityQueueLowering() -> PriorityQueueLowering {
+  return PriorityQueueLowering {
+    heapArrayBacked: true,
+    comparatorPolicyLowered: true,
+    pushLoweredToAppendAndSiftUp: true,
+    popLoweredToRootSwapAndSiftDown: true,
+    peekLoweredToRootLoad: true,
+    replaceTopLoweredToRootStoreAndSiftDown: true,
+    heapifyLoweredToBottomUpSiftDown: true,
+    sortedDrainLoweredToRepeatedPop: true,
+    iteratorLoweredToHeapArrayCursor: true,
+    stableTieBreakLowered: true,
+    callableComparatorInlined: true,
+    boundsProofRequired: true,
+  }
+}
+
+impl PriorityQueueLowering {
+  pub fn hotPathReady(self: PriorityQueueLowering) -> bool {
+    return self.heapArrayBacked
+      && self.comparatorPolicyLowered
+      && self.pushLoweredToAppendAndSiftUp
+      && self.popLoweredToRootSwapAndSiftDown
+      && self.peekLoweredToRootLoad
+      && self.replaceTopLoweredToRootStoreAndSiftDown
+      && self.heapifyLoweredToBottomUpSiftDown
+      && self.sortedDrainLoweredToRepeatedPop
+      && self.iteratorLoweredToHeapArrayCursor
+      && self.stableTieBreakLowered
+      && self.callableComparatorInlined
+      && self.boundsProofRequired
+  }
+}

@@ -1,0 +1,29 @@
+pub struct ForDomainDataLowLevelRealImplProof {
+  parserRows: usize,
+  analysisRows: usize,
+  hirRows: usize,
+  mirRows: usize,
+  nativeRows: usize,
+  runtimeRows: usize,
+  stdlibRows: usize,
+  executableRows: usize,
+  negativeRows: usize,
+  bootstrapEvidenceRows: usize,
+  lowering: NativeForDomainDataLowLevelLowering,
+}
+
+impl ForDomainDataLowLevelRealImplProof {
+  pub fn complete(self: ForDomainDataLowLevelRealImplProof) -> bool {
+    return self.parserRows >= 23
+      && self.analysisRows >= 17
+      && self.hirRows >= 20
+      && self.mirRows >= 20
+      && self.nativeRows >= 16
+      && self.runtimeRows >= 8
+      && self.stdlibRows >= 8
+      && self.executableRows >= 8
+      && self.negativeRows >= 5
+      && self.bootstrapEvidenceRows >= 8
+      && self.lowering.complete()
+  }
+}

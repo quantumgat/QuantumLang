@@ -1,0 +1,165 @@
+pub enum IoErrorKind {
+  ReadFailed,
+  WriteFailed,
+  FlushFailed,
+  PartialWrite,
+  EndOfFile,
+  Interrupted,
+  TimedOut,
+  Cancelled,
+  WouldBlock,
+  Closed,
+}
+
+pub struct IoRetryPolicy {
+  retryable: bool,
+  maxRetries: usize,
+  backoffMillis: u64,
+  preservesPartialWrite: bool,
+}
+
+pub struct IoPartialProgress {
+  requestedBytes: usize,
+  completedBytes: usize,
+  resumeOffset: usize,
+  outputPreserved: bool,
+}
+
+pub struct IoError {
+  code: ErrorCode,
+  kind: IoErrorKind,
+  os: Option<OsError>,
+  bytesCompleted: usize,
+  partialWritePreserved: bool,
+  retryPolicy: IoRetryPolicy,
+  partial: IoPartialProgress,
+  source: ErrorSource,
+  noCoredump: bool,
+}
+
+impl IoError {
+  /**
+    Creates a write error that preserves partial output progress.
+
+    example:
+      let err = IoError.partialWrite(100, 64)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn partialWrite(requestedBytes: usize, completedBytes: usize) -> IoError {
+    return IoError {
+      code: ErrorCode.new(ErrorCategory.Io, "QIO", 3004),
+      kind: IoErrorKind.PartialWrite,
+      os: None,
+      bytesCompleted: completedBytes,
+      partialWritePreserved: true,
+      retryPolicy: IoRetryPolicy.standard(true),
+      partial: IoPartialProgress.saved(requestedBytes, completedBytes),
+      source: ErrorSource.unknown(),
+      noCoredump: true,
+    }
+  }
+
+  pub fn fromOs(kind: IoErrorKind, os: OsError) -> IoError {
+    return IoError {
+      code: ErrorCode.new(ErrorCategory.Io, "QIO", IoError.codeNumber(kind)),
+      kind: kind,
+      os: Some(os),
+      bytesCompleted: 0,
+      partialWritePreserved: true,
+      retryPolicy: IoRetryPolicy.standard(os.canRetry()),
+      partial: IoPartialProgress.empty(),
+      source: ErrorSource.unknown(),
+      noCoredump: true,
+    }
+  }
+
+  pub fn resumable(self: IoError) -> bool {
+    return self.partialWritePreserved && self.partial.outputPreserved
+  }
+
+  pub fn toError(self: IoError) -> Error {
+    return Error.new(self.code, self.message())
+  }
+
+  pub fn safe(self: IoError) -> bool {
+    return self.code.stable()
+      && self.retryPolicy.safe()
+      && self.partial.safe()
+      && self.noCoredump
+  }
+
+  pub fn message(self: IoError) -> string {
+    match self.kind {
+      IoErrorKind.ReadFailed => { return "io read failed" }
+      IoErrorKind.WriteFailed => { return "io write failed" }
+      IoErrorKind.FlushFailed => { return "io flush failed" }
+      IoErrorKind.PartialWrite => { return "io partial write preserved" }
+      IoErrorKind.EndOfFile => { return "io end of file" }
+      IoErrorKind.Interrupted => { return "io operation interrupted" }
+      IoErrorKind.TimedOut => { return "io operation timed out" }
+      IoErrorKind.Cancelled => { return "io operation cancelled" }
+      IoErrorKind.WouldBlock => { return "io operation would block" }
+      IoErrorKind.Closed => { return "io handle closed" }
+    }
+  }
+
+  pub fn codeNumber(kind: IoErrorKind) -> u32 {
+    match kind {
+      IoErrorKind.ReadFailed => { return 3001 }
+      IoErrorKind.WriteFailed => { return 3002 }
+      IoErrorKind.FlushFailed => { return 3003 }
+      IoErrorKind.PartialWrite => { return 3004 }
+      IoErrorKind.EndOfFile => { return 3005 }
+      IoErrorKind.Interrupted => { return 3006 }
+      IoErrorKind.TimedOut => { return 3007 }
+      IoErrorKind.Cancelled => { return 3008 }
+      IoErrorKind.WouldBlock => { return 3009 }
+      IoErrorKind.Closed => { return 3010 }
+    }
+  }
+}
+
+impl IoRetryPolicy {
+  pub fn standard(retryable: bool) -> IoRetryPolicy {
+    return IoRetryPolicy {
+      retryable: retryable,
+      maxRetries: 3,
+      backoffMillis: 1,
+      preservesPartialWrite: true,
+    }
+  }
+
+  pub fn safe(self: IoRetryPolicy) -> bool {
+    return self.preservesPartialWrite && self.maxRetries <= 16
+  }
+}
+
+impl IoPartialProgress {
+  pub fn empty() -> IoPartialProgress {
+    return IoPartialProgress {
+      requestedBytes: 0,
+      completedBytes: 0,
+      resumeOffset: 0,
+      outputPreserved: true,
+    }
+  }
+
+  pub fn saved(requestedBytes: usize, completedBytes: usize) -> IoPartialProgress {
+    return IoPartialProgress {
+      requestedBytes: requestedBytes,
+      completedBytes: completedBytes,
+      resumeOffset: completedBytes,
+      outputPreserved: true,
+    }
+  }
+
+  pub fn safe(self: IoPartialProgress) -> bool {
+    return self.completedBytes <= self.requestedBytes
+      && self.resumeOffset == self.completedBytes
+      && self.outputPreserved
+  }
+}

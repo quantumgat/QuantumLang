@@ -1,0 +1,25 @@
+pub struct SafeFailureLowering {
+  boundsTrapRewritten: bool,
+  nullTrapRewritten: bool,
+  panicBridgeEmitted: bool,
+  oomBranchEmitted: bool,
+  ffiPanicBoundaryEmitted: bool,
+  stackOverflowGuardEmitted: bool,
+  sourceMapEmitted: bool,
+  coreFileDisabledForSafeCode: bool,
+  runtimeAbortRejected: bool,
+}
+
+impl SafeFailureLowering {
+  pub fn safeCodeLowered(self: SafeFailureLowering) -> bool {
+    return self.boundsTrapRewritten
+      && self.nullTrapRewritten
+      && self.panicBridgeEmitted
+      && self.oomBranchEmitted
+      && self.ffiPanicBoundaryEmitted
+      && self.stackOverflowGuardEmitted
+      && self.sourceMapEmitted
+      && self.coreFileDisabledForSafeCode
+      && self.runtimeAbortRejected
+  }
+}

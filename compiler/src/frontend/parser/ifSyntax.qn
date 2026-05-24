@@ -1,0 +1,128 @@
+pub enum IfSyntaxFamily {
+  Core
+  ElseChain
+  Expression
+  Pattern
+  Guard
+  Range
+  TypeTest
+  QuestionFlow
+  AwaitQuestionFlow
+  StaticComptime
+  TargetFeature
+  Quantum
+}
+
+pub struct IfSyntaxParse {
+  family: IfSyntaxFamily,
+  formCount: usize,
+  sourceRangeReady: bool,
+  patternAllowed: bool,
+  expressionAllowed: bool,
+  recoveryReady: bool,
+}
+
+pub struct IfParseInput {
+  node: u64,
+  family: IfSyntaxFamily,
+  conditionId: u64,
+  patternId: u64,
+  guardId: u64,
+  thenBodyId: u64,
+  elseBodyId: u64,
+  tokenStart: usize,
+  tokenEnd: usize,
+}
+
+pub struct IfParseResult {
+  input: IfParseInput,
+  syntax: IfSyntaxParse,
+  astNodeReady: bool,
+  diagnosticReady: bool,
+}
+
+pub fn ifSyntaxParse(
+  family: IfSyntaxFamily,
+  formCount: usize,
+  sourceRangeReady: bool,
+  patternAllowed: bool,
+  expressionAllowed: bool,
+  recoveryReady: bool,
+) -> IfSyntaxParse {
+  return IfSyntaxParse {
+    family: family,
+    formCount: formCount,
+    sourceRangeReady: sourceRangeReady,
+    patternAllowed: patternAllowed,
+    expressionAllowed: expressionAllowed,
+    recoveryReady: recoveryReady,
+  }
+}
+
+pub fn ifParseInput(
+  node: u64,
+  family: IfSyntaxFamily,
+  conditionId: u64,
+  patternId: u64,
+  guardId: u64,
+  thenBodyId: u64,
+  elseBodyId: u64,
+  tokenStart: usize,
+  tokenEnd: usize,
+) -> IfParseInput {
+  return IfParseInput {
+    node: node,
+    family: family,
+    conditionId: conditionId,
+    patternId: patternId,
+    guardId: guardId,
+    thenBodyId: thenBodyId,
+    elseBodyId: elseBodyId,
+    tokenStart: tokenStart,
+    tokenEnd: tokenEnd,
+  }
+}
+
+pub fn parseIf(input: IfParseInput) -> IfParseResult {
+  let hasSpan = input.tokenEnd > input.tokenStart
+  let sourceRangeReady = input.node > 0 && hasSpan
+  let patternAllowed = input.family == IfSyntaxFamily.Pattern
+    || input.family == IfSyntaxFamily.Guard
+  let expressionAllowed = input.thenBodyId > 0
+  let recoveryReady = sourceRangeReady && input.conditionId > 0
+  let syntax = ifSyntaxParse(
+    input.family,
+    13,
+    sourceRangeReady,
+    patternAllowed,
+    expressionAllowed,
+    recoveryReady,
+  )
+  return IfParseResult {
+    input: input,
+    syntax: syntax,
+    astNodeReady: syntax.complete(),
+    diagnosticReady: recoveryReady,
+  }
+}
+
+impl IfSyntaxParse {
+  pub fn complete(self: IfSyntaxParse) -> bool {
+    return self.formCount >= 13
+      && self.sourceRangeReady
+      && self.expressionAllowed
+      && self.recoveryReady
+  }
+}
+
+impl IfParseResult {
+  pub fn executableReady(self: IfParseResult) -> bool {
+    return self.syntax.complete()
+      && self.astNodeReady
+      && self.diagnosticReady
+  }
+
+  pub fn guardedPattern(self: IfParseResult) -> bool {
+    return self.input.patternId > 0 && self.input.guardId > 0
+  }
+}

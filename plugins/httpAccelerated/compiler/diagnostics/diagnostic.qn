@@ -1,0 +1,29 @@
+pub enum HttpAcceleratedDiagnosticKind {
+  MissingPackageFact,
+  MissingSourceMap,
+  UnsupportedTarget,
+  KernelUnavailable,
+  FallbackRequired,
+}
+
+pub struct HttpAcceleratedDiagnostic {
+  kind: HttpAcceleratedDiagnosticKind,
+  code: string,
+  message: string,
+  sourceMapped: bool,
+}
+
+impl HttpAcceleratedDiagnostic {
+  pub fn missingFact(fact: string) -> HttpAcceleratedDiagnostic {
+    return HttpAcceleratedDiagnostic {
+      kind: HttpAcceleratedDiagnosticKind.MissingPackageFact,
+      code: "HTTPACC001",
+      message: "missing HTTP package fact: " + fact,
+      sourceMapped: true,
+    }
+  }
+
+  pub fn valid(self: HttpAcceleratedDiagnostic) -> bool {
+    return self.code != "" && self.message != "" && self.sourceMapped
+  }
+}

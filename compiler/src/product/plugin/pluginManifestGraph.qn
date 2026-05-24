@@ -1,0 +1,57 @@
+pub struct PluginManifestGraphNode {
+  name: string,
+  version: string,
+  sourcePath: string,
+  manifestAccepted: bool,
+  lockfileRequired: bool,
+}
+
+impl PluginManifestGraphNode {
+  pub fn fromParseResult(result: PluginManifestParseResult) -> PluginManifestGraphNode {
+    return PluginManifestGraphNode {
+      name: result.manifest.name,
+      version: result.manifest.version,
+      sourcePath: result.document.sourcePath,
+      manifestAccepted: result.accepted(),
+      lockfileRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginManifestGraphNode) -> bool {
+    return self.name != ""
+      && self.version != ""
+      && self.sourcePath != ""
+      && self.manifestAccepted
+      && self.lockfileRequired
+  }
+}
+
+pub struct PluginManifestGraph {
+  nodeCount: usize,
+  edgeCount: usize,
+  acyclic: bool,
+  deterministicOrder: bool,
+  dependencyVersionsPinned: bool,
+  lockfileFingerprintsRequired: bool,
+}
+
+impl PluginManifestGraph {
+  pub fn single(result: PluginManifestParseResult) -> PluginManifestGraph {
+    return PluginManifestGraph {
+      nodeCount: 1,
+      edgeCount: 0,
+      acyclic: result.accepted(),
+      deterministicOrder: true,
+      dependencyVersionsPinned: true,
+      lockfileFingerprintsRequired: true,
+    }
+  }
+
+  pub fn accepted(self: PluginManifestGraph) -> bool {
+    return self.nodeCount > 0
+      && self.acyclic
+      && self.deterministicOrder
+      && self.dependencyVersionsPinned
+      && self.lockfileFingerprintsRequired
+  }
+}

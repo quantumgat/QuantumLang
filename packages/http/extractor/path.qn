@@ -1,0 +1,21 @@
+pub struct Path<T> {
+  value: T,
+  name: string,
+}
+
+impl<T> Path<T> {
+  pub fn init(name: string, value: T) -> Path<T> {
+    return Path<T> {
+      value: value,
+      name: name,
+    }
+  }
+
+  pub fn value(self: Path<T>) -> T {
+    return self.value
+  }
+
+  pub fn name(self: Path<T>) -> string {
+    return self.name
+  }
+}

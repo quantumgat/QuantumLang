@@ -1,0 +1,12 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct CorsPolicy {
+  enabled: bool
+  origins: Vec<string>
+  methods: Vec<string>
+  headers: Vec<string>
+  credentials: bool
+  maxAgeSeconds: usize
+  varyOrigin: bool
+}
+pub struct Cors {
+}

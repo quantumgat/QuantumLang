@@ -1,0 +1,9 @@
+[module]
+name = "quantum"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "quantum-type-effect-resource-analysis"
+
+[tests]
+required = ["qtlc_clean_qtlang_source_roots"]

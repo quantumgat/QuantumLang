@@ -1,0 +1,136 @@
+pub enum JsonScannerKind {
+  Scalar
+  Sse42
+  Avx2
+  Neon
+}
+
+pub enum JsonStructuralKind {
+  ObjectStart
+  ObjectEnd
+  ArrayStart
+  ArrayEnd
+  Colon
+  Comma
+  String
+  Number
+  Literal
+}
+
+pub struct JsonStructuralToken {
+  kind: JsonStructuralKind,
+  offset: usize,
+  depth: usize,
+  inString: bool,
+}
+
+pub struct JsonStructuralTape {
+  tokens: Vec<JsonStructuralToken>,
+  maxDepth: usize,
+  validUtf8: bool,
+  validStrings: bool,
+  scalarFallbackUsed: bool,
+}
+
+pub struct JsonScannerOptions {
+  preferred: JsonScannerKind,
+  requireSimd: bool,
+  allowScalarFallback: bool,
+  validateUtf8: bool,
+  validateStrings: bool,
+  maxDepth: usize,
+}
+
+pub struct JsonScannerPlan {
+  kind: JsonScannerKind,
+  structuralScan: bool,
+  stringValidation: bool,
+  utf8Validation: bool,
+  quoteMask: bool,
+  escapeMask: bool,
+  depthChecked: bool,
+  targetFeatureChecked: bool,
+  requiredSimdSatisfied: bool,
+  scalarFallback: bool,
+  noArtifactOnUnsupportedRequiredSimd: bool,
+}
+
+impl JsonScannerPlan {
+  pub fn forKind(kind: JsonScannerKind, options: JsonScannerOptions) -> JsonScannerPlan {
+    let simdRequired = options.requireSimd
+    let scalarAllowed = options.allowScalarFallback
+    return JsonScannerPlan {
+      kind: kind,
+      structuralScan: true,
+      stringValidation: options.validateStrings,
+      utf8Validation: options.validateUtf8,
+      quoteMask: true,
+      escapeMask: true,
+      depthChecked: options.maxDepth > 0,
+      targetFeatureChecked: kind == JsonScannerKind.Scalar || jsonScannerTargetAvailable(kind),
+      requiredSimdSatisfied: !simdRequired || kind != JsonScannerKind.Scalar,
+      scalarFallback: scalarAllowed,
+      noArtifactOnUnsupportedRequiredSimd: true,
+    }
+  }
+
+  pub fn safe(self: JsonScannerPlan) -> bool {
+    return self.structuralScan
+      && self.stringValidation
+      && self.utf8Validation
+      && self.quoteMask
+      && self.escapeMask
+      && self.depthChecked
+      && self.targetFeatureChecked
+      && self.requiredSimdSatisfied
+      && (self.scalarFallback || self.kind != JsonScannerKind.Scalar)
+      && self.noArtifactOnUnsupportedRequiredSimd
+  }
+}
+
+impl JsonScannerOptions {
+  pub fn portable() -> JsonScannerOptions {
+    return JsonScannerOptions {
+      preferred: JsonScannerKind.Scalar,
+      requireSimd: false,
+      allowScalarFallback: true,
+      validateUtf8: true,
+      validateStrings: true,
+      maxDepth: 1024,
+    }
+  }
+
+  pub fn required(kind: JsonScannerKind) -> JsonScannerOptions {
+    return JsonScannerOptions {
+      preferred: kind,
+      requireSimd: kind != JsonScannerKind.Scalar,
+      allowScalarFallback: kind == JsonScannerKind.Scalar,
+      validateUtf8: true,
+      validateStrings: true,
+      maxDepth: 1024,
+    }
+  }
+}
+
+impl JsonStructuralTape {
+  pub fn safe(self: JsonStructuralTape) -> bool {
+    return self.validUtf8 && self.validStrings && self.maxDepth > 0
+  }
+}
+
+pub fn scan(bytes: Bytes) -> Result<JsonStructuralTape, JsonError> {
+  return scan(bytes, JsonScannerOptions.portable())
+}
+
+pub fn scan(bytes: Bytes, options: JsonScannerOptions) -> Result<JsonStructuralTape, JsonError> {
+  let kind = jsonSelectScannerKind(options)?
+  let plan = JsonScannerPlan.forKind(kind, options)
+  if !plan.safe() {
+    return Err(JsonError.new(JsonErrorKind.UnsupportedType, "$", 0))
+  }
+  return jsonScanStructuralTapeKernel(bytes, plan, options)
+}
+
+fn jsonSelectScannerKind(options: JsonScannerOptions) -> Result<JsonScannerKind, JsonError>
+fn jsonScannerTargetAvailable(kind: JsonScannerKind) -> bool
+fn jsonScanStructuralTapeKernel(bytes: Bytes, plan: JsonScannerPlan, options: JsonScannerOptions) -> Result<JsonStructuralTape, JsonError>

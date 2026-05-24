@@ -1,0 +1,10 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeStartPlan {
+  profileName: string
+  deterministicProfile: bool
+  sourceMapped: bool
+  subsystemPortsReady: bool
+}
+pub extern "qnpkg" {
+  pub fn runtimeStartPlan(profileName: string) -> RuntimeStartPlan
+}

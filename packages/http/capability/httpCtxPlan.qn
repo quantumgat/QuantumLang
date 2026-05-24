@@ -1,0 +1,98 @@
+pub struct HttpCtxCapabilitySlot {
+  contextType: string,
+  capabilityType: string,
+  slotIndex: usize,
+  required: bool,
+}
+
+impl HttpCtxCapabilitySlot {
+  pub fn init(
+    contextType: string,
+    capabilityType: string,
+    slotIndex: usize,
+    required: bool,
+  ) -> HttpCtxCapabilitySlot {
+    return HttpCtxCapabilitySlot {
+      contextType: contextType,
+      capabilityType: capabilityType,
+      slotIndex: slotIndex,
+      required: required,
+    }
+  }
+
+  pub fn of<Ctx, T>(slotIndex: usize) -> HttpCtxCapabilitySlot {
+    return HttpCtxCapabilitySlot.init(typeName<Ctx>(), typeName<T>(), slotIndex, true)
+  }
+
+  pub fn contextType(self: HttpCtxCapabilitySlot) -> string {
+    return self.contextType
+  }
+
+  pub fn capabilityType(self: HttpCtxCapabilitySlot) -> string {
+    return self.capabilityType
+  }
+
+  pub fn slotIndex(self: HttpCtxCapabilitySlot) -> usize {
+    return self.slotIndex
+  }
+
+  pub fn required(self: HttpCtxCapabilitySlot) -> bool {
+    return self.required
+  }
+
+  pub fn complete(self: HttpCtxCapabilitySlot) -> bool {
+    return self.contextType != "" && self.capabilityType != ""
+  }
+}
+
+pub struct HttpCtxCapabilityPlan {
+  contextType: string,
+  slots: Vec<HttpCtxCapabilitySlot>,
+}
+
+impl HttpCtxCapabilityPlan {
+  pub fn init(contextType: string, slots: Vec<HttpCtxCapabilitySlot>) -> HttpCtxCapabilityPlan {
+    return HttpCtxCapabilityPlan {
+      contextType: contextType,
+      slots: slots,
+    }
+  }
+
+  pub fn empty<Ctx>() -> HttpCtxCapabilityPlan {
+    return HttpCtxCapabilityPlan.init(typeName<Ctx>(), [])
+  }
+
+  pub fn add<T>(self: HttpCtxCapabilityPlan, slotIndex: usize) -> HttpCtxCapabilityPlan {
+    return HttpCtxCapabilityPlan {
+      contextType: self.contextType,
+      slots: self.slots.push(HttpCtxCapabilitySlot.init(self.contextType, typeName<T>(), slotIndex, true)),
+    }
+  }
+
+  pub fn contextType(self: HttpCtxCapabilityPlan) -> string {
+    return self.contextType
+  }
+
+  pub fn slotCount(self: HttpCtxCapabilityPlan) -> usize {
+    return self.slots.len()
+  }
+
+  pub fn slotAt(self: HttpCtxCapabilityPlan, index: usize) -> HttpCtxCapabilitySlot {
+    return self.slots[index]
+  }
+
+  pub fn complete(self: HttpCtxCapabilityPlan) -> bool {
+    if self.contextType == "" {
+      return false
+    }
+    let mut index: usize = 0
+    while index < self.slots.len() {
+      let slot = self.slots[index]
+      if !slot.complete() {
+        return false
+      }
+      index = index + 1
+    }
+    return self.slots.len() > 0
+  }
+}

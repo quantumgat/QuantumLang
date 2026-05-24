@@ -1,0 +1,19 @@
+pub struct HardwareSafety {
+  name: string,
+  available: bool,
+  fallbackAvailable: bool,
+}
+
+impl HardwareSafety {
+  pub fn init(name: string, available: bool, fallbackAvailable: bool) -> HardwareSafety {
+    return HardwareSafety {
+      name: name,
+      available: available,
+      fallbackAvailable: fallbackAvailable,
+    }
+  }
+
+  pub fn usable(self: HardwareSafety) -> bool {
+    return self.available || self.fallbackAvailable
+  }
+}

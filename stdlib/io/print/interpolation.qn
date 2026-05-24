@@ -1,0 +1,17 @@
+pub struct PrintInterpolationPolicy {
+  plainStringEvaluatesBraces: bool,
+  fStringEvaluatesBraces: bool,
+  formatSpecCheckedByCompiler: bool,
+  functionCallsRequireFString: bool,
+}
+
+impl PrintInterpolationPolicy {
+  pub fn default() -> PrintInterpolationPolicy {
+    return PrintInterpolationPolicy {
+      plainStringEvaluatesBraces: false,
+      fStringEvaluatesBraces: true,
+      formatSpecCheckedByCompiler: true,
+      functionCallsRequireFString: true,
+    }
+  }
+}

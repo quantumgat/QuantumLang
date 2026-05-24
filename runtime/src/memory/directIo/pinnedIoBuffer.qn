@@ -1,0 +1,23 @@
+pub struct RuntimePinnedIoBuffer {
+  address: usize,
+  bytes: usize,
+  aligned: bool,
+  pinned: bool,
+  pageLocked: bool,
+}
+
+impl RuntimePinnedIoBuffer {
+  pub fn init(address: usize, bytes: usize, aligned: bool, pinned: bool, pageLocked: bool) -> RuntimePinnedIoBuffer {
+    return RuntimePinnedIoBuffer {
+      address: address,
+      bytes: bytes,
+      aligned: aligned,
+      pinned: pinned,
+      pageLocked: pageLocked,
+    }
+  }
+
+  pub fn accepted(self: RuntimePinnedIoBuffer) -> bool {
+    return self.address > 0 && self.bytes > 0 && self.aligned && self.pinned && self.pageLocked
+  }
+}

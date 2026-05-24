@@ -1,0 +1,29 @@
+pub struct OopDispatchHandoff {
+  callId: u64,
+  receiverTypeId: u64,
+  methodId: u64,
+  virtualCall: bool,
+  interfaceCall: bool,
+  hotPath: bool,
+}
+
+pub fn oopDispatchHandoff(callId: u64, receiverTypeId: u64, methodId: u64, virtualCall: bool, interfaceCall: bool, hotPath: bool) -> OopDispatchHandoff {
+  return OopDispatchHandoff {
+    callId: callId,
+    receiverTypeId: receiverTypeId,
+    methodId: methodId,
+    virtualCall: virtualCall,
+    interfaceCall: interfaceCall,
+    hotPath: hotPath,
+  }
+}
+
+impl OopDispatchHandoff {
+  pub fn needsDispatchTier(self: OopDispatchHandoff) -> bool {
+    return self.virtualCall || self.interfaceCall
+  }
+
+  pub fn isHotDispatch(self: OopDispatchHandoff) -> bool {
+    return self.hotPath && self.needsDispatchTier()
+  }
+}

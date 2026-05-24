@@ -1,0 +1,36 @@
+pub struct RuntimeSyncFact {
+  atomicOrderChecked: bool,
+  compareExchangeChecked: bool,
+  fenceChecked: bool,
+  waitWakeChecked: bool,
+  mutexLifecycleChecked: bool,
+  cancellationSafe: bool,
+  reclamationLinked: bool,
+  noCoredumpDiagnostic: bool,
+}
+
+impl RuntimeSyncFact {
+  pub fn init() -> RuntimeSyncFact {
+    return RuntimeSyncFact {
+      atomicOrderChecked: true,
+      compareExchangeChecked: true,
+      fenceChecked: true,
+      waitWakeChecked: true,
+      mutexLifecycleChecked: true,
+      cancellationSafe: true,
+      reclamationLinked: true,
+      noCoredumpDiagnostic: true,
+    }
+  }
+
+  pub fn accepted(self: RuntimeSyncFact) -> bool {
+    return self.atomicOrderChecked
+      && self.compareExchangeChecked
+      && self.fenceChecked
+      && self.waitWakeChecked
+      && self.mutexLifecycleChecked
+      && self.cancellationSafe
+      && self.reclamationLinked
+      && self.noCoredumpDiagnostic
+  }
+}

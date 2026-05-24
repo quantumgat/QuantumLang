@@ -1,0 +1,23 @@
+pub enum Utf8Status {
+  Valid,
+  Invalid,
+}
+
+pub struct Utf8Validation {
+  status: Utf8Status,
+  errorByte: usize,
+}
+
+pub fn validUtf8() -> Utf8Validation {
+  return Utf8Validation { status: Utf8Status.Valid, errorByte: 0 }
+}
+
+impl Utf8Validation {
+  pub fn isValid(self: Utf8Validation) -> bool {
+    return self.status == Utf8Status.Valid
+  }
+
+  pub fn firstErrorByte(self: Utf8Validation) -> usize {
+    return self.errorByte
+  }
+}

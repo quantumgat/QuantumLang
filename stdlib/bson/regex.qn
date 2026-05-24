@@ -1,0 +1,28 @@
+pub struct BsonRegex {
+  pattern: string,
+  options: string,
+}
+
+impl BsonRegex {
+  pub fn init(pattern: string) -> BsonRegex {
+    return BsonRegex {
+      pattern: pattern,
+      options: "",
+    }
+  }
+
+  pub fn withOptions(pattern: string, options: string) -> BsonRegex {
+    return BsonRegex {
+      pattern: pattern,
+      options: options,
+    }
+  }
+
+  pub fn source(self: BsonRegex) -> string {
+    return self.pattern
+  }
+
+  pub fn flags(self: BsonRegex) -> string {
+    return self.options
+  }
+}

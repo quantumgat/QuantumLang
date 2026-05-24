@@ -1,0 +1,205 @@
+pub struct BsonWriter {
+  writer: BinaryWriter,
+}
+
+impl BsonWriter {
+  pub fn init() -> Result<BsonWriter, BsonError> {
+    return bsonWriterInit()
+  }
+
+  pub fn fromWriter(writer: BinaryWriter) -> BsonWriter {
+    return BsonWriter { writer: writer }
+  }
+
+  pub fn nullField(self: BsonWriter, name: string) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.nullValue())
+  }
+
+  pub fn bool(self: BsonWriter, name: string, value: bool) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.bool(value))
+  }
+
+  pub fn i8(self: BsonWriter, name: string, value: i8) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.i8(value))
+  }
+
+  pub fn u8(self: BsonWriter, name: string, value: u8) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.u8(value))
+  }
+
+  pub fn i16(self: BsonWriter, name: string, value: i16) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.i16(value))
+  }
+
+  pub fn u16(self: BsonWriter, name: string, value: u16) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.u16(value))
+  }
+
+  pub fn i32(self: BsonWriter, name: string, value: i32) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.i32(value))
+  }
+
+  pub fn u32(self: BsonWriter, name: string, value: u32) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.u32(value)?)
+  }
+
+  pub fn i64(self: BsonWriter, name: string, value: i64) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.i64(value))
+  }
+
+  pub fn u64(self: BsonWriter, name: string, value: u64) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.u64(value)?)
+  }
+
+  pub fn i128(self: BsonWriter, name: string, value: i128) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.i128(value))
+  }
+
+  pub fn u128(self: BsonWriter, name: string, value: u128) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.u128(value))
+  }
+
+  pub fn i256(self: BsonWriter, name: string, value: i256) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.i256(value))
+  }
+
+  pub fn u256(self: BsonWriter, name: string, value: u256) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.u256(value))
+  }
+
+  pub fn isize(self: BsonWriter, name: string, value: isize) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.isize(value))
+  }
+
+  pub fn usize(self: BsonWriter, name: string, value: usize) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.usize(value))
+  }
+
+  pub fn f32(self: BsonWriter, name: string, value: f32) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.f32(value))
+  }
+
+  pub fn f16(self: BsonWriter, name: string, value: f16) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.f16(value))
+  }
+
+  pub fn f64(self: BsonWriter, name: string, value: f64) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.f64(value))
+  }
+
+  pub fn f128(self: BsonWriter, name: string, value: f128) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.f128(value))
+  }
+
+  pub fn char(self: BsonWriter, name: string, value: char) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.char(value))
+  }
+
+  pub fn string(self: BsonWriter, name: string, value: string) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.string(value))
+  }
+
+  pub fn bytes(self: BsonWriter, name: string, value: BinaryView) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.bytes(value))
+  }
+
+  pub fn binary(self: BsonWriter, name: string, value: BsonBinary) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.binary(value))
+  }
+
+  pub fn objectId(self: BsonWriter, name: string, value: ObjectId) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.objectId(value))
+  }
+
+  pub fn dateTime(self: BsonWriter, name: string, value: BsonDateTime) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.dateTime(value))
+  }
+
+  pub fn decimal128(self: BsonWriter, name: string, value: BsonDecimal128) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.decimal128(value))
+  }
+
+  pub fn dec128(self: BsonWriter, name: string, value: dec128) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.dec128(value))
+  }
+
+  pub fn bigint(self: BsonWriter, name: string, value: BigInt) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.bigint(value))
+  }
+
+  pub fn biguint(self: BsonWriter, name: string, value: BigUint) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.biguint(value))
+  }
+
+  pub fn complex64(self: BsonWriter, name: string, value: complex64) -> Result<BsonWriter, BsonError> requires(alloc) {
+    return bsonWriterField(self, name, BsonValue.complex64(value)?)
+  }
+
+  pub fn complex128(self: BsonWriter, name: string, value: complex128) -> Result<BsonWriter, BsonError> requires(alloc) {
+    return bsonWriterField(self, name, BsonValue.complex128(value)?)
+  }
+
+  pub fn complex256(self: BsonWriter, name: string, value: complex256) -> Result<BsonWriter, BsonError> requires(alloc) {
+    return bsonWriterField(self, name, BsonValue.complex256(value)?)
+  }
+
+  pub fn array(self: BsonWriter, name: string, value: BsonArray) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.array(value))
+  }
+
+  pub fn document(self: BsonWriter, name: string, value: BsonDocument) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.document(value))
+  }
+
+  pub fn timestamp(self: BsonWriter, name: string, value: BsonTimestamp) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.timestamp(value))
+  }
+
+  pub fn regex(self: BsonWriter, name: string, value: BsonRegex) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.regex(value))
+  }
+
+  pub fn javaScript(self: BsonWriter, name: string, value: BsonJavaScript) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.javaScript(value))
+  }
+
+  pub fn symbol(self: BsonWriter, name: string, value: string) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.symbol(value))
+  }
+
+  pub fn dbPointer(self: BsonWriter, name: string, value: BsonDbPointer) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.dbPointer(value))
+  }
+
+  pub fn undefined(self: BsonWriter, name: string) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.undefined())
+  }
+
+  pub fn minKey(self: BsonWriter, name: string) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.minKey())
+  }
+
+  pub fn maxKey(self: BsonWriter, name: string) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.maxKey())
+  }
+
+  pub fn exact(self: BsonWriter, name: string, value: BsonExactValue) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.exactValue(value))
+  }
+
+  pub fn value(self: BsonWriter, name: string, value: BsonValue) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, value)
+  }
+
+  pub fn field<T>(self: BsonWriter, name: string, value: T) -> Result<BsonWriter, BsonError> {
+    return bsonWriterField(self, name, BsonValue.from(value)?)
+  }
+
+  pub fn finish(self: BsonWriter) -> Result<BinaryView, BsonError> {
+    return bsonWriterFinish(self)
+  }
+}
+
+fn bsonWriterInit() -> Result<BsonWriter, BsonError>
+fn bsonWriterField(writer: BsonWriter, name: string, value: BsonValue) -> Result<BsonWriter, BsonError>
+fn bsonWriterFinish(writer: BsonWriter) -> Result<BinaryView, BsonError>

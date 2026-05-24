@@ -1,0 +1,13 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum RuntimeSelectFairness {
+  Biased
+  RoundRobin
+  Randomized
+}
+pub struct RuntimeSelect {
+  selectId: u64
+  branchCount: usize
+  fairness: RuntimeSelectFairness
+  cleanupRegistered: bool
+  lostWakePrevented: bool
+}

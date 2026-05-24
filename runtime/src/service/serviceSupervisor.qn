@@ -1,0 +1,27 @@
+pub class ServiceSupervisor {
+  serviceCount: usize,
+  running: bool,
+
+  pub init() {
+    self.serviceCount = 0
+    self.running = false
+  }
+
+  pub fn start(self: &mut ServiceSupervisor) -> bool {
+    self.running = true
+    return self.running
+  }
+
+  pub fn shutdown(self: &mut ServiceSupervisor) -> bool {
+    self.running = false
+    return self.running == false
+  }
+
+  pub fn drop(self: &mut ServiceSupervisor) -> bool {
+    return self.shutdown()
+  }
+
+  pub fn ownsServices(self: &ServiceSupervisor) -> bool {
+    return self.running || self.serviceCount == 0
+  }
+}

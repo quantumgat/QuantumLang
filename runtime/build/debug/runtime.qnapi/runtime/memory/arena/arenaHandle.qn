@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct ArenaHandle {
+  arenaId: u64
+  regionId: u64
+  generation: u64
+  resetEpoch: u64
+  released: bool
+}

@@ -1,0 +1,11 @@
+pub enum HandleState {
+  Open,
+  Closed,
+  Revoked,
+}
+
+impl HandleState {
+  pub fn usable(self: HandleState) -> bool {
+    return self == HandleState.Open
+  }
+}

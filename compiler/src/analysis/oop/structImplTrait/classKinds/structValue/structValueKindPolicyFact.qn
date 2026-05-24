@@ -1,0 +1,19 @@
+pub struct StructValueKindPolicyFact {
+  ownerId: u64,
+  layoutBound: bool,
+  derivesBound: bool,
+  moveCopyPolicyBound: bool,
+  monomorphized: bool,
+  hiddenDispatchRejected: bool,
+}
+
+impl StructValueKindPolicyFact {
+  pub fn complete(self: StructValueKindPolicyFact) -> bool {
+    return self.ownerId > 0
+      && self.layoutBound
+      && self.derivesBound
+      && self.moveCopyPolicyBound
+      && self.monomorphized
+      && self.hiddenDispatchRejected
+  }
+}

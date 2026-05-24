@@ -1,0 +1,38 @@
+pub enum BsonBenchmarkKind {
+  EncodeSmallDocument
+  DecodeSmallDocument
+  ValidateDocument
+  ObjectIdParse
+  JsonBridge
+  ExactModeEncode
+}
+
+pub struct BsonBenchmarkCase {
+  kind: BsonBenchmarkKind,
+  name: string,
+  inputBytes: usize,
+  allocationCountRecorded: bool,
+  bytesPerSecondRecorded: bool,
+  cyclesPerByteRecorded: bool,
+}
+
+impl BsonBenchmarkCase {
+  pub fn required(kind: BsonBenchmarkKind, name: string, inputBytes: usize) -> BsonBenchmarkCase {
+    return BsonBenchmarkCase {
+      kind: kind,
+      name: name,
+      inputBytes: inputBytes,
+      allocationCountRecorded: false,
+      bytesPerSecondRecorded: false,
+      cyclesPerByteRecorded: false,
+    }
+  }
+
+  pub fn measured(self: BsonBenchmarkCase) -> bool {
+    return self.name != ""
+      && self.inputBytes > 0
+      && self.allocationCountRecorded
+      && self.bytesPerSecondRecorded
+      && self.cyclesPerByteRecorded
+  }
+}

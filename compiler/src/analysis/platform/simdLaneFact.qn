@@ -1,0 +1,19 @@
+pub struct SimdLaneFact {
+  laneCount: usize,
+  laneBytes: usize,
+  targetSupported: bool,
+}
+
+impl SimdLaneFact {
+  pub fn init(laneCount: usize, laneBytes: usize, targetSupported: bool) -> SimdLaneFact {
+    return SimdLaneFact {
+      laneCount: laneCount,
+      laneBytes: laneBytes,
+      targetSupported: targetSupported,
+    }
+  }
+
+  pub fn accepted(self: SimdLaneFact) -> bool {
+    return self.laneCount > 0 && self.laneBytes > 0 && self.targetSupported
+  }
+}

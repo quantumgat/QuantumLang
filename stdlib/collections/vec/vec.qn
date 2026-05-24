@@ -1,0 +1,370 @@
+/**
+  Growable contiguous collection.
+
+  examples:
+    let users = Vec<User>()
+    let users = Vec<User>.empty()
+    let users = Vec<User>.withCapacity(1024)
+    let users = Vec<User>.builder().capacity(1024).build()
+    let users: Vec<User> = []
+    let nums = [1, 2, 3]
+    let values: Vec<i32 | string> = [1, 2, "test"]
+    let triple = (1, 2, "test")
+    let fixed: [i32; 3] = [1, 2, 3]
+    users = users.push(user)
+    let mut nums = [1, 2, 3]
+    nums.push(34)
+
+  literal policy:
+    [] needs an element type from annotation, cast, or target context.
+    [1, 2, 3] defaults to Vec<i32> when no fixed-array target is present.
+    [1, 2, "test"] requires an explicit union Vec target or tuple syntax.
+    {} is record, object, map, or set syntax; it is not Vec syntax.
+
+  effects: pure for reads; allocation only for capacity growth
+  complexity: O(1) len/isEmpty/get by index; amortized O(1) push
+  allocation: contiguous buffer owned by Vec
+  stability: public since 0.1
+*/
+pub struct Vec<T> {
+  data: usize,
+  len: usize,
+  capacity: usize,
+  generation: usize,
+}
+
+impl<T> Vec<T> {
+  /**
+    Creates an empty Vec with no reserved capacity.
+
+    example:
+      let users = Vec<User>()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn init() -> Vec<T> {
+    return Vec<T> {
+      data: 0,
+      len: 0,
+      capacity: 0,
+      generation: 0,
+    }
+  }
+
+  /**
+    Creates an empty Vec with no reserved capacity.
+
+    example:
+      let users = Vec<User>.empty()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn empty() -> Vec<T> {
+    return Vec<T>.init()
+  }
+
+  /**
+    Creates an empty Vec with reserved capacity.
+
+    example:
+      let users = Vec<User>.withCapacity(1024)
+
+    effects: alloc
+    complexity: O(1)
+    allocation: reserves capacity for future pushes
+    stability: public since 0.1
+  */
+  pub fn withCapacity(capacity: usize) -> Vec<T> requires(alloc) {
+    return Vec<T> {
+      data: 0,
+      len: 0,
+      capacity: capacity,
+      generation: 0,
+    }
+  }
+
+  /**
+    Copies visible slice items into a new Vec.
+
+    example:
+      let users = Vec<User>.from(source.asSlice())
+
+    effects: alloc
+    complexity: O(n)
+    allocation: allocates enough capacity for the copied slice
+    stability: public since 0.1
+  */
+  pub fn from(items: Slice<T>) -> Vec<T> requires(alloc) {
+    return Vec<T> {
+      data: 0,
+      len: items.len,
+      capacity: items.len,
+      generation: 0,
+    }
+  }
+
+  /**
+    Starts a Vec builder for capacity-first construction.
+
+    example:
+      let users = Vec<User>.builder().capacity(1024).build()
+
+    effects: pure until build reserves capacity
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn builder() -> VecBuilder<T> {
+    return VecBuilder<T> { capacity: 0 }
+  }
+
+  /**
+    Returns the number of initialized elements.
+
+    example:
+      let count = users.len()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn len(self: Vec<T>) -> usize {
+    return self.len
+  }
+
+  /**
+    Returns the reserved element capacity.
+
+    example:
+      let reserved = users.capacity()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn capacity(self: Vec<T>) -> usize {
+    return self.capacity
+  }
+
+  /**
+    Returns true when the Vec has no elements.
+
+    example:
+      if users.isEmpty() { return }
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn isEmpty(self: Vec<T>) -> bool {
+    return self.len == 0
+  }
+
+  /**
+    Appends one value and returns the updated Vec.
+
+    examples:
+      users = users.push(user)
+      nums.push(34)
+
+    effects: alloc when capacity grows
+    complexity: amortized O(1)
+    allocation: grows capacity when len reaches capacity
+    stability: public since 0.1
+  */
+  pub fn push(self: Vec<T>, value: T) -> Vec<T> requires(alloc) {
+    let nextCapacity = self.nextCapacity(1)
+    return Vec<T> {
+      data: self.data,
+      len: self.len + 1,
+      capacity: nextCapacity,
+      generation: self.generation + 1,
+    }
+  }
+
+  /**
+    Alias for push for queue-style call sites.
+
+    example:
+      values = values.pushBack(value)
+
+    effects: alloc when capacity grows
+    complexity: amortized O(1)
+    allocation: grows capacity when len reaches capacity
+    stability: public since 0.1
+  */
+  pub fn pushBack(self: Vec<T>, value: T) -> Vec<T> requires(alloc) {
+    return self.push(value)
+  }
+
+  /**
+    Returns the item at index when it exists.
+
+    example:
+      let first = users.get(0)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn get(self: Vec<T>, index: usize) -> Option<T> {
+    if index >= self.len {
+      return None
+    }
+    return Some(self[index])
+  }
+
+  /**
+    Alias for get.
+
+    example:
+      let item = users.at(index)
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn at(self: Vec<T>, index: usize) -> Option<T> {
+    return self.get(index)
+  }
+
+  /**
+    Returns the first item when present.
+
+    example:
+      let first = users.first()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn first(self: Vec<T>) -> Option<T> {
+    return self.get(0)
+  }
+
+  /**
+    Returns the last item when present.
+
+    example:
+      let last = users.last()
+
+    effects: pure
+    complexity: O(1)
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn last(self: Vec<T>) -> Option<T> {
+    if self.len == 0 {
+      return None
+    }
+    return self.get(self.len - 1)
+  }
+
+  /**
+    Replaces an item at index when the index exists.
+
+    example:
+      users = users.set(index, updatedUser)
+
+    effects: alloc for value movement policy
+    complexity: O(1)
+    allocation: none unless element move policy requires it
+    stability: public since 0.1
+  */
+  pub fn set(self: Vec<T>, index: usize, value: T) -> Vec<T> requires(alloc) {
+    if index >= self.len {
+      return self
+    }
+    return Vec<T> {
+      data: self.data,
+      len: self.len,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+    }
+  }
+
+  /**
+    Returns the last item when present.
+
+    example:
+      let value = values.pop()
+
+    effects: alloc for value movement policy
+    complexity: O(1)
+    allocation: none unless element move policy requires it
+    stability: public since 0.1
+  */
+  pub fn pop(self: Vec<T>) -> Option<T> requires(alloc) {
+    return self.last()
+  }
+
+  /**
+    Alias for pop for stack-style call sites.
+
+    example:
+      let value = values.popBack()
+
+    effects: alloc for value movement policy
+    complexity: O(1)
+    allocation: none unless element move policy requires it
+    stability: public since 0.1
+  */
+  pub fn popBack(self: Vec<T>) -> Option<T> requires(alloc) {
+    return self.pop()
+  }
+
+  /**
+    Removes an item at index and returns the updated Vec.
+
+    example:
+      users = users.removeAt(index)
+
+    effects: alloc for value movement policy
+    complexity: O(n - index)
+    allocation: none unless element move policy requires it
+    stability: public since 0.1
+  */
+  pub fn removeAt(self: Vec<T>, index: usize) -> Vec<T> requires(alloc) {
+    if index >= self.len {
+      return self
+    }
+    return Vec<T> {
+      data: self.data,
+      len: self.len - 1,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+    }
+  }
+
+  /**
+    Drops all visible items while keeping capacity.
+
+    example:
+      users = users.clear()
+
+    effects: pure for plain values; drop effects follow element ownership
+    complexity: O(n) when elements need drop
+    allocation: none
+    stability: public since 0.1
+  */
+  pub fn clear(self: Vec<T>) -> Vec<T> {
+    return Vec<T> {
+      data: self.data,
+      len: 0,
+      capacity: self.capacity,
+      generation: self.generation + 1,
+    }
+  }
+}

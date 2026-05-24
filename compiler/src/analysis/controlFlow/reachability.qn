@@ -1,0 +1,15 @@
+pub struct ReachabilityFact {
+  block: u64,
+  reachable: bool,
+  exitsFunction: bool,
+}
+
+pub fn reachabilityFact(block: u64, reachable: bool, exitsFunction: bool) -> ReachabilityFact {
+  return ReachabilityFact { block: block, reachable: reachable, exitsFunction: exitsFunction }
+}
+
+impl ReachabilityFact {
+  pub fn canExecute(self: ReachabilityFact) -> bool {
+    return self.reachable
+  }
+}

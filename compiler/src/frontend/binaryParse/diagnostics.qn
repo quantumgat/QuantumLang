@@ -1,0 +1,14 @@
+pub enum BinaryParseErrorKind {
+  BadMagic,
+  UnsupportedVersion,
+  InvalidSpanTable,
+}
+
+pub struct BinaryParseDiagnostic {
+  kind: BinaryParseErrorKind,
+  offset: usize,
+}
+
+pub fn binaryParseDiagnostic(kind: BinaryParseErrorKind, offset: usize) -> BinaryParseDiagnostic {
+  return BinaryParseDiagnostic { kind: kind, offset: offset }
+}

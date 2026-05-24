@@ -1,0 +1,10 @@
+[module]
+name = "target"
+visibility = "internal"
+root = "mod.qn"
+owner = "qtlc"
+role = "native-target-profile-object-linker-handoff"
+
+[dependencies]
+allowed = ["common"]
+forbidden = ["backend/c", "backend/llvm", "generated source fallback"]

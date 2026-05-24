@@ -1,0 +1,12 @@
+pub struct WindowsLinkPlan {
+  target: string,
+  coffRequired: bool,
+  msvcLinkSupported: bool,
+  importLibraryAware: bool,
+}
+
+impl WindowsLinkPlan {
+  pub fn accepted(self: WindowsLinkPlan) -> bool {
+    return self.target != "" && self.coffRequired && self.msvcLinkSupported
+  }
+}

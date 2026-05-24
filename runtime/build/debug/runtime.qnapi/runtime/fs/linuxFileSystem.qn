@@ -1,0 +1,11 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub abstract class LinuxFileSystem {
+  root: string
+  mounted: bool
+  pub init(root: string) {}
+  pub fn providerName(self: &LinuxFileSystem) -> string
+  pub fn supportsAtomicRename(self: &LinuxFileSystem) -> bool
+  pub fn supportsSymlink(self: &LinuxFileSystem) -> bool
+  pub fn supportsStreaming(self: &LinuxFileSystem) -> bool
+  pub fn noCoredump(self: &LinuxFileSystem) -> bool
+}

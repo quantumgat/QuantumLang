@@ -1,0 +1,18 @@
+// qtlc package API surface for http; bodies are supplied by the native package archive.
+pub struct HttpSessionId {
+  value: string
+}
+pub struct HttpSessionHandle {
+  id: HttpSessionId
+  loaded: bool
+  changed: bool
+  destroyed: bool
+}
+pub struct HttpSession<T> {
+  handle: HttpSessionHandle
+  value: T
+}
+pub struct SessionFlash<T> {
+  value: T
+  consumed: bool
+}

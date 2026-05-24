@@ -1,0 +1,30 @@
+pub struct BinaryCodecTypeCoverageKernel {
+  primitiveFamiliesAccepted: bool,
+  nestedFamiliesAccepted: bool,
+  deterministicCollectionsAccepted: bool,
+  unorderedCollectionsRejected: bool,
+  liveResourcesRejected: bool,
+  diagnosticsNoCoredump: bool,
+}
+
+impl BinaryCodecTypeCoverageKernel {
+  pub fn standard() -> BinaryCodecTypeCoverageKernel {
+    return BinaryCodecTypeCoverageKernel {
+      primitiveFamiliesAccepted: true,
+      nestedFamiliesAccepted: true,
+      deterministicCollectionsAccepted: true,
+      unorderedCollectionsRejected: true,
+      liveResourcesRejected: true,
+      diagnosticsNoCoredump: true,
+    }
+  }
+
+  pub fn accepted(self: BinaryCodecTypeCoverageKernel) -> bool {
+    return self.primitiveFamiliesAccepted
+      && self.nestedFamiliesAccepted
+      && self.deterministicCollectionsAccepted
+      && self.unorderedCollectionsRejected
+      && self.liveResourcesRejected
+      && self.diagnosticsNoCoredump
+  }
+}

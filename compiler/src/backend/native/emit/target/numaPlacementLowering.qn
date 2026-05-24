@@ -1,0 +1,19 @@
+pub struct NumaPlacementLowering {
+  emitsPagePlacement: bool,
+  preservesLocality: bool,
+  emitsFallbackDiagnostic: bool,
+}
+
+impl NumaPlacementLowering {
+  pub fn init(emitsPagePlacement: bool, preservesLocality: bool, emitsFallbackDiagnostic: bool) -> NumaPlacementLowering {
+    return NumaPlacementLowering {
+      emitsPagePlacement: emitsPagePlacement,
+      preservesLocality: preservesLocality,
+      emitsFallbackDiagnostic: emitsFallbackDiagnostic,
+    }
+  }
+
+  pub fn accepted(self: NumaPlacementLowering) -> bool {
+    return self.emitsPagePlacement && self.preservesLocality || self.emitsFallbackDiagnostic
+  }
+}

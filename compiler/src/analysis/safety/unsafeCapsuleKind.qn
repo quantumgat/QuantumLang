@@ -1,0 +1,27 @@
+pub enum UnsafeCapsuleKind {
+  Block,
+  Function,
+  Trait,
+  Extern,
+  Attribute,
+}
+
+pub struct UnsafeCapsuleShape {
+  kind: UnsafeCapsuleKind,
+  requiresLocalReason: bool,
+  permitsNestedUnsafe: bool,
+}
+
+impl UnsafeCapsuleShape {
+  pub fn init(kind: UnsafeCapsuleKind, requiresLocalReason: bool, permitsNestedUnsafe: bool) -> UnsafeCapsuleShape {
+    return UnsafeCapsuleShape {
+      kind: kind,
+      requiresLocalReason: requiresLocalReason,
+      permitsNestedUnsafe: permitsNestedUnsafe,
+    }
+  }
+
+  pub fn acceptsNestedUnsafe(self: UnsafeCapsuleShape) -> bool {
+    return self.permitsNestedUnsafe
+  }
+}

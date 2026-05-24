@@ -1,0 +1,10 @@
+pub enum RuntimeMemoryError {
+  OutOfMemory,
+  PressureDenied,
+  WrongAllocatorDomain,
+  WrongGeneration,
+  DoubleFree,
+  StaleAllocation,
+  InvalidLayout,
+  AllocatorStopped,
+}

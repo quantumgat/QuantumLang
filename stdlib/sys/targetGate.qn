@@ -1,0 +1,22 @@
+pub struct SysTargetGate {
+  target: OsTarget,
+  feature: string,
+  capability: SysCapability,
+  supported: bool,
+}
+
+pub fn targetGate(target: OsTarget, feature: string, capability: SysCapability) -> SysTargetGate
+pub fn requireTarget(feature: string, capability: SysCapability) -> Result<SysTargetGate, OsError>
+
+impl SysTargetGate {
+  pub fn accepted(self: SysTargetGate) -> bool {
+    return self.feature != "" && self.supported && self.capability.allowed()
+  }
+
+  pub fn require(self: SysTargetGate) -> Result<SysTargetGate, OsError> {
+    if self.accepted() {
+      return Ok(self)
+    }
+    return Err(self.capability.unsupported(self.feature).error())
+  }
+}

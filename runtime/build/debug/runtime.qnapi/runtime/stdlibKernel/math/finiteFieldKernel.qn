@@ -1,0 +1,8 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct FiniteFieldKernel {
+  modulusChecked: bool
+  canonicalResidue: bool
+  inverseChecked: bool
+  constantTimeEq: bool
+  noCoredump: bool
+}

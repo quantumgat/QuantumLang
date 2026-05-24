@@ -1,0 +1,233 @@
+pub enum LowLevelErrorDiagnosticKind {
+  Memory
+  Pointer
+  Unsafe
+  Atomic
+  Simd
+  Layout
+  Ffi
+  CoredumpRisk
+  DoubleFreeRisk
+}
+
+pub struct LowLevelErrorDiagnostic {
+  kind: LowLevelErrorDiagnosticKind,
+  diagnostic: Diagnostic,
+  machine: MachineDiagnostic,
+  proof: ProofDiagnostic,
+  fixIt: FixIt,
+  range: SourceRange,
+  safeFixItOnly: bool,
+  noCoredumpPath: bool,
+  redacted: bool,
+}
+
+pub fn lowLevelErrorDiagnostic(
+  kind: LowLevelErrorDiagnosticKind,
+  file: u32,
+  start: usize,
+  end: usize,
+  message: string,
+  replacement: string,
+) -> LowLevelErrorDiagnostic {
+  let range = SourceRange.init(file, start, end)
+  let diagnostic = Diagnostic.model(
+    diagnosticCode("LOW", kind.codeNumber()),
+    kind.category(),
+    DiagnosticSeverity.Error,
+    range,
+    message
+  )
+  let proof = ProofDiagnostic.init(
+    kind.proofKind(),
+    kind.proofCode(),
+    range,
+    ProofExplanation.init(kind.ruleName(), message, range)
+  )
+  let fixIt = FixIt.init(range, replacement, FixItSafety.Safe)
+  return LowLevelErrorDiagnostic {
+    kind: kind,
+    diagnostic: diagnostic,
+    machine: MachineDiagnostic.fromDiagnostic(diagnostic),
+    proof: proof,
+    fixIt: fixIt,
+    range: range,
+    safeFixItOnly: true,
+    noCoredumpPath: true,
+    redacted: true,
+  }
+}
+
+pub fn memoryErrorDiagnostic(file: u32, start: usize, end: usize, message: string) -> LowLevelErrorDiagnostic {
+  return lowLevelErrorDiagnostic(
+    LowLevelErrorDiagnosticKind.Memory,
+    file,
+    start,
+    end,
+    message,
+    "use a checked allocator domain or owned handle"
+  )
+}
+
+pub fn pointerErrorDiagnostic(file: u32, start: usize, end: usize, message: string) -> LowLevelErrorDiagnostic {
+  return lowLevelErrorDiagnostic(
+    LowLevelErrorDiagnosticKind.Pointer,
+    file,
+    start,
+    end,
+    message,
+    "use Ptr.get()? or NonNull<T> after a null check"
+  )
+}
+
+pub fn unsafeErrorDiagnostic(file: u32, start: usize, end: usize, message: string) -> LowLevelErrorDiagnostic {
+  return lowLevelErrorDiagnostic(
+    LowLevelErrorDiagnosticKind.Unsafe,
+    file,
+    start,
+    end,
+    message,
+    "move the operation into an unsafe block with a proof obligation"
+  )
+}
+
+pub fn atomicErrorDiagnostic(file: u32, start: usize, end: usize, message: string) -> LowLevelErrorDiagnostic {
+  return lowLevelErrorDiagnostic(
+    LowLevelErrorDiagnosticKind.Atomic,
+    file,
+    start,
+    end,
+    message,
+    "choose a valid Ordering for this atomic operation"
+  )
+}
+
+pub fn simdErrorDiagnostic(file: u32, start: usize, end: usize, message: string) -> LowLevelErrorDiagnostic {
+  return lowLevelErrorDiagnostic(
+    LowLevelErrorDiagnosticKind.Simd,
+    file,
+    start,
+    end,
+    message,
+    "enable a supported target feature or use the scalar fallback"
+  )
+}
+
+pub fn layoutErrorDiagnostic(file: u32, start: usize, end: usize, message: string) -> LowLevelErrorDiagnostic {
+  return lowLevelErrorDiagnostic(
+    LowLevelErrorDiagnosticKind.Layout,
+    file,
+    start,
+    end,
+    message,
+    "use a stable layout, explicit alignment, or portable Binary encoding"
+  )
+}
+
+pub fn ffiErrorDiagnostic(file: u32, start: usize, end: usize, message: string) -> LowLevelErrorDiagnostic {
+  return lowLevelErrorDiagnostic(
+    LowLevelErrorDiagnosticKind.Ffi,
+    file,
+    start,
+    end,
+    message,
+    "wrap the call in an FFI boundary with typed error translation"
+  )
+}
+
+pub fn coredumpRiskDiagnostic(file: u32, start: usize, end: usize, message: string) -> LowLevelErrorDiagnostic {
+  return lowLevelErrorDiagnostic(
+    LowLevelErrorDiagnosticKind.CoredumpRisk,
+    file,
+    start,
+    end,
+    message,
+    "route the failure through crashless RuntimeReport emission"
+  )
+}
+
+pub fn doubleFreeRiskDiagnostic(file: u32, start: usize, end: usize, message: string) -> LowLevelErrorDiagnostic {
+  return lowLevelErrorDiagnostic(
+    LowLevelErrorDiagnosticKind.DoubleFreeRisk,
+    file,
+    start,
+    end,
+    message,
+    "remove the second release or transfer ownership before freeing"
+  )
+}
+
+impl LowLevelErrorDiagnosticKind {
+  pub fn category(self: LowLevelErrorDiagnosticKind) -> DiagnosticCategory {
+    match self {
+      LowLevelErrorDiagnosticKind.Memory => { return DiagnosticCategory.Memory }
+      LowLevelErrorDiagnosticKind.Pointer => { return DiagnosticCategory.Memory }
+      LowLevelErrorDiagnosticKind.Unsafe => { return DiagnosticCategory.Unsafe }
+      LowLevelErrorDiagnosticKind.Atomic => { return DiagnosticCategory.Atomic }
+      LowLevelErrorDiagnosticKind.Simd => { return DiagnosticCategory.Simd }
+      LowLevelErrorDiagnosticKind.Layout => { return DiagnosticCategory.Layout }
+      LowLevelErrorDiagnosticKind.Ffi => { return DiagnosticCategory.Ffi }
+      LowLevelErrorDiagnosticKind.CoredumpRisk => { return DiagnosticCategory.Runtime }
+      LowLevelErrorDiagnosticKind.DoubleFreeRisk => { return DiagnosticCategory.Ownership }
+    }
+  }
+
+  pub fn proofKind(self: LowLevelErrorDiagnosticKind) -> ProofDiagnosticKind {
+    match self {
+      LowLevelErrorDiagnosticKind.Memory => { return ProofDiagnosticKind.Memory }
+      LowLevelErrorDiagnosticKind.Pointer => { return ProofDiagnosticKind.Pointer }
+      LowLevelErrorDiagnosticKind.Unsafe => { return ProofDiagnosticKind.UnsafeObligation }
+      LowLevelErrorDiagnosticKind.Atomic => { return ProofDiagnosticKind.AtomicOrder }
+      LowLevelErrorDiagnosticKind.Simd => { return ProofDiagnosticKind.SimdTarget }
+      LowLevelErrorDiagnosticKind.Layout => { return ProofDiagnosticKind.Layout }
+      LowLevelErrorDiagnosticKind.Ffi => { return ProofDiagnosticKind.FfiBoundary }
+      LowLevelErrorDiagnosticKind.CoredumpRisk => { return ProofDiagnosticKind.CoredumpRisk }
+      LowLevelErrorDiagnosticKind.DoubleFreeRisk => { return ProofDiagnosticKind.DoubleFreeRisk }
+    }
+  }
+
+  pub fn codeNumber(self: LowLevelErrorDiagnosticKind) -> u32 {
+    match self {
+      LowLevelErrorDiagnosticKind.Memory => { return 2001 }
+      LowLevelErrorDiagnosticKind.Pointer => { return 2002 }
+      LowLevelErrorDiagnosticKind.Unsafe => { return 2003 }
+      LowLevelErrorDiagnosticKind.Atomic => { return 2004 }
+      LowLevelErrorDiagnosticKind.Simd => { return 2005 }
+      LowLevelErrorDiagnosticKind.Layout => { return 2006 }
+      LowLevelErrorDiagnosticKind.Ffi => { return 2007 }
+      LowLevelErrorDiagnosticKind.CoredumpRisk => { return 2008 }
+      LowLevelErrorDiagnosticKind.DoubleFreeRisk => { return 2009 }
+    }
+  }
+
+  pub fn proofCode(self: LowLevelErrorDiagnosticKind) -> string {
+    return "LOW"
+  }
+
+  pub fn ruleName(self: LowLevelErrorDiagnosticKind) -> string {
+    match self {
+      LowLevelErrorDiagnosticKind.Memory => { return "memory-safety" }
+      LowLevelErrorDiagnosticKind.Pointer => { return "pointer-safety" }
+      LowLevelErrorDiagnosticKind.Unsafe => { return "unsafe-obligation" }
+      LowLevelErrorDiagnosticKind.Atomic => { return "atomic-ordering" }
+      LowLevelErrorDiagnosticKind.Simd => { return "simd-target-gate" }
+      LowLevelErrorDiagnosticKind.Layout => { return "layout-proof" }
+      LowLevelErrorDiagnosticKind.Ffi => { return "ffi-boundary" }
+      LowLevelErrorDiagnosticKind.CoredumpRisk => { return "crashless-failure" }
+      LowLevelErrorDiagnosticKind.DoubleFreeRisk => { return "double-free-proof" }
+    }
+  }
+}
+
+impl LowLevelErrorDiagnostic {
+  pub fn reportable(self: LowLevelErrorDiagnostic) -> bool {
+    return self.diagnostic.complete()
+      && self.machine.safe()
+      && self.proof.reportable()
+      && self.fixIt.applicable()
+      && self.range.exact()
+      && self.safeFixItOnly
+      && self.noCoredumpPath
+      && self.redacted
+  }
+}

@@ -1,0 +1,40 @@
+pub enum MirSyncPrimitiveOpKind {
+  LockAcquire
+  LockRelease
+  ReadAcquire
+  WriteAcquire
+  PermitAcquire
+  PermitRelease
+  EventSignal
+  BarrierArrive
+  OnceRun
+  WaitGroupDone
+  WaitGraphRecord
+}
+
+pub struct MirSyncPrimitiveOp {
+  instruction: u64,
+  kind: MirSyncPrimitiveOpKind,
+  runtimeCallRequired: bool,
+  waitGraphRequired: bool,
+}
+
+impl MirSyncPrimitiveOp {
+  pub fn init(
+    instruction: u64,
+    kind: MirSyncPrimitiveOpKind,
+    runtimeCallRequired: bool,
+    waitGraphRequired: bool,
+  ) -> MirSyncPrimitiveOp {
+    return MirSyncPrimitiveOp {
+      instruction: instruction,
+      kind: kind,
+      runtimeCallRequired: runtimeCallRequired,
+      waitGraphRequired: waitGraphRequired,
+    }
+  }
+
+  pub fn accepted(self: MirSyncPrimitiveOp) -> bool {
+    return self.instruction > 0 && self.runtimeCallRequired && self.waitGraphRequired
+  }
+}

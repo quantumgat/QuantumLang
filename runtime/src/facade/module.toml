@@ -1,0 +1,9 @@
+[module]
+name = "facade"
+visibility = "internal"
+root = "mod.qn"
+owner = "runtime"
+role = "owned-module-boundary"
+
+[tests]
+required = ["qtlc_qtlang_compiler_native_build_probe", "qtlc_qtlang_runtime_stream_facade_foundation"]

@@ -1,0 +1,7 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeChannelFairness {
+  channelId: u64
+  turn: u64
+  starvationThreshold: usize
+  fairnessPreserved: bool
+}

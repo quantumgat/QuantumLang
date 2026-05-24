@@ -1,0 +1,32 @@
+pub struct FreeTokenRecord {
+  allocationId: u64,
+  generation: u64,
+  domainId: u64,
+  consumed: bool,
+}
+
+impl FreeTokenRecord {
+  pub fn init(allocationId: u64, generation: u64, domainId: u64) -> FreeTokenRecord {
+    return FreeTokenRecord {
+      allocationId: allocationId,
+      generation: generation,
+      domainId: domainId,
+      consumed: false,
+    }
+  }
+
+  pub fn consume(self: FreeTokenRecord, domainId: u64) -> Result<FreeTokenRecord, RuntimeMemoryError> {
+    if self.consumed {
+      return Err(RuntimeMemoryError.DoubleFree)
+    }
+    if self.domainId != domainId {
+      return Err(RuntimeMemoryError.WrongAllocatorDomain)
+    }
+    return Ok(FreeTokenRecord {
+      allocationId: self.allocationId,
+      generation: self.generation,
+      domainId: self.domainId,
+      consumed: true,
+    })
+  }
+}

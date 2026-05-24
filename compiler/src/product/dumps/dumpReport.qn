@@ -1,0 +1,25 @@
+pub struct DumpReport {
+  dumpKindName: string,
+  rowCount: usize,
+  sourceMapped: bool,
+  deterministic: bool,
+  computedFacts: bool,
+}
+
+pub fn dumpReport(kindName: string, rowCount: usize) -> DumpReport {
+  return DumpReport { dumpKindName: kindName, rowCount: rowCount, sourceMapped: true, deterministic: true, computedFacts: false }
+}
+
+impl DumpReport {
+  pub fn rows(self: DumpReport) -> usize {
+    return self.rowCount
+  }
+
+  pub fn isDeterministic(self: DumpReport) -> bool {
+    return self.deterministic
+  }
+
+  pub fn usesExistingFacts(self: DumpReport) -> bool {
+    return self.sourceMapped && self.computedFacts == false
+  }
+}

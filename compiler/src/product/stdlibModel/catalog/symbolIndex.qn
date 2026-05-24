@@ -1,0 +1,11 @@
+pub struct StdlibSymbolIndex {
+  qualifiedName: string,
+  moduleName: string,
+  publicSymbol: bool,
+}
+
+impl StdlibSymbolIndex {
+  pub fn accepted(self: StdlibSymbolIndex) -> bool {
+    return self.qualifiedName != "" && self.moduleName != "" && self.publicSymbol
+  }
+}

@@ -1,0 +1,45 @@
+pub struct LinkedListKernel {
+  nodeIndexBacked: bool,
+  headTailDirect: bool,
+  pushFrontUsesNodeAllocAndHeadLink: bool,
+  pushBackUsesNodeAllocAndTailLink: bool,
+  popFrontUsesHeadUnlink: bool,
+  popBackUsesTailUnlink: bool,
+  iteratorNodeCursorStable: bool,
+  toVecUsesCursorCopy: bool,
+  appendUsesCursorPushBack: bool,
+  tombstoneRemovalStable: bool,
+  callableLoopsInlineable: bool,
+}
+
+impl LinkedListKernel {
+  pub fn standard() -> LinkedListKernel {
+    return LinkedListKernel {
+      nodeIndexBacked: true,
+      headTailDirect: true,
+      pushFrontUsesNodeAllocAndHeadLink: true,
+      pushBackUsesNodeAllocAndTailLink: true,
+      popFrontUsesHeadUnlink: true,
+      popBackUsesTailUnlink: true,
+      iteratorNodeCursorStable: true,
+      toVecUsesCursorCopy: true,
+      appendUsesCursorPushBack: true,
+      tombstoneRemovalStable: true,
+      callableLoopsInlineable: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: LinkedListKernel) -> bool {
+    return self.nodeIndexBacked
+      && self.headTailDirect
+      && self.pushFrontUsesNodeAllocAndHeadLink
+      && self.pushBackUsesNodeAllocAndTailLink
+      && self.popFrontUsesHeadUnlink
+      && self.popBackUsesTailUnlink
+      && self.iteratorNodeCursorStable
+      && self.toVecUsesCursorCopy
+      && self.appendUsesCursorPushBack
+      && self.tombstoneRemovalStable
+      && self.callableLoopsInlineable
+  }
+}

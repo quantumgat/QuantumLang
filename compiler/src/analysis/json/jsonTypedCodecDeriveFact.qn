@@ -1,0 +1,43 @@
+pub enum JsonTypedCodecLoweringStage {
+  DeriveMetadata
+  FieldMatcher
+  PrimitiveBinding
+  DecodeBody
+  EncodeBody
+  SizeBody
+}
+
+pub struct JsonTypedCodecDeriveFact {
+  typeName: string,
+  stage: JsonTypedCodecLoweringStage,
+  serdeDeriveAccepted: bool,
+  metadataOwnedByCompiler: bool,
+  fieldMetadataComplete: bool,
+  generatedDecodeImpl: bool,
+  generatedEncodeImpl: bool,
+  generatedSizeImpl: bool,
+  directPrimitiveParsers: bool,
+  directPrimitiveWriters: bool,
+  noRuntimeReflection: bool,
+  noDynamicJsonValueTree: bool,
+  exactNumberPolicy: bool,
+  sourceMappedDiagnostics: bool,
+}
+
+impl JsonTypedCodecDeriveFact {
+  pub fn accepted(self: JsonTypedCodecDeriveFact) -> bool {
+    return self.typeName != ""
+      && self.serdeDeriveAccepted
+      && self.metadataOwnedByCompiler
+      && self.fieldMetadataComplete
+      && self.generatedDecodeImpl
+      && self.generatedEncodeImpl
+      && self.generatedSizeImpl
+      && self.directPrimitiveParsers
+      && self.directPrimitiveWriters
+      && self.noRuntimeReflection
+      && self.noDynamicJsonValueTree
+      && self.exactNumberPolicy
+      && self.sourceMappedDiagnostics
+  }
+}

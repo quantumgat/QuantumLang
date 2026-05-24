@@ -1,0 +1,21 @@
+pub struct RuntimeBarrier {
+  handle: SyncHandle,
+  parties: usize,
+  arrived: usize,
+  generation: u64,
+}
+
+impl RuntimeBarrier {
+  pub fn init(handle: SyncHandle, parties: usize, arrived: usize, generation: u64) -> RuntimeBarrier {
+    return RuntimeBarrier {
+      handle: handle,
+      parties: parties,
+      arrived: arrived,
+      generation: generation,
+    }
+  }
+
+  pub fn complete(self: RuntimeBarrier) -> bool {
+    return self.parties > 0 && self.arrived >= self.parties
+  }
+}

@@ -1,0 +1,19 @@
+pub struct RuntimeDispatchLowering {
+  emitsProbe: bool,
+  emitsDispatchTable: bool,
+  emitsFallbackBranch: bool,
+}
+
+impl RuntimeDispatchLowering {
+  pub fn init(emitsProbe: bool, emitsDispatchTable: bool, emitsFallbackBranch: bool) -> RuntimeDispatchLowering {
+    return RuntimeDispatchLowering {
+      emitsProbe: emitsProbe,
+      emitsDispatchTable: emitsDispatchTable,
+      emitsFallbackBranch: emitsFallbackBranch,
+    }
+  }
+
+  pub fn accepted(self: RuntimeDispatchLowering) -> bool {
+    return self.emitsProbe && self.emitsDispatchTable && self.emitsFallbackBranch
+  }
+}

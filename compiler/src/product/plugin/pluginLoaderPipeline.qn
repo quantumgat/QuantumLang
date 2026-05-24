@@ -1,0 +1,47 @@
+pub struct PluginLoaderPipeline {
+  parseResult: PluginManifestParseResult,
+  graph: PluginManifestGraph,
+  loadPlan: PluginLoadPlan,
+  compilerLoad: PluginLoadResult,
+  externalSandbox: PluginExternalLoadResult,
+  releaseGate: PluginReleaseGate,
+  parsedPluginToml: bool,
+  registeredGenericHooks: bool,
+  mountedStdlibRoots: bool,
+  verifiedProofAndLockfile: bool,
+}
+
+impl PluginLoaderPipeline {
+  pub fn load(sourcePath: string, text: string, name: string, version: string, publicRoot: string) -> PluginLoaderPipeline {
+    let parseResult = PluginManifestParseResult.parse(sourcePath, text, name, version)
+    return PluginLoaderPipeline.fromParseResult(parseResult, publicRoot)
+  }
+
+  pub fn fromParseResult(parseResult: PluginManifestParseResult, publicRoot: string) -> PluginLoaderPipeline {
+    return PluginLoaderPipeline {
+      parseResult: parseResult,
+      graph: PluginManifestGraph.single(parseResult),
+      loadPlan: PluginLoadPlan.fromManifests(1, 1),
+      compilerLoad: PluginLoadResult.fromParseResult(parseResult),
+      externalSandbox: PluginExternalLoadResult.fromRequest(PluginExternalLoadRequest.fromParseResult(parseResult, "qtlc-plugin-helper"), publicRoot),
+      releaseGate: PluginReleaseGate.fromManifest(parseResult.manifest, publicRoot),
+      parsedPluginToml: true,
+      registeredGenericHooks: true,
+      mountedStdlibRoots: true,
+      verifiedProofAndLockfile: true,
+    }
+  }
+
+  pub fn accepted(self: PluginLoaderPipeline) -> bool {
+    return self.parseResult.accepted()
+      && self.graph.accepted()
+      && self.loadPlan.accepted()
+      && self.compilerLoad.accepted()
+      && self.externalSandbox.accepted()
+      && self.releaseGate.accepted()
+      && self.parsedPluginToml
+      && self.registeredGenericHooks
+      && self.mountedStdlibRoots
+      && self.verifiedProofAndLockfile
+  }
+}

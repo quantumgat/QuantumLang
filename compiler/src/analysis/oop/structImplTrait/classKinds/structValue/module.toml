@@ -1,0 +1,6 @@
+[module]
+name = "structValue"
+visibility = "internal"
+owner = "qtlc"
+role = "oop-struct-impl-trait-class-kind"
+root = "mod.qn"

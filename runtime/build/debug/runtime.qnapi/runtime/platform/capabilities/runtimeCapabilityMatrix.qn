@@ -1,0 +1,12 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub struct RuntimeCapabilityMatrix {
+  target: string
+  filesystem: bool
+  network: bool
+  process: bool
+  terminal: bool
+  signal: bool
+  threads: bool
+  rawHandle: bool
+  systemInfo: bool
+}

@@ -1,0 +1,14 @@
+// qtlc package API surface for runtime; bodies are supplied by the native package archive.
+pub enum SimdRuntimeFallbackPolicy {
+  RejectScalarFallback
+  AllowDeterministicFallback
+  TargetFeatureDispatch
+}
+pub struct SimdMathKernel {
+  policy: SimdRuntimeFallbackPolicy
+  targetFeatureChecked: bool
+  laneShapeChecked: bool
+  alignmentChecked: bool
+  noHiddenAllocation: bool
+  noCoredump: bool
+}

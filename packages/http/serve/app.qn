@@ -1,0 +1,402 @@
+class HttpAppFactory {
+  builderCount: usize,
+
+  pub init() {
+    self.builderCount = 0
+  }
+
+  pub fn builder(self: HttpAppFactory) -> AppBuilder {
+    return AppBuilder.init()
+  }
+}
+
+pub class AppBuilder {
+  stateGraph: AppStateGraph,
+  controllerGraph: ControllerGraph,
+  apiGraph: ApiGraph,
+  dependencyGraph: AppDependencyGraph,
+  policyGraph: MiddlewarePolicyGraph,
+  serverPolicy: ServerPolicy,
+  lifecycleHooks: LifecycleHooks,
+  diagnosticPolicy: AppStateDiagnosticPolicy,
+  errorPolicy: HttpErrorPolicy,
+  responsePolicy: ResponsePolicy,
+  defaultMiddleware: HttpDefaultMiddlewarePolicy,
+  trustedProxyPolicy: TrustedProxyPolicy,
+  bindAddress: HttpBindAddress,
+
+  pub init() {
+    self.stateGraph = AppStateGraph.empty()
+    self.controllerGraph = ControllerGraph.empty()
+    self.apiGraph = ApiGraph.empty()
+    self.dependencyGraph = AppDependencyGraph.empty()
+    self.policyGraph = MiddlewarePolicyGraph.empty()
+    self.serverPolicy = ServerPolicy.init()
+    self.lifecycleHooks = LifecycleHooks.init()
+    self.diagnosticPolicy = AppStateDiagnosticPolicy.production()
+    self.errorPolicy = HttpErrorPolicy.default()
+    self.responsePolicy = ResponsePolicy.default()
+    self.defaultMiddleware = HttpDefaultMiddlewarePolicy.api()
+    self.trustedProxyPolicy = TrustedProxyPolicy.none()
+    self.bindAddress = HttpBindAddress.defaultLocal()
+  }
+
+  pub fn state<T>(self: AppBuilder, value: T) -> AppBuilder {
+    self.stateGraph = self.stateGraph.project<T>()
+    self.dependencyGraph = self.dependencyGraph.addState<T>()
+    return self
+  }
+
+  pub fn controller<T>(self: AppBuilder) -> AppBuilder {
+    self.controllerGraph = self.controllerGraph.add(ControllerFact.of<T>())
+    self.dependencyGraph = self.dependencyGraph.addController<T>()
+    return self
+  }
+
+  pub fn controllerNamed(self: AppBuilder, controllerName: string, ownerId: u64) -> AppBuilder {
+    self.controllerGraph = self.controllerGraph.add(ControllerFact.named(controllerName, ownerId))
+    self.dependencyGraph = self.dependencyGraph.addControllerNamed(controllerName, ownerId)
+    return self
+  }
+
+  pub fn api<T>(self: AppBuilder) -> AppBuilder {
+    self.apiGraph = self.apiGraph.addApi<T>()
+    return self
+  }
+
+  pub fn controller<T, Ctx>(self: AppBuilder, requires: Ctx) -> AppBuilder {
+    self.controllerGraph = self.controllerGraph.add(ControllerFact.of<T>())
+    self.dependencyGraph = self.dependencyGraph.addController<T>()
+    self.policyGraph = self.policyGraph.addController(PolicyFact.controller<T, Ctx>())
+    return self
+  }
+
+  pub fn use<T>(self: AppBuilder, policy: T) -> AppBuilder {
+    self.policyGraph = self.policyGraph.addGlobal(PolicyFact.global<T>())
+    return self
+  }
+
+  pub fn context<Ctx>(self: AppBuilder) -> AppBuilder {
+    self.policyGraph = self.policyGraph.addAppContext(PolicyFact.appContext<Ctx>())
+    return self
+  }
+
+  pub fn defaults(self: AppBuilder, defaults: HttpDefaultMiddlewarePolicy) -> AppBuilder {
+    self.defaultMiddleware = defaults
+    return self
+  }
+
+  pub fn workers(self: AppBuilder, workers: usize) -> AppBuilder {
+    self.serverPolicy = self.serverPolicy.workers(workers)
+    return self
+  }
+
+  pub fn mode(self: AppBuilder, mode: HttpTransportMode) -> AppBuilder {
+    self.serverPolicy = self.serverPolicy.withMode(mode)
+    return self
+  }
+
+  pub fn blockingPool(self: AppBuilder, workers: usize) -> AppBuilder {
+    self.serverPolicy = self.serverPolicy.withBlockingPool(workers)
+    return self
+  }
+
+  pub fn bind(self: AppBuilder, host: string, port: usize) -> AppBuilder {
+    self.bindAddress = HttpBindAddress.init(host, port, "explicit")
+    return self
+  }
+
+  pub fn bind(self: AppBuilder, address: HttpBindAddress) -> AppBuilder {
+    self.bindAddress = address
+    return self
+  }
+
+  pub fn bindAddress(self: AppBuilder) -> HttpBindAddress {
+    return self.bindAddress
+  }
+
+  pub fn timeout(self: AppBuilder, seconds: usize) -> AppBuilder {
+    self.serverPolicy = self.serverPolicy.withTimeout(seconds)
+    return self
+  }
+
+  pub fn maxBodySize(self: AppBuilder, bytes: usize) -> AppBuilder {
+    self.serverPolicy = self.serverPolicy.withMaxBodyBytes(bytes)
+    return self
+  }
+
+  pub fn trustedProxies(self: AppBuilder, policy: TrustedProxyPolicy) -> AppBuilder {
+    self.trustedProxyPolicy = policy
+    return self
+  }
+
+  pub fn error<T>(self: AppBuilder) -> AppBuilder {
+    self.errorPolicy = HttpErrorPolicy.custom<T>()
+    return self
+  }
+
+  pub fn error<T>(self: AppBuilder, mapper: T) -> AppBuilder {
+    self.errorPolicy = HttpErrorPolicy.custom<T>()
+    return self
+  }
+
+  pub fn response(self: AppBuilder, policy: ResponsePolicy) -> AppBuilder {
+    self.responsePolicy = policy
+    return self
+  }
+
+  pub fn onStart(self: AppBuilder, name: string) -> AppBuilder {
+    self.lifecycleHooks = self.lifecycleHooks.onStart(name)
+    return self
+  }
+
+  pub fn onStop(self: AppBuilder, name: string) -> AppBuilder {
+    self.lifecycleHooks = self.lifecycleHooks.onStop(name)
+    return self
+  }
+
+  pub fn requireHealth(self: AppBuilder) -> AppBuilder {
+    self.diagnosticPolicy = self.diagnosticPolicy.requireHealth()
+    return self
+  }
+
+  pub fn requireReconnect(self: AppBuilder) -> AppBuilder {
+    self.diagnosticPolicy = self.diagnosticPolicy.requireReconnect()
+    return self
+  }
+
+  pub fn plan(self: AppBuilder, port: usize) -> AppPlan {
+    return self.planForBind(self.bindAddress.withPort(port))
+  }
+
+  pub fn plan(self: AppBuilder) -> AppPlan {
+    return self.planForBind(self.bindAddress)
+  }
+
+  pub fn plan(self: AppBuilder, address: string) -> Result<AppPlan, AppBuilderDiagnostic> {
+    let bindResult = HttpBindAddress.parse(address)
+    match bindResult {
+      Ok(bindAddress) => {
+        return Ok(self.planForBind(bindAddress))
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  fn planForBind(self: AppBuilder, bindAddress: HttpBindAddress) -> AppPlan {
+    return AppPlan.withBind(
+      bindAddress,
+      self.stateGraph,
+      self.controllerGraph,
+      self.apiGraph,
+      self.dependencyGraph,
+      self.policyGraph,
+      self.serverPolicy,
+      self.lifecycleHooks,
+      self.errorPolicy,
+      self.responsePolicy,
+      self.defaultMiddleware,
+      self.trustedProxyPolicy
+    )
+  }
+
+  pub fn diagnostics(self: AppBuilder) -> AppStateDiagnosticReport {
+    return AppStateDiagnosticReport.fromAppPlan(self.plan(), self.diagnosticPolicy)
+  }
+
+  pub fn diagnostics(self: AppBuilder, port: usize) -> AppStateDiagnosticReport {
+    return AppStateDiagnosticReport.fromAppPlan(self.plan(port), self.diagnosticPolicy)
+  }
+
+  pub fn asyncTransportPlan(self: AppBuilder, port: usize) -> Result<HttpAsyncTransportPlan, AppBuilderDiagnostic> {
+    let result = self.validate(port)
+    match result {
+      Ok(plan) => {
+        let asyncPlan = plan.asyncTransportPlan()
+        if asyncPlan.accepted() && plan.asyncLifecycleReady() {
+          return Ok(asyncPlan)
+        }
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn asyncTransportPlan(self: AppBuilder) -> Result<HttpAsyncTransportPlan, AppBuilderDiagnostic> {
+    let result = self.validate()
+    match result {
+      Ok(plan) => {
+        let asyncPlan = plan.asyncTransportPlan()
+        if asyncPlan.accepted() && plan.asyncLifecycleReady() {
+          return Ok(asyncPlan)
+        }
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn transportModePlan(self: AppBuilder, port: usize) -> Result<HttpTransportModePlan, AppBuilderDiagnostic> {
+    let result = self.validate(port)
+    match result {
+      Ok(plan) => {
+        let modePlan = plan.transportModePlan()
+        if modePlan.accepted() {
+          return Ok(modePlan)
+        }
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn transportModePlan(self: AppBuilder) -> Result<HttpTransportModePlan, AppBuilderDiagnostic> {
+    let result = self.validate()
+    match result {
+      Ok(plan) => {
+        let modePlan = plan.transportModePlan()
+        if modePlan.accepted() {
+          return Ok(modePlan)
+        }
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn validate(self: AppBuilder, port: usize) -> Result<AppPlan, AppBuilderDiagnostic> {
+    let plan = self.plan(port)
+    return self.validatePlan(plan)
+  }
+
+  pub fn validate(self: AppBuilder) -> Result<AppPlan, AppBuilderDiagnostic> {
+    let plan = self.plan()
+    return self.validatePlan(plan)
+  }
+
+  pub fn validate(self: AppBuilder, address: string) -> Result<AppPlan, AppBuilderDiagnostic> {
+    let planResult = self.plan(address)
+    match planResult {
+      Ok(plan) => {
+        return self.validatePlan(plan)
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  fn validatePlan(self: AppBuilder, plan: AppPlan) -> Result<AppPlan, AppBuilderDiagnostic> {
+    if !plan.valid() {
+      if !plan.dependenciesComplete() {
+        return Err(AppBuilderDiagnostic.invalidDependencyGraph(plan.dependencyGraph()))
+      }
+      if !plan.errorPolicyComplete() {
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      if !plan.responsePolicyComplete() {
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      if !plan.defaultMiddlewareComplete() {
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      if !plan.trustedProxyPolicyComplete() {
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      let transportMode = plan.transportModePlan()
+      if !transportMode.accepted() {
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      return Err(AppBuilderDiagnostic.invalidAppPlan())
+    }
+    let diagnostics = AppStateDiagnosticReport.fromAppPlan(plan, self.diagnosticPolicy)
+    if diagnostics.clean() {
+      return Ok(plan)
+    }
+    return Err(AppBuilderDiagnostic.invalidAppState(diagnostics))
+  }
+
+  pub fn ready(self: AppBuilder) -> bool {
+    let result = self.validate()
+    match result {
+      Ok(plan) => {
+        return true
+      }
+      Err(error) => {
+        return false
+      }
+    }
+  }
+
+  pub fn ready(self: AppBuilder, port: usize) -> bool {
+    let result = self.validate(port)
+    match result {
+      Ok(plan) => {
+        return true
+      }
+      Err(error) => {
+        return false
+      }
+    }
+  }
+
+  pub fn run(self: AppBuilder, port: usize) -> Result<Unit, AppBuilderDiagnostic> {
+    let modePlanResult = self.transportModePlan(port)
+    match modePlanResult {
+      Ok(modePlan) => {
+        if modePlan.accepted() {
+          return Ok(())
+        }
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn run(self: AppBuilder, address: string) -> Result<Unit, AppBuilderDiagnostic> {
+    let planResult = self.validate(address)
+    match planResult {
+      Ok(plan) => {
+        let modePlan = plan.transportModePlan()
+        if modePlan.accepted() {
+          return Ok(())
+        }
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+
+  pub fn run(self: AppBuilder) -> Result<Unit, AppBuilderDiagnostic> {
+    let modePlanResult = self.transportModePlan()
+    match modePlanResult {
+      Ok(modePlan) => {
+        if modePlan.accepted() {
+          return Ok(())
+        }
+        return Err(AppBuilderDiagnostic.invalidAppPlan())
+      }
+      Err(error) => {
+        return Err(error)
+      }
+    }
+  }
+}
+
+pub fn App() -> AppBuilder {
+  return AppBuilder.init()
+}

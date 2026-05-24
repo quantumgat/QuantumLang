@@ -1,0 +1,41 @@
+pub struct ParallelLoopProductionRuntime {
+  threadsClamped: bool,
+  batchClamped: bool,
+  workBounded: bool,
+  stopFirstResult: bool,
+  breakStopsWorkers: bool,
+  continueWorkerLocal: bool,
+  noCoredump: bool,
+}
+
+pub fn parallelLoopProductionRuntime(
+  threadsClamped: bool,
+  batchClamped: bool,
+  workBounded: bool,
+  stopFirstResult: bool,
+  breakStopsWorkers: bool,
+  continueWorkerLocal: bool,
+  noCoredump: bool,
+) -> ParallelLoopProductionRuntime {
+  return ParallelLoopProductionRuntime {
+    threadsClamped: threadsClamped,
+    batchClamped: batchClamped,
+    workBounded: workBounded,
+    stopFirstResult: stopFirstResult,
+    breakStopsWorkers: breakStopsWorkers,
+    continueWorkerLocal: continueWorkerLocal,
+    noCoredump: noCoredump,
+  }
+}
+
+impl ParallelLoopProductionRuntime {
+  pub fn accepted(self: ParallelLoopProductionRuntime) -> bool {
+    return self.threadsClamped
+      && self.batchClamped
+      && self.workBounded
+      && self.stopFirstResult
+      && self.breakStopsWorkers
+      && self.continueWorkerLocal
+      && self.noCoredump
+  }
+}

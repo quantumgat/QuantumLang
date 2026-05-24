@@ -1,0 +1,35 @@
+pub enum JsonScannerTarget {
+  Scalar
+  Sse42
+  Avx2
+  Neon
+}
+
+pub struct JsonScannerFact {
+  target: JsonScannerTarget,
+  targetGated: bool,
+  scalarFallback: bool,
+  structuralTapeProduced: bool,
+  quoteMaskProduced: bool,
+  escapeMaskProduced: bool,
+  utf8Validated: bool,
+  stringEscapesValidated: bool,
+  depthChecked: bool,
+  requiredSimdDiagnostic: bool,
+  noArtifactOnUnsupportedRequiredSimd: bool,
+}
+
+impl JsonScannerFact {
+  pub fn accepted(self: JsonScannerFact) -> bool {
+    return self.targetGated
+      && self.scalarFallback
+      && self.structuralTapeProduced
+      && self.quoteMaskProduced
+      && self.escapeMaskProduced
+      && self.utf8Validated
+      && self.stringEscapesValidated
+      && self.depthChecked
+      && self.requiredSimdDiagnostic
+      && self.noArtifactOnUnsupportedRequiredSimd
+  }
+}

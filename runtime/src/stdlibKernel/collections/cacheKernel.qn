@@ -1,0 +1,54 @@
+pub struct CacheKernel {
+  mapBackedLookup: bool,
+  linkedOrderBackedRecency: bool,
+  generationStampedOrder: bool,
+  getUsesMapProbe: bool,
+  putUsesMapInsertAndOrderAppend: bool,
+  removeUsesMapRemove: bool,
+  evictionUsesLiveOrderCursor: bool,
+  cursorErased: bool,
+  cursorSkipsStaleOrderKeys: bool,
+  iteratorUsesCursor: bool,
+  toVecUsesCursor: bool,
+  forEachUsesCursor: bool,
+  callableLoopsInlineable: bool,
+  zeroCopyEntryLoadWherePossible: bool,
+}
+
+impl CacheKernel {
+  pub fn standard() -> CacheKernel {
+    return CacheKernel {
+      mapBackedLookup: true,
+      linkedOrderBackedRecency: true,
+      generationStampedOrder: true,
+      getUsesMapProbe: true,
+      putUsesMapInsertAndOrderAppend: true,
+      removeUsesMapRemove: true,
+      evictionUsesLiveOrderCursor: true,
+      cursorErased: true,
+      cursorSkipsStaleOrderKeys: true,
+      iteratorUsesCursor: true,
+      toVecUsesCursor: true,
+      forEachUsesCursor: true,
+      callableLoopsInlineable: true,
+      zeroCopyEntryLoadWherePossible: true,
+    }
+  }
+
+  pub fn canRunHotPath(self: CacheKernel) -> bool {
+    return self.mapBackedLookup
+      && self.linkedOrderBackedRecency
+      && self.generationStampedOrder
+      && self.getUsesMapProbe
+      && self.putUsesMapInsertAndOrderAppend
+      && self.removeUsesMapRemove
+      && self.evictionUsesLiveOrderCursor
+      && self.cursorErased
+      && self.cursorSkipsStaleOrderKeys
+      && self.iteratorUsesCursor
+      && self.toVecUsesCursor
+      && self.forEachUsesCursor
+      && self.callableLoopsInlineable
+      && self.zeroCopyEntryLoadWherePossible
+  }
+}

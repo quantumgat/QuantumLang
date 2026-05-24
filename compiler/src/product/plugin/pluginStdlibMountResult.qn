@@ -1,0 +1,30 @@
+pub struct PluginStdlibMountResult {
+  importMount: PluginImportMount,
+  docsExamplesMount: PluginDocsExamplesMount,
+  rootConflict: PluginRootConflict,
+  manifestValidated: bool,
+  sourceLoaded: bool,
+  namespaceMounted: bool,
+}
+
+impl PluginStdlibMountResult {
+  pub fn fromManifest(manifest: PluginManifest, publicRoot: string) -> PluginStdlibMountResult {
+    return PluginStdlibMountResult {
+      importMount: PluginImportMount.fromManifest(manifest, publicRoot),
+      docsExamplesMount: PluginDocsExamplesMount.fromRoot(manifest.stdlib),
+      rootConflict: PluginRootConflict.none(),
+      manifestValidated: manifest.accepted(),
+      sourceLoaded: true,
+      namespaceMounted: true,
+    }
+  }
+
+  pub fn accepted(self: PluginStdlibMountResult) -> bool {
+    return self.importMount.accepted()
+      && self.docsExamplesMount.accepted()
+      && self.rootConflict.accepted()
+      && self.manifestValidated
+      && self.sourceLoaded
+      && self.namespaceMounted
+  }
+}

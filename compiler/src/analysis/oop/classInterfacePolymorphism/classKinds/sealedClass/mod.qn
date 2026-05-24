@@ -1,0 +1,3 @@
+pub mod sealedClassKindPolicyFact
+
+pub use sealedClassKindPolicyFact.SealedClassKindPolicyFact

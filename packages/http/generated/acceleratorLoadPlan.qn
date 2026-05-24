@@ -1,0 +1,106 @@
+pub enum HttpAcceleratorLoadMode {
+  PortableFallback,
+  PluginLoaded,
+}
+
+pub struct HttpAcceleratorManifestIntent {
+  packageName: string,
+  officialPlugin: string,
+  pluginRequired: bool,
+  genericHooksOnly: bool,
+}
+
+impl HttpAcceleratorManifestIntent {
+  pub fn fromHttpPackage() -> HttpAcceleratorManifestIntent {
+    return HttpAcceleratorManifestIntent {
+      packageName: "http",
+      officialPlugin: "httpAccelerated",
+      pluginRequired: false,
+      genericHooksOnly: true,
+    }
+  }
+
+  pub fn valid(self: HttpAcceleratorManifestIntent) -> bool {
+    return self.packageName == "http"
+      && self.officialPlugin == "httpAccelerated"
+      && !self.pluginRequired
+      && self.genericHooksOnly
+  }
+
+  pub fn required(self: HttpAcceleratorManifestIntent) -> bool {
+    return self.pluginRequired
+  }
+}
+
+pub struct HttpAcceleratorLoadPlan {
+  intent: HttpAcceleratorManifestIntent,
+  mode: HttpAcceleratorLoadMode,
+  pluginDiscovered: bool,
+  pluginAccepted: bool,
+  portableFallbackAvailable: bool,
+  packageFactsReady: bool,
+  executablePathReady: bool,
+  noCoreHttp: bool,
+}
+
+impl HttpAcceleratorLoadPlan {
+  pub fn fromPackageManifest(pluginDiscovered: bool) -> HttpAcceleratorLoadPlan {
+    let intent = HttpAcceleratorManifestIntent.fromHttpPackage()
+    return HttpAcceleratorLoadPlan {
+      intent: intent,
+      mode: if pluginDiscovered { HttpAcceleratorLoadMode.PluginLoaded } else { HttpAcceleratorLoadMode.PortableFallback },
+      pluginDiscovered: pluginDiscovered,
+      pluginAccepted: pluginDiscovered,
+      portableFallbackAvailable: true,
+      packageFactsReady: true,
+      executablePathReady: true,
+      noCoreHttp: true,
+    }
+  }
+
+  pub fn portableFallback() -> HttpAcceleratorLoadPlan {
+    return HttpAcceleratorLoadPlan.fromPackageManifest(false)
+  }
+
+  pub fn accelerated() -> HttpAcceleratorLoadPlan {
+    return HttpAcceleratorLoadPlan.fromPackageManifest(true)
+  }
+
+  pub fn ready(self: HttpAcceleratorLoadPlan) -> bool {
+    if !self.intent.valid() || !self.packageFactsReady || !self.executablePathReady || !self.noCoreHttp {
+      return false
+    }
+    if self.mode == HttpAcceleratorLoadMode.PluginLoaded {
+      return self.pluginDiscovered && self.pluginAccepted
+    }
+    return !self.intent.required() && self.portableFallbackAvailable
+  }
+}
+
+pub struct HttpAcceleratorExecutablePath {
+  loadPlan: HttpAcceleratorLoadPlan,
+  parserReady: bool,
+  routeReady: bool,
+  writerReady: bool,
+  fallbackReady: bool,
+}
+
+impl HttpAcceleratorExecutablePath {
+  pub fn fromLoadPlan(loadPlan: HttpAcceleratorLoadPlan) -> HttpAcceleratorExecutablePath {
+    return HttpAcceleratorExecutablePath {
+      loadPlan: loadPlan,
+      parserReady: true,
+      routeReady: true,
+      writerReady: true,
+      fallbackReady: true,
+    }
+  }
+
+  pub fn executable(self: HttpAcceleratorExecutablePath) -> bool {
+    return self.loadPlan.ready()
+      && self.parserReady
+      && self.routeReady
+      && self.writerReady
+      && self.fallbackReady
+  }
+}

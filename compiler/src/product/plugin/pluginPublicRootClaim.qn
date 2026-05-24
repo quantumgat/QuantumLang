@@ -1,0 +1,27 @@
+pub struct PluginPublicRootClaim {
+  publicRoot: string,
+  pluginName: string,
+  namespaceOwned: bool,
+  conflictChecked: bool,
+  lockfileRecorded: bool,
+}
+
+impl PluginPublicRootClaim {
+  pub fn declared(publicRoot: string, pluginName: string) -> PluginPublicRootClaim {
+    return PluginPublicRootClaim {
+      publicRoot: publicRoot,
+      pluginName: pluginName,
+      namespaceOwned: true,
+      conflictChecked: true,
+      lockfileRecorded: true,
+    }
+  }
+
+  pub fn accepted(self: PluginPublicRootClaim) -> bool {
+    return self.publicRoot != ""
+      && self.pluginName != ""
+      && self.namespaceOwned
+      && self.conflictChecked
+      && self.lockfileRecorded
+  }
+}

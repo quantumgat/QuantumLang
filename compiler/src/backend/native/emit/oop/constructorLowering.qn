@@ -1,0 +1,31 @@
+pub struct OopConstructorNativeLowering {
+  mirOpId: u64,
+  ownerTypeName: string,
+  emitsDirectAllocation: bool,
+  emitsFieldStores: bool,
+  emitsImplicitFieldConstructorStores: bool,
+  explicitInitOverridesImplicit: bool,
+  emitsBaseInitCalls: bool,
+  emitsInitializedMark: bool,
+  emitsPartialCleanupPath: bool,
+  rejectsVirtualDispatchBeforeFullInit: bool,
+  noWrapperFactoryCall: bool,
+  sourceMapBound: bool,
+}
+
+impl OopConstructorNativeLowering {
+  pub fn complete(self: OopConstructorNativeLowering) -> bool {
+    return self.mirOpId > 0
+      && self.ownerTypeName != ""
+      && self.emitsDirectAllocation
+      && self.emitsFieldStores
+      && self.emitsImplicitFieldConstructorStores
+      && self.explicitInitOverridesImplicit
+      && self.emitsBaseInitCalls
+      && self.emitsInitializedMark
+      && self.emitsPartialCleanupPath
+      && self.rejectsVirtualDispatchBeforeFullInit
+      && self.noWrapperFactoryCall
+      && self.sourceMapBound
+  }
+}

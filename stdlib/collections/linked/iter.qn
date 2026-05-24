@@ -1,0 +1,38 @@
+pub struct LinkedListIter<T> {
+  list: LinkedList<T>,
+  current: Option<usize>,
+  generation: usize,
+}
+
+impl<T> LinkedListIter<T> {
+  pub fn isEmpty(self: LinkedListIter<T>) -> bool {
+    return self.current == None
+  }
+
+  pub fn next(self: LinkedListIter<T>) -> Option<T> {
+    match self.current {
+      Some(index) => {
+        return Some(self.list.nodes[index].value)
+      }
+      None => {
+        return None
+      }
+    }
+  }
+
+  pub fn advance(self: LinkedListIter<T>) -> LinkedListIter<T> {
+    match self.current {
+      Some(index) => {
+        let node = self.list.nodes[index]
+        return LinkedListIter<T> {
+          list: self.list,
+          current: node.next,
+          generation: self.generation,
+        }
+      }
+      None => {
+        return self
+      }
+    }
+  }
+}

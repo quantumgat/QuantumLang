@@ -1,0 +1,26 @@
+pub struct StdlibPublicRootAudit {
+  plannedRoot: string,
+  newRootOwnsPublicApi: bool,
+  cleanMetadataRequired: bool,
+  rejectsOldMetadataLowering: bool,
+  rejectsBootstrapExternBindings: bool,
+  runtimeAbiBoundaryRequired: bool,
+  quantumApiIncluded: bool,
+  gapClosureRequired: bool,
+}
+
+impl StdlibPublicRootAudit {
+  pub fn rootPlanClosed(self: StdlibPublicRootAudit) -> bool {
+    return self.plannedRoot == "qtlc/qtlang/stdlib"
+      && self.newRootOwnsPublicApi
+      && self.cleanMetadataRequired
+      && self.rejectsOldMetadataLowering
+      && self.rejectsBootstrapExternBindings
+      && self.runtimeAbiBoundaryRequired
+      && self.quantumApiIncluded
+  }
+
+  pub fn requiresGapClosure(self: StdlibPublicRootAudit) -> bool {
+    return self.rootPlanClosed() && self.gapClosureRequired
+  }
+}
