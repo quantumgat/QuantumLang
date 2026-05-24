@@ -1,3 +1,3 @@
 # QuantumLang source files
-*.qn text
-*.qtl text
+*.qn linguist-language=Text -linguist-detectable
+*.qtl linguist-language=Text -linguist-detectable
