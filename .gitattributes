@@ -1,1 +1,3 @@
-*.qn linguist-language=Rust
+# QuantumLang source files
+*.qn text
+*.qtl text
